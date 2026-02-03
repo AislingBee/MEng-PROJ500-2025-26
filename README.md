@@ -12,6 +12,12 @@ MEng-PROJ500-2025-26/
 │ ├── ros2_core/  ROS2 workspace
 │ └── isaac_sim_rl/  Isaac Lab policies
 ├── simulation/  Isaac assets
+│ ├── docs
+│ ├── isaac
+│ │ ├── assets
+│ │ ├── usd
+│ │ └── scripts
+│ └── rl
 └── testing/  Test plans
 ```
 
