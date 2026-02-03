@@ -14,10 +14,10 @@ MEng-PROJ500-2025-26/
 ├── simulation/  Isaac assets
 │ ├── docs
 │ ├── isaac
-│ │ ├── assets
-│ │ ├── usd
-│ │ └── scripts
-│ └── rl
+│ ├── assets
+│ ├── usd
+│ └── scripts
+│ 
 └── testing/  Test plans
 ```
 
