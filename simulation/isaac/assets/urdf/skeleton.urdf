@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+<robot name="humanoid">
+
+
+  <!-- =========================
+       LINKS (INERTIAL + VISUAL)
+       ========================= -->
+
+  <link name="pelvis_link">
+    <inertial>
+      <origin xyz="0.00 0.00 0.00"/>
+      <mass value="0.470"/>
+      <inertia ixx="0.01" ixy="0.00" ixz="0.00"
+               iyy="0.01" iyz="0.00" izz="0.00"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/pelvis_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/pelvis_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="torso_link">
+    <inertial>
+      <origin xyz="0.00 0.00 0.15"/>
+      <mass value="3.477"/>
+      <inertia ixx="0.05" ixy="0.00" ixz="0.00"
+               iyy="0.05" iyz="0.00" izz="0.03"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/torso_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/torso_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Left leg links -->
+  <link name="l_hip_yaw_link">
+    <inertial>
+      <origin xyz="0.00 0.06 -0.07"/>
+      <mass value="6.334"/>
+      <inertia ixx="0.03" ixy="0.00" ixz="0.01"
+               iyy="0.04" iyz="0.00" izz="0.03"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/l_hip_yaw_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/l_hip_yaw_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="l_hip_pitch_link">
+    <inertial>
+      <origin xyz="-0.03 -0.07 0.00"/>
+      <mass value="2.494"/>
+      <inertia ixx="0.00" ixy="0.00" ixz="0.00"
+               iyy="0.01" iyz="0.00" izz="0.00"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/l_hip_pitch_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/l_hip_pitch_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="l_thigh_link">
+    <inertial>
+      <origin xyz="0.00 -0.01 -0.26"/>
+      <mass value="3.092"/>
+      <inertia ixx="0.03" ixy="0.00" ixz="0.00"
+               iyy="0.03" iyz="0.00" izz="0.00"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/l_thigh_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/l_thigh_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="l_shank_link">
+    <inertial>
+      <origin xyz="0.00 0.02 -0.15"/>
+      <mass value="0.852"/>
+      <inertia ixx="0.01" ixy="0.00" ixz="0.00"
+               iyy="0.01" iyz="0.00" izz="0.00"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/l_shank_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/l_shank_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="l_ankle_link">
+    <inertial>
+      <origin xyz="0.00 -0.03 0.00"/>
+      <mass value="2.498"/>
+      <inertia ixx="0.01" ixy="0.00" ixz="0.00"
+               iyy="0.00" iyz="0.00" izz="0.00"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/l_ankle_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/l_ankle_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="l_foot_link">
+    <inertial>
+      <origin xyz="0.02 0.00 -0.01"/>
+      <mass value="2.790"/>
+      <inertia ixx="0.01" ixy="0.00" ixz="0.00"
+               iyy="0.01" iyz="0.00" izz="0.01"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/l_foot_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/l_foot_link.stl"/></geometry></collision>
+  </link>
+
+  <!-- Right leg links -->
+  <link name="r_hip_yaw_link">
+    <inertial>
+      <origin xyz="0.00 -0.06 -0.07"/>
+      <mass value="6.334"/>
+      <inertia ixx="0.03" ixy="0.00" ixz="0.01"
+               iyy="0.00" iyz="0.00" izz="0.03"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/r_hip_yaw_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/r_hip_yaw_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="r_hip_pitch_link">
+    <inertial>
+      <origin xyz="-0.03 0.07 0.00"/>
+      <mass value="2.494"/>
+      <inertia ixx="0.00" ixy="0.00" ixz="0.00"
+               iyy="0.01" iyz="0.00" izz="0.00"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/r_hip_pitch_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/r_hip_pitch_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="r_thigh_link">
+    <inertial>
+      <origin xyz="0.00 0.01 -0.26"/>
+      <mass value="3.092"/>
+      <inertia ixx="0.03" ixy="0.00" ixz="0.00"
+               iyy="0.03" iyz="0.00" izz="0.00"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/r_thigh_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/r_thigh_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="r_shank_link">
+    <inertial>
+      <origin xyz="0.00 -0.02 -0.15"/>
+      <mass value="0.852"/>
+      <inertia ixx="0.01" ixy="0.00" ixz="0.00"
+               iyy="0.01" iyz="0.00" izz="0.00"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/r_shank_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/r_shank_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="r_ankle_link">
+    <inertial>
+      <origin xyz="0.00 0.03 0.00"/>
+      <mass value="2.498"/>
+      <inertia ixx="0.01" ixy="0.00" ixz="0.00"
+               iyy="0.00" iyz="0.00" izz="0.00"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/r_ankle_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/r_ankle_link.stl"/></geometry></collision>
+  </link>
+
+  <link name="r_foot_link">
+    <inertial>
+      <origin xyz="0.02 0.00 -0.01"/>
+      <mass value="2.790"/>
+      <inertia ixx="0.01" ixy="0.00" ixz="0.00"
+               iyy="0.01" iyz="0.00" izz="0.01"/>
+    </inertial>
+    <visual><geometry><mesh filename="meshes/r_foot_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="meshes/r_foot_link.stl"/></geometry></collision>
+  </link>
+
+    <!-- =========================
+       JOINTS (Z-UP ORIGINS + AXES)
+       ========================= -->
+
+  <!-- Torso -->
+  <joint name="torso_joint" type="revolute">
+    <parent link="pelvis_link"/>
+    <child link="torso_link"/>
+    <origin xyz="0.00 0.00 0.00" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <!-- Left leg chain -->
+  <joint name="l_hip_yaw_joint" type="revolute">
+    <parent link="pelvis_link"/>
+    <child link="l_hip_yaw_link"/>
+    <origin xyz="0.00 0.12 -0.01" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="l_hip_pitch_joint" type="revolute">
+    <parent link="l_hip_yaw_link"/>
+    <child link="l_hip_pitch_link"/>
+    <origin xyz="0.00 0.08 -0.14" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="l_hip_roll_joint" type="revolute">
+    <parent link="l_hip_pitch_link"/>
+    <child link="l_thigh_link"/>
+    <origin xyz="0.00 -0.08 0.00" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="l_knee_joint" type="revolute">
+    <parent link="l_thigh_link"/>
+    <child link="l_shank_link"/>
+    <origin xyz="0.00 0.01 -0.30" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="l_ankle_joint" type="revolute">
+    <parent link="l_shank_link"/>
+    <child link="l_ankle_link"/>
+    <origin xyz="0.00 0.00 -0.30" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="l_foot_joint" type="revolute">
+    <parent link="l_ankle_link"/>
+    <child link="l_foot_link"/>
+    <origin xyz="0.07 -0.01 0.00" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <!-- Right leg chain -->
+  <joint name="r_hip_yaw_joint" type="revolute">
+    <parent link="pelvis_link"/>
+    <child link="r_hip_yaw_link"/>
+    <origin xyz="0.00 -0.12 -0.01" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="r_hip_pitch_joint" type="revolute">
+    <parent link="r_hip_yaw_link"/>
+    <child link="r_hip_pitch_link"/>
+    <origin xyz="0.00 -0.08 -0.14" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="r_hip_roll_joint" type="revolute">
+    <parent link="r_hip_pitch_link"/>
+    <child link="r_thigh_link"/>
+    <origin xyz="0.00 0.08 0.00" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="r_knee_joint" type="revolute">
+    <parent link="r_thigh_link"/>
+    <child link="r_shank_link"/>
+    <origin xyz="0.00 -0.01 -0.30" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="r_ankle_joint" type="revolute">
+    <parent link="r_shank_link"/>
+    <child link="r_ankle_link"/>
+    <origin xyz="0.00 0.00 -0.30" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+  <joint name="r_foot_joint" type="revolute">
+    <parent link="r_ankle_link"/>
+    <child link="r_foot_link"/>
+    <origin xyz="0.07 0.01 0.00" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-3.14" upper="3.14" effort="120" velocity="5.0"/>
+  </joint>
+
+
+</robot>
