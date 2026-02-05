@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="humanoid">
+<robot name="skeleton">
 
 
   <!-- =========================
@@ -16,13 +16,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/pelvis_link.stl"/>
+        <mesh filename="../meshes/skeleton/pelvis_link.stl"/>
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/pelvis_link.stl"/>
+        <mesh filename="../meshes/skeleton/pelvis_link.stl"/>
       </geometry>
     </collision>
   </link>
@@ -37,13 +37,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/torso_link.stl"/>
+        <mesh filename="../meshes/skeleton/torso_link.stl"/>
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/torso_link.stl"/>
+        <mesh filename="../meshes/skeleton/torso_link.stl"/>
       </geometry>
     </collision>
   </link>
@@ -56,8 +56,8 @@
       <inertia ixx="0.03" ixy="0.00" ixz="0.01"
                iyy="0.04" iyz="0.00" izz="0.03"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/l_hip_yaw_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/l_hip_yaw_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/l_hip_yaw_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/l_hip_yaw_link.stl"/></geometry></collision>
   </link>
 
   <link name="l_hip_pitch_link">
@@ -67,8 +67,8 @@
       <inertia ixx="0.00" ixy="0.00" ixz="0.00"
                iyy="0.01" iyz="0.00" izz="0.00"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/l_hip_pitch_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/l_hip_pitch_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/l_hip_pitch_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/l_hip_pitch_link.stl"/></geometry></collision>
   </link>
 
   <link name="l_thigh_link">
@@ -78,8 +78,8 @@
       <inertia ixx="0.03" ixy="0.00" ixz="0.00"
                iyy="0.03" iyz="0.00" izz="0.00"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/l_thigh_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/l_thigh_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/l_thigh_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/l_thigh_link.stl"/></geometry></collision>
   </link>
 
   <link name="l_shank_link">
@@ -89,8 +89,8 @@
       <inertia ixx="0.01" ixy="0.00" ixz="0.00"
                iyy="0.01" iyz="0.00" izz="0.00"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/l_shank_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/l_shank_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/l_shank_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/l_shank_link.stl"/></geometry></collision>
   </link>
 
   <link name="l_ankle_link">
@@ -100,8 +100,8 @@
       <inertia ixx="0.01" ixy="0.00" ixz="0.00"
                iyy="0.00" iyz="0.00" izz="0.00"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/l_ankle_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/l_ankle_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/l_ankle_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/l_ankle_link.stl"/></geometry></collision>
   </link>
 
   <link name="l_foot_link">
@@ -111,8 +111,8 @@
       <inertia ixx="0.01" ixy="0.00" ixz="0.00"
                iyy="0.01" iyz="0.00" izz="0.01"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/l_foot_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/l_foot_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/l_foot_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/l_foot_link.stl"/></geometry></collision>
   </link>
 
   <!-- Right leg links -->
@@ -123,8 +123,8 @@
       <inertia ixx="0.03" ixy="0.00" ixz="0.01"
                iyy="0.00" iyz="0.00" izz="0.03"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/r_hip_yaw_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/r_hip_yaw_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/r_hip_yaw_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/r_hip_yaw_link.stl"/></geometry></collision>
   </link>
 
   <link name="r_hip_pitch_link">
@@ -134,8 +134,8 @@
       <inertia ixx="0.00" ixy="0.00" ixz="0.00"
                iyy="0.01" iyz="0.00" izz="0.00"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/r_hip_pitch_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/r_hip_pitch_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/r_hip_pitch_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/r_hip_pitch_link.stl"/></geometry></collision>
   </link>
 
   <link name="r_thigh_link">
@@ -145,8 +145,8 @@
       <inertia ixx="0.03" ixy="0.00" ixz="0.00"
                iyy="0.03" iyz="0.00" izz="0.00"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/r_thigh_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/r_thigh_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/r_thigh_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/r_thigh_link.stl"/></geometry></collision>
   </link>
 
   <link name="r_shank_link">
@@ -156,8 +156,8 @@
       <inertia ixx="0.01" ixy="0.00" ixz="0.00"
                iyy="0.01" iyz="0.00" izz="0.00"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/r_shank_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/r_shank_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/r_shank_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/r_shank_link.stl"/></geometry></collision>
   </link>
 
   <link name="r_ankle_link">
@@ -167,8 +167,8 @@
       <inertia ixx="0.01" ixy="0.00" ixz="0.00"
                iyy="0.00" iyz="0.00" izz="0.00"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/r_ankle_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/r_ankle_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/r_ankle_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/r_ankle_link.stl"/></geometry></collision>
   </link>
 
   <link name="r_foot_link">
@@ -178,8 +178,8 @@
       <inertia ixx="0.01" ixy="0.00" ixz="0.00"
                iyy="0.01" iyz="0.00" izz="0.01"/>
     </inertial>
-    <visual><geometry><mesh filename="meshes/r_foot_link.stl"/></geometry></visual>
-    <collision><geometry><mesh filename="meshes/r_foot_link.stl"/></geometry></collision>
+    <visual><geometry><mesh filename="../meshes/skeleton/r_foot_link.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="../meshes/skeleton/r_foot_link.stl"/></geometry></collision>
   </link>
 
     <!-- =========================
