@@ -1,36 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot name="plymouth_humanoid_skeleton">
 
-    This sets the orientation correct for the URDF conversion. Z verticle. 
-    <link name="world_link">
-    <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <mass value="0.001"/>
-        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
-    </inertial>
-
-    <!-- <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-        <box size="0.001 0.001 0.001"/>
-        </geometry>
-    </visual>
-
-    <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-        <box size="0.001 0.001 0.001"/>
-        </geometry>
-    </collision> -->
-    </link>
-    
-    <link name="world_link"/>
-    <joint name="world_to_root" type="fixed">
-    <parent link="world_link"/>
-    <child link="robot_pelvis_link"/>
-    <origin xyz="0 0 0" rpy="1.5708 0 1.5708"/>
-    </joint>
-
 
     <!-- ////////////////LINKS URDF///////////////////
         /////////////////////////////////////////////  -->
@@ -40,16 +10,19 @@
         <inertial>
             <origin xyz="0.040610506256969305 -0.04428824001105586 0.15232735840638484" rpy="0 0 0" />
             <mass value="3.4766230099551185" />
-            <inertia ixx="0.04556755879204122" iyy="0.05012873896013481" izz="0.029046998553490383" ixy="0.0001363433350708794" iyz="-0.00014319360185266472" ixz="-2.17772042035054e-05" />
+            <inertia    ixx="0.04556755879204122" iyy="0.05012873896013481" izz="0.029046998553490383" 
+                        ixy="0.0001363433350708794" iyz="-0.00014319360185266472" ixz="-2.17772042035054e-05" />
         </inertial>
         <visual name="robot_torso_link_visual">
-            <origin xyz="0.03999999999999842 -0.2065000000000018 -0.8247999999999985" rpy="0 0 -1.5707963267948957" />
+            <origin     xyz="0.03999999999999842 -0.2065000000000018 -0.8247999999999985" 
+                        rpy="0 0 -1.5707963267948957" />
             <geometry>
                 <mesh filename="meshes/robot_torso_link.stl" scale="1.0 1.0 1.0" />
             </geometry>
         </visual>
         <collision name="robot_torso_link_collision">
-            <origin xyz="0.03999999999999842 -0.2065000000000018 -0.8247999999999985" rpy="0 0 -1.5707963267948957" />
+            <origin     xyz="0.03999999999999842 -0.2065000000000018 -0.8247999999999985" 
+                        rpy="0 0 -1.5707963267948957" />
             <geometry>
                 <mesh filename="meshes/robot_torso_link.stl" scale="1.0 1.0 1.0" />
             </geometry>
@@ -59,7 +32,8 @@
         <inertial>
             <origin xyz="0.000000001907307843025983 0.8221283725272435 -0.16050000000009512" rpy="0 0 0" />
             <mass value="0.4703666239440356" />
-            <inertia ixx="0.0004950338258166186" iyy="0.0051455689188816735" izz="0.00465557720347649" ixy="-1.2440762051764413e-16" iyz="-4.9948841394502e-17" ixz="-2.4664787627748077e-16" />
+            <inertia    ixx="0.0004950338258166186" iyy="0.0051455689188816735" izz="0.00465557720347649" 
+                        ixy="-1.2440762051764413e-16" iyz="-4.9948841394502e-17" ixz="-2.4664787627748077e-16" />
         </inertial>
         <visual name="robot_pelvis_link_visual">
             <origin xyz="0 0 0" rpy="0 0 0" />
@@ -78,7 +52,8 @@
         <inertial>
             <origin xyz="0.06170580963744355 0 0.06827606857409776" rpy="0 0 0" />
             <mass value="6.333603185323419" />
-            <inertia ixx="0.028436782140791816" iyy="0.03981948777445865" izz="0.025134874646244795" ixy="3.3504560609475864e-12" iyz="4.739341596998279e-12" ixz="-0.010596038307326227" />
+            <inertia    ixx="0.028436782140791816" iyy="0.03981948777445865" izz="0.025134874646244795" 
+                        ixy="3.3504560609475864e-12" iyz="4.739341596998279e-12" ixz="-0.010596038307326227" />
         </inertial>
         <visual name="robot_l_hip_yaw_link_visual">
             <origin xyz="0.0010000019072628774 0 0.1212999999999947" rpy="0 0 -3.1415926535897922" />
@@ -97,7 +72,8 @@
         <inertial>
             <origin xyz="-0.02696184868350109 0.00005718654837338022 0.07266905837477193" rpy="0 0 0" />
             <mass value="2.4943200880759124" />
-            <inertia ixx="0.005318665627015662" iyy="0.0035221024403746387" izz="0.0031803389744609056" ixy="1.301162759759191e-07" iyz="-3.3025731688284423e-07" ixz="0.00011211843529274009" />
+            <inertia    ixx="0.005318665627015662" iyy="0.0035221024403746387" izz="0.0031803389744609056" 
+                        ixy="1.301162759759191e-07" iyz="-3.3025731688284423e-07" ixz="0.00011211843529274009" />
         </inertial>
         <visual name="robot_l_hip_pitch_link_visual">
             <origin xyz="0.000799999999894574 0.2573000000000074 0.07500000166893321" rpy="1.5707963267949085 -1.570796326794896 0" />
