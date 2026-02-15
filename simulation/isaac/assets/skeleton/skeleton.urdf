@@ -287,84 +287,84 @@
         <parent link="robot_pelvis_link" />
         <child link="robot_l_hip_yaw_link" />
         <axis xyz="-4.2755644765189156e-32 2.1213866940853923e-14 1.0" />
-        <limit lower="-0.523599" upper="0.523599" effort="1000000" velocity="1000000" />
+        <limit lower="-0.523599" upper="0.523599" effort="60"  velocity="6" />
     </joint>
     <joint name="robot_l_hip_yaw_link_l_pitch_joint" type="revolute">
         <origin xyz="0.07499999999999987 2.877698079828406e-15 0.13629999999999995" rpy="-1.5707963267948966 2.1213866940853926e-14 1.5707963267948966" />
         <parent link="robot_l_hip_yaw_link" />
         <child link="robot_l_hip_pitch_link" />
         <axis xyz="-2.2725973344141428e-32 2.775557561565327e-17 -1.0" />
-        <limit lower="-1.047198" upper="0.698132" effort="1000000" velocity="1000000" />
+        <limit lower="-1.047198" upper="0.698132" effort="60"  velocity="6" />
     </joint>
     <joint name="robot_l_hip_pitch_link_l_roll_joint" type="revolute">
         <origin xyz="0.0004884400000000255 5.907999999990921e-05 0.07498434999999998" rpy="-1.5707963267949294 1.5707963267948966 0" />
         <parent link="robot_l_hip_pitch_link" />
         <child link="robot_l_thigh_link" />
         <axis xyz="-3.8518598882279653e-34 1.0 3.270422467429247e-14" />
-        <limit lower="-0.436332" upper="0.436332" effort="1000000" velocity="1000000" />
+        <limit lower="-0.436332" upper="0.436332" effort="60"  velocity="6" />
     </joint>
     <joint name="robot_l_thigh_link_l_knee_joint" type="revolute">
         <origin xyz="0.0129999999999999 0.0005000000000097771 -0.3" rpy="-1.5707963267948981 3.270422467429247e-14 -1.5707963267948966" />
         <parent link="robot_l_thigh_link" />
         <child link="robot_l_shank_link" />
         <axis xyz="-1.2210395847338845e-31 1.4849232954356037e-15 -1.0" />
-        <limit lower="-2.094395" upper="0.0" effort="1000000" velocity="1000000" />
+        <limit lower="-2.094395" upper="0.0" effort="90"  velocity="8" />
     </joint>
     <joint name="robot_l_shank_link_l_ankle_joint" type="revolute">
         <origin xyz="0.0 0.3 4.440892098500626e-16" rpy="-3.141592653589792 2.241782455256438e-31 3.1554436208840472e-30" />
         <parent link="robot_l_shank_link" />
         <child link="robot_l_ankle_link" />
         <axis xyz="1.0207428705226006e-31 -0.0 1.0" />
-        <limit lower="-0.610865" upper="0.436332" effort="1000000" velocity="1000000" />
+        <limit lower="-0.610865" upper="0.436332" effort="45"  velocity="10" />
     </joint>
     <joint name="robot_l_ankle_link_l_foot_joint" type="revolute">
         <origin xyz="0.07401155999999999 -5.9079999999998025e-05 0.009015649999999998" rpy="1.5707963267948966 1.5707963267948966 0" />
         <parent link="robot_l_ankle_link" />
         <child link="robot_l_foot_link" />
         <axis xyz="1.2094840050743994e-31 1.0 0.0" />
-        <limit lower="-0.261799" upper="0.261799" effort="1000000" velocity="1000000" />
+        <limit lower="-0.261799" upper="0.261799" effort="45"  velocity="10" />
     </joint>
     <joint name="robot_pelvis_link_r_yaw_joint" type="revolute">
         <origin xyz="-0.11999999999999826 0.8127999999999959 -0.1604999999999903" rpy="-1.5707963267948628 2.77555756156387e-17 5.273559366969195e-16" />
         <parent link="robot_pelvis_link" />
         <child link="robot_r_hip_yaw_link" />
         <axis xyz="4.2755644765189156e-32 2.1047333487160162e-14 1.0" />
-        <limit lower="-0.523599" upper="0.523599" effort="1000000" velocity="1000000" />
+        <limit lower="-0.523599" upper="0.523599" effort="60"  velocity="6" />
     </joint>
     <joint name="robot_r_hip_yaw_link_r_pitch_joint" type="revolute">
         <origin xyz="-0.07499999999999991 -2.877698079828406e-15 -0.13629999999999995" rpy="-1.5707963267948966 -2.1047333487160162e-14 -1.5707963267948966" />
         <parent link="robot_r_hip_yaw_link" />
         <child link="robot_r_hip_pitch_link" />
         <axis xyz="-8.281498761229452e-33 0.0 1.0" />
-        <limit lower="-1.047198" upper="0.698132" effort="1000000" velocity="1000000" />
+        <limit lower="-1.047198" upper="0.698132" effort="60"  velocity="6" />
     </joint>
     <joint name="robot_r_hip_pitch_link_r_roll_joint" type="revolute">
         <origin xyz="0.0005000000000000072 0.0 0.07500000000000002" rpy="-1.5707963267948637 -1.5707963267948966 0" />
         <parent link="robot_r_hip_pitch_link" />
         <child link="robot_r_thigh_link" />
         <axis xyz="-2.1955601366083152e-32 1.0 -3.282668935420722e-14" />
-        <limit lower="-0.436332" upper="0.436332" effort="1000000" velocity="1000000" />
+        <limit lower="-0.436332" upper="0.436332" effort="60"  velocity="6" />
     </joint>
     <joint name="robot_r_thigh_link_r_knee_joint" type="revolute">
         <origin xyz="-0.013000000000000185 -0.0004999999999901661 0.3000000000000001" rpy="-1.570796326794898 3.282668935420722e-14 1.5707963267948966" />
         <parent link="robot_r_thigh_link" />
         <child link="robot_r_shank_link" />
         <axis xyz="-3.120006509880417e-32 -1.193489751472503e-15 1.0" />
-        <limit lower="-2.094395" upper="0.0" effort="1000000" velocity="1000000" />
+        <limit lower="-2.094395" upper="0.0" effort="90"  velocity="8" />
     </joint>
     <joint name="robot_r_shank_link_r_ankle_joint" type="revolute">
         <origin xyz="0.0 -0.3 -3.552713678800501e-16" rpy="-3.1415926535897922 -1.0400021699518434e-31 0.0" />
         <parent link="robot_r_shank_link" />
         <child link="robot_r_ankle_link" />
         <axis xyz="7.280015189638016e-32 1.5879329631222806e-30 -1.0" />
-        <limit lower="-0.610865" upper="0.436332" effort="1000000" velocity="1000000" />
+        <limit lower="-0.610865" upper="0.436332" effort="45"  velocity="10" />
     </joint>
     <joint name="robot_r_ankle_link_r_foot_joint" type="revolute">
         <origin xyz="0.07400000000000002 0.0 0.01" rpy="1.5707963267948966 -1.5707963267948961 0" />
         <parent link="robot_r_ankle_link" />
         <child link="robot_r_foot_link" />
         <axis xyz="-2.5037089276361443e-33 1.0 -2.105898581219543e-17" />
-        <limit lower="-0.261799" upper="0.261799" effort="1000000" velocity="1000000" />
+        <limit lower="-0.261799" upper="0.261799" effort="45"  velocity="10" />
     </joint>
     <joint name="robot_pelvis_link_torso_joint" type="fixed">
         <origin xyz="-0.03999999999999858 0.8247999999999963 -0.2064999999999898" rpy="-1.570796326794884 2.77555756156387e-17 5.273559366969195e-16" />
