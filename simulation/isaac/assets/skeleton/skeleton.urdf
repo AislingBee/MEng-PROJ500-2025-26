@@ -1,370 +1,354 @@
 <?xml version='1.0' encoding='utf-8'?>
-<robot name="plymouth_humanoid_skeleton">
-
-
-    <!-- ////////////////LINKS URDF///////////////////
-        /////////////////////////////////////////////  -->
-
-
+<robot name="export_v2">
     <link name="robot_torso_link">
         <inertial>
-            <origin xyz="0.040610506256969305 -0.04428824001105586 0.15232735840638484" rpy="0 0 0" />
+            <origin xyz="0.040610506256969305 -0.04428824001105586 0.15232735840638484" rpy="0.0 -0.0 0.0" />
             <mass value="3.4766230099551185" />
-            <inertia    ixx="0.04556755879204122" iyy="0.05012873896013481" izz="0.029046998553490383" 
-                        ixy="0.0001363433350708794" iyz="-0.00014319360185266472" ixz="-2.17772042035054e-05" />
+            <inertia ixx="0.04556755879204122" iyy="0.05012873896013481" izz="0.029046998553490383" ixy="0.0001363433350708794" iyz="-0.00014319360185266472" ixz="-2.17772042035054e-05" />
         </inertial>
         <visual name="robot_torso_link_visual">
-            <origin     xyz="0.03999999999999842 -0.2065000000000018 -0.8247999999999985" 
-                        rpy="0 0 -1.5707963267948957" />
+            <origin xyz="0.03999999999999842 -0.2065000000000018 -0.8247999999999985" rpy="1.404432126150822e-14 -1.3128387266192404e-14 -1.5707963267948957" />
             <geometry>
-                <mesh filename="meshes/robot_torso_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_torso_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_torso_link_collision">
-            <origin     xyz="0.03999999999999842 -0.2065000000000018 -0.8247999999999985" 
-                        rpy="0 0 -1.5707963267948957" />
+            <origin xyz="0.03999999999999842 -0.2065000000000018 -0.8247999999999985" rpy="1.404432126150822e-14 -1.3128387266192404e-14 -1.5707963267948957" />
             <geometry>
-                <mesh filename="meshes/robot_torso_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_torso_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_pelvis_link">
         <inertial>
-            <origin xyz="0.000000001907307843025983 0.8221283725272435 -0.16050000000009512" rpy="0 0 0" />
+            <origin xyz="1.907307843025983e-09 0.8221283725272435 -0.16050000000009512" rpy="0.0 0.0 0.0" />
             <mass value="0.4703666239440356" />
-            <inertia    ixx="0.0004950338258166186" iyy="0.0051455689188816735" izz="0.00465557720347649" 
-                        ixy="-1.2440762051764413e-16" iyz="-4.9948841394502e-17" ixz="-2.4664787627748077e-16" />
+            <inertia ixx="0.0004950338258166186" iyy="0.0051455689188816735" izz="0.00465557720347649" ixy="-1.2440762051764413e-16" iyz="-4.9948841394502e-17" ixz="-2.4664787627748077e-16" />
         </inertial>
         <visual name="robot_pelvis_link_visual">
-            <origin xyz="0 0 0" rpy="0 0 0" />
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
             <geometry>
-                <mesh filename="meshes/robot_pelvis_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_pelvis_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_pelvis_link_collision">
-            <origin xyz="0 0 0" rpy="0 0 0" />
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
             <geometry>
-                <mesh filename="meshes/robot_pelvis_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_pelvis_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_l_hip_yaw_link">
         <inertial>
-            <origin xyz="0.06170580963744355 0 0.06827606857409776" rpy="0 0 0" />
+            <origin xyz="0.06170580963744355 1.9456187771993428e-11 0.06827606857409776" rpy="0.0 -0.0 0.0" />
             <mass value="6.333603185323419" />
-            <inertia    ixx="0.028436782140791816" iyy="0.03981948777445865" izz="0.025134874646244795" 
-                        ixy="3.3504560609475864e-12" iyz="4.739341596998279e-12" ixz="-0.010596038307326227" />
+            <inertia ixx="0.028436782140791816" iyy="0.03981948777445865" izz="0.025134874646244795" ixy="3.3504560609475864e-12" iyz="4.739341596998279e-12" ixz="-0.010596038307326227" />
         </inertial>
         <visual name="robot_l_hip_yaw_link_visual">
-            <origin xyz="0.0010000019072628774 0 0.1212999999999947" rpy="0 0 -3.1415926535897922" />
+            <origin xyz="0.0010000019072628774 -4.121147867408581e-15 0.1212999999999947" rpy="3.4106331814313436e-14 2.914335439640653e-16 -3.1415926535897922" />
             <geometry>
-                <mesh filename="meshes/robot_l_hip_yaw_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_hip_yaw_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_l_hip_yaw_link_collision">
-            <origin xyz="0.0010000019072628774 0 0.1212999999999947" rpy="0 0 -3.1415926535897922" />
+            <origin xyz="0.0010000019072628774 -4.121147867408581e-15 0.1212999999999947" rpy="3.4106331814313436e-14 2.914335439640653e-16 -3.1415926535897922" />
             <geometry>
-                <mesh filename="meshes/robot_l_hip_yaw_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_hip_yaw_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_l_hip_pitch_link">
         <inertial>
-            <origin xyz="-0.02696184868350109 0.00005718654837338022 0.07266905837477193" rpy="0 0 0" />
+            <origin xyz="-0.02696184868350109 5.718654837338022e-05 0.07266905837477193" rpy="-3.7659531324685076e-81 -0.0 0.0" />
             <mass value="2.4943200880759124" />
-            <inertia    ixx="0.005318665627015662" iyy="0.0035221024403746387" izz="0.0031803389744609056" 
-                        ixy="1.301162759759191e-07" iyz="-3.3025731688284423e-07" ixz="0.00011211843529274009" />
+            <inertia ixx="0.005318665627015662" iyy="0.0035221024403746387" izz="0.0031803389744609056" ixy="1.301162759759191e-07" iyz="-3.3025731688284423e-07" ixz="0.00011211843529274009" />
         </inertial>
         <visual name="robot_l_hip_pitch_link_visual">
             <origin xyz="0.000799999999894574 0.2573000000000074 0.07500000166893321" rpy="1.5707963267949085 -1.570796326794896 0" />
             <geometry>
-                <mesh filename="meshes/robot_l_hip_pitch_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_hip_pitch_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_l_hip_pitch_link_collision">
             <origin xyz="0.000799999999894574 0.2573000000000074 0.07500000166893321" rpy="1.5707963267949085 -1.570796326794896 0" />
             <geometry>
-                <mesh filename="meshes/robot_l_hip_pitch_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_hip_pitch_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_l_thigh_link">
         <inertial>
-            <origin xyz="-0.013245029323109475 -0.004137655727869163 -0.2579314528909593" rpy="0 0 0" />
+            <origin xyz="-0.013245029323109475 -0.004137655727869163 -0.2579314528909593" rpy="0.0 -0.0 0.0" />
             <mass value="3.0917752218546957" />
             <inertia ixx="0.02883218865798365" iyy="0.02680266525524863" izz="0.003607875021008361" ixy="0.00010068883616660142" iyz="0.0021454171666648405" ixz="-0.0010188574668207385" />
         </inertial>
         <visual name="robot_l_thigh_link_visual">
-            <origin xyz="-0.006500003619415118 0.000500003046754074 0.000000004497130134950567" rpy="3.141592653589783 0 3.1415926535897922" />
+            <origin xyz="-0.006500003619415118 0.000500003046754074 4.497130134950567e-09" rpy="3.141592653589783 -4.579669976578868e-16 3.1415926535897922" />
             <geometry>
-                <mesh filename="meshes/robot_l_thigh_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_thigh_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_l_thigh_link_collision">
-            <origin xyz="-0.006500003619415118 0.000500003046754074 0.000000004497130134950567" rpy="3.141592653589783 0 3.1415926535897922" />
+            <origin xyz="-0.006500003619415118 0.000500003046754074 4.497130134950567e-09" rpy="3.141592653589783 -4.579669976578868e-16 3.1415926535897922" />
             <geometry>
-                <mesh filename="meshes/robot_l_thigh_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_thigh_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_l_shank_link">
         <inertial>
-            <origin xyz="-0.0000000030467861478200577 0.14999999550286972 0.02088709684404469" rpy="0 0 0" />
+            <origin xyz="-3.0467861478200577e-09 0.14999999550286972 0.02088709684404469" rpy="-3.852921568495442e-61 -0.0 0.0" />
             <mass value="0.8515894596853654" />
             <inertia ixx="0.008817835807395924" iyy="0.00018545866885020384" izz="0.008885909396953537" ixy="-1.7694179454963418e-16" iyz="-5.108341843844014e-17" ixz="-7.241192720668563e-17" />
         </inertial>
         <visual name="robot_l_shank_link_visual">
-            <origin xyz="-0.0000000030467515088616894 -0.3000000044971365 -0.021500003857830272" rpy="-1.5707963267949183 -1.5707963267948943 0" />
+            <origin xyz="-3.0467515088616894e-09 -0.3000000044971365 -0.021500003857830272" rpy="-1.5707963267949183 -1.5707963267948943 0" />
             <geometry>
-                <mesh filename="meshes/robot_l_shank_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_shank_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_l_shank_link_collision">
-            <origin xyz="-0.0000000030467515088616894 -0.3000000044971365 -0.021500003857830272" rpy="-1.5707963267949183 -1.5707963267948943 0" />
+            <origin xyz="-3.0467515088616894e-09 -0.3000000044971365 -0.021500003857830272" rpy="-1.5707963267949183 -1.5707963267948943 0" />
             <geometry>
-                <mesh filename="meshes/robot_l_shank_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_shank_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_l_ankle_link">
         <inertial>
-            <origin xyz="0.0025101642045814642 -0.0000029435578429026778 0.027693209476934388" rpy="0 0 0" />
+            <origin xyz="0.0025101642045814642 -2.9435578429026778e-06 0.027693209476934388" rpy="0.0 -0.0 0.0" />
             <mass value="2.497542686119488" />
             <inertia ixx="0.003170044378268018" iyy="0.0035459766740820603" izz="0.005361641268614978" ixy="3.5193338254746465e-07" iyz="-5.0583123384351225e-08" ixz="8.715197442183548e-05" />
         </inertial>
         <visual name="robot_l_ankle_link_visual">
-            <origin xyz="0.000011559999991028747 0.599940920000003 0.018515648092735582" rpy="1.5707963267949097 -1.5707963267948954 0" />
+            <origin xyz="1.1559999991028747e-05 0.599940920000003 0.018515648092735582" rpy="1.5707963267949097 -1.5707963267948954 0" />
             <geometry>
-                <mesh filename="meshes/robot_l_ankle_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_ankle_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_l_ankle_link_collision">
-            <origin xyz="0.000011559999991028747 0.599940920000003 0.018515648092735582" rpy="1.5707963267949097 -1.5707963267948954 0" />
+            <origin xyz="1.1559999991028747e-05 0.599940920000003 0.018515648092735582" rpy="1.5707963267949097 -1.5707963267948954 0" />
             <geometry>
-                <mesh filename="meshes/robot_l_ankle_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_ankle_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_l_foot_link">
         <inertial>
-            <origin xyz="0.0000000021152900764320747 0.021295071129086525 0.009743852524883821" rpy="0 0 0" />
+            <origin xyz="2.1152900764320747e-09 0.021295071129086525 0.009743852524883821" rpy="0.0 1.2587272089100742e-93 0.0" />
             <mass value="2.78967156731517" />
             <inertia ixx="0.007113124123467467" iyy="0.007089530917847919" izz="0.005986516031780277" ixy="3.032130102553765e-11" iyz="0.001208249550533235" ixz="-3.797835657071147e-11" />
         </inertial>
         <visual name="robot_l_foot_link_visual">
-            <origin xyz="-0.009499998092735584 -0.07400000000000896 -0.600000000000003" rpy="0 0 -3.1415926535897922" />
+            <origin xyz="-0.009499998092735584 -0.07400000000000896 -0.600000000000003" rpy="1.3142265054000194e-14 -6.383782391594815e-16 -3.1415926535897922" />
             <geometry>
-                <mesh filename="meshes/robot_l_foot_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_foot_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_l_foot_link_collision">
-            <origin xyz="-0.009499998092735584 -0.07400000000000896 -0.600000000000003" rpy="0 0 -3.1415926535897922" />
+            <origin xyz="-0.009499998092735584 -0.07400000000000896 -0.600000000000003" rpy="1.3142265054000194e-14 -6.383782391594815e-16 -3.1415926535897922" />
             <geometry>
-                <mesh filename="meshes/robot_l_foot_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_l_foot_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_r_hip_yaw_link">
         <inertial>
-            <origin xyz="-0.06170580582138252 0 -0.06827606857536807" rpy="0 0 0" />
+            <origin xyz="-0.06170580582138252 -1.9462511602341692e-11 -0.06827606857536807" rpy="0.0 -0.0 0.0" />
             <mass value="6.33360318547509" />
             <inertia ixx="0.02843678214118306" iyy="0.03981948777555511" izz="0.025134874646876512" ixy="3.3527615383185486e-12" iyz="4.741342443921934e-12" ixz="-0.010596038306837618" />
         </inertial>
         <visual name="robot_r_hip_yaw_link_visual">
-            <origin xyz="-0.0009999980926557051 0 -0.12129999999999527" rpy="0 0 0" />
+            <origin xyz="-0.0009999980926557051 4.0856207306205765e-15 -0.12129999999999527" rpy="-3.3939798360619713e-14 2.9143354396404137e-16 -1.1379786002408091e-15" />
             <geometry>
-                <mesh filename="meshes/robot_r_hip_yaw_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_hip_yaw_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_r_hip_yaw_link_collision">
-            <origin xyz="-0.0009999980926557051 0 -0.12129999999999527" rpy="0 0 0" />
+            <origin xyz="-0.0009999980926557051 4.0856207306205765e-15 -0.12129999999999527" rpy="-3.3939798360619713e-14 2.9143354396404137e-16 -1.1379786002408091e-15" />
             <geometry>
-                <mesh filename="meshes/robot_r_hip_yaw_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_hip_yaw_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_r_hip_pitch_link">
         <inertial>
-            <origin xyz="-0.026950752726990004 -0.0000004887744043458043 0.07268407470290571" rpy="0 0 0" />
+            <origin xyz="-0.026950752726990004 -4.887744043458043e-07 0.07268407470290571" rpy="0.0 -0.0 0.0" />
             <mass value="2.4943200880759147" />
             <inertia ixx="0.005318838704479134" iyy="0.0035222338455168645" izz="0.003180296615424849" ixy="-2.273747279346594e-08" iyz="2.823485417691174e-09" ixz="0.00011208276943740214" />
         </inertial>
         <visual name="robot_r_hip_pitch_link_visual">
             <origin xyz="0.0007999999998950713 -0.25730000000000786 0.075000005483542" rpy="1.5707963267948843 -1.5707963267948957 0" />
             <geometry>
-                <mesh filename="meshes/robot_r_hip_pitch_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_hip_pitch_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_r_hip_pitch_link_collision">
             <origin xyz="0.0007999999998950713 -0.25730000000000786 0.075000005483542" rpy="1.5707963267948843 -1.5707963267948957 0" />
             <geometry>
-                <mesh filename="meshes/robot_r_hip_pitch_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_hip_pitch_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_r_thigh_link">
         <inertial>
-            <origin xyz="0.013245027463409737 0.004137658774629856 0.2579314573880829" rpy="0 0 0" />
+            <origin xyz="0.013245027463409737 0.004137658774629856 0.2579314573880829" rpy="0.0 -0.0 0.0" />
             <mass value="3.0917752218546957" />
             <inertia ixx="0.02883218865798376" iyy="0.026802665253455676" izz="0.003607875019214846" ixy="0.00010068883404953363" iyz="0.0021454171666639033" ixz="-0.0010188574476189692" />
         </inertial>
         <visual name="robot_r_thigh_link_visual">
-            <origin xyz="0.006500001907344953 -0.0005000000000066862 0" rpy="3.1415926535897474 0 0" />
+            <origin xyz="0.006500001907344953 -0.0005000000000066862 -6.1106675275368615e-15" rpy="3.1415926535897474 2.0816681711726145e-16 9.020562075079486e-16" />
             <geometry>
-                <mesh filename="meshes/robot_r_thigh_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_thigh_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_r_thigh_link_collision">
-            <origin xyz="0.006500001907344953 -0.0005000000000066862 0" rpy="3.1415926535897474 0 0" />
+            <origin xyz="0.006500001907344953 -0.0005000000000066862 -6.1106675275368615e-15" rpy="3.1415926535897474 2.0816681711726145e-16 9.020562075079486e-16" />
             <geometry>
-                <mesh filename="meshes/robot_r_thigh_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_thigh_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_r_shank_link">
         <inertial>
-            <origin xyz="0 -0.14999999999999544 0.02088709874680781" rpy="0 0 0" />
+            <origin xyz="-4.405364961712621e-14 -0.14999999999999544 0.02088709874680781" rpy="-4.922502319359728e-62 -0.0 0.0" />
             <mass value="0.8515894596853654" />
             <inertia ixx="0.008817835807396299" iyy="0.00018545866885018997" izz="0.008885909396952732" ixy="1.1796119636642298e-16" iyz="-8.32422847682077e-17" ixz="-8.92696737494169e-17" />
         </inertial>
         <visual name="robot_r_shank_link_visual">
-            <origin xyz="0 0.30000000000001104 -0.021500001955065694" rpy="-1.570796326794883 -1.5707963267948897 0" />
+            <origin xyz="-6.0751403907488565e-15 0.30000000000001104 -0.021500001955065694" rpy="-1.570796326794883 -1.5707963267948897 0" />
             <geometry>
-                <mesh filename="meshes/robot_r_shank_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_shank_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_r_shank_link_collision">
-            <origin xyz="0 0.30000000000001104 -0.021500001955065694" rpy="-1.570796326794883 -1.5707963267948897 0" />
+            <origin xyz="-6.0751403907488565e-15 0.30000000000001104 -0.021500001955065694" rpy="-1.570796326794883 -1.5707963267948897 0" />
             <geometry>
-                <mesh filename="meshes/robot_r_shank_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_shank_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_r_ankle_link">
         <inertial>
-            <origin xyz="0.0025096858438951133 0.0000004881742454987403 0.02773418951986404" rpy="0 0 0" />
+            <origin xyz="0.0025096858438951133 4.881742454987403e-07 0.02773418951986404" rpy="-6.299414961705125e-96 -0.0 0.0" />
             <mass value="2.4975426861194876" />
             <inertia ixx="0.0031677074193712795" iyy="0.0035435011232669844" izz="0.005361501992920334" ixy="3.059899889024109e-09" iyz="-2.2390836785374235e-08" ixz="8.122457175510502e-05" />
         </inertial>
         <visual name="robot_r_ankle_link_visual">
-            <origin xyz="0 -0.6000000000000062 0.01950000190734496" rpy="1.5707963267948835 -1.5707963267948952 0" />
+            <origin xyz="-6.643574579356937e-15 -0.6000000000000062 0.01950000190734496" rpy="1.5707963267948835 -1.5707963267948952 0" />
             <geometry>
-                <mesh filename="meshes/robot_r_ankle_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_ankle_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_r_ankle_link_collision">
-            <origin xyz="0 -0.6000000000000062 0.01950000190734496" rpy="1.5707963267948835 -1.5707963267948952 0" />
+            <origin xyz="-6.643574579356937e-15 -0.6000000000000062 0.01950000190734496" rpy="1.5707963267948835 -1.5707963267948952 0" />
             <geometry>
-                <mesh filename="meshes/robot_r_ankle_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_ankle_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="robot_r_foot_link">
         <inertial>
-            <origin xyz="0.0000000016993186235936263 -0.02129507460669811 -0.009743852524875" rpy="0 0 0" />
+            <origin xyz="1.6993186235936263e-09 -0.02129507460669811 -0.009743852524875" rpy="0.0 -0.0 0.0" />
             <mass value="2.7896715673151693" />
             <inertia ixx="0.007113124257631137" iyy="0.007089530917849758" izz="0.005986516165940273" ixy="3.032198797603414e-11" iyz="0.0012082496450576182" ixz="-3.797779352347724e-11" />
         </inertial>
         <visual name="robot_r_foot_link_visual">
-            <origin xyz="0.00950000190734107 0.07400000000000669 0.6000000000000062" rpy="0 0 0" />
+            <origin xyz="0.00950000190734107 0.07400000000000669 0.6000000000000062" rpy="-1.3163324039812401e-14 -2.0816681711723186e-16 -9.020562075079555e-16" />
             <geometry>
-                <mesh filename="meshes/robot_r_foot_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_foot_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="robot_r_foot_link_collision">
-            <origin xyz="0.00950000190734107 0.07400000000000669 0.6000000000000062" rpy="0 0 0" />
+            <origin xyz="0.00950000190734107 0.07400000000000669 0.6000000000000062" rpy="-1.3163324039812401e-14 -2.0816681711723186e-16 -9.020562075079555e-16" />
             <geometry>
-                <mesh filename="meshes/robot_r_foot_link.stl" scale="1.0 1.0 1.0" />
+                <mesh filename="meshes/robot_r_foot_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
-
-    <!-- //////////////////JOINTS/////////////////////////
-        ////////////////////////////////////////////////// -->
-
     <joint name="robot_pelvis_link_l_yaw_joint" type="revolute">
         <origin xyz="0.12000000000000094 0.8127999999999959 -0.1604999999999903" rpy="1.5707963267949308 2.77555756156387e-17 5.273559366969195e-16" />
         <parent link="robot_pelvis_link" />
         <child link="robot_l_hip_yaw_link" />
         <axis xyz="-4.2755644765189156e-32 2.1213866940853923e-14 1.0" />
-        <limit lower="-0.523599" upper="0.523599" effort="60"  velocity="6" />
+        <limit lower="-0.523599" upper="0.523599" effort="60" velocity="6" />
     </joint>
     <joint name="robot_l_hip_yaw_link_l_pitch_joint" type="revolute">
         <origin xyz="0.07499999999999987 2.877698079828406e-15 0.13629999999999995" rpy="-1.5707963267948966 2.1213866940853926e-14 1.5707963267948966" />
         <parent link="robot_l_hip_yaw_link" />
         <child link="robot_l_hip_pitch_link" />
         <axis xyz="-2.2725973344141428e-32 2.775557561565327e-17 -1.0" />
-        <limit lower="-1.047198" upper="0.698132" effort="60"  velocity="6" />
+        <limit lower="-1.047198" upper="0.698132" effort="60" velocity="6" />
     </joint>
     <joint name="robot_l_hip_pitch_link_l_roll_joint" type="revolute">
         <origin xyz="0.0004884400000000255 5.907999999990921e-05 0.07498434999999998" rpy="-1.5707963267949294 1.5707963267948966 0" />
         <parent link="robot_l_hip_pitch_link" />
         <child link="robot_l_thigh_link" />
         <axis xyz="-3.8518598882279653e-34 1.0 3.270422467429247e-14" />
-        <limit lower="-0.436332" upper="0.436332" effort="60"  velocity="6" />
+        <limit lower="-0.436332" upper="0.436332" effort="60" velocity="6" />
     </joint>
     <joint name="robot_l_thigh_link_l_knee_joint" type="revolute">
         <origin xyz="0.0129999999999999 0.0005000000000097771 -0.3" rpy="-1.5707963267948981 3.270422467429247e-14 -1.5707963267948966" />
         <parent link="robot_l_thigh_link" />
         <child link="robot_l_shank_link" />
         <axis xyz="-1.2210395847338845e-31 1.4849232954356037e-15 -1.0" />
-        <limit lower="-2.094395" upper="0.0" effort="90"  velocity="8" />
+        <limit lower="-2.094395" upper="0.0" effort="90" velocity="8" />
     </joint>
     <joint name="robot_l_shank_link_l_ankle_joint" type="revolute">
         <origin xyz="0.0 0.3 4.440892098500626e-16" rpy="-3.141592653589792 2.241782455256438e-31 3.1554436208840472e-30" />
         <parent link="robot_l_shank_link" />
         <child link="robot_l_ankle_link" />
         <axis xyz="1.0207428705226006e-31 -0.0 1.0" />
-        <limit lower="-0.610865" upper="0.436332" effort="45"  velocity="10" />
+        <limit lower="-0.610865" upper="0.436332" effort="45" velocity="10" />
     </joint>
     <joint name="robot_l_ankle_link_l_foot_joint" type="revolute">
         <origin xyz="0.07401155999999999 -5.9079999999998025e-05 0.009015649999999998" rpy="1.5707963267948966 1.5707963267948966 0" />
         <parent link="robot_l_ankle_link" />
         <child link="robot_l_foot_link" />
         <axis xyz="1.2094840050743994e-31 1.0 0.0" />
-        <limit lower="-0.261799" upper="0.261799" effort="45"  velocity="10" />
+        <limit lower="-0.261799" upper="0.261799" effort="45" velocity="10" />
     </joint>
     <joint name="robot_pelvis_link_r_yaw_joint" type="revolute">
         <origin xyz="-0.11999999999999826 0.8127999999999959 -0.1604999999999903" rpy="-1.5707963267948628 2.77555756156387e-17 5.273559366969195e-16" />
         <parent link="robot_pelvis_link" />
         <child link="robot_r_hip_yaw_link" />
         <axis xyz="4.2755644765189156e-32 2.1047333487160162e-14 1.0" />
-        <limit lower="-0.523599" upper="0.523599" effort="60"  velocity="6" />
+        <limit lower="-0.523599" upper="0.523599" effort="60" velocity="6" />
     </joint>
     <joint name="robot_r_hip_yaw_link_r_pitch_joint" type="revolute">
         <origin xyz="-0.07499999999999991 -2.877698079828406e-15 -0.13629999999999995" rpy="-1.5707963267948966 -2.1047333487160162e-14 -1.5707963267948966" />
         <parent link="robot_r_hip_yaw_link" />
         <child link="robot_r_hip_pitch_link" />
         <axis xyz="-8.281498761229452e-33 0.0 1.0" />
-        <limit lower="-1.047198" upper="0.698132" effort="60"  velocity="6" />
+        <limit lower="-1.047198" upper="0.698132" effort="60" velocity="6" />
     </joint>
     <joint name="robot_r_hip_pitch_link_r_roll_joint" type="revolute">
         <origin xyz="0.0005000000000000072 0.0 0.07500000000000002" rpy="-1.5707963267948637 -1.5707963267948966 0" />
         <parent link="robot_r_hip_pitch_link" />
         <child link="robot_r_thigh_link" />
         <axis xyz="-2.1955601366083152e-32 1.0 -3.282668935420722e-14" />
-        <limit lower="-0.436332" upper="0.436332" effort="60"  velocity="6" />
+        <limit lower="-0.436332" upper="0.436332" effort="60" velocity="6" />
     </joint>
     <joint name="robot_r_thigh_link_r_knee_joint" type="revolute">
         <origin xyz="-0.013000000000000185 -0.0004999999999901661 0.3000000000000001" rpy="-1.570796326794898 3.282668935420722e-14 1.5707963267948966" />
         <parent link="robot_r_thigh_link" />
         <child link="robot_r_shank_link" />
         <axis xyz="-3.120006509880417e-32 -1.193489751472503e-15 1.0" />
-        <limit lower="-2.094395" upper="0.0" effort="90"  velocity="8" />
+        <limit lower="-2.094395" upper="0.0" effort="90" velocity="8" />
     </joint>
     <joint name="robot_r_shank_link_r_ankle_joint" type="revolute">
         <origin xyz="0.0 -0.3 -3.552713678800501e-16" rpy="-3.1415926535897922 -1.0400021699518434e-31 0.0" />
         <parent link="robot_r_shank_link" />
         <child link="robot_r_ankle_link" />
         <axis xyz="7.280015189638016e-32 1.5879329631222806e-30 -1.0" />
-        <limit lower="-0.610865" upper="0.436332" effort="45"  velocity="10" />
+        <limit lower="-0.610865" upper="0.436332" effort="45" velocity="10" />
     </joint>
     <joint name="robot_r_ankle_link_r_foot_joint" type="revolute">
         <origin xyz="0.07400000000000002 0.0 0.01" rpy="1.5707963267948966 -1.5707963267948961 0" />
         <parent link="robot_r_ankle_link" />
         <child link="robot_r_foot_link" />
         <axis xyz="-2.5037089276361443e-33 1.0 -2.105898581219543e-17" />
-        <limit lower="-0.261799" upper="0.261799" effort="45"  velocity="10" />
+        <limit lower="-0.261799" upper="0.261799" effort="45" velocity="10" />
     </joint>
     <joint name="robot_pelvis_link_torso_joint" type="fixed">
         <origin xyz="-0.03999999999999858 0.8247999999999963 -0.2064999999999898" rpy="-1.570796326794884 2.77555756156387e-17 5.273559366969195e-16" />
