@@ -3,7 +3,7 @@ import os
 from isaaclab.app import AppLauncher
 
 # ---------------- CLI ----------------
-parser = argparse.ArgumentParser(description="Convert URDF to USD (Isaac Lab).")
+parser = argparse.ArgumentParser(description="Convert URDF to USD (Isaac Lab) with fixed layer paths.")
 parser.add_argument("--urdf", required=True, type=str, help="Path to the robot URDF.")
 parser.add_argument("--out_usd", required=True, type=str, help="Output USD file path.")
 AppLauncher.add_app_launcher_args(parser)
@@ -12,13 +12,70 @@ args = parser.parse_args()
 # ---------------- Launch Isaac Sim via Isaac Lab ----------------
 app = AppLauncher(args).app
 
-# Imports AFTER app launch
+# Imports AFTER app launch (pxr is available only after this)
+from pxr import Sdf, Usd
 from isaaclab.sim.converters import UrdfConverter, UrdfConverterCfg
 
 
+def _fix_sublayer_paths(root_usd_path: str):
+    """Fix broken sublayer paths like 'C:/configuration/xxx.usd' -> './configuration/xxx.usd'."""
+    root_layer = Sdf.Layer.FindOrOpen(root_usd_path)
+    if root_layer is None:
+        raise RuntimeError(f"Failed to open root USD layer: {root_usd_path}")
+
+    changed = False
+    new_paths = []
+    for p in root_layer.subLayerPaths:
+        # Handle the broken path your logs show
+        if p.replace("\\", "/").startswith("C:/configuration/"):
+            fname = os.path.basename(p)
+            new_paths.append(f"./configuration/{fname}")
+            changed = True
+        # (optional) handle other variants just in case
+        elif p.replace("\\", "/").startswith("/configuration/"):
+            fname = os.path.basename(p)
+            new_paths.append(f"./configuration/{fname}")
+            changed = True
+        else:
+            new_paths.append(p)
+
+    if changed:
+        root_layer.subLayerPaths = new_paths
+        root_layer.Save()
+
+    return changed
+
+
+def _ensure_default_prim(root_usd_path: str):
+    """Ensure the root layer has a defaultPrim so @file@<defaultPrim> resolves."""
+    stage = Usd.Stage.Open(root_usd_path)
+    if stage is None:
+        raise RuntimeError(f"Failed to open USD stage: {root_usd_path}")
+
+    if stage.GetDefaultPrim():
+        return False  # already good
+
+    # Prefer /World if it exists, otherwise choose the first top-level prim.
+    world = stage.GetPrimAtPath("/World")
+    if world and world.IsValid():
+        stage.SetDefaultPrim(world)
+        stage.GetRootLayer().Save()
+        return True
+
+    tops = stage.GetPseudoRoot().GetChildren()
+    if tops:
+        stage.SetDefaultPrim(tops[0])
+        stage.GetRootLayer().Save()
+        return True
+
+    # Nothing to set
+    return False
+
+
 def main():
-    urdf_path = os.path.normpath(args.urdf)
-    out_usd = os.path.normpath(args.out_usd)
+    # IMPORTANT: use absolute paths everywhere
+    urdf_path = os.path.abspath(os.path.normpath(args.urdf))
+    out_usd = os.path.abspath(os.path.normpath(args.out_usd))
 
     if not os.path.isfile(urdf_path):
         raise FileNotFoundError(f"URDF not found: {urdf_path}")
@@ -27,20 +84,33 @@ def main():
     usd_file_name = os.path.basename(out_usd)
     os.makedirs(usd_dir, exist_ok=True)
 
-    # Create config with required fields
     cfg = UrdfConverterCfg(
         asset_path=urdf_path,
-        usd_dir=usd_dir,
+        usd_dir=usd_dir,              # absolute
         usd_file_name=usd_file_name,
-        fix_base=False,  # humanoid should be floating
+        fix_base=False,               # humanoid should be floating
     )
 
-    # Fill required joint drive fields (typed config, not dict)
+    # Joint drive defaults (safe baseline)
     cfg.joint_drive.gains.stiffness = 200.0
     cfg.joint_drive.gains.damping = 20.0
 
     converter = UrdfConverter(cfg)
-    print(f"[OK] Generated USD at: {converter.usd_path}")
+
+    # converter.usd_path is the "real" root USD it created
+    root_usd_path = os.path.abspath(os.path.normpath(converter.usd_path))
+    print(f"[OK] Generated USD at: {root_usd_path}")
+
+    # Patch broken sublayer paths in the root USD
+    changed = _fix_sublayer_paths(root_usd_path)
+    if changed:
+        print("[OK] Fixed broken subLayerPaths to use ./configuration/...")
+
+    # Ensure defaultPrim exists to satisfy <defaultPrim> references
+    if _ensure_default_prim(root_usd_path):
+        print("[OK] Set defaultPrim on root USD")
+
+    print("[DONE] URDF -> USD pipeline complete.")
 
 
 if __name__ == "__main__":
