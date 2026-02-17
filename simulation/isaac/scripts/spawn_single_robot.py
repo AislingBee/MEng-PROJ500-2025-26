@@ -47,7 +47,17 @@ def main():
         prim_path="/World/Robot",
         spawn=sim_utils.UsdFileCfg(
             usd_path=usd_path,
-            prim_path="/skeleton"   # <-- IMPORTANT
+            # THIS is the important part:
+            articulation_props=sim_utils.ArticulationRootPropertiesCfg(
+                enabled_self_collisions=False,
+                solver_position_iteration_count=8,
+                solver_velocity_iteration_count=1,
+            ),
+            # (optional but recommended)
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(
+                rigid_body_enabled=True,
+                max_depenetration_velocity=5.0,
+            ),
         ),
         actuators={
             "all_joints": ImplicitActuatorCfg(
