@@ -68,8 +68,8 @@ def main():
                 joint_names_expr=".*",
                 effort_limit_sim=200.0,
                 velocity_limit_sim=100.0,
-                stiffness=0.0,
-                damping=0.0,
+                stiffness=20.0,
+                damping=2.0,
             )
         },
         init_state=ArticulationCfg.InitialStateCfg(
