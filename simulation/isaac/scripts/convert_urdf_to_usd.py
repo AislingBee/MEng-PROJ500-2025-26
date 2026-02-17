@@ -16,6 +16,7 @@ app = AppLauncher(args).app
 from pxr import Usd, UsdGeom, Gf
 from pxr import Sdf, Usd
 from isaaclab.sim.converters import UrdfConverter, UrdfConverterCfg
+from pxr import UsdPhysics
 
 
 def _fix_sublayer_paths(root_usd_path: str):
@@ -143,6 +144,13 @@ def main():
 
     # Typical Y-up -> Z-up correction: rotate -90 degrees about X
     xform.AddRotateXYZOp().Set(Gf.Vec3f(90.0, 0.0, 0.0))
+
+    robot_prim = stage.GetPrimAtPath("/Robot")
+    if not robot_prim or not robot_prim.IsValid():
+        # fallback: defaultPrim
+        robot_prim = stage.GetDefaultPrim()
+
+    UsdPhysics.ArticulationRootAPI.Apply(robot_prim)
 
     fixed_usd_path = os.path.splitext(root_usd_path)[0] + "_fixed.usd"
     stage.GetRootLayer().Export(fixed_usd_path)
