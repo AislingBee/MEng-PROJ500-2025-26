@@ -142,7 +142,7 @@ def main():
     xform.ClearXformOpOrder()
 
     # Typical Y-up -> Z-up correction: rotate -90 degrees about X
-    xform.AddRotateXYZOp().Set(Gf.Vec3f(-90.0, 0.0, 0.0))
+    xform.AddRotateXYZOp().Set(Gf.Vec3f(90.0, 0.0, 0.0))
 
     fixed_usd_path = os.path.splitext(root_usd_path)[0] + "_fixed.usd"
     stage.GetRootLayer().Export(fixed_usd_path)
