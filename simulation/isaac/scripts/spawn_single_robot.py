@@ -35,7 +35,6 @@ def main():
         device=args.device,
         physx=sim_utils.PhysxCfg(
             enable_external_forces_every_iteration=True,
-            solver_velocity_iteration_count=1,
         ),
     )
     sim = SimulationContext(sim_cfg)
