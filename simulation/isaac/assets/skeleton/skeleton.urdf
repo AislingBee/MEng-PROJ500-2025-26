@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<robot name="export_v2">
+<robot name="Robot">
     <link name="robot_torso_link">
         <inertial>
             <origin xyz="0.040610506256969305 -0.04428824001105586 0.15232735840638484" rpy="0 0 0" />
