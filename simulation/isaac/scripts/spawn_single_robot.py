@@ -32,7 +32,11 @@ def main():
     # Notice: device now comes from args.device automatically
     sim_cfg = sim_utils.SimulationCfg(
         dt=1.0 / 120.0,
-        device=args.device
+        device=args.device,
+        physx=sim_utils.PhysxCfg(
+            enable_external_forces_every_iteration=True,
+            solver_velocity_iteration_count=1,
+        ),
     )
     sim = SimulationContext(sim_cfg)
 
@@ -62,8 +66,8 @@ def main():
         actuators={
             "all_joints": ImplicitActuatorCfg(
                 joint_names_expr=".*",
-                effort_limit=200.0,
-                velocity_limit=100.0,
+                effort_limit_sim=200.0,
+                velocity_limit_sim=100.0,
                 stiffness=0.0,
                 damping=0.0,
             )
