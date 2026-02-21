@@ -33,7 +33,7 @@ def _fix_sublayer_paths(root_usd_path: str):
             fname = os.path.basename(p)
             new_paths.append(f"./configuration/{fname}")
             changed = True
-        # (optional) handle other variants just in case
+        # handle other variants just in case
         elif p.replace("\\", "/").startswith("/configuration/"):
             fname = os.path.basename(p)
             new_paths.append(f"./configuration/{fname}")
@@ -75,7 +75,7 @@ def _ensure_default_prim(root_usd_path: str):
 
 
 def main():
-    # IMPORTANT: use absolute paths everywhere
+    # use absolute paths everywhere
     urdf_path = os.path.abspath(os.path.normpath(args.urdf))
     out_usd = os.path.abspath(os.path.normpath(args.out_usd))
 

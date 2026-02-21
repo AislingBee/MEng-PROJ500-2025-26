@@ -6,13 +6,8 @@ from isaaclab.app import AppLauncher
 
 def main():
     parser = argparse.ArgumentParser()
-
-    # ADD THIS FIRST
     AppLauncher.add_app_launcher_args(parser)
-
-    # Only add YOUR custom args
     parser.add_argument("--usd", type=str, required=True, help="Path to robot USD file.")
-
     args = parser.parse_args()
 
     usd_path = os.path.abspath(args.usd)
@@ -28,8 +23,11 @@ def main():
     from isaaclab.assets import Articulation, ArticulationCfg
     from isaaclab.actuators import ImplicitActuatorCfg
 
+    reset_interval = 5.0  # seconds
+    time_elapsed = 0.0
 
-    # Notice: device now comes from args.device automatically
+
+    # device now comes from args.device automatically
     sim_cfg = sim_utils.SimulationCfg(
         dt=1.0 / 120.0,
         device=args.device,
@@ -50,13 +48,13 @@ def main():
         prim_path="/World/Robot",
         spawn=sim_utils.UsdFileCfg(
             usd_path=usd_path,
-            # THIS is the important part:
+            
             articulation_props=sim_utils.ArticulationRootPropertiesCfg(
                 enabled_self_collisions=False,
                 solver_position_iteration_count=8,
                 solver_velocity_iteration_count=1,
             ),
-            # (optional but recommended)
+            
             rigid_props=sim_utils.RigidBodyPropertiesCfg(
                 rigid_body_enabled=True,
                 max_depenetration_velocity=5.0,
@@ -67,8 +65,8 @@ def main():
                 joint_names_expr=".*",
                 effort_limit_sim=200.0,
                 velocity_limit_sim=100.0,
-                stiffness=20.0,
-                damping=2.0,
+                stiffness=200.0,
+                damping=50.0,
             )
         },
         init_state=ArticulationCfg.InitialStateCfg(
@@ -87,8 +85,17 @@ def main():
     sim.set_camera_view([3.0, 3.0, 2.0], [0.0, 0.0, 1.0])
 
     while simulation_app.is_running():
+
         sim.step()
         robot.update(sim_cfg.dt)
+
+        time_elapsed += sim_cfg.dt
+
+        if time_elapsed >= reset_interval:
+            print("Resetting simulation...")
+            sim.reset()
+            robot.reset()
+            time_elapsed = 0.0
 
     simulation_app.close()
 
