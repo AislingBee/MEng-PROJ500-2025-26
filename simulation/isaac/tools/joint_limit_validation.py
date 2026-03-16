@@ -2,6 +2,7 @@ import argparse
 import os
 import csv
 
+
 from isaaclab.app import AppLauncher
 
 
@@ -55,6 +56,8 @@ def main():
     # ---------------- Launch Isaac Sim via Isaac Lab ----------------
     app_launcher = AppLauncher(args)
     simulation_app = app_launcher.app
+
+
 
     # Isaac Lab imports (inside, after app launch)
     import torch
@@ -296,6 +299,7 @@ def main():
             writer.writerow(row)
 
     print(f"\nResults written to: {csv_path}")
+
 
     # ---------------- Keep app open until closed ----------------
     print("\nValidation complete. Close the Isaac Sim window to exit.")
