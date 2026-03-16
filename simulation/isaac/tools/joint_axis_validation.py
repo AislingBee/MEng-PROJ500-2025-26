@@ -11,7 +11,7 @@ def main():
     parser.add_argument("--usd", type=str, required=True, help="Path to robot USD file.")
     # You can drive tests by joint index for now (simple + robust)
     parser.add_argument("--joint_index", type=int, default=0, help="Joint index to test.")
-    parser.add_argument("--step_rad", type=float, default=0.25, help="Step size in radians (+/-).")
+    parser.add_argument("--step_rad", type=float, default=0.5, help="Step size in radians (+/-).")
     parser.add_argument("--hold_s", type=float, default=1.0, help="How long to hold each step (seconds).")
     args = parser.parse_args()
 
@@ -69,7 +69,7 @@ def main():
                 joint_names_expr=".*",
                 effort_limit_sim=200.0,
                 velocity_limit_sim=100.0,
-                stiffness=200.0,
+                stiffness=500.0,
                 damping=50.0,
             )
         },
@@ -89,33 +89,42 @@ def main():
 
     sim.set_camera_view([3.0, 3.0, 2.0], [0.0, 0.0, 1.0])
 
-    # ----------------Define Joint Names---------------------------
+# ----------------Define Joint Names---------------------------
+
     JOINT_NAMES = [
-        "l_hip_yaw_joint",          # index 0
-        "l_hip_pitch_joint",        # index 1
-        "l_hip_roll_joint",         # index 2
-        "l_knee_joint",             # index 3
-        "l_ankle_joint",            # index 4
-        "l_foot_joint",             # index 5
-        "r_hip_yaw_joint",          # index 6
-        "r_hip_pitch_joint",        # index 7
-        "r_hip_roll_joint",         # index 8
-        "r_knee_joint",             # index 9
-        "r_ankle_joint",            # index 10
-        "r_foot_joint",             # index 11
-        "torso_joint",              # index 12
+        "robot_pelvis_link_l_yaw_joint",
+        "robot_l_hip_yaw_link_l_pitch_joint",
+        "robot_l_hip_pitch_link_l_roll_joint",
+        "robot_l_thigh_link_l_knee_joint",
+        "robot_l_shank_link_l_ankle_joint",
+        "robot_l_ankle_link_l_foot_joint",
+        "robot_pelvis_link_r_yaw_joint",
+        "robot_r_hip_yaw_link_r_pitch_joint",
+        "robot_r_hip_pitch_link_r_roll_joint",
+        "robot_r_thigh_link_r_knee_joint",
+        "robot_r_shank_link_r_ankle_joint",
+        "robot_r_ankle_link_r_foot_joint",
     ]
 
     joint_name_to_index = {
         name: robot.joint_names.index(name) for name in JOINT_NAMES
     }
 
+    # TEMP: dump all joint names so we can see the exact strings
+    # print("\n--- robot.joint_names (Isaac articulation) ---")
+    # for i, n in enumerate(list(robot.joint_names)):
+    #     print(f"{i:02d} : {n}")
+    # print("--------------------------------------------\n")
+
+    # # Stop here so it doesn't crash later
+    # raise SystemExit("Printed joint names. Update JOINT_NAMES to match exactly.")
+
 
     # ---------------- Define Neutral "Zero" Pose ----------------
     # This is NOT changing URDF zero; it's capturing a reference pose.
     # You can replace this with your own "standing neutral" init_state joint_pos later.
     robot.update(sim_cfg.dt)  # ensure buffers are populated
-    q_zero = robot.data.joint_pos.clone()  # tensor [num_joints]
+    q_zero = robot.data.joint_pos[0].clone()  # tensor [num_joints]
     # If you want: print(q_zero) for sanity, but it’s usually noisy.
 
     # ---------------- Test Setup ----------------
@@ -143,10 +152,6 @@ def main():
 
     # ---------------- Main Loop ----------------
     while simulation_app.is_running():
-        # Step sim
-        sim.step()
-        robot.update(sim_cfg.dt)
-
         # Update state timing
         state_counter += 1
         if state_counter >= hold_steps:
@@ -157,8 +162,17 @@ def main():
         q_target[:] = q_zero
         q_target[joint_i] = q_zero[joint_i] + states[state_k]
 
-        # Send position targets
-        robot.set_joint_position_target(q_target)
+        # Send targets to robot
+        robot.set_joint_position_target(q_target.unsqueeze(0))
+        robot.write_data_to_sim()
+
+        # Step sim
+        sim.step()
+        robot.update(sim_cfg.dt)
+
+        # print(q_target)
+        # print the command being sent. 
+        print("state:", states[state_k]) 
 
     simulation_app.close()
 
