@@ -34,6 +34,93 @@ Notes
    the script still runs and logs position/error data, but torque columns will be blank.
 """
 
+ACTUATOR_SETTINGS = {
+    "pelvis_yaw": {
+        "joint_names": [
+            "robot_pelvis_link_l_yaw_joint",
+            "robot_pelvis_link_r_yaw_joint",
+        ],
+        "effort_limit": 50.0,
+        "velocity_limit": 8.0,
+        "stiffness": 130.0,
+        "damping": 4.0,
+    },
+    "hip_yaw": {
+        "joint_names": [
+            "robot_l_hip_yaw_link_l_pitch_joint",
+            "robot_r_hip_yaw_link_r_pitch_joint",
+        ],
+        "effort_limit": 80.0,
+        "velocity_limit": 8.0,
+        "stiffness": 220.0,
+        "damping": 8.0,
+    },
+    "hip_roll": {
+        "joint_names": [
+            "robot_l_hip_pitch_link_l_roll_joint",
+            "robot_r_hip_pitch_link_r_roll_joint",
+        ],
+        "effort_limit": 75.0,
+        "velocity_limit": 8.0,
+        "stiffness": 190.0,
+        "damping": 7.0,
+    },
+    "knees": {
+        "joint_names": [
+            "robot_l_thigh_link_l_knee_joint",
+            "robot_r_thigh_link_r_knee_joint",
+        ],
+        "effort_limit": 90.0,
+        "velocity_limit": 8.0,
+        "stiffness": 280.0,
+        "damping": 10.0,
+    },
+    "ankle_pitch": {
+        "joint_names": [
+            "robot_l_shank_link_l_ankle_joint",
+            "robot_r_shank_link_r_ankle_joint",
+        ],
+        "effort_limit": 60.0,
+        "velocity_limit": 10.0,
+        "stiffness": 160.0,
+        "damping": 6.0,
+    },
+    "ankle_roll": {
+        "joint_names": [
+            "robot_l_ankle_link_l_foot_joint",
+            "robot_r_ankle_link_r_foot_joint",
+        ],
+        "effort_limit": 40.0,
+        "velocity_limit": 10.0,
+        "stiffness": 120.0,
+        "damping": 5.0,
+    },
+}
+
+
+def build_per_joint_limits_and_gains(joint_names):
+    effort_limits = []
+    velocity_limits = []
+    stiffnesses = []
+    dampings = []
+
+    for joint_name in joint_names:
+        matched = False
+        for cfg in ACTUATOR_SETTINGS.values():
+            if joint_name in cfg["joint_names"]:
+                effort_limits.append(cfg["effort_limit"])
+                velocity_limits.append(cfg["velocity_limit"])
+                stiffnesses.append(cfg["stiffness"])
+                dampings.append(cfg["damping"])
+                matched = True
+                break
+
+        if not matched:
+            raise RuntimeError(f"No actuator settings found for joint: {joint_name}")
+
+    return effort_limits, velocity_limits, stiffnesses, dampings
+
+
 import argparse
 import csv
 import math
@@ -67,6 +154,12 @@ parser.add_argument("--camera_target", type=float, nargs=3, default=(0.0, 0.0, 1
 
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
+
+# Disable global actuator overrides
+args.effort_limit = None
+args.velocity_limit = None
+args.stiffness = None
+args.damping = None
 
 # -----------------------------------------------------------------------------
 # Launch app before Isaac imports
@@ -228,19 +321,27 @@ def main():
     light_cfg = sim_utils.DomeLightCfg(intensity=2000.0)
     light_cfg.func("/World/light", light_cfg)
 
+    actuators = {}
+
+    for group_name, cfg in ACTUATOR_SETTINGS.items():
+        actuators[group_name] = ImplicitActuatorCfg(
+            joint_names_expr=cfg["joint_names"],
+            effort_limit_sim=cfg["effort_limit"],
+            velocity_limit_sim=cfg["velocity_limit"],
+            stiffness=cfg["stiffness"],
+            damping=cfg["damping"],
+        )
+
     # Robot
     robot_cfg = ArticulationCfg(
         prim_path="/World/Robot",
         spawn=sim_utils.UsdFileCfg(usd_path=args.usd),
-        actuators={
-            "all_joints": ImplicitActuatorCfg(
-                joint_names_expr=".*",
-                effort_limit_sim=args.effort_limit,
-                velocity_limit_sim=args.velocity_limit,
-                stiffness=args.stiffness,
-                damping=args.damping,
-            )
-        },
+
+        # FIX THE BASE FOR THIS TEST
+        init_state=ArticulationCfg.InitialStateCfg(
+            pos=(0.0, 0.0, 1.0),
+        ),
+        actuators=actuators
     )
 
     robot = Articulation(robot_cfg)
@@ -253,14 +354,36 @@ def main():
     # Let buffers populate
     robot.update(args.dt)
 
+    joint_names = robot.joint_names
+
+    (   
+        effort_limits_per_joint, 
+        velocity_limits_per_joint, 
+        stiffness_per_joint, 
+        damping_per_joint,
+    ) = build_per_joint_limits_and_gains(joint_names)
+
+
+    print("\n[RUNTIME JOINT GAINS]")
+    for i, name in enumerate(joint_names):
+        k = float(robot.data.joint_stiffness[0, i].item())
+        d = float(robot.data.joint_damping[0, i].item())
+        print(f"{i:2d}  {name:40s}  Kp={k:8.3f}  Kd={d:8.3f}")
+
+    print("\n[RUNTIME LIMITS]")
+    for i, name in enumerate(joint_names):
+        v = float(robot.data.joint_vel_limits[0, i].item())
+        print(f"{i:2d}  {name:40s}  vel_limit={v:8.3f}")
+
     joint_names = get_joint_names(robot)
     lower_limits, upper_limits = get_joint_limits(robot)
     q_neutral = get_joint_positions(robot)
 
     num_joints = len(joint_names)
+
     print(f"[INFO] Loaded robot: {args.usd}")
     print(f"[INFO] Number of joints: {num_joints}")
-    print(f"[INFO] Effort limit: {args.effort_limit:.3f} Nm")
+    print(f"[INFO] Effort limit: {args.effort_limits_per_joint[joint_i]:.3f} Nm")
     print(f"[INFO] Velocity limit: {args.velocity_limit:.3f} rad/s")
     print(f"[INFO] Stiffness: {args.stiffness:.3f}")
     print(f"[INFO] Damping: {args.damping:.3f}")
@@ -299,7 +422,7 @@ def main():
                 "reached_rad": "",
                 "position_error_rad": "",
                 "max_abs_effort_nm": "",
-                "effort_limit_nm": args.effort_limit,
+                "effort_limit_nm": effort_limits_per_joint[joint_i],
                 "saturation_reached": "",
                 "torque_clip_ok": "",
                 "overall_pass": "",
@@ -377,7 +500,7 @@ def main():
                 "reached_rad": reached_value,
                 "position_error_rad": pos_error,
                 "max_abs_effort_nm": max_abs_effort if max_abs_effort is not None else "",
-                "effort_limit_nm": args.effort_limit,
+                "effort_limit_nm": args.effort_limits_per_joint[joint_i],
                 "saturation_reached": "" if saturation_reached is None else saturation_reached,
                 "torque_clip_ok": "" if torque_clip_ok is None else torque_clip_ok,
                 "overall_pass": overall_pass,
