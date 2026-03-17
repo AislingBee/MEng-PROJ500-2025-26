@@ -383,10 +383,7 @@ def main():
 
     print(f"[INFO] Loaded robot: {args.usd}")
     print(f"[INFO] Number of joints: {num_joints}")
-    print(f"[INFO] Effort limit: {args.effort_limits_per_joint[joint_i]:.3f} Nm")
-    print(f"[INFO] Velocity limit: {args.velocity_limit:.3f} rad/s")
-    print(f"[INFO] Stiffness: {args.stiffness:.3f}")
-    print(f"[INFO] Damping: {args.damping:.3f}")
+    print("[INFO] Per-joint actuator settings active from ACTUATOR_SETTINGS")
     print(f"[INFO] CSV output: {args.output_csv}")
 
     sample_effort = get_joint_efforts(robot)
@@ -453,10 +450,12 @@ def main():
             reached_value = float(reached_pos[joint_i].item())
             pos_error = reached_value - float(target_value)
 
+            joint_effort_limit = float(effort_limits_per_joint[joint_i])
+
             if max_effort is not None:
                 max_abs_effort = float(max_effort[joint_i].item())
-                saturation_reached = max_abs_effort >= (args.effort_limit * args.saturation_fraction)
-                torque_clip_ok = max_abs_effort <= (args.effort_limit * 1.05)
+                saturation_reached = max_abs_effort >= (joint_effort_limit * args.saturation_fraction)
+                torque_clip_ok = max_abs_effort <= (joint_effort_limit * 1.05)
             else:
                 max_abs_effort = None
                 saturation_reached = None
@@ -500,7 +499,7 @@ def main():
                 "reached_rad": reached_value,
                 "position_error_rad": pos_error,
                 "max_abs_effort_nm": max_abs_effort if max_abs_effort is not None else "",
-                "effort_limit_nm": args.effort_limits_per_joint[joint_i],
+                "effort_limit_nm": float(effort_limits_per_joint[joint_i]),
                 "saturation_reached": "" if saturation_reached is None else saturation_reached,
                 "torque_clip_ok": "" if torque_clip_ok is None else torque_clip_ok,
                 "overall_pass": overall_pass,
