@@ -20,6 +20,7 @@ from simulation.isaac.configuration.actuator_config import (
 import argparse
 import math
 import os
+import time
 
 from isaaclab.app import AppLauncher
 
@@ -164,6 +165,10 @@ def main():
 
     # Let buffers populate
     robot.update(args.dt)
+
+    print("[INFO] Waiting for viewer to initialise...")
+    time.sleep(3.0)   # adjust (2–5s typically)
+    print("[INFO] Starting standing pose...")
 
     joint_names = list(robot.joint_names)
     q_target = build_standing_target_tensor(robot, args.device)
