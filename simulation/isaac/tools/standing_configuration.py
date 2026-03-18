@@ -34,7 +34,7 @@ parser.add_argument("--usd", type=str, required=True, help="Path to robot USD")
 parser.add_argument("--dt", type=float, default=1.0 / 120.0, help="Simulation timestep")
 parser.add_argument("--gravity", type=float, nargs=3, default=(0.0, 0.0, -9.81), help="Gravity vector")
 
-parser.add_argument("--base_height", type=float, default=1.0, help="Robot base height")
+parser.add_argument("--base_height", type=float, default=0.05, help="Robot base height")
 parser.add_argument("--settle_steps", type=int, default=240, help="Steps to hold standing pose")
 parser.add_argument("--camera_eye", type=float, nargs=3, default=(3.0, 3.0, 2.0), help="Camera eye")
 parser.add_argument("--camera_target", type=float, nargs=3, default=(0.0, 0.0, 1.0), help="Camera target")
@@ -64,14 +64,14 @@ from isaaclab.actuators import ImplicitActuatorCfg
 STANDING_TARGETS_DEG = {
     "robot_pelvis_link_l_yaw_joint": 0.0,
     "robot_pelvis_link_r_yaw_joint": 0.0,
-    "robot_l_hip_yaw_link_l_pitch_joint": 0.0,
-    "robot_r_hip_yaw_link_r_pitch_joint": 0.0,
+    "robot_l_hip_yaw_link_l_pitch_joint": -3.0,
+    "robot_r_hip_yaw_link_r_pitch_joint": -3.0,
     "robot_l_hip_pitch_link_l_roll_joint": 0.0,
     "robot_r_hip_pitch_link_r_roll_joint": 0.0,
-    "robot_l_thigh_link_l_knee_joint": -10.0,
-    "robot_r_thigh_link_r_knee_joint": -10.0,
-    "robot_l_shank_link_l_ankle_joint": 0.0,
-    "robot_r_shank_link_r_ankle_joint": 0.0,
+    "robot_l_thigh_link_l_knee_joint": -15.0,
+    "robot_r_thigh_link_r_knee_joint": -15.0,
+    "robot_l_shank_link_l_ankle_joint": 10.0,
+    "robot_r_shank_link_r_ankle_joint": 10.0,
     "robot_l_ankle_link_l_foot_joint": 0.0,
     "robot_r_ankle_link_r_foot_joint": 0.0,
 }
@@ -167,7 +167,7 @@ def main():
     robot.update(args.dt)
 
     print("[INFO] Waiting for viewer to initialise...")
-    time.sleep(3.0)   # adjust (2–5s typically)
+    time.sleep(5.0)   # Small delay to allow pc to catch 
     print("[INFO] Starting standing pose...")
 
     joint_names = list(robot.joint_names)
