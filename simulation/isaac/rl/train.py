@@ -2,175 +2,106 @@
 from __future__ import annotations
 
 import argparse
-import importlib.metadata as metadata
 import os
-import pickle
-import platform
-import sys
 from datetime import datetime
 
-from packaging import version
-
 from isaaclab.app import AppLauncher
-
-# local imports
-import cli_args  # isort: skip
 
 # -----------------------------------------------------------------------------
 # CLI
 # -----------------------------------------------------------------------------
-parser = argparse.ArgumentParser(description="Train PROJ500 humanoid stand with RSL-RL.")
-parser.add_argument("--video", action="store_true", default=False, help="Record videos during training.")
-parser.add_argument("--video_length", type=int, default=200, help="Length of recorded video in steps.")
-parser.add_argument("--video_interval", type=int, default=2000, help="Interval between video recordings.")
-parser.add_argument("--num_envs", type=int, default=None, help="Number of environments to simulate.")
-parser.add_argument("--task", type=str, default="Humanoid-Stand-v0", help="Registered gym task name.")
-parser.add_argument(
-    "--agent",
-    type=str,
-    default="rsl_rl_cfg_entry_point",
-    help="Name of the RL agent configuration entry point.",
-)
-parser.add_argument("--seed", type=int, default=None, help="Random seed.")
-parser.add_argument("--max_iterations", type=int, default=None, help="PPO training iterations.")
-parser.add_argument("--distributed", action="store_true", default=False, help="Distributed multi-GPU training.")
-parser.add_argument("--export_io_descriptors", action="store_true", default=False, help="Export IO descriptors.")
-
-cli_args.add_rsl_rl_args(parser)
+parser = argparse.ArgumentParser(description="Train PROJ500 humanoid standing policy with PPO.")
 AppLauncher.add_app_launcher_args(parser)
-args_cli, hydra_args = parser.parse_known_args()
+parser.add_argument("--num_envs", type=int, default=256, help="Number of parallel environments.")
+parser.add_argument("--max_iterations", type=int, default=1000, help="Number of PPO iterations.")
+parser.add_argument("--seed", type=int, default=42, help="Random seed.")
+args = parser.parse_args()
 
-if args_cli.video:
-    args_cli.enable_cameras = True
-
-# clear sys.argv for Hydra
-sys.argv = [sys.argv[0]] + hydra_args
-
-# launch Isaac Sim
-app_launcher = AppLauncher(args_cli)
+# launch Isaac Sim first
+app_launcher = AppLauncher(args)
 simulation_app = app_launcher.app
-
-# -----------------------------------------------------------------------------
-# version check
-# -----------------------------------------------------------------------------
-RSL_RL_VERSION = "3.0.1"
-installed_version = metadata.version("rsl-rl-lib")
-if version.parse(installed_version) < version.parse(RSL_RL_VERSION):
-    if platform.system() == "Windows":
-        cmd = [r".\isaaclab.bat", "-p", "-m", "pip", "install", f"rsl-rl-lib=={RSL_RL_VERSION}"]
-    else:
-        cmd = ["./isaaclab.sh", "-p", "-m", "pip", "install", f"rsl-rl-lib=={RSL_RL_VERSION}"]
-    print(
-        f"Please install the correct version of RSL-RL.\n"
-        f"Existing version is: '{installed_version}' and required version is: '{RSL_RL_VERSION}'.\n"
-        f"To install the correct version, run:\n\n\t{' '.join(cmd)}\n"
-    )
-    raise SystemExit(1)
 
 # -----------------------------------------------------------------------------
 # imports after app launch
 # -----------------------------------------------------------------------------
-import gymnasium as gym
-import omni
 import torch
 from rsl_rl.runners import OnPolicyRunner
+from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 
-from isaaclab.envs import DirectMARLEnv, DirectMARLEnvCfg, DirectRLEnvCfg, ManagerBasedRLEnvCfg, multi_agent_to_single_agent
-from isaaclab.utils.dict import print_dict
-from isaaclab_rl.rsl_rl import RslRlBaseRunnerCfg, RslRlVecEnvWrapper
-
-from isaaclab_tasks.utils.hydra import hydra_task_config
-
-# import the task registration
-import simulation.isaac.rl.tasks.humanoid_stand  # noqa: F401
+from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnv, HumanoidStandEnvCfg
 
 
-torch.backends.cuda.matmul.allow_tf32 = True
-torch.backends.cudnn.allow_tf32 = True
-torch.backends.cudnn.deterministic = False
-torch.backends.cudnn.benchmark = False
+def build_train_cfg(device: str, max_iterations: int, seed: int) -> dict:
+    return {
+        "seed": seed,
+        "device": device,
+        "num_steps_per_env": 24,
+        "max_iterations": max_iterations,
+        "empirical_normalization": False,
+        "save_interval": 50,
+        "experiment_name": "humanoid_stand",
+        "run_name": "",
+        "logger": "tensorboard",
+        "policy": {
+            "class_name": "ActorCritic",
+            "init_noise_std": 1.0,
+            "actor_hidden_dims": [256, 256, 128],
+            "critic_hidden_dims": [256, 256, 128],
+            "activation": "elu",
+        },
+        "algorithm": {
+            "class_name": "PPO",
+            "value_loss_coef": 1.0,
+            "use_clipped_value_loss": True,
+            "clip_param": 0.2,
+            "entropy_coef": 0.01,
+            "num_learning_epochs": 5,
+            "num_mini_batches": 4,
+            "learning_rate": 1.0e-3,
+            "schedule": "adaptive",
+            "gamma": 0.99,
+            "lam": 0.95,
+            "desired_kl": 0.01,
+            "max_grad_norm": 1.0,
+        },
+    }
 
 
-def dump_pickle(filename, data):
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-    with open(filename, "wb") as f:
-        pickle.dump(data, f)
+def main():
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.allow_tf32 = True
 
+    env_cfg = HumanoidStandEnvCfg()
+    env_cfg.scene.num_envs = args.num_envs
+    env_cfg.seed = args.seed
 
-def dump_yaml(filename, data):
-    import yaml
+    env = HumanoidStandEnv(env_cfg, render_mode=None)
+    env = RslRlVecEnvWrapper(env, clip_actions=1.0)
 
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-    if hasattr(data, "to_dict"):
-        data = data.to_dict()
-    with open(filename, "w") as f:
-        yaml.dump(data, f, default_flow_style=False, sort_keys=False)
+    train_cfg = build_train_cfg(
+        device=env.unwrapped.device,
+        max_iterations=args.max_iterations,
+        seed=args.seed,
+    )
 
+    log_root = os.path.abspath(os.path.join("logs", "rsl_rl", train_cfg["experiment_name"]))
+    os.makedirs(log_root, exist_ok=True)
 
-@hydra_task_config(args_cli.task, args_cli.agent)
-def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agent_cfg: RslRlBaseRunnerCfg):
-    agent_cfg = cli_args.update_rsl_rl_cfg(agent_cfg, args_cli)
+    run_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    log_dir = os.path.join(log_root, run_name)
+    os.makedirs(log_dir, exist_ok=True)
 
-    if args_cli.num_envs is not None:
-        env_cfg.scene.num_envs = args_cli.num_envs
-    if args_cli.max_iterations is not None:
-        agent_cfg.max_iterations = args_cli.max_iterations
+    runner = OnPolicyRunner(env, train_cfg, log_dir=log_dir, device=train_cfg["device"])
+    runner.learn(
+        num_learning_iterations=train_cfg["max_iterations"],
+        init_at_random_ep_len=True,
+    )
 
-    env_cfg.seed = agent_cfg.seed
-    env_cfg.sim.device = args_cli.device if args_cli.device is not None else env_cfg.sim.device
-
-    if args_cli.distributed:
-        env_cfg.sim.device = f"cuda:{app_launcher.local_rank}"
-        agent_cfg.device = f"cuda:{app_launcher.local_rank}"
-        seed = agent_cfg.seed + app_launcher.local_rank
-        env_cfg.seed = seed
-        agent_cfg.seed = seed
-
-    log_root_path = os.path.abspath(os.path.join("logs", "rsl_rl", agent_cfg.experiment_name))
-    print(f"[INFO] Logging experiment in directory: {log_root_path}")
-
-    log_dir = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    print(f"Exact experiment name requested from command line: {log_dir}")
-    if agent_cfg.run_name:
-        log_dir += f"_{agent_cfg.run_name}"
-    log_dir = os.path.join(log_root_path, log_dir)
-
-    if isinstance(env_cfg, ManagerBasedRLEnvCfg):
-        env_cfg.export_io_descriptors = args_cli.export_io_descriptors
-        env_cfg.io_descriptors_output_dir = log_dir
-    else:
-        omni.log.warn("IO descriptors are only supported for manager based RL environments. No IO descriptors will be exported.")
-
-    env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
-
-    if isinstance(env.unwrapped, DirectMARLEnv):
-        env = multi_agent_to_single_agent(env)
-
-    if args_cli.video:
-        video_kwargs = {
-            "video_folder": os.path.join(log_dir, "videos", "train"),
-            "step_trigger": lambda step: step % args_cli.video_interval == 0,
-            "video_length": args_cli.video_length,
-            "disable_logger": True,
-        }
-        print("[INFO] Recording videos during training.")
-        print_dict(video_kwargs, nesting=4)
-        env = gym.wrappers.RecordVideo(env, **video_kwargs)
-
-    env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
-
-    runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
-    runner.add_git_repo_to_log(__file__)
-
-    dump_yaml(os.path.join(log_dir, "params", "env.yaml"), env_cfg)
-    dump_yaml(os.path.join(log_dir, "params", "agent.yaml"), agent_cfg)
-    dump_pickle(os.path.join(log_dir, "params", "env.pkl"), env_cfg)
-    dump_pickle(os.path.join(log_dir, "params", "agent.pkl"), agent_cfg)
-
-    runner.learn(num_learning_iterations=agent_cfg.max_iterations, init_at_random_ep_len=True)
     env.close()
 
 
 if __name__ == "__main__":
-    main()
-    simulation_app.close()
+    try:
+        main()
+    finally:
+        simulation_app.close()
