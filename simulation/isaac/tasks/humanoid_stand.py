@@ -1,9 +1,6 @@
-import gym
+import gymnasium as gym
 
-from simulation.isaac.rl.envs.humanoid_stand_env import (
-    HumanoidStandEnv,
-    HumanoidStandEnvCfg,
-)
+from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnvCfg
 
 
 gym.register(

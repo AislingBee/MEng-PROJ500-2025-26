@@ -10,104 +10,83 @@ from isaaclab.app import AppLauncher
 # -----------------------------------------------------------------------------
 # CLI
 # -----------------------------------------------------------------------------
-parser = argparse.ArgumentParser(description="Train PROJ500 humanoid standing policy with PPO.")
+parser = argparse.ArgumentParser(description="Train PROJ500 humanoid stand with PPO.")
 AppLauncher.add_app_launcher_args(parser)
-parser.add_argument("--num_envs", type=int, default=64, help="Number of parallel environments.")
-parser.add_argument("--max_iterations", type=int, default=10, help="Number of PPO iterations.")
-parser.add_argument("--seed", type=int, default=42, help="Random seed.")
+parser.add_argument("--num_envs", type=int, default=64)
+parser.add_argument("--max_iterations", type=int, default=1000)
+parser.add_argument("--task", type=str, default="Humanoid-Stand-v0")
 args = parser.parse_args()
 
-# launch Isaac Sim first
+# launch Isaac Sim
 app_launcher = AppLauncher(args)
 simulation_app = app_launcher.app
 
 # -----------------------------------------------------------------------------
-# imports after app launch
+# imports AFTER launch
 # -----------------------------------------------------------------------------
+import gymnasium as gym
 import torch
 from rsl_rl.runners import OnPolicyRunner
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 
-from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnv, HumanoidStandEnvCfg
+import importlib.util
+from pathlib import Path
 
+THIS_DIR = Path(__file__).resolve().parent
 
-def build_train_cfg(device: str, max_iterations: int, seed: int) -> dict:
-    return {
-        "seed": seed,
-        "device": device,
-        "num_steps_per_env": 8,
-        "max_iterations": max_iterations,
-        "empirical_normalization": False,
-        "save_interval": 50,
-        "experiment_name": "humanoid_stand",
-        "run_name": "",
-        "logger": "tensorboard",
-        "policy": {
-            "class_name": "ActorCritic",
-            "init_noise_std": 1.0,
-            "actor_hidden_dims": [256, 256, 128],
-            "critic_hidden_dims": [256, 256, 128],
-            "activation": "elu",
-        },
-        "algorithm": {
-            "class_name": "PPO",
-            "value_loss_coef": 1.0,
-            "use_clipped_value_loss": True,
-            "clip_param": 0.2,
-            "entropy_coef": 0.01,
-            "num_learning_epochs": 5,
-            "num_mini_batches": 4,
-            "learning_rate": 1.0e-3,
-            "schedule": "adaptive",
-            "gamma": 0.99,
-            "lam": 0.95,
-            "desired_kl": 0.01,
-            "max_grad_norm": 1.0,
-        },
-    }
+# load task registration file directly
+task_file = THIS_DIR / "tasks" / "humanoid_stand.py"
+spec = importlib.util.spec_from_file_location("humanoid_stand_task", task_file)
+task_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(task_module)
+
+# load PPO config file directly
+ppo_cfg_file = THIS_DIR / "config" / "humanoid_stand_ppo_cfg.py"
+spec = importlib.util.spec_from_file_location("humanoid_stand_ppo_cfg", ppo_cfg_file)
+ppo_cfg_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(ppo_cfg_module)
+get_humanoid_stand_ppo_cfg = ppo_cfg_module.get_humanoid_stand_ppo_cfg
+
+torch.backends.cuda.matmul.allow_tf32 = True
+torch.backends.cudnn.allow_tf32 = True
 
 
 def main():
-    torch.backends.cuda.matmul.allow_tf32 = True
-    torch.backends.cudnn.allow_tf32 = True
+    # build env
+    env = gym.make(args.task, render_mode=None)
 
-    env_cfg = HumanoidStandEnvCfg()
-    env_cfg.scene.num_envs = args.num_envs
-    env_cfg.seed = args.seed
+    # override num envs
+    env.unwrapped.cfg.scene.num_envs = args.num_envs
 
-    env = HumanoidStandEnv(env_cfg, render_mode=None)
-    print("Env created.")
+    # wrap for RSL-RL
     env = RslRlVecEnvWrapper(env, clip_actions=1.0)
-    print("Env wrapped.")
+    print("Env ready.")
 
-    train_cfg = build_train_cfg(
-        device=env.unwrapped.device,
-        max_iterations=args.max_iterations,
-        seed=args.seed,
-    )
-    print("Train cfg built.")
+    # get PPO config
+    agent_cfg = get_humanoid_stand_ppo_cfg()
+    agent_cfg.max_iterations = args.max_iterations
 
-    log_root = os.path.abspath(os.path.join("logs", "rsl_rl", train_cfg["experiment_name"]))
+    # logging
+    log_root = os.path.abspath(os.path.join("logs", "rsl_rl", agent_cfg.experiment_name))
     os.makedirs(log_root, exist_ok=True)
 
     run_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     log_dir = os.path.join(log_root, run_name)
     os.makedirs(log_dir, exist_ok=True)
 
-    runner = OnPolicyRunner(env, train_cfg, log_dir=log_dir, device=train_cfg["device"])
-    print("Runner created.")
+    # runner
+    print("Creating PPO runner...")
+    runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
 
-    print("Starting PPO learn...")
+    print("Starting training...")
     runner.learn(
-        num_learning_iterations=train_cfg["max_iterations"],
+        num_learning_iterations=agent_cfg.max_iterations,
         init_at_random_ep_len=True,
     )
-    print("Training finished.")
+
     env.close()
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    finally:
-        simulation_app.close()
+    main()
+    simulation_app.close()
