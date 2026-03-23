@@ -12,8 +12,8 @@ from isaaclab.app import AppLauncher
 # -----------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Train PROJ500 humanoid standing policy with PPO.")
 AppLauncher.add_app_launcher_args(parser)
-parser.add_argument("--num_envs", type=int, default=256, help="Number of parallel environments.")
-parser.add_argument("--max_iterations", type=int, default=1000, help="Number of PPO iterations.")
+parser.add_argument("--num_envs", type=int, default=64, help="Number of parallel environments.")
+parser.add_argument("--max_iterations", type=int, default=10, help="Number of PPO iterations.")
 parser.add_argument("--seed", type=int, default=42, help="Random seed.")
 args = parser.parse_args()
 
@@ -35,7 +35,7 @@ def build_train_cfg(device: str, max_iterations: int, seed: int) -> dict:
     return {
         "seed": seed,
         "device": device,
-        "num_steps_per_env": 24,
+        "num_steps_per_env": 8,
         "max_iterations": max_iterations,
         "empirical_normalization": False,
         "save_interval": 50,
@@ -92,11 +92,14 @@ def main():
     os.makedirs(log_dir, exist_ok=True)
 
     runner = OnPolicyRunner(env, train_cfg, log_dir=log_dir, device=train_cfg["device"])
+    print("Runner created.")
+
+    print("Starting PPO learn...")
     runner.learn(
         num_learning_iterations=train_cfg["max_iterations"],
         init_at_random_ep_len=True,
     )
-
+    print("Training finished.")
     env.close()
 
 
