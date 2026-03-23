@@ -36,7 +36,7 @@ THIS_DIR = Path(__file__).resolve().parent
 ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
 
 # task registration
-task_file = ISAAC_DIR / "tasks" / "humanoid_stand.py"
+task_file = ISAAC_DIR / "tasks" / "humanoid_stand_task.py"
 spec = importlib.util.spec_from_file_location("humanoid_stand_task", task_file)
 task_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(task_module)
