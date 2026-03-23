@@ -16,7 +16,7 @@ from isaaclab.utils import configclass
 from isaaclab.utils.math import quat_rotate_inverse
 
 from ...configuration.actuator_config import ACTUATOR_SETTINGS
-from ...tools.standing_configuration import STANDING_TARGETS_DEG
+from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
 
 
 USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "skeleton" / "skeleton_fixed.usd"

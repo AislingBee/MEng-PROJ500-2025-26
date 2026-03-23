@@ -20,7 +20,7 @@ def main():
     cfg = HumanoidStandEnvCfg()
     env = HumanoidStandEnv(cfg)
 
-    obs = env.reset()
+    obs, info = env.reset()
     print("Reset OK, obs shape:", obs["policy"].shape)
 
     actions = torch.zeros((env.num_envs, cfg.action_space), device=env.device)
