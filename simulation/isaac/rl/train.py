@@ -33,15 +33,16 @@ import importlib.util
 from pathlib import Path
 
 THIS_DIR = Path(__file__).resolve().parent
+ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
 
-# load task registration file directly
-task_file = THIS_DIR / "tasks" / "humanoid_stand.py"
+# task registration
+task_file = ISAAC_DIR / "tasks" / "humanoid_stand.py"
 spec = importlib.util.spec_from_file_location("humanoid_stand_task", task_file)
 task_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(task_module)
 
-# load PPO config file directly
-ppo_cfg_file = THIS_DIR / "config" / "humanoid_stand_ppo_cfg.py"
+# PPO config
+ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_stand_ppo_cfg.py"
 spec = importlib.util.spec_from_file_location("humanoid_stand_ppo_cfg", ppo_cfg_file)
 ppo_cfg_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ppo_cfg_module)
