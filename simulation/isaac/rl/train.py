@@ -53,11 +53,12 @@ torch.backends.cudnn.allow_tf32 = True
 
 
 def main():
-    # build env
-    env = gym.make(args.task, render_mode=None)
+    from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnvCfg
 
-    # override num envs
-    env.unwrapped.cfg.scene.num_envs = args.num_envs
+    env_cfg = HumanoidStandEnvCfg()
+    env_cfg.scene.num_envs = args.num_envs
+
+    env = gym.make(args.task, cfg=env_cfg, render_mode=None)
 
     # wrap for RSL-RL
     env = RslRlVecEnvWrapper(env, clip_actions=1.0)
