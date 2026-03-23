@@ -76,13 +76,16 @@ def main():
     env_cfg.seed = args.seed
 
     env = HumanoidStandEnv(env_cfg, render_mode=None)
+    print("Env created.")
     env = RslRlVecEnvWrapper(env, clip_actions=1.0)
+    print("Env wrapped.")
 
     train_cfg = build_train_cfg(
         device=env.unwrapped.device,
         max_iterations=args.max_iterations,
         seed=args.seed,
     )
+    print("Train cfg built.")
 
     log_root = os.path.abspath(os.path.join("logs", "rsl_rl", train_cfg["experiment_name"]))
     os.makedirs(log_root, exist_ok=True)
