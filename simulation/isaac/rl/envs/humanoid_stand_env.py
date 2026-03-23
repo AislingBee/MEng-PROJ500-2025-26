@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from pathlib import Path
 import math
 
 import torch
@@ -18,41 +19,34 @@ from ...configuration.actuator_config import ACTUATOR_SETTINGS
 from ...tools.standing_configuration import STANDING_TARGETS_DEG
 
 
-USD_PATH = (
-    r"C:\Users\jandr\Git\MEng-PROJ500-2025-26\simulation\isaac\assets\usd_generated"
-    r"\skeleton\skeleton_fixed.usd"
-)
+USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "skeleton" / "skeleton_fixed.usd"
 
 
 @configclass
 class HumanoidStandEnvCfg(DirectRLEnvCfg):
-    # sim
     decimation: int = 2
     episode_length_s: float = 10.0
+
     sim: SimulationCfg = SimulationCfg(
         dt=1.0 / 120.0,
         render_interval=decimation,
     )
 
-    # scene
     scene: InteractiveSceneCfg = InteractiveSceneCfg(
         num_envs=256,
         env_spacing=3.0,
         replicate_physics=True,
     )
 
-    # RL sizes
     action_space: int = 12
     observation_space: int = 30  # 12 q + 12 dq + 3 gravity + 3 ang vel
     state_space: int = 0
 
-    # task
-    usd_path: str = USD_PATH
+    usd_path: str = str(USD_PATH)
     base_height: float = 0.05
     alive_reward: float = 1.0
     fall_height_threshold: float = 0.20
     tilt_gravity_z_threshold: float = -0.60
-    action_scale_to_limits: bool = True
 
 
 class HumanoidStandEnv(DirectRLEnv):
@@ -61,7 +55,7 @@ class HumanoidStandEnv(DirectRLEnv):
     def __init__(self, cfg: HumanoidStandEnvCfg, render_mode: str | None = None, **kwargs):
         super().__init__(cfg, render_mode=render_mode, **kwargs)
 
-        self.robot: Articulation = self.scene["robot"]
+        self.robot: Articulation = self.scene.articulations["robot"]
         self.num_dofs = self.robot.num_joints
         self.joint_ids = torch.arange(self.num_dofs, device=self.device, dtype=torch.long)
 
@@ -97,18 +91,7 @@ class HumanoidStandEnv(DirectRLEnv):
 
         robot_cfg = ArticulationCfg(
             prim_path="/World/envs/env_.*/Robot",
-            spawn=sim_utils.UsdFileCfg(
-                usd_path=self.cfg.usd_path,
-                articulation_props=sim_utils.ArticulationRootPropertiesCfg(
-                    enabled_self_collisions=False,
-                    solver_position_iteration_count=8,
-                    solver_velocity_iteration_count=1,
-                ),
-                rigid_props=sim_utils.RigidBodyPropertiesCfg(
-                    rigid_body_enabled=True,
-                    max_depenetration_velocity=5.0,
-                ),
-            ),
+            spawn=sim_utils.UsdFileCfg(usd_path=self.cfg.usd_path),
             init_state=ArticulationCfg.InitialStateCfg(
                 pos=(0.0, 0.0, self.cfg.base_height),
                 rot=(1.0, 0.0, 0.0, 0.0),
@@ -116,8 +99,7 @@ class HumanoidStandEnv(DirectRLEnv):
             actuators=actuators,
         )
 
-        robot = Articulation(robot_cfg)
-        self.scene.add("robot", robot)
+        self.scene.articulations["robot"] = Articulation(robot_cfg)
         self.scene.clone_environments(copy_from_source=False)
         self.scene.filter_collisions(global_prim_paths=[])
 
@@ -131,13 +113,8 @@ class HumanoidStandEnv(DirectRLEnv):
         self._actions = torch.clamp(actions, -1.0, 1.0)
 
     def _apply_action(self) -> None:
-        if self.cfg.action_scale_to_limits:
-            alpha = 0.5 * (self._actions + 1.0)
-            targets = self._joint_lower + alpha * (self._joint_upper - self._joint_lower)
-        else:
-            targets = self._standing_q.unsqueeze(0) + 0.25 * self._actions
-            targets = torch.max(torch.min(targets, self._joint_upper), self._joint_lower)
-
+        alpha = 0.5 * (self._actions + 1.0)
+        targets = self._joint_lower + alpha * (self._joint_upper - self._joint_lower)
         self.robot.set_joint_position_target(targets, joint_ids=self.joint_ids)
 
     def _get_observations(self) -> dict:
@@ -167,21 +144,20 @@ class HumanoidStandEnv(DirectRLEnv):
 
     def _reset_idx(self, env_ids: Sequence[int] | None):
         if env_ids is None:
-            env_ids = self.robot._ALL_INDICES
+            env_ids = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
+        else:
+            env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
 
         super()._reset_idx(env_ids)
-
-        env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
 
         default_root_state = self.robot.data.default_root_state[env_ids].clone()
         default_root_state[:, :3] += self.scene.env_origins[env_ids]
 
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
         joint_vel = torch.zeros((len(env_ids), self.num_dofs), device=self.device)
-
         joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
 
         self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
         self.robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
         self.robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
-        self.robot.set_joint_position_target(joint_pos, joint_ids=self.joint_ids, env_ids=env_ids)
+        self.robot.set_joint_position_target(joint_pos, env_ids=env_ids)
