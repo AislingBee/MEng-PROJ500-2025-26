@@ -112,9 +112,15 @@ class HumanoidStandEnv(DirectRLEnv):
     def _pre_physics_step(self, actions: torch.Tensor) -> None:
         self._actions = torch.clamp(actions, -1.0, 1.0)
 
+    # def _apply_action(self) -> None:
+    #     alpha = 0.5 * (self._actions + 1.0)
+    #     targets = self._joint_lower + alpha * (self._joint_upper - self._joint_lower)
+    #     self.robot.set_joint_position_target(targets, joint_ids=self.joint_ids)
+
     def _apply_action(self) -> None:
-        alpha = 0.5 * (self._actions + 1.0)
+        alpha = 0.15  # rad, start small
         targets = self._joint_lower + alpha * (self._joint_upper - self._joint_lower)
+        targets = torch.max(torch.min(targets, self._joint_upper), self._joint_lower)
         self.robot.set_joint_position_target(targets, joint_ids=self.joint_ids)
 
     def _get_observations(self) -> dict:
