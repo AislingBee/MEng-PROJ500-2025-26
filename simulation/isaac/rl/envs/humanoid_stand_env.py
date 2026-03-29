@@ -39,7 +39,13 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     )
 
     action_space: int = 12
-    observation_space: int = 30  # 12 q + 12 dq + 3 gravity + 3 ang vel
+    observation_space: int = 42
+
+    action_scale: tuple[float, ...] = (
+        0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
+        0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
+    )
+
     state_space: int = 0
 
     usd_path: str = str(USD_PATH)
@@ -49,11 +55,20 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     tilt_gravity_z_threshold: float = -0.60
 
 
+
+
 class HumanoidStandEnv(DirectRLEnv):
     cfg: HumanoidStandEnvCfg
 
     def __init__(self, cfg: HumanoidStandEnvCfg, render_mode: str | None = None, **kwargs):
         super().__init__(cfg, render_mode=render_mode, **kwargs)
+
+        self._actions = torch.zeros((self.num_envs, self.cfg.action_space), device=self.device)
+        self._last_actions = torch.zeros((self.num_envs, self.cfg.action_space), device=self.device)
+
+        self._action_scale = torch.tensor(
+            self.cfg.action_scale, dtype=torch.float32, device=self.device
+        ).unsqueeze(0)
 
         self.robot: Articulation = self.scene.articulations["robot"]
         self.num_dofs = self.robot.num_joints
@@ -110,27 +125,33 @@ class HumanoidStandEnv(DirectRLEnv):
         return q
 
     def _pre_physics_step(self, actions: torch.Tensor) -> None:
+        self._last_actions[:] = self._actions
         self._actions = torch.clamp(actions, -1.0, 1.0)
 
-    # def _apply_action(self) -> None:
-    #     alpha = 0.5 * (self._actions + 1.0)
-    #     targets = self._joint_lower + alpha * (self._joint_upper - self._joint_lower)
-    #     self.robot.set_joint_position_target(targets, joint_ids=self.joint_ids)
-
     def _apply_action(self) -> None:
-        alpha = 0.15  # rad, start small
-        targets = self._joint_lower + alpha * (self._joint_upper - self._joint_lower)
+        targets = self._standing_q.unsqueeze(0) + self._action_scale * self._actions
         targets = torch.max(torch.min(targets, self._joint_upper), self._joint_lower)
         self.robot.set_joint_position_target(targets, joint_ids=self.joint_ids)
 
     def _get_observations(self) -> dict:
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
+        q_rel = q - self._standing_q.unsqueeze(0)
+
         root_quat_w = self.robot.data.root_quat_w
         root_ang_vel_b = self.robot.data.root_ang_vel_b
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
 
-        obs = torch.cat((q, qd, projected_gravity_b, root_ang_vel_b), dim=-1)
+        obs = torch.cat(
+            (
+                q_rel,  # 12
+                qd,  # 12
+                projected_gravity_b,  # 3
+                root_ang_vel_b,  # 3
+                self._last_actions,  # 12
+            ),
+            dim=-1,
+        )
         return {"policy": obs}
 
     def _get_rewards(self) -> torch.Tensor:
