@@ -50,9 +50,6 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
 
     usd_path: str = str(USD_PATH)
     base_height: float = 0.05
-    alive_reward: float = 1.0
-    fall_height_threshold: float = 0.20
-    tilt_gravity_z_threshold: float = -0.60
 
     # Reward Variables
     target_base_height: float = 0.05
@@ -81,11 +78,6 @@ class HumanoidStandEnv(DirectRLEnv):
     def __init__(self, cfg: HumanoidStandEnvCfg, render_mode: str | None = None, **kwargs):
         super().__init__(cfg, render_mode=render_mode, **kwargs)
 
-        self._actions = torch.zeros((self.num_envs, self.cfg.action_space), device=self.device)
-        self._last_actions = torch.zeros((self.num_envs, self.cfg.action_space), device=self.device)
-
-        self._action_scale = torch.tensor(self.cfg.action_scale, device=self.device).unsqueeze(0)
-
         self.robot: Articulation = self.scene.articulations["robot"]
         self.num_dofs = self.robot.num_joints
         self.joint_ids = torch.arange(self.num_dofs, device=self.device, dtype=torch.long)
@@ -97,6 +89,12 @@ class HumanoidStandEnv(DirectRLEnv):
             )
 
         self._actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+        self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+
+        self._action_scale = torch.tensor(
+            self.cfg.action_scale, dtype=torch.float32, device=self.device
+        ).unsqueeze(0)
+
         self._gravity_vec_w = torch.tensor([0.0, 0.0, -1.0], device=self.device).repeat(self.num_envs, 1)
 
         self._standing_q = self._build_standing_pose_tensor()
@@ -125,7 +123,7 @@ class HumanoidStandEnv(DirectRLEnv):
             spawn=sim_utils.UsdFileCfg(usd_path=self.cfg.usd_path),
             init_state=ArticulationCfg.InitialStateCfg(
                 pos=(0.0, 0.0, self.cfg.base_height),
-                rot=(0.0, 0.0, 0.0, 0.0),
+                rot=(1.0, 0.0, 0.0, 0.0),
             ),
             actuators=actuators,
         )
@@ -141,6 +139,9 @@ class HumanoidStandEnv(DirectRLEnv):
         return q
 
     def _pre_physics_step(self, actions: torch.Tensor) -> None:
+        if torch.isnan(actions).any():
+            raise RuntimeError("NaN detected in actions")
+
         self._last_actions[:] = self._actions
         self._actions = torch.clamp(actions, -1.0, 1.0)
 
@@ -168,6 +169,10 @@ class HumanoidStandEnv(DirectRLEnv):
             ),
             dim=-1,
         )
+
+        if torch.isnan(obs).any():
+            raise RuntimeError("NaN detected in observations")
+
         return {"policy": obs}
 
     def _get_rewards(self) -> torch.Tensor:
@@ -203,6 +208,10 @@ class HumanoidStandEnv(DirectRLEnv):
                 - self.cfg.reward_scales["joint_vel"] * p_joint_vel
                 - self.cfg.reward_scales["action_rate"] * p_action_rate
         )
+
+        if torch.isnan(reward).any():
+            raise RuntimeError("NaN detected in rewards")
+
         return reward
 
     def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
@@ -248,3 +257,7 @@ class HumanoidStandEnv(DirectRLEnv):
         self.robot.set_joint_position_target(joint_pos, env_ids=env_ids)
         self._actions[env_ids] = 0.0
         self._last_actions[env_ids] = 0.0
+
+        if len(env_ids) > 0 and int(env_ids[0]) == 0:
+            root_height = self.robot.data.root_pos_w[env_ids, 2]
+            print("Reset root height sample:", root_height[:5])
