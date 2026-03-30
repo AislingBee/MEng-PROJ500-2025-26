@@ -49,7 +49,7 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     state_space: int = 0
 
     usd_path: str = str(USD_PATH)
-    base_height: float = 0.05
+    base_height: float = 0.80
 
     # Reward Variables
     target_base_height: float = 0.05
@@ -66,7 +66,7 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     }
 
     # Termination
-    fall_height_threshold: float = 0.20
+    fall_height_threshold: float = 0.03
     tilt_limit: float = 0.20  # projected gravity xy squared magnitude threshold
 
 
@@ -128,9 +128,10 @@ class HumanoidStandEnv(DirectRLEnv):
             actuators=actuators,
         )
 
-        print("ROBOT USD:", robot_cfg.spawn.usd_path)
-        print("spawn pos", robot_cfg.init_state.pos)
-        print("spawn rot", robot_cfg.init_state.rot)
+
+        # print("ROBOT USD:", robot_cfg.spawn.usd_path)
+        # print("spawn pos", robot_cfg.init_state.pos)
+        # print("spawn rot", robot_cfg.init_state.rot)
 
         self.scene.articulations["robot"] = Articulation(robot_cfg)
         self.scene.clone_environments(copy_from_source=False)
@@ -225,19 +226,33 @@ class HumanoidStandEnv(DirectRLEnv):
         root_quat_w = self.robot.data.root_quat_w
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
 
-        tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
+        # tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
 
         fallen = base_height < self.cfg.fall_height_threshold
-        over_tilted = tilt_metric > self.cfg.tilt_limit
+        print("Fallen Height:", self.cfg.fall_height_threshold)
+        # over_tilted = tilt_metric > self.cfg.tilt_limit
         bad_state = (
                 torch.isnan(q).any(dim=1)
                 | torch.isnan(qd).any(dim=1)
                 | torch.isnan(base_height)
                 | torch.isnan(projected_gravity_b).any(dim=1)
         )
+        if torch.any(fallen):
+            print("Terminated Reason: Fallen")
+        # elif torch.any(over_tilted):
+        #     print("Terminated Reason: Over Tilted")
+        elif torch.any(bad_state):
+            print("Terminated Reason: Bad State")
 
-        terminated = fallen | over_tilted | bad_state
+        # terminated = fallen | over_tilted | bad_state
+        terminated = fallen | bad_state
         time_out = self.episode_length_buf >= self.max_episode_length - 1
+
+        if self.common_step_counter % 100 == 0:
+            print("base_z sample:", base_height[:5].detach().cpu().numpy())
+            print("terminated sample:", terminated[:5].detach().cpu().numpy())
+            print("time_out sample:", time_out[:5].detach().cpu().numpy())
+
         return terminated, time_out
 
     def _reset_idx(self, env_ids: Sequence[int] | None):
@@ -249,7 +264,8 @@ class HumanoidStandEnv(DirectRLEnv):
         super()._reset_idx(env_ids)
 
         default_root_state = self.robot.data.default_root_state[env_ids].clone()
-        default_root_state[:, :3] += self.scene.env_origins[env_ids]
+        default_root_state[:, :3] = self.scene.env_origins[env_ids]
+        default_root_state[:, 2] += self.cfg.base_height
 
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
         joint_vel = torch.zeros((len(env_ids), self.num_dofs), device=self.device)
