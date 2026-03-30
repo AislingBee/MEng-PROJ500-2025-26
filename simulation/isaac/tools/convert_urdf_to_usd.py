@@ -16,7 +16,6 @@ app = AppLauncher(args).app
 from pxr import Usd, UsdGeom, Gf
 from pxr import Sdf, Usd
 from isaaclab.sim.converters import UrdfConverter, UrdfConverterCfg
-from pxr import UsdPhysics
 
 
 def _fix_sublayer_paths(root_usd_path: str):
@@ -120,40 +119,32 @@ def main():
     if stage is None:
         raise RuntimeError(f"Failed to open USD stage: {root_usd_path}")
 
-    # Find the prim to rotate:
-    # - If defaultPrim is /World, rotate /World/Robot (or first child) instead.
+    # Rotate the asset root only. For this robot the defaultPrim is /Robot.
     prim_to_rotate = stage.GetDefaultPrim()
     if not prim_to_rotate or not prim_to_rotate.IsValid():
         raise RuntimeError("No defaultPrim found; cannot apply rotation.")
 
-    if prim_to_rotate.GetPath().pathString == "/World":
-        # Prefer /World/Robot if it exists, else first child under /World
-        robot = stage.GetPrimAtPath("/World/Robot")
-        if robot and robot.IsValid():
-            prim_to_rotate = robot
-        else:
-            kids = prim_to_rotate.GetChildren()
-            if not kids:
-                raise RuntimeError("Default prim is /World but has no children to rotate.")
-            prim_to_rotate = kids[0]
+    print(f"[INFO] Rotating prim: {prim_to_rotate.GetPath()}")
 
     xform = UsdGeom.Xformable(prim_to_rotate)
+    if not xform:
+        raise RuntimeError(f"Prim is not Xformable: {prim_to_rotate.GetPath()}")
 
-    # Make it deterministic
-    xform.ClearXformOpOrder()
+    # Re-use an existing rotateXYZ op if present. Do not clear existing xform ops.
+    rotate_op = None
+    for op in xform.GetOrderedXformOps():
+        if op.GetOpType() == UsdGeom.XformOp.TypeRotateXYZ:
+            rotate_op = op
+            break
 
-    # Typical Y-up -> Z-up correction: rotate -90 degrees about X
-    xform.AddRotateXYZOp().Set(Gf.Vec3f(90.0, 0.0, 0.0))
+    if rotate_op is None:
+        rotate_op = xform.AddRotateXYZOp()
 
-    robot_prim = stage.GetPrimAtPath("/Robot")
-    if not robot_prim or not robot_prim.IsValid():
-        # fallback: defaultPrim
-        robot_prim = stage.GetDefaultPrim()
-
-    UsdPhysics.ArticulationRootAPI.Apply(robot_prim)
+    # Fusion 360 / URDF frame correction for Isaac.
+    rotate_op.Set(Gf.Vec3f(90.0, 0.0, 0.0))
 
     fixed_usd_path = os.path.splitext(root_usd_path)[0] + "_fixed.usd"
-    stage.GetRootLayer().Export(fixed_usd_path)
+    stage.Export(fixed_usd_path)
     print(f"[OK] Wrote rotated USD: {fixed_usd_path}")
     # ----------------- END BLOCK -----------------
 
