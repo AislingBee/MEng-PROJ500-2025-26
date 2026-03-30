@@ -123,10 +123,14 @@ class HumanoidStandEnv(DirectRLEnv):
             spawn=sim_utils.UsdFileCfg(usd_path=self.cfg.usd_path),
             init_state=ArticulationCfg.InitialStateCfg(
                 pos=(0.0, 0.0, self.cfg.base_height),
-                rot=(1.0, 0.0, 0.0, 0.0),
+                rot=(0.70710678, 0.70710678, 0.0, 0.0),
             ),
             actuators=actuators,
         )
+
+        print("ROBOT USD:", robot_cfg.spawn.usd_path)
+        print("spawn pos", robot_cfg.init_state.pos)
+        print("spawn rot", robot_cfg.init_state.rot)
 
         self.scene.articulations["robot"] = Articulation(robot_cfg)
         self.scene.clone_environments(copy_from_source=False)
