@@ -68,6 +68,10 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
         "action_rate": 0.05,
     }
 
+    # Termination
+    fall_height_threshold: float = 0.20
+    tilt_limit: float = 0.20  # projected gravity xy squared magnitude threshold
+
 
 
 
@@ -202,14 +206,24 @@ class HumanoidStandEnv(DirectRLEnv):
         return reward
 
     def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
+        q = self.robot.data.joint_pos
+        qd = self.robot.data.joint_vel
         base_height = self.robot.data.root_pos_w[:, 2]
         root_quat_w = self.robot.data.root_quat_w
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
 
-        fallen = base_height < self.cfg.fall_height_threshold
-        over_tilted = projected_gravity_b[:, 2] > self.cfg.tilt_gravity_z_threshold
+        tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
 
-        terminated = fallen | over_tilted
+        fallen = base_height < self.cfg.fall_height_threshold
+        over_tilted = tilt_metric > self.cfg.tilt_limit
+        bad_state = (
+                torch.isnan(q).any(dim=1)
+                | torch.isnan(qd).any(dim=1)
+                | torch.isnan(base_height)
+                | torch.isnan(projected_gravity_b).any(dim=1)
+        )
+
+        terminated = fallen | over_tilted | bad_state
         time_out = self.episode_length_buf >= self.max_episode_length - 1
         return terminated, time_out
 
@@ -232,3 +246,5 @@ class HumanoidStandEnv(DirectRLEnv):
         self.robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
         self.robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
         self.robot.set_joint_position_target(joint_pos, env_ids=env_ids)
+        self._actions[env_ids] = 0.0
+        self._last_actions[env_ids] = 0.0
