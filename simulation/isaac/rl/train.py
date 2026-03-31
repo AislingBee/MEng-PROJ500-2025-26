@@ -4,6 +4,9 @@ from __future__ import annotations
 import argparse
 import os
 from datetime import datetime
+import importlib.util
+from pathlib import Path
+from importlib.metadata import version
 
 from isaaclab.app import AppLauncher
 
@@ -27,10 +30,7 @@ simulation_app = app_launcher.app
 import gymnasium as gym
 import torch
 from rsl_rl.runners import OnPolicyRunner
-from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
-
-import importlib.util
-from pathlib import Path
+from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 
 THIS_DIR = Path(__file__).resolve().parent
 ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
@@ -68,6 +68,23 @@ def main():
     agent_cfg = get_humanoid_stand_ppo_cfg()
     agent_cfg.max_iterations = args.max_iterations
 
+    # convert deprecated Isaac Lab / rsl_rl config fields
+    agent_cfg = handle_deprecated_rsl_rl_cfg(agent_cfg, version("rsl-rl"))
+    cfg_dict = agent_cfg.to_dict()
+
+    # strip legacy fields if still present after conversion
+    if "actor" in cfg_dict:
+        cfg_dict["actor"].pop("stochastic", None)
+        cfg_dict["actor"].pop("init_noise_std", None)
+        cfg_dict["actor"].pop("noise_std_type", None)
+        cfg_dict["actor"].pop("state_dependent_std", None)
+
+    if "critic" in cfg_dict:
+        cfg_dict["critic"].pop("stochastic", None)
+        cfg_dict["critic"].pop("init_noise_std", None)
+        cfg_dict["critic"].pop("noise_std_type", None)
+        cfg_dict["critic"].pop("state_dependent_std", None)
+
     # logging
     log_root = os.path.abspath(os.path.join("logs", "rsl_rl", agent_cfg.experiment_name))
     os.makedirs(log_root, exist_ok=True)
@@ -78,7 +95,7 @@ def main():
 
     # runner
     print("Creating PPO runner...")
-    runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
+    runner = OnPolicyRunner(env, cfg_dict, log_dir=log_dir, device=agent_cfg.device)
 
     print("Starting training...")
     runner.learn(
