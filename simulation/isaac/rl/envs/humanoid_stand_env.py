@@ -40,19 +40,18 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
 
     action_space: int = 12
     observation_space: int = 42
+    state_space: int = 0
 
     action_scale: tuple[float, ...] = (
         0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
         0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
     )
 
-    state_space: int = 0
-
     usd_path: str = str(USD_PATH)
-    base_height: float = 0.80
+    base_height: float = 0.82
 
     # Reward Variables
-    target_base_height: float = 0.05
+    target_base_height: float = base_height
     upright_k: float = 8.0
     pose_k: float = 4.0
     height_k: float = 40.0
@@ -66,11 +65,8 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     }
 
     # Termination
-    fall_height_threshold: float = 0.03
+    fall_height_threshold: float = 0.40
     tilt_limit: float = 0.20  # projected gravity xy squared magnitude threshold
-
-
-
 
 class HumanoidStandEnv(DirectRLEnv):
     cfg: HumanoidStandEnvCfg
@@ -156,9 +152,9 @@ class HumanoidStandEnv(DirectRLEnv):
         self.robot.set_joint_position_target(targets, joint_ids=self.joint_ids)
 
     def _get_observations(self) -> dict:
-        q = self.robot.data.joint_pos
-        qd = self.robot.data.joint_vel
-        q_rel = q - self._standing_q.unsqueeze(0)
+        q = self.robot.data.joint_pos # Position of the joints
+        qd = self.robot.data.joint_vel # velocity of the joints
+        q_rel = q - self._standing_q.unsqueeze(0) # how far each joint is from the standing pose.
 
         root_quat_w = self.robot.data.root_quat_w
         root_ang_vel_b = self.robot.data.root_ang_vel_b
@@ -223,13 +219,14 @@ class HumanoidStandEnv(DirectRLEnv):
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
         base_height = self.robot.data.root_pos_w[:, 2]
+        print("Base Height:", base_height)
         root_quat_w = self.robot.data.root_quat_w
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
 
         # tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
 
         fallen = base_height < self.cfg.fall_height_threshold
-        print("Fallen Height:", self.cfg.fall_height_threshold)
+        # print("Fallen Height:", self.cfg.fall_height_threshold)
         # over_tilted = tilt_metric > self.cfg.tilt_limit
         bad_state = (
                 torch.isnan(q).any(dim=1)
@@ -237,21 +234,21 @@ class HumanoidStandEnv(DirectRLEnv):
                 | torch.isnan(base_height)
                 | torch.isnan(projected_gravity_b).any(dim=1)
         )
-        if torch.any(fallen):
-            print("Terminated Reason: Fallen")
+        # if torch.any(fallen):
+        #     print("Terminated Reason: Fallen")
         # elif torch.any(over_tilted):
         #     print("Terminated Reason: Over Tilted")
-        elif torch.any(bad_state):
-            print("Terminated Reason: Bad State")
+        # elif torch.any(bad_state):
+        #     print("Terminated Reason: Bad State")
 
         # terminated = fallen | over_tilted | bad_state
         terminated = fallen | bad_state
         time_out = self.episode_length_buf >= self.max_episode_length - 1
 
-        if self.common_step_counter % 100 == 0:
-            print("base_z sample:", base_height[:5].detach().cpu().numpy())
-            print("terminated sample:", terminated[:5].detach().cpu().numpy())
-            print("time_out sample:", time_out[:5].detach().cpu().numpy())
+        # if self.common_step_counter % 100 == 0:
+        #     print("base_z sample:", base_height[:5].detach().cpu().numpy())
+        #     print("terminated sample:", terminated[:5].detach().cpu().numpy())
+        #     print("time_out sample:", time_out[:5].detach().cpu().numpy())
 
         return terminated, time_out
 
@@ -261,22 +258,24 @@ class HumanoidStandEnv(DirectRLEnv):
         else:
             env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
 
-        super()._reset_idx(env_ids)
-
-        default_root_state = self.robot.data.default_root_state[env_ids].clone()
-        default_root_state[:, :3] = self.scene.env_origins[env_ids]
-        default_root_state[:, 2] += self.cfg.base_height
-
-        joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
-        joint_vel = torch.zeros((len(env_ids), self.num_dofs), device=self.device)
-        joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
-
-        self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
-        self.robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
-        self.robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
-        self.robot.set_joint_position_target(joint_pos, env_ids=env_ids)
-        self._actions[env_ids] = 0.0
-        self._last_actions[env_ids] = 0.0
+        # super()._reset_idx(env_ids)
+        #
+        # default_root_state = self.robot.data.default_root_state[env_ids].clone()
+        # default_root_state[:, :3] = self.scene.env_origins[env_ids]
+        # default_root_state[:, 2] += self.cfg.base_height
+        #
+        # joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
+        # joint_vel = torch.zeros((len(env_ids), self.num_dofs), device=self.device)
+        # joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
+        #
+        # self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
+        # self.robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
+        # self.robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
+        # self.robot.set_joint_position_target(joint_pos, env_ids=env_ids)
+        # self._actions[env_ids] = 0.0
+        # self._last_actions[env_ids] = 0.0
+        #
+        # print("RESET || RESET || RESET || RESET")
 
         # if len(env_ids) > 0 and int(env_ids[0]) == 0:
         #     root_height = self.robot.data.root_pos_w[env_ids, 2]
