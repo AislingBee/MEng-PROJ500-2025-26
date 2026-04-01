@@ -18,7 +18,7 @@ from ...configuration.actuator_config import ACTUATOR_SETTINGS
 from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
 
 
-USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "skeleton" / "skeleton_fixed.usd"
+USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "skeleton" / "skeleton.usd"
 
 
 @configclass
@@ -62,7 +62,7 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     }
 
     # Termination
-    tilt_limit: float = 0.5  # projected gravity xy squared magnitude threshold
+    tilt_limit: float = 0.3  # projected gravity xy squared magnitude threshold
 
 
 
@@ -224,6 +224,7 @@ class HumanoidStandEnv(DirectRLEnv):
                 | torch.isnan(projected_gravity_b).any(dim=1)
         )
 
+
         if torch.any(over_tilted):
             print("Terminated Reason: Over Tilted")
             print("Tilt Value:", tilt_metric)
@@ -262,4 +263,3 @@ class HumanoidStandEnv(DirectRLEnv):
         #     root_height = self.robot.data.root_pos_w[env_ids, 2]
         #     print("Reset root height sample:", root_height[:5])
 
-        print("RESET || RESET || RESET")
