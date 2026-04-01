@@ -138,10 +138,6 @@ class HumanoidStandEnv(DirectRLEnv):
         self.scene.clone_environments(copy_from_source=False)
         self.scene.filter_collisions(global_prim_paths=[])
 
-        self.robot = self.scene.articulations["robot"]
-        print("Robot Body Names:" ,self.robot.body_names)
-        wait_for(5000)
-
 
     def _build_standing_pose_tensor(self) -> torch.Tensor:
         q = torch.zeros(self.num_dofs, dtype=torch.float32, device=self.device)
