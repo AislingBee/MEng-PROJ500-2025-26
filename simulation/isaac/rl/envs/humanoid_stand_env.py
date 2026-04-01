@@ -118,7 +118,7 @@ class HumanoidStandEnv(DirectRLEnv):
             spawn=sim_utils.UsdFileCfg(usd_path=self.cfg.usd_path),
             init_state=ArticulationCfg.InitialStateCfg(
                 pos=(0.0, 0.0, 0.0),
-                rot=(0.70710678, 0.70710678, 0.0, 0.0),
+                rot=(1.0, 0.0, 0.0, 0.0),
             ),
             actuators=actuators,
         )

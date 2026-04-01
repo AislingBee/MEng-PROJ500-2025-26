@@ -56,10 +56,10 @@ def _ensure_default_prim(root_usd_path: str):
     if stage.GetDefaultPrim():
         return False  # already good
 
-    # Prefer /World if it exists, otherwise choose the first top-level prim.
-    world = stage.GetPrimAtPath("/World")
-    if world and world.IsValid():
-        stage.SetDefaultPrim(world)
+    # Prefer /Robot if it exists, otherwise /World, otherwise first top-level prim
+    robot = stage.GetPrimAtPath("/Robot")
+    if robot and robot.IsValid():
+        stage.SetDefaultPrim(robot)
         stage.GetRootLayer().Save()
         return True
 
@@ -110,43 +110,6 @@ def main():
     # Ensure defaultPrim exists to satisfy <defaultPrim> references
     if _ensure_default_prim(root_usd_path):
         print("[OK] Set defaultPrim on root USD")
-
-    # ----------------- ADD THIS BLOCK -----------------
-    # Bake a fixed rotation into a new USD so the robot is upright in Isaac (Z-up)
-    from pxr import Usd, UsdGeom, Gf
-
-    stage = Usd.Stage.Open(root_usd_path)
-    if stage is None:
-        raise RuntimeError(f"Failed to open USD stage: {root_usd_path}")
-
-    # Rotate the asset root only. For this robot the defaultPrim is /Robot.
-    prim_to_rotate = stage.GetDefaultPrim()
-    if not prim_to_rotate or not prim_to_rotate.IsValid():
-        raise RuntimeError("No defaultPrim found; cannot apply rotation.")
-
-    print(f"[INFO] Rotating prim: {prim_to_rotate.GetPath()}")
-
-    xform = UsdGeom.Xformable(prim_to_rotate)
-    if not xform:
-        raise RuntimeError(f"Prim is not Xformable: {prim_to_rotate.GetPath()}")
-
-    # Re-use an existing rotateXYZ op if present. Do not clear existing xform ops.
-    rotate_op = None
-    for op in xform.GetOrderedXformOps():
-        if op.GetOpType() == UsdGeom.XformOp.TypeRotateXYZ:
-            rotate_op = op
-            break
-
-    if rotate_op is None:
-        rotate_op = xform.AddRotateXYZOp()
-
-    # Fusion 360 / URDF frame correction for Isaac.
-    rotate_op.Set(Gf.Vec3f(90.0, 0.0, 0.0))
-
-    fixed_usd_path = os.path.splitext(root_usd_path)[0] + "_fixed.usd"
-    stage.Export(fixed_usd_path)
-    print(f"[OK] Wrote rotated USD: {fixed_usd_path}")
-    # ----------------- END BLOCK -----------------
 
     print("[DONE] URDF -> USD pipeline complete.")
 
