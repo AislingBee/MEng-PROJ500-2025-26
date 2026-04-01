@@ -62,7 +62,7 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     }
 
     # Termination
-    tilt_limit: float = 0.35  # projected gravity xy squared magnitude threshold
+    tilt_limit: float = 0.5  # projected gravity xy squared magnitude threshold
 
 
 
@@ -226,6 +226,7 @@ class HumanoidStandEnv(DirectRLEnv):
 
         if torch.any(over_tilted):
             print("Terminated Reason: Over Tilted")
+            print("Tilt Value:", tilt_metric)
         elif torch.any(bad_state):
             print("Terminated Reason: Bad State")
 
