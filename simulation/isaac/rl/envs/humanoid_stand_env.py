@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from asyncio import wait_for
 from collections.abc import Sequence
 from pathlib import Path
 import math
@@ -49,7 +50,7 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     state_space: int = 0
 
     usd_path: str = str(USD_PATH)
-    base_height: float = 0.80
+    base_height: float = 0
 
     # Reward Variables
     target_base_height: float = 0.05
@@ -66,7 +67,7 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     }
 
     # Termination
-    fall_height_threshold: float = 0.03
+    fall_height_threshold: float = 0.40
     tilt_limit: float = 0.20  # projected gravity xy squared magnitude threshold
 
 
@@ -122,7 +123,7 @@ class HumanoidStandEnv(DirectRLEnv):
             prim_path="/World/envs/env_.*/Robot",
             spawn=sim_utils.UsdFileCfg(usd_path=self.cfg.usd_path),
             init_state=ArticulationCfg.InitialStateCfg(
-                pos=(0.0, 0.0, self.cfg.base_height),
+                pos=(0.0, 0.0, 0.0),
                 rot=(0.70710678, 0.70710678, 0.0, 0.0),
             ),
             actuators=actuators,
@@ -136,6 +137,11 @@ class HumanoidStandEnv(DirectRLEnv):
         self.scene.articulations["robot"] = Articulation(robot_cfg)
         self.scene.clone_environments(copy_from_source=False)
         self.scene.filter_collisions(global_prim_paths=[])
+
+        self.robot = self.scene.articulations["robot"]
+        print("Robot Body Names:" ,self.robot.body_names)
+        wait_for(5000)
+
 
     def _build_standing_pose_tensor(self) -> torch.Tensor:
         q = torch.zeros(self.num_dofs, dtype=torch.float32, device=self.device)
@@ -223,18 +229,22 @@ class HumanoidStandEnv(DirectRLEnv):
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
         base_height = self.robot.data.root_pos_w[:, 2]
+        torso_height = base_height + 0.82
         root_quat_w = self.robot.data.root_quat_w
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
-
         # tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
+        fallen = torso_height < self.cfg.fall_height_threshold
 
-        fallen = base_height < self.cfg.fall_height_threshold
-        print("Fallen Height:", self.cfg.fall_height_threshold)
+        # print("Torso Height:", torso_height)
+
+        # print("Torso height difference to threshold: ", torso_height - self.cfg.fall_height_threshold)
+
+        # print("Fallen Height:", self.cfg.fall_height_threshold)
         # over_tilted = tilt_metric > self.cfg.tilt_limit
         bad_state = (
                 torch.isnan(q).any(dim=1)
                 | torch.isnan(qd).any(dim=1)
-                | torch.isnan(base_height)
+                | torch.isnan(torso_height)
                 | torch.isnan(projected_gravity_b).any(dim=1)
         )
         if torch.any(fallen):
@@ -248,10 +258,10 @@ class HumanoidStandEnv(DirectRLEnv):
         terminated = fallen | bad_state
         time_out = self.episode_length_buf >= self.max_episode_length - 1
 
-        if self.common_step_counter % 100 == 0:
-            print("base_z sample:", base_height[:5].detach().cpu().numpy())
-            print("terminated sample:", terminated[:5].detach().cpu().numpy())
-            print("time_out sample:", time_out[:5].detach().cpu().numpy())
+        # if self.common_step_counter % 100 == 0:
+        #     print("base_z sample:", base_height[:5].detach().cpu().numpy())
+        #     print("terminated sample:", terminated[:5].detach().cpu().numpy())
+        #     print("time_out sample:", time_out[:5].detach().cpu().numpy())
 
         return terminated, time_out
 
@@ -281,3 +291,5 @@ class HumanoidStandEnv(DirectRLEnv):
         # if len(env_ids) > 0 and int(env_ids[0]) == 0:
         #     root_height = self.robot.data.root_pos_w[env_ids, 2]
         #     print("Reset root height sample:", root_height[:5])
+
+        print("RESET || RESET || RESET")

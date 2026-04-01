@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 import importlib.util
 from pathlib import Path
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 
 from isaaclab.app import AppLauncher
 
@@ -69,7 +69,12 @@ def main():
     agent_cfg.max_iterations = args.max_iterations
 
     # convert deprecated Isaac Lab / rsl_rl config fields
-    agent_cfg = handle_deprecated_rsl_rl_cfg(agent_cfg, version("rsl-rl"))
+    try:
+        rsl_rl_version = version("rsl-rl-lib")
+    except PackageNotFoundError:
+        rsl_rl_version = version("rsl-rl")
+
+    agent_cfg = handle_deprecated_rsl_rl_cfg(agent_cfg, rsl_rl_version)
     cfg_dict = agent_cfg.to_dict()
 
     # strip legacy fields if still present after conversion
