@@ -112,7 +112,7 @@ class HumanoidStandEnv(DirectRLEnv):
         name_to_body_idx = {name: i for i, name in enumerate(self.robot.body_names)}
         missing_bodies = [name for name in self.cfg.forbidden_body_names if name not in name_to_body_idx]
         if missing_bodies:
-            raise RuntimeError("Forbidden body names not found in robot.body_names: {missing_bodies}")
+            raise RuntimeError(f"Forbidden body names not found in robot.body_names: {missing_bodies}")
         self._forbidden_body_ids = torch.tensor(
             [name_to_body_idx[name] for name in self.cfg.forbidden_body_names],
             device=self.device,
@@ -218,9 +218,12 @@ class HumanoidStandEnv(DirectRLEnv):
         p_ang_vel = torch.mean(root_ang_vel_b ** 2, dim=1)
         p_joint_vel = torch.mean(qd ** 2, dim=1)
         p_action_rate = torch.mean(action_rate ** 2, dim=1)
+        survival_reward = 0.2
+
 
         reward = (
-                self.cfg.reward_scales["upright"] * r_upright
+                survival_reward
+                + self.cfg.reward_scales["upright"] * r_upright
                 + self.cfg.reward_scales["pose"] * r_pose
                 - self.cfg.reward_scales["ang_vel"] * p_ang_vel
                 - self.cfg.reward_scales["joint_vel"] * p_joint_vel
@@ -257,20 +260,20 @@ class HumanoidStandEnv(DirectRLEnv):
 
         time_out = self.episode_length_buf >= self.max_episode_length - 1
 
-        if torch.any(over_tilted):
-            print("Terminated Reason: Over Tilted")
-        if torch.any(bad_state):
-            print("Terminated Reason: Bad State")
-        if torch.any(body_hit_ground):
-            print("Terminated Reason: Body Hit Ground")
-        if time_out.any():
-            print("Terminated Reason: Time Out")
+        # if torch.any(over_tilted):
+        #     print("Terminated Reason: Over Tilted")
+        # if torch.any(bad_state):
+        #     print("Terminated Reason: Bad State")
+        # if torch.any(body_hit_ground):
+        #     print("Terminated Reason: Body Hit Ground")
+        # if time_out.any():
+        #     print("Terminated Reason: Time Out")
 
         return terminated, time_out
 
     def _reset_idx(self, env_ids: Sequence[int] | None):
 
-        print("###################################|RESET|#######################################")
+        # print("###################################|RESET|#######################################")
 
         if env_ids is None:
             env_ids = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
@@ -284,8 +287,18 @@ class HumanoidStandEnv(DirectRLEnv):
         default_root_state[:, 2] += self.cfg.base_height
 
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
-        joint_vel = torch.zeros((len(env_ids), self.num_dofs), device=self.device)
-        joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
+        joint_pos += 0.02 * torch.randn_like(joint_pos) # Randomisation
+
+        joint_vel = 0.05 * torch.randn(
+            (len(env_ids), self.num_dofs),
+            device=self.device
+        )
+
+        joint_pos = torch.max(
+            torch.min(joint_pos,
+            self._joint_upper[env_ids]),
+            self._joint_lower[env_ids]
+        )
 
         self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
         self.robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
