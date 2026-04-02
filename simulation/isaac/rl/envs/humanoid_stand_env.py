@@ -62,9 +62,21 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     }
 
     # Termination
-    tilt_limit: float = 0.3  # projected gravity xy squared magnitude threshold
+    tilt_limit: float = 0.25  # projected gravity xy squared magnitude threshold
 
-
+    forbidden_body_names: tuple[str, ...] = (
+        "robot_l_hip_yaw_link",
+        "robot_r_hip_yaw_link",
+        "robot_l_hip_pitch_link",
+        "robot_r_hip_pitch_link",
+        "robot_l_thigh_link",
+        "robot_r_thigh_link",
+        "robot_l_shank_link",
+        "robot_r_shank_link",
+        "robot_l_ankle_link",
+        "robot_r_ankle_link",
+    )
+    forbidden_body_height_limit: float = 0.075
 
 
 class HumanoidStandEnv(DirectRLEnv):
@@ -95,6 +107,17 @@ class HumanoidStandEnv(DirectRLEnv):
         self._standing_q = self._build_standing_pose_tensor()
         self._joint_lower = self.robot.data.soft_joint_pos_limits[..., 0].clone()
         self._joint_upper = self.robot.data.soft_joint_pos_limits[..., 1].clone()
+
+        # Forbidden body contact with ground
+        name_to_body_idx = {name: i for i, name in enumerate(self.robot.body_names)}
+        missing_bodies = [name for name in self.cfg.forbidden_body_names if name not in name_to_body_idx]
+        if missing_bodies:
+            raise RuntimeError("Forbidden body names not found in robot.body_names: {missing_bodies}")
+        self._forbidden_body_ids = torch.tensor(
+            [name_to_body_idx[name] for name in self.cfg.forbidden_body_names],
+            device=self.device,
+            dtype=torch.long,
+        )
 
     def _setup_scene(self):
         ground_cfg = sim_utils.GroundPlaneCfg()
@@ -214,9 +237,8 @@ class HumanoidStandEnv(DirectRLEnv):
         qd = self.robot.data.joint_vel
         root_quat_w = self.robot.data.root_quat_w
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
-
         tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
-        over_tilted = tilt_metric > self.cfg.tilt_limit
+        # over_tilted = tilt_metric > self.cfg.tilt_limit
 
         bad_state = (
                 torch.isnan(q).any(dim=1)
@@ -224,16 +246,24 @@ class HumanoidStandEnv(DirectRLEnv):
                 | torch.isnan(projected_gravity_b).any(dim=1)
         )
 
+        forbidden_body_heights = self.robot.data.body_pos_w[:, self._forbidden_body_ids, 2]
+        # print("forbidden_body_heights", forbidden_body_heights)
+        body_hit_ground = torch.any(
+            forbidden_body_heights < self.cfg.forbidden_body_height_limit,
+            dim=1,
+        )
 
-        if torch.any(over_tilted):
-            print("Terminated Reason: Over Tilted")
-            print("Tilt Value:", tilt_metric)
-        elif torch.any(bad_state):
-            print("Terminated Reason: Bad State")
+        # terminated = over_tilted | bad_state | body_hit_ground
+        terminated = bad_state | body_hit_ground
 
-        terminated = over_tilted | bad_state
         time_out = self.episode_length_buf >= self.max_episode_length - 1
 
+        # if torch.any(over_tilted):
+        #     print("Terminated Reason: Over Tilted")
+        if torch.any(bad_state):
+            print("Terminated Reason: Bad State")
+        if torch.any(body_hit_ground):
+            print("Terminated Reason: Body Hit Ground")
         if time_out.any():
             print("Terminated Reason: Time Out")
 
@@ -241,7 +271,7 @@ class HumanoidStandEnv(DirectRLEnv):
 
     def _reset_idx(self, env_ids: Sequence[int] | None):
 
-        print("RESET##########################################################")
+        print("###################################|RESET|#######################################")
 
         if env_ids is None:
             env_ids = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
