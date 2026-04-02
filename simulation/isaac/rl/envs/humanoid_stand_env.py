@@ -238,7 +238,7 @@ class HumanoidStandEnv(DirectRLEnv):
         root_quat_w = self.robot.data.root_quat_w
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
         tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
-        # over_tilted = tilt_metric > self.cfg.tilt_limit
+        over_tilted = tilt_metric > self.cfg.tilt_limit
 
         bad_state = (
                 torch.isnan(q).any(dim=1)
@@ -253,13 +253,12 @@ class HumanoidStandEnv(DirectRLEnv):
             dim=1,
         )
 
-        # terminated = over_tilted | bad_state | body_hit_ground
-        terminated = bad_state | body_hit_ground
+        terminated = over_tilted | bad_state | body_hit_ground
 
         time_out = self.episode_length_buf >= self.max_episode_length - 1
 
-        # if torch.any(over_tilted):
-        #     print("Terminated Reason: Over Tilted")
+        if torch.any(over_tilted):
+            print("Terminated Reason: Over Tilted")
         if torch.any(bad_state):
             print("Terminated Reason: Bad State")
         if torch.any(body_hit_ground):
