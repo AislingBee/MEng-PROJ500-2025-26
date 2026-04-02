@@ -234,9 +234,15 @@ class HumanoidStandEnv(DirectRLEnv):
         terminated = over_tilted | bad_state
         time_out = self.episode_length_buf >= self.max_episode_length - 1
 
+        if time_out.any():
+            print("Terminated Reason: Time Out")
+
         return terminated, time_out
 
     def _reset_idx(self, env_ids: Sequence[int] | None):
+
+        print("RESET##########################################################")
+
         if env_ids is None:
             env_ids = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
         else:
