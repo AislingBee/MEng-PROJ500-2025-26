@@ -61,6 +61,68 @@ ACTUATOR_SETTINGS = {
     },
 }
 
+# ACTUATOR_SETTINGS = {
+#     "pelvis_yaw": {
+#         "joint_names": [
+#             "robot_pelvis_link_l_yaw_joint",
+#             "robot_pelvis_link_r_yaw_joint",
+#         ],
+#         "effort_limit": 0.0,
+#         "velocity_limit": 8.0,
+#         "stiffness": 0.0,
+#         "damping": 0.0,
+#     },
+#     "hip_yaw": {
+#         "joint_names": [
+#             "robot_l_hip_yaw_link_l_pitch_joint",
+#             "robot_r_hip_yaw_link_r_pitch_joint",
+#         ],
+#         "effort_limit": 0.0,
+#         "velocity_limit": 8.0,
+#         "stiffness": 0.0,
+#         "damping": 0.0,
+#     },
+#     "hip_roll": {
+#         "joint_names": [
+#             "robot_l_hip_pitch_link_l_roll_joint",
+#             "robot_r_hip_pitch_link_r_roll_joint",
+#         ],
+#         "effort_limit": 0.0,
+#         "velocity_limit": 8.0,
+#         "stiffness": 0.0,
+#         "damping": 0.0,
+#     },
+#     "knees": {
+#         "joint_names": [
+#             "robot_l_thigh_link_l_knee_joint",
+#             "robot_r_thigh_link_r_knee_joint",
+#         ],
+#         "effort_limit": 0.0,
+#         "velocity_limit": 8.0,
+#         "stiffness": 0.0,
+#         "damping": 0.0,
+#     },
+#     "ankle_pitch": {
+#         "joint_names": [
+#             "robot_l_shank_link_l_ankle_joint",
+#             "robot_r_shank_link_r_ankle_joint",
+#         ],
+#         "effort_limit": 0.0,
+#         "velocity_limit": 10.0,
+#         "stiffness": 0.0,
+#         "damping": 0.0,
+#     },
+#     "ankle_roll": {
+#         "joint_names": [
+#             "robot_l_ankle_link_l_foot_joint",
+#             "robot_r_ankle_link_r_foot_joint",
+#         ],
+#         "effort_limit": 0.0,
+#         "velocity_limit": 10.0,
+#         "stiffness": 0.0,
+#         "damping": 0.0,
+#     },
+# }
 
 def build_per_joint_limits_and_gains(joint_names):
     effort_limits = []

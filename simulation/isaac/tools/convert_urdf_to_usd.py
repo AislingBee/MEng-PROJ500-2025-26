@@ -16,7 +16,6 @@ app = AppLauncher(args).app
 from pxr import Usd, UsdGeom, Gf
 from pxr import Sdf, Usd
 from isaaclab.sim.converters import UrdfConverter, UrdfConverterCfg
-from pxr import UsdPhysics
 
 
 def _fix_sublayer_paths(root_usd_path: str):
@@ -57,10 +56,10 @@ def _ensure_default_prim(root_usd_path: str):
     if stage.GetDefaultPrim():
         return False  # already good
 
-    # Prefer /World if it exists, otherwise choose the first top-level prim.
-    world = stage.GetPrimAtPath("/World")
-    if world and world.IsValid():
-        stage.SetDefaultPrim(world)
+    # Prefer /Robot if it exists, otherwise /World, otherwise first top-level prim
+    robot = stage.GetPrimAtPath("/Robot")
+    if robot and robot.IsValid():
+        stage.SetDefaultPrim(robot)
         stage.GetRootLayer().Save()
         return True
 
@@ -111,51 +110,6 @@ def main():
     # Ensure defaultPrim exists to satisfy <defaultPrim> references
     if _ensure_default_prim(root_usd_path):
         print("[OK] Set defaultPrim on root USD")
-
-    # ----------------- ADD THIS BLOCK -----------------
-    # Bake a fixed rotation into a new USD so the robot is upright in Isaac (Z-up)
-    from pxr import Usd, UsdGeom, Gf
-
-    stage = Usd.Stage.Open(root_usd_path)
-    if stage is None:
-        raise RuntimeError(f"Failed to open USD stage: {root_usd_path}")
-
-    # Find the prim to rotate:
-    # - If defaultPrim is /World, rotate /World/Robot (or first child) instead.
-    prim_to_rotate = stage.GetDefaultPrim()
-    if not prim_to_rotate or not prim_to_rotate.IsValid():
-        raise RuntimeError("No defaultPrim found; cannot apply rotation.")
-
-    if prim_to_rotate.GetPath().pathString == "/World":
-        # Prefer /World/Robot if it exists, else first child under /World
-        robot = stage.GetPrimAtPath("/World/Robot")
-        if robot and robot.IsValid():
-            prim_to_rotate = robot
-        else:
-            kids = prim_to_rotate.GetChildren()
-            if not kids:
-                raise RuntimeError("Default prim is /World but has no children to rotate.")
-            prim_to_rotate = kids[0]
-
-    xform = UsdGeom.Xformable(prim_to_rotate)
-
-    # Make it deterministic
-    xform.ClearXformOpOrder()
-
-    # Typical Y-up -> Z-up correction: rotate -90 degrees about X
-    xform.AddRotateXYZOp().Set(Gf.Vec3f(90.0, 0.0, 0.0))
-
-    robot_prim = stage.GetPrimAtPath("/Robot")
-    if not robot_prim or not robot_prim.IsValid():
-        # fallback: defaultPrim
-        robot_prim = stage.GetDefaultPrim()
-
-    UsdPhysics.ArticulationRootAPI.Apply(robot_prim)
-
-    fixed_usd_path = os.path.splitext(root_usd_path)[0] + "_fixed.usd"
-    stage.GetRootLayer().Export(fixed_usd_path)
-    print(f"[OK] Wrote rotated USD: {fixed_usd_path}")
-    # ----------------- END BLOCK -----------------
 
     print("[DONE] URDF -> USD pipeline complete.")
 

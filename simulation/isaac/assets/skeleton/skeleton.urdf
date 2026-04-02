@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot name="Robot">
+    <link name="isaac_zup_root" />
     <link name="robot_torso_link">
         <inertial>
             <origin xyz="0.040610506256969305 -0.04428824001105586 0.15232735840638484" rpy="0 0 0" />
@@ -266,6 +267,11 @@
             </geometry>
         </collision>
     </link>
+    <joint name="isaac_zup_root_joint" type="fixed">
+        <parent link="isaac_zup_root" />
+        <child link="robot_pelvis_link" />
+        <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
+    </joint>
     <joint name="robot_pelvis_link_l_yaw_joint" type="revolute">
         <origin xyz="0.12000000000000094 0.8127999999999959 -0.1604999999999903" rpy="1.5707963267949308 0 0" />
         <parent link="robot_pelvis_link" />

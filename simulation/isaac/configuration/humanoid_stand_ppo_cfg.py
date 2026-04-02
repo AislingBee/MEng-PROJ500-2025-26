@@ -1,7 +1,7 @@
 from isaaclab_rl.rsl_rl import (
     RslRlOnPolicyRunnerCfg,
-    RslRlPpoActorCriticCfg,
     RslRlPpoAlgorithmCfg,
+    RslRlMLPModelCfg,
 )
 
 
@@ -17,11 +17,20 @@ def get_humanoid_stand_ppo_cfg():
         run_name="",
         logger="tensorboard",
         clip_actions=1.0,
-        policy=RslRlPpoActorCriticCfg(
-            init_noise_std=1.0,
-            actor_hidden_dims=[256, 256, 128],
-            critic_hidden_dims=[256, 256, 128],
+        actor=RslRlMLPModelCfg(
+            hidden_dims=[256, 256, 128],
             activation="elu",
+            obs_normalization=False,
+            distribution_cfg=RslRlMLPModelCfg.GaussianDistributionCfg(
+                init_std=1.0,
+                std_type="scalar",
+            ),
+        ),
+        critic=RslRlMLPModelCfg(
+            hidden_dims=[256, 256, 128],
+            activation="elu",
+            obs_normalization=False,
+            distribution_cfg=None,
         ),
         algorithm=RslRlPpoAlgorithmCfg(
             value_loss_coef=1.0,
