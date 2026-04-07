@@ -56,12 +56,12 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     zero_command_prob: float = 0.2
 
     # Reward Variables
-    upright_k: float = 8.0
-    vel_tracking_k: float = 6.0
+    upright_k: float = 5.0
+    vel_tracking_k: float = 8.0
     pose_k: float = 1.0
     reward_scales = {
-        "vel_track": 3.0,
-        "upright": 1.0,
+        "vel_track": 5.0,
+        "upright": 0.5,
         "pose": 0.2,
         "ang_vel": 0.05,
         "joint_vel": 0.02,
@@ -253,6 +253,31 @@ class HumanoidWalkEnv(DirectRLEnv):
         if torch.isnan(reward).any():
             raise RuntimeError("NaN detected in rewards")
 
+        if not hasattr(self, "_reward_debug_counter"):
+            self._reward_debug_counter = 0
+
+        self._reward_debug_counter += 1
+
+        if self._reward_debug_counter % 100 == 0:
+            vel_term = self.cfg.reward_scales["vel_track"] * r_vel_track
+            upright_term = self.cfg.reward_scales["upright"] * r_upright
+            pose_term = self.cfg.reward_scales["pose"] * r_pose
+            ang_term = self.cfg.reward_scales["ang_vel"] * p_ang_vel
+            joint_term = self.cfg.reward_scales["joint_vel"] * p_joint_vel
+            action_term = self.cfg.reward_scales["action_rate"] * p_action_rate
+
+            print(
+                "reward contrib | "
+                f"vel: {vel_term.mean().item():.4f} | "
+                f"upright: {upright_term.mean().item():.4f} | "
+                f"pose: {pose_term.mean().item():.4f} | "
+                f"ang_pen: {ang_term.mean().item():.4f} | "
+                f"joint_pen: {joint_term.mean().item():.4f} | "
+                f"action_pen: {action_term.mean().item():.4f} | "
+                f"survival: {survival_reward:.4f} | "
+                f"total: {reward.mean().item():.4f}"
+            )
+
         return reward
 
     def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
@@ -288,6 +313,9 @@ class HumanoidWalkEnv(DirectRLEnv):
         #     print("Terminated Reason: Body Hit Ground")
         # if time_out.any():
         #     print("Terminated Reason: Time Out")
+
+        # print("cmd:", self._commands[:8, 0])
+        # print("vx :", self.robot.data.root_lin_vel_b[:8, 0])
 
         return terminated, time_out
 
