@@ -38,7 +38,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     )
 
     action_space: int = 12
-    observation_space: int = 42
+    observation_space: int = 46
 
     action_scale: tuple[float, ...] = (
         0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
@@ -49,6 +49,11 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
 
     usd_path: str = str(USD_PATH)
     base_height: float = 0
+
+    # Velocity parameters and zero probability
+    command_lin_vel_x_min: float = 0.0
+    command_lin_vel_x_max: float = 0.35
+    zero_command_prob: float = 0.2
 
     # Reward Variables
     upright_k: float = 8.0
@@ -97,6 +102,7 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         self._actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+        self._commands = torch.zeros((self.num_envs, 1), device=self.device)
 
         self._action_scale = torch.tensor(
             self.cfg.action_scale, dtype=torch.float32, device=self.device
@@ -156,7 +162,6 @@ class HumanoidWalkEnv(DirectRLEnv):
         self.scene.clone_environments(copy_from_source=False)
         self.scene.filter_collisions(global_prim_paths=[])
 
-
     def _build_standing_pose_tensor(self) -> torch.Tensor:
         q = torch.zeros(self.num_dofs, dtype=torch.float32, device=self.device)
         for i, joint_name in enumerate(self.robot.joint_names):
@@ -176,24 +181,28 @@ class HumanoidWalkEnv(DirectRLEnv):
         self.robot.set_joint_position_target(targets, joint_ids=self.joint_ids)
 
     def _get_observations(self) -> dict:
-        q = self.robot.data.joint_pos
+        q = self.robot.data.joint_pos # Tells the policy what the joint positions are.
         qd = self.robot.data.joint_vel
         q_rel = q - self._standing_q.unsqueeze(0)
 
         root_quat_w = self.robot.data.root_quat_w
         root_ang_vel_b = self.robot.data.root_ang_vel_b
+        root_lin_vel_b = self.robot.data.root_lin_vel_b
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
 
         obs = torch.cat(
             (
-                q_rel,  # 12
-                qd,  # 12
-                projected_gravity_b,  # 3
-                root_ang_vel_b,  # 3
-                self._last_actions,  # 12
+                q_rel,  # 12 # Joint positions relative to standing pose.
+                qd,  # 12 # Tells the policy how fast the joints are moving.
+                projected_gravity_b,  # 3 # Orientation relative to gravity
+                root_lin_vel_b,  # 3 # Tells the policy whether it is actually translating.
+                root_ang_vel_b,  # 3 # Tells the policy if it is rotating too much.
+                self._commands, #1 # Defines the task target
+                self._last_actions,  # 12 # Averaging smoother by providing action history
             ),
             dim=-1,
         )
+
 
         if torch.isnan(obs).any():
             raise RuntimeError("NaN detected in observations")
@@ -311,3 +320,15 @@ class HumanoidWalkEnv(DirectRLEnv):
         #     root_height = self.robot.data.root_pos_w[env_ids, 2]
         #     print("Reset root height sample:", root_height[:5])
 
+        num_resets = len(env_ids)
+
+        commands = torch.rand((num_resets, 1), device=self.device)
+        commands = (
+            self.cfg.command_lin_vel_x_min
+            + (self.cfg.command_lin_vel_x_max - self.cfg.command_lin_vel_x_min) * commands
+        )
+
+        zero_mask = torch.rand((num_resets, 1), device=self.device) < self.cfg.zero_command_prob
+        commands[zero_mask] = 0.0
+
+        self._commands[env_ids] = commands

@@ -35,6 +35,10 @@ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 THIS_DIR = Path(__file__).resolve().parent
 ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
 
+# Training Task Selection ###########################################################
+#####################################################################################
+# Update this section when changing the training type.
+
 # Standing Task #####################################################################
 
 # # task registration
@@ -63,16 +67,19 @@ ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_walk_ppo_cfg.py"
 spec = importlib.util.spec_from_file_location("humanoid_walk_ppo_cfg", ppo_cfg_file)
 ppo_cfg_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ppo_cfg_module)
-get_humanoid_stand_ppo_cfg = ppo_cfg_module.get_humanoid_walk_ppo_cfg
+get_humanoid_walk_ppo_cfg = ppo_cfg_module.get_humanoid_walk_ppo_cfg
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 
 
 def main():
-    from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnvCfg
+    # from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnvCfg # Standing Training
+    from simulation.isaac.rl.envs.humanoid_walk_env import HumanoidWalkEnvCfg # Walking Training
 
-    env_cfg = HumanoidStandEnvCfg()
+    # env_cfg = HumanoidStandEnvCfg() # Update this line with correct config.
+    env_cfg = HumanoidWalkEnvCfg()
+
     env_cfg.scene.num_envs = args.num_envs
 
     env = gym.make(args.task, cfg=env_cfg, render_mode=None)
@@ -82,7 +89,9 @@ def main():
     print("Env ready.")
 
     # get PPO config
-    agent_cfg = get_humanoid_stand_ppo_cfg()
+    # agent_cfg = get_humanoid_stand_ppo_cfg() # Standing training PPO
+    agent_cfg = get_humanoid_walk_ppo_cfg() # Walking training PPO
+
     agent_cfg.max_iterations = args.max_iterations
 
     # convert deprecated Isaac Lab / rsl_rl config fields
