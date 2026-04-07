@@ -332,3 +332,6 @@ class HumanoidWalkEnv(DirectRLEnv):
         commands[zero_mask] = 0.0
 
         self._commands[env_ids] = commands
+
+        # print("command sample:", self._commands[env_ids][:5].squeeze(-1))
+
