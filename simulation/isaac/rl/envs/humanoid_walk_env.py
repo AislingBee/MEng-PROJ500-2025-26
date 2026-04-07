@@ -57,10 +57,12 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
 
     # Reward Variables
     upright_k: float = 8.0
-    pose_k: float = 4.0
+    vel_tracking_k: float = 6.0
+    pose_k: float = 1.0
     reward_scales = {
-        "upright": 2.0,
-        "pose": 1.5,
+        "vel_track": 3.0,
+        "upright": 1.0,
+        "pose": 0.2,
         "ang_vel": 0.05,
         "joint_vel": 0.02,
         "action_rate": 0.05,
@@ -213,30 +215,39 @@ class HumanoidWalkEnv(DirectRLEnv):
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
         root_quat_w = self.robot.data.root_quat_w
+        root_lin_vel_b = self.robot.data.root_lin_vel_b
         root_ang_vel_b = self.robot.data.root_ang_vel_b
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
 
         q_err = q - self._standing_q.unsqueeze(0)
         action_rate = self._actions - self._last_actions
 
+        # Upright term
         tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
-
         r_upright = torch.exp(-self.cfg.upright_k * tilt_metric)
+
+        # Forward velocity tracking term
+        lin_vel_error = root_lin_vel_b[:, 0] - self._commands[:, 0]
+        r_vel_track = torch.exp(-self.cfg.vel_tracking_k * lin_vel_error ** 2)
+
+        # Weak pose regularisation
         r_pose = torch.exp(-self.cfg.pose_k * torch.mean(q_err ** 2, dim=1))
 
+        # Penalties
         p_ang_vel = torch.mean(root_ang_vel_b ** 2, dim=1)
         p_joint_vel = torch.mean(qd ** 2, dim=1)
         p_action_rate = torch.mean(action_rate ** 2, dim=1)
+
         survival_reward = 0.2
 
-
         reward = (
-                survival_reward
-                + self.cfg.reward_scales["upright"] * r_upright
-                + self.cfg.reward_scales["pose"] * r_pose
-                - self.cfg.reward_scales["ang_vel"] * p_ang_vel
-                - self.cfg.reward_scales["joint_vel"] * p_joint_vel
-                - self.cfg.reward_scales["action_rate"] * p_action_rate
+            survival_reward
+            + self.cfg.reward_scales["vel_track"] * r_vel_track
+            + self.cfg.reward_scales["upright"] * r_upright
+            + self.cfg.reward_scales["pose"] * r_pose
+            - self.cfg.reward_scales["ang_vel"] * p_ang_vel
+            - self.cfg.reward_scales["joint_vel"] * p_joint_vel
+            - self.cfg.reward_scales["action_rate"] * p_action_rate
         )
 
         if torch.isnan(reward).any():
