@@ -117,17 +117,6 @@ def main():
 
     env = gym.make(args.task, cfg=env_cfg, render_mode=render_mode)
 
-    print(f"render_mode: {env.render_mode}")
-    frame = env.render()
-    print(f"render() returned type: {type(frame)}")
-    if frame is None:
-        print("render() returned None")
-    else:
-        try:
-            print(f"frame shape: {frame.shape}")
-        except AttributeError:
-            print("frame has no shape attribute")
-
     if args.video:
         video_folder = Path(log_dir) / "videos" / "train"
         video_folder.mkdir(parents=True, exist_ok=True)
@@ -135,14 +124,10 @@ def main():
         env = RecordVideo(
             env,
             video_folder=str(video_folder),
-            step_trigger=lambda step: step > 0 and step % args.video_interval == 0,
+            step_trigger=lambda step: step % args.video_interval == 0,
             video_length=args.video_length,
             disable_logger=True,
         )
-
-        print(f"Video enabled: {args.video}")
-        print(f"Saving videos to: {video_folder}")
-        print(f"Video interval: {args.video_interval}, video length: {args.video_length}")
 
     # wrap for RSL-RL
     env = RslRlVecEnvWrapper(env, clip_actions=1.0)
