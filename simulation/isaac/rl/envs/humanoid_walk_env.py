@@ -61,11 +61,13 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     pose_k: float = 1.0
     reward_scales = {
         "vel_track": 5.0,
-        "upright": 0.5,
-        "pose": 0.2,
+        "upright": 0.3,
+        "pose": 0.05,
         "ang_vel": 0.05,
         "joint_vel": 0.02,
-        "action_rate": 0.05,
+        "action_rate": 0.03,
+        "lin_vel_y": 0.5,
+        "yaw_rate": 0.5,
     }
 
     # Termination
@@ -237,6 +239,8 @@ class HumanoidWalkEnv(DirectRLEnv):
         p_ang_vel = torch.mean(root_ang_vel_b ** 2, dim=1)
         p_joint_vel = torch.mean(qd ** 2, dim=1)
         p_action_rate = torch.mean(action_rate ** 2, dim=1)
+        p_lin_vel_y = root_lin_vel_b[:, 1] ** 2
+        p_yaw_rate = root_ang_vel_b[:, 2] ** 2
 
         survival_reward = 0.2
 
@@ -248,6 +252,8 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["ang_vel"] * p_ang_vel
             - self.cfg.reward_scales["joint_vel"] * p_joint_vel
             - self.cfg.reward_scales["action_rate"] * p_action_rate
+            - self.cfg.reward_scales["lin_vel_y"] * p_lin_vel_y
+            - self.cfg.reward_scales["yaw_rate"] * p_yaw_rate
         )
 
         if torch.isnan(reward).any():
@@ -265,6 +271,8 @@ class HumanoidWalkEnv(DirectRLEnv):
             ang_term = self.cfg.reward_scales["ang_vel"] * p_ang_vel
             joint_term = self.cfg.reward_scales["joint_vel"] * p_joint_vel
             action_term = self.cfg.reward_scales["action_rate"] * p_action_rate
+            lin_y_term = self.cfg.reward_scales["lin_vel_y"] * p_lin_vel_y
+            yaw_term = self.cfg.reward_scales["yaw_rate"] * p_yaw_rate
 
             print(
                 "reward contrib | "
