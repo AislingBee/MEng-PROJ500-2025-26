@@ -2,19 +2,21 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import os
+import importlib.util
 from pathlib import Path
+from importlib.metadata import PackageNotFoundError, version
 
 from isaaclab.app import AppLauncher
 
 # -----------------------------------------------------------------------------
 # CLI
 # -----------------------------------------------------------------------------
-parser = argparse.ArgumentParser(description="Play a trained PROJ500 humanoid standing policy.")
+parser = argparse.ArgumentParser(description="Play back PROJ500 humanoid walk PPO checkpoint.")
 AppLauncher.add_app_launcher_args(parser)
-parser.add_argument("--checkpoint", type=str, required=True, help="Path to model_*.pt checkpoint file.")
-parser.add_argument("--num_envs", type=int, default=1, help="Number of environments to simulate.")
+parser.add_argument("--task", type=str, default="Humanoid-Walk-v0")
+parser.add_argument("--num_envs", type=int, default=1)
+parser.add_argument("--checkpoint", type=str, required=True, help="Path to .pt checkpoint file")
 args = parser.parse_args()
 
 # launch Isaac Sim
@@ -24,66 +26,106 @@ simulation_app = app_launcher.app
 # -----------------------------------------------------------------------------
 # imports AFTER launch
 # -----------------------------------------------------------------------------
+import gymnasium as gym
 import torch
 from rsl_rl.runners import OnPolicyRunner
-from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
+from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 
-from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnv, HumanoidStandEnvCfg
+THIS_DIR = Path(__file__).resolve().parent
+ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
 
+# -----------------------------------------------------------------------------
+# Task registration
+# -----------------------------------------------------------------------------
 
-def _load_ppo_cfg():
-    this_file = Path(__file__).resolve()
-    isaac_dir = this_file.parent.parent  # simulation/isaac
-    ppo_cfg_file = isaac_dir / "configuration" / "humanoid_stand_ppo_cfg.py"
+# Walking Task #################################################################
 
-    spec = importlib.util.spec_from_file_location("humanoid_stand_ppo_cfg", ppo_cfg_file)
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module.get_humanoid_stand_ppo_cfg
+# task registration
+task_file = ISAAC_DIR / "tasks" / "humanoid_walk_task.py"
+spec = importlib.util.spec_from_file_location("humanoid_walk_task", task_file)
+task_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(task_module)
+
+# PPO config
+ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_walk_ppo_cfg.py"
+spec = importlib.util.spec_from_file_location("humanoid_walk_ppo_cfg", ppo_cfg_file)
+ppo_cfg_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(ppo_cfg_module)
+get_humanoid_walk_ppo_cfg = ppo_cfg_module.get_humanoid_walk_ppo_cfg
+
+torch.backends.cuda.matmul.allow_tf32 = True
+torch.backends.cudnn.allow_tf32 = True
 
 
 def main():
-    checkpoint = os.path.abspath(args.checkpoint)
-    if not os.path.isfile(checkpoint):
-        raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
+    from simulation.isaac.rl.envs.humanoid_walk_env import HumanoidWalkEnvCfg
 
-    torch.backends.cuda.matmul.allow_tf32 = True
-    torch.backends.cudnn.allow_tf32 = True
+    checkpoint_path = Path(args.checkpoint).resolve()
+    if not checkpoint_path.is_file():
+        raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
 
-    # build env directly
-    env_cfg = HumanoidStandEnvCfg()
+    env_cfg = HumanoidWalkEnvCfg()
     env_cfg.scene.num_envs = args.num_envs
 
-    env = HumanoidStandEnv(env_cfg, render_mode=None)
+    # GUI visual inspection, so no video wrapper and no rgb_array needed
+    env = gym.make(args.task, cfg=env_cfg, render_mode=None)
+
+    # wrap for RSL-RL
     env = RslRlVecEnvWrapper(env, clip_actions=1.0)
-    print(f"[INFO] Env ready with {env.num_envs} env(s).")
+    print("Env ready.")
 
-    # load PPO config
-    get_humanoid_stand_ppo_cfg = _load_ppo_cfg()
-    agent_cfg = get_humanoid_stand_ppo_cfg()
+    # PPO config
+    agent_cfg = get_humanoid_walk_ppo_cfg()
 
-    # create runner and load checkpoint
-    print(f"[INFO] Loading checkpoint: {checkpoint}")
-    runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=None, device=env.unwrapped.device)
-    runner.load(checkpoint, load_optimizer=False)
+    # convert deprecated Isaac Lab / rsl_rl config fields
+    try:
+        rsl_rl_version = version("rsl-rl-lib")
+    except PackageNotFoundError:
+        rsl_rl_version = version("rsl-rl")
 
-    # inference policy
+    agent_cfg = handle_deprecated_rsl_rl_cfg(agent_cfg, rsl_rl_version)
+    cfg_dict = agent_cfg.to_dict()
+
+    # strip legacy fields if still present after conversion
+    if "actor" in cfg_dict:
+        cfg_dict["actor"].pop("stochastic", None)
+        cfg_dict["actor"].pop("init_noise_std", None)
+        cfg_dict["actor"].pop("noise_std_type", None)
+        cfg_dict["actor"].pop("state_dependent_std", None)
+
+    if "critic" in cfg_dict:
+        cfg_dict["critic"].pop("stochastic", None)
+        cfg_dict["critic"].pop("init_noise_std", None)
+        cfg_dict["critic"].pop("noise_std_type", None)
+        cfg_dict["critic"].pop("state_dependent_std", None)
+
+    # dummy log dir for runner construction
+    log_dir = os.path.abspath(os.path.join("logs", "rsl_rl", "playback"))
+    os.makedirs(log_dir, exist_ok=True)
+
+    print("Creating PPO runner...")
+    runner = OnPolicyRunner(env, cfg_dict, log_dir=log_dir, device=agent_cfg.device)
+
+    print(f"Loading checkpoint: {checkpoint_path}")
+    runner.load(str(checkpoint_path))
+
     policy = runner.get_inference_policy(device=env.unwrapped.device)
-    print("[INFO] Policy loaded. Starting play loop...")
 
-    obs, _ = env.get_observations()
+    obs, _ = env.reset()
+    print("Starting playback...")
 
     while simulation_app.is_running():
         with torch.inference_mode():
             actions = policy(obs)
-            obs, _, _, _ = env.step(actions)
+            obs, _, dones, _ = env.step(actions)
+
+            # optional reset handling if needed
+            if torch.any(dones):
+                obs, _ = env.reset()
 
     env.close()
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    finally:
-        simulation_app.close()
+    main()
+    simulation_app.close()
