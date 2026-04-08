@@ -14,10 +14,17 @@ from isaaclab.app import AppLauncher
 # CLI
 # -----------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Train PROJ500 humanoid walk with PPO.")
-AppLauncher.add_app_launcher_args(parser)
-parser.add_argument("--num_envs", type=int, default=1024) #8192
+
+parser.add_argument("--num_envs", type=int, default=1024)  # 8192
 parser.add_argument("--max_iterations", type=int, default=4000)
 parser.add_argument("--task", type=str, default="Humanoid-Walk-v0")
+
+# video / rendering
+parser.add_argument("--video", action="store_true", default=False, help="Record videos during training.")
+parser.add_argument("--video_length", type=int, default=300, help="Recorded clip length in env steps.")
+parser.add_argument("--video_interval", type=int, default=10000, help="Env steps between video recordings.")
+
+AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 
 # launch Isaac Sim
@@ -29,6 +36,7 @@ simulation_app = app_launcher.app
 # -----------------------------------------------------------------------------
 import gymnasium as gym
 import torch
+from gymnasium.wrappers import RecordVideo
 from rsl_rl.runners import OnPolicyRunner
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 
@@ -82,11 +90,7 @@ def main():
 
     env_cfg.scene.num_envs = args.num_envs
 
-    env = gym.make(args.task, cfg=env_cfg, render_mode=None)
-
-    # wrap for RSL-RL
-    env = RslRlVecEnvWrapper(env, clip_actions=1.0)
-    print("Env ready.")
+    render_mode = "rgb_array" if args.video else None
 
     # get PPO config
     # agent_cfg = get_humanoid_stand_ppo_cfg() # Standing training PPO
@@ -103,6 +107,34 @@ def main():
     agent_cfg = handle_deprecated_rsl_rl_cfg(agent_cfg, rsl_rl_version)
     cfg_dict = agent_cfg.to_dict()
 
+    # logging
+    log_root = os.path.abspath(os.path.join("logs", "rsl_rl", agent_cfg.experiment_name))
+    os.makedirs(log_root, exist_ok=True)
+
+    run_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    log_dir = os.path.join(log_root, run_name)
+    os.makedirs(log_dir, exist_ok=True)
+
+    env = gym.make(args.task, cfg=env_cfg, render_mode=render_mode)
+
+    if args.video:
+        video_folder = Path(log_dir) / "videos" / "train"
+        video_folder.mkdir(parents=True, exist_ok=True)
+
+        env = RecordVideo(
+            env,
+            video_folder=str(video_folder),
+            step_trigger=lambda step: step % args.video_interval == 0,
+            video_length=args.video_length,
+            disable_logger=True,
+        )
+
+    # wrap for RSL-RL
+    env = RslRlVecEnvWrapper(env, clip_actions=1.0)
+    print("Env ready.")
+
+
+
     # strip legacy fields if still present after conversion
     if "actor" in cfg_dict:
         cfg_dict["actor"].pop("stochastic", None)
@@ -115,14 +147,6 @@ def main():
         cfg_dict["critic"].pop("init_noise_std", None)
         cfg_dict["critic"].pop("noise_std_type", None)
         cfg_dict["critic"].pop("state_dependent_std", None)
-
-    # logging
-    log_root = os.path.abspath(os.path.join("logs", "rsl_rl", agent_cfg.experiment_name))
-    os.makedirs(log_root, exist_ok=True)
-
-    run_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_dir = os.path.join(log_root, run_name)
-    os.makedirs(log_dir, exist_ok=True)
 
     # runner
     print("Creating PPO runner...")
