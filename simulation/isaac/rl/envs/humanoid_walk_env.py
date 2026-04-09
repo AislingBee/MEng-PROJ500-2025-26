@@ -62,13 +62,13 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     reward_scales = {
         "vel_track": 5.0,
         "upright": 0.3,
-        "pose": 0.1,
+        "pose": 0.2,
         "ang_vel": 0.1,
         "joint_vel": 0.02,
         "action_rate": 0.03,
         "lin_vel_y": 2.0,
         "yaw_rate": 2.0,
-        "roll_lean": 1.5,
+        "roll_lean": 2.5,
     }
 
     # Termination
