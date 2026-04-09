@@ -276,6 +276,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             action_term = self.cfg.reward_scales["action_rate"] * p_action_rate
             lin_y_term = self.cfg.reward_scales["lin_vel_y"] * p_lin_vel_y
             yaw_term = self.cfg.reward_scales["yaw_rate"] * p_yaw_rate
+            roll_lean_term = self.cfg.reward_scales["roll_lean"] * p_roll_lean
 
             print(
                 "reward contrib | "
@@ -285,8 +286,12 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"ang_pen: {ang_term.mean().item():.4f} | "
                 f"joint_pen: {joint_term.mean().item():.4f} | "
                 f"action_pen: {action_term.mean().item():.4f} | "
+                f"lin_vel_pen: {lin_y_term.mean().item():.4f} | "
+                f"yaw_rate_pen: {yaw_term.mean().item():.4f} | "
+                f"roll_lean_pen: {roll_lean_term.mean().item():.4f}"
                 f"survival: {survival_reward:.4f} | "
                 f"total: {reward.mean().item():.4f}"
+
             )
 
         return reward
