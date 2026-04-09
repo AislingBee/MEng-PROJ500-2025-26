@@ -41,8 +41,8 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     observation_space: int = 46
 
     action_scale: tuple[float, ...] = (
-        0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
-        0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
+        0.12, 0.10, 0.25, 0.35, 0.18, 0.12,
+        0.12, 0.10, 0.25, 0.35, 0.18, 0.12,
     )
 
     state_space: int = 0
@@ -52,8 +52,8 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
 
     # Velocity parameters and zero probability
     command_lin_vel_x_min: float = 0.0
-    command_lin_vel_x_max: float = 0.20
-    zero_command_prob: float = 0.2
+    command_lin_vel_x_max: float = 0.10
+    zero_command_prob: float = 0.0
 
     # Reward Variables
     upright_k: float = 5.0
@@ -62,7 +62,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     reward_scales = {
         "vel_track": 5.0,
         "upright": 0.3,
-        "pose": 0.2,
+        "pose": 0.0,
         "ang_vel": 0.1,
         "joint_vel": 0.02,
         "action_rate": 0.03,
