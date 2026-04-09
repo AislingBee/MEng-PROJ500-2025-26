@@ -55,6 +55,12 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     command_lin_vel_x_max: float = 0.10
     zero_command_prob: float = 0.0
 
+    # Gait walking
+    foot_clearance_height_target: float = 0.04
+    foot_clearance_sigma: float = 0.02
+    step_reward_command_threshold: float = 0.05
+    step_phase_vel_threshold: float = 0.02
+
     # Reward Variables
     upright_k: float = 5.0
     vel_tracking_k: float = 8.0
@@ -69,6 +75,8 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "lin_vel_y": 2.0,
         "yaw_rate": 2.0,
         "roll_lean": 2.5,
+        "foot_clearance": 0.5,
+        "step_alternation": 0.2,
     }
 
     # Termination
@@ -129,6 +137,22 @@ class HumanoidWalkEnv(DirectRLEnv):
             device=self.device,
             dtype=torch.long,
         )
+
+        foot_name_candidates = {
+            "left": ["robot_l_ankle_link"],
+            "right": ["robot_r_ankle_link"],
+        }
+
+        self._foot_body_ids = {}
+        for side, names in foot_name_candidates.items():
+            found = None
+            for name in name_to_body_idx:
+                found = name_to_body_idx[name]
+                break
+            if found is None:
+                raise RuntimeError(f"Could not find {side} foot body in robot.body_names. Tried {names}")
+            self._foot_body_ids[side] = found
+
 
     def _setup_scene(self):
         ground_cfg = sim_utils.GroundPlaneCfg()
@@ -222,6 +246,12 @@ class HumanoidWalkEnv(DirectRLEnv):
         root_ang_vel_b = self.robot.data.root_ang_vel_b
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
 
+        body_pos_w = self.robot.data.body_pos_w
+        left_foot_z = body_pos_w[:, self._foot_body_ids["left"], 2]
+        right_foot_z = body_pos_w[:, self._foot_body_ids["right"], 2]
+
+        command_active = (self._commands[:, 0] > self.cfg.step_reward_command_threshold).float()
+
         q_err = q - self._standing_q.unsqueeze(0)
         action_rate = self._actions - self._last_actions
 
@@ -244,6 +274,33 @@ class HumanoidWalkEnv(DirectRLEnv):
         p_yaw_rate = root_ang_vel_b[:, 2] ** 2
         p_roll_lean = projected_gravity_b[:, 1] ** 2
 
+        # Foot clearance reward
+        left_clearance_err = left_foot_z - self.cfg.foot_clearance_height_target
+        right_clearance_err = right_foot_z - self.cfg.foot_clearance_height_target
+
+        r_left_clearance = torch.exp(
+            -(left_clearance_err ** 2) / (self.cfg.foot_clearance_sigma ** 2)
+        )
+        r_right_clearance = torch.exp(
+            -(right_clearance_err ** 2) / (self.cfg.foot_clearance_sigma ** 2)
+        )
+
+        # Reward only one foot being up at a time, not both
+        single_support_mask = ((left_foot_z > 0.02) ^ (right_foot_z > 0.02)).float()
+        r_foot_clearance = 0.5 * (r_left_clearance + r_right_clearance) * single_support_mask * command_active
+
+        # Simple alternation reward:
+        # encourage different vertical foot velocities so one foot is rising while the other is not
+        left_foot_vz = self.robot.data.body_lin_vel_w[:, self._foot_body_ids["left"], 2]
+        right_foot_vz = self.robot.data.body_lin_vel_w[:, self._foot_body_ids["right"], 2]
+
+        moving_feet_mask = (
+            (torch.abs(left_foot_vz) > self.cfg.step_phase_vel_threshold)
+            | (torch.abs(right_foot_vz) > self.cfg.step_phase_vel_threshold)
+        ).float()
+
+        r_step_alternation = torch.abs(left_foot_vz - right_foot_vz) * moving_feet_mask * command_active
+
         survival_reward = 0 # temporary while debugging the gait issue.
 
         reward = (
@@ -251,6 +308,8 @@ class HumanoidWalkEnv(DirectRLEnv):
             + self.cfg.reward_scales["vel_track"] * r_vel_track
             + self.cfg.reward_scales["upright"] * r_upright
             + self.cfg.reward_scales["pose"] * r_pose
+            + self.cfg.reward_scales["foot_clearance"] * r_foot_clearance
+            + self.cfg.reward_scales["step_alternation"] * r_step_alternation
             - self.cfg.reward_scales["ang_vel"] * p_ang_vel
             - self.cfg.reward_scales["joint_vel"] * p_joint_vel
             - self.cfg.reward_scales["action_rate"] * p_action_rate
