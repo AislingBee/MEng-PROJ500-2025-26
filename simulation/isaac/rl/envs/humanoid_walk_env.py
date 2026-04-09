@@ -60,7 +60,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     foot_clearance_sigma: float = 0.02
     step_reward_command_threshold: float = 0.05
     step_phase_vel_threshold: float = 0.02
-    step_height_threshold: float = 0.03
+    step_height_threshold: float = 0.05
     step_cooldown_steps: int = 12
     step_support_height_max: float = 0.02
 
@@ -391,6 +391,8 @@ class HumanoidWalkEnv(DirectRLEnv):
             lin_y_term = self.cfg.reward_scales["lin_vel_y"] * p_lin_vel_y
             yaw_term = self.cfg.reward_scales["yaw_rate"] * p_yaw_rate
             roll_lean_term = self.cfg.reward_scales["roll_lean"] * p_roll_lean
+            step_event_term = self.cfg.reward_scales["step_event"] * r_step_event
+            step_alt_term = self.cfg.reward_scales["step_alternation"] * r_step_alternation
 
             print(
                 "reward contrib | "
@@ -402,10 +404,11 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"action_pen: {action_term.mean().item():.4f} | "
                 f"lin_vel_pen: {lin_y_term.mean().item():.4f} | "
                 f"yaw_rate_pen: {yaw_term.mean().item():.4f} | "
-                f"roll_lean_pen: {roll_lean_term.mean().item():.4f}"
+                f"roll_lean_pen: {roll_lean_term.mean().item():.4f} | "
+                f"step_event: {step_event_term.mean().item():.4f} | "
+                f"step_alt: {step_alt_term.mean().item():.4f} | "
                 f"survival: {survival_reward:.4f} | "
                 f"total: {reward.mean().item():.4f}"
-
             )
 
         return reward
