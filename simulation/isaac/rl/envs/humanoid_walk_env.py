@@ -60,6 +60,9 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     foot_clearance_sigma: float = 0.02
     step_reward_command_threshold: float = 0.05
     step_phase_vel_threshold: float = 0.02
+    step_height_threshold: float = 0.03
+    step_cooldown_steps: int = 12
+    step_support_height_max: float = 0.02
 
     # Reward Variables
     upright_k: float = 5.0
@@ -76,7 +79,8 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "yaw_rate": 2.0,
         "roll_lean": 2.5,
         "foot_clearance": 0.5,
-        "step_alternation": 0.2,
+        "step_alternation": 0.5,
+        "step_event": 1.0,
     }
 
     # Termination
@@ -152,6 +156,13 @@ class HumanoidWalkEnv(DirectRLEnv):
             if found is None:
                 raise RuntimeError(f"Could not find {side} foot body in robot.body_names. Tried {names}")
             self._foot_body_ids[side] = found
+
+        self._left_step_cooldown = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
+        self._right_step_cooldown = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
+        self._prev_left_foot_z = torch.zeros(self.num_envs, device=self.device)
+        self._prev_right_foot_z = torch.zeros(self.num_envs, device=self.device)
+        self._last_step_side = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
+        # 0 = none, 1 = left, 2 = right
 
 
     def _setup_scene(self):
@@ -239,6 +250,10 @@ class HumanoidWalkEnv(DirectRLEnv):
         return {"policy": obs}
 
     def _get_rewards(self) -> torch.Tensor:
+        # Update cooldowns each reward step
+        self._left_step_cooldown = torch.clamp(self._left_step_cooldown - 1, min=0)
+        self._right_step_cooldown = torch.clamp(self._right_step_cooldown - 1, min=0)
+
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
         root_quat_w = self.robot.data.root_quat_w
@@ -303,12 +318,52 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         survival_reward = 0 # temporary while debugging the gait issue.
 
+        # Detect step events
+        left_up_cross = (
+                (self._prev_left_foot_z <= self.cfg.step_height_threshold)
+                & (left_foot_z > self.cfg.step_height_threshold)
+        )
+
+        right_up_cross = (
+                (self._prev_right_foot_z <= self.cfg.step_height_threshold)
+                & (right_foot_z > self.cfg.step_height_threshold)
+        )
+
+        left_allowed = self._left_step_cooldown == 0
+        right_allowed = self._right_step_cooldown == 0
+
+        left_support_ok = right_foot_z < self.cfg.step_support_height_max
+        right_support_ok = left_foot_z < self.cfg.step_support_height_max
+
+        command_active = self._commands[:, 0] > self.cfg.step_reward_command_threshold
+
+        left_step_event = left_up_cross & left_allowed & left_support_ok & command_active
+        right_step_event = right_up_cross & right_allowed & right_support_ok & command_active
+
+        # Reward pulse
+        r_step_event = left_step_event.float() + right_step_event.float()
+
+        left_alt_bonus = left_step_event & (self._last_step_side == 2)
+        right_alt_bonus = right_step_event & (self._last_step_side == 1)
+        r_step_alternation = left_alt_bonus.float() + right_alt_bonus.float()
+
+        self._left_step_cooldown[left_step_event] = self.cfg.step_cooldown_steps
+        self._right_step_cooldown[right_step_event] = self.cfg.step_cooldown_steps
+
+        self._last_step_side[left_step_event] = 1
+        self._last_step_side[right_step_event] = 2
+
+        self._prev_left_foot_z[:] = left_foot_z
+        self._prev_right_foot_z[:] = right_foot_z
+
         reward = (
             survival_reward
             + self.cfg.reward_scales["vel_track"] * r_vel_track
             + self.cfg.reward_scales["upright"] * r_upright
             + self.cfg.reward_scales["pose"] * r_pose
             + self.cfg.reward_scales["foot_clearance"] * r_foot_clearance
+            + self.cfg.reward_scales["step_alternation"] * r_step_alternation
+            + self.cfg.reward_scales["step_event"] * r_step_event
             + self.cfg.reward_scales["step_alternation"] * r_step_alternation
             - self.cfg.reward_scales["ang_vel"] * p_ang_vel
             - self.cfg.reward_scales["joint_vel"] * p_joint_vel
