@@ -56,14 +56,13 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     zero_command_prob: float = 0.0
 
     # Gait walking
-    foot_clearance_height_target: float = 0.04
-    foot_clearance_sigma: float = 0.02
     step_reward_command_threshold: float = 0.05
     step_phase_vel_threshold: float = 0.02
-    step_height_threshold: float = 0.05
+    step_height_threshold: float = 0.06
     step_cooldown_steps: int = 20
     step_support_height_max: float = 0.02
     min_step_forward_vel: float = 0.05
+    foot_drag_height_threshold: float = 0.035
 
     # Reward Variables
     upright_k: float = 5.0
@@ -81,6 +80,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "roll_lean": 2.5,
         "step_alternation": 0.5,
         "step_event": 1.0,
+        "foot_drag": 1.0,
     }
 
     # Termination
@@ -290,41 +290,25 @@ class HumanoidWalkEnv(DirectRLEnv):
         p_yaw_rate = root_ang_vel_b[:, 2] ** 2
         p_roll_lean = projected_gravity_b[:, 1] ** 2
 
-        # # Foot clearance reward
-        # left_clearance_err = left_foot_z - self.cfg.foot_clearance_height_target
-        # right_clearance_err = right_foot_z - self.cfg.foot_clearance_height_target
-        #
-        # r_left_clearance = torch.exp(
-        #     -(left_clearance_err ** 2) / (self.cfg.foot_clearance_sigma ** 2)
-        # )
-        # r_right_clearance = torch.exp(
-        #     -(right_clearance_err ** 2) / (self.cfg.foot_clearance_sigma ** 2)
-        # )
-        #
-        # # Reward only one foot being up at a time, not both
-        # single_support_mask = ((left_foot_z > 0.02) ^ (right_foot_z > 0.02)).float()
-        # r_foot_clearance = 0.5 * (r_left_clearance + r_right_clearance) * single_support_mask * command_active
+        # Foot drag penalty: punish horizontal foot motion while foot is near the ground
+        left_foot_vel_xy = torch.norm(
+            self.robot.data.body_lin_vel_w[:, self._foot_body_ids["left"], :2], dim=1
+        )
+        right_foot_vel_xy = torch.norm(
+            self.robot.data.body_lin_vel_w[:, self._foot_body_ids["right"], :2], dim=1
+        )
 
-        # Simple alternation reward:
-        # encourage different vertical foot velocities so one foot is rising while the other is not
-        left_foot_vz = self.robot.data.body_lin_vel_w[:, self._foot_body_ids["left"], 2]
-        right_foot_vz = self.robot.data.body_lin_vel_w[:, self._foot_body_ids["right"], 2]
+        left_drag = (left_foot_z < self.cfg.foot_drag_height_threshold).float() * left_foot_vel_xy
+        right_drag = (right_foot_z < self.cfg.foot_drag_height_threshold).float() * right_foot_vel_xy
+        p_foot_drag = left_drag + right_drag
 
-        moving_feet_mask = (
-            (torch.abs(left_foot_vz) > self.cfg.step_phase_vel_threshold)
-            | (torch.abs(right_foot_vz) > self.cfg.step_phase_vel_threshold)
-        ).float()
-
-        r_step_alternation = torch.abs(left_foot_vz - right_foot_vz) * moving_feet_mask * command_active
-
-        survival_reward = 0 # temporary while debugging the gait issue.
+        survival_reward = 0.0
 
         # Detect step events
         left_up_cross = (
                 (self._prev_left_foot_z <= self.cfg.step_height_threshold)
                 & (left_foot_z > self.cfg.step_height_threshold)
         )
-
         right_up_cross = (
                 (self._prev_right_foot_z <= self.cfg.step_height_threshold)
                 & (right_foot_z > self.cfg.step_height_threshold)
@@ -336,16 +320,11 @@ class HumanoidWalkEnv(DirectRLEnv):
         left_support_ok = right_foot_z < self.cfg.step_support_height_max
         right_support_ok = left_foot_z < self.cfg.step_support_height_max
 
-        command_active = self._commands[:, 0] > self.cfg.step_reward_command_threshold
-
-        left_step_event = left_up_cross & left_allowed & left_support_ok & command_active
-        right_step_event = right_up_cross & right_allowed & right_support_ok & command_active
-
-        # Make alternation of leg mandatory
+        command_active_bool = self._commands[:, 0] > self.cfg.step_reward_command_threshold
         forward_ok = root_lin_vel_b[:, 0] > self.cfg.min_step_forward_vel
 
-        left_is_alternating = self._last_step_side == 2
-        right_is_alternating = self._last_step_side == 1
+        left_step_event = left_up_cross & left_allowed & left_support_ok & command_active_bool
+        right_step_event = right_up_cross & right_allowed & right_support_ok & command_active_bool
 
         left_is_alternating = (self._last_step_side == 0) | (self._last_step_side == 2)
         right_is_alternating = (self._last_step_side == 0) | (self._last_step_side == 1)
@@ -353,13 +332,8 @@ class HumanoidWalkEnv(DirectRLEnv):
         left_rewarded_step = left_step_event & left_is_alternating & forward_ok
         right_rewarded_step = right_step_event & right_is_alternating & forward_ok
 
-        # Reward pulse
         r_step_event = left_rewarded_step.float() + right_rewarded_step.float()
         r_step_alternation = r_step_event.clone()
-
-        left_alt_bonus = left_step_event & (self._last_step_side == 2)
-        right_alt_bonus = right_step_event & (self._last_step_side == 1)
-        r_step_alternation = left_alt_bonus.float() + right_alt_bonus.float()
 
         self._left_step_cooldown[left_rewarded_step] = self.cfg.step_cooldown_steps
         self._right_step_cooldown[right_rewarded_step] = self.cfg.step_cooldown_steps
@@ -371,18 +345,19 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._prev_right_foot_z[:] = right_foot_z
 
         reward = (
-            survival_reward
-            + self.cfg.reward_scales["vel_track"] * r_vel_track
-            + self.cfg.reward_scales["upright"] * r_upright
-            + self.cfg.reward_scales["pose"] * r_pose
-            + self.cfg.reward_scales["step_alternation"] * r_step_alternation
-            + self.cfg.reward_scales["step_event"] * r_step_event
-            - self.cfg.reward_scales["ang_vel"] * p_ang_vel
-            - self.cfg.reward_scales["joint_vel"] * p_joint_vel
-            - self.cfg.reward_scales["action_rate"] * p_action_rate
-            - self.cfg.reward_scales["lin_vel_y"] * p_lin_vel_y
-            - self.cfg.reward_scales["yaw_rate"] * p_yaw_rate
-            - self.cfg.reward_scales["roll_lean"] * p_roll_lean
+                survival_reward
+                + self.cfg.reward_scales["vel_track"] * r_vel_track
+                + self.cfg.reward_scales["upright"] * r_upright
+                + self.cfg.reward_scales["pose"] * r_pose
+                + self.cfg.reward_scales["step_event"] * r_step_event
+                + self.cfg.reward_scales["step_alternation"] * r_step_alternation
+                - self.cfg.reward_scales["ang_vel"] * p_ang_vel
+                - self.cfg.reward_scales["joint_vel"] * p_joint_vel
+                - self.cfg.reward_scales["action_rate"] * p_action_rate
+                - self.cfg.reward_scales["lin_vel_y"] * p_lin_vel_y
+                - self.cfg.reward_scales["yaw_rate"] * p_yaw_rate
+                - self.cfg.reward_scales["roll_lean"] * p_roll_lean
+                - self.cfg.reward_scales["foot_drag"] * p_foot_drag
         )
 
         if torch.isnan(reward).any():
@@ -405,6 +380,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             roll_lean_term = self.cfg.reward_scales["roll_lean"] * p_roll_lean
             step_event_term = self.cfg.reward_scales["step_event"] * r_step_event
             step_alt_term = self.cfg.reward_scales["step_alternation"] * r_step_alternation
+            foot_drag_term = self.cfg.reward_scales["foot_drag"] * p_foot_drag
 
             print(
                 "reward contrib | "
@@ -417,6 +393,7 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"lin_vel_pen: {lin_y_term.mean().item():.4f} | "
                 f"yaw_rate_pen: {yaw_term.mean().item():.4f} | "
                 f"roll_lean_pen: {roll_lean_term.mean().item():.4f} | "
+                f"foot_drag_pen: {foot_drag_term.mean().item():.4f} | "
                 f"step_event: {step_event_term.mean().item():.4f} | "
                 f"step_alt: {step_alt_term.mean().item():.4f} | "
                 f"survival: {survival_reward:.4f} | "
@@ -499,6 +476,12 @@ class HumanoidWalkEnv(DirectRLEnv):
         self.robot.set_joint_position_target(joint_pos, env_ids=env_ids)
         self._actions[env_ids] = 0.0
         self._last_actions[env_ids] = 0.0
+
+        self._left_step_cooldown[env_ids] = 0
+        self._right_step_cooldown[env_ids] = 0
+        self._prev_left_foot_z[env_ids] = 0.0
+        self._prev_right_foot_z[env_ids] = 0.0
+        self._last_step_side[env_ids] = 0
 
         # if len(env_ids) > 0 and int(env_ids[0]) == 0:
         #     root_height = self.robot.data.root_pos_w[env_ids, 2]
