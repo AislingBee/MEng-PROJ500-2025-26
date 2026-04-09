@@ -52,7 +52,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
 
     # Velocity parameters and zero probability
     command_lin_vel_x_min: float = 0.0
-    command_lin_vel_x_max: float = 0.35
+    command_lin_vel_x_max: float = 0.20
     zero_command_prob: float = 0.2
 
     # Reward Variables
@@ -62,12 +62,13 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     reward_scales = {
         "vel_track": 5.0,
         "upright": 0.3,
-        "pose": 0.05,
-        "ang_vel": 0.05,
+        "pose": 0.1,
+        "ang_vel": 0.1,
         "joint_vel": 0.02,
         "action_rate": 0.03,
-        "lin_vel_y": 0.5,
-        "yaw_rate": 0.5,
+        "lin_vel_y": 2.0,
+        "yaw_rate": 2.0,
+        "roll_lean": 1.5,
     }
 
     # Termination
@@ -241,8 +242,9 @@ class HumanoidWalkEnv(DirectRLEnv):
         p_action_rate = torch.mean(action_rate ** 2, dim=1)
         p_lin_vel_y = root_lin_vel_b[:, 1] ** 2
         p_yaw_rate = root_ang_vel_b[:, 2] ** 2
+        p_roll_lean = projected_gravity_b[:, 1] ** 2
 
-        survival_reward = 0.2
+        survival_reward = 0 # temporary while debugging the gait issue.
 
         reward = (
             survival_reward
@@ -254,6 +256,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["action_rate"] * p_action_rate
             - self.cfg.reward_scales["lin_vel_y"] * p_lin_vel_y
             - self.cfg.reward_scales["yaw_rate"] * p_yaw_rate
+            - self.cfg.reward_scales["roll_lean"] * p_roll_lean
         )
 
         if torch.isnan(reward).any():
