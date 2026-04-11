@@ -217,7 +217,7 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         self.scene.sensors["left_foot_contact"] = ContactSensor(
             ContactSensorCfg(
-                prim_path="{ENV_REGEX_NS}/Robot/robot_l_foot_link",
+                prim_path="/World/envs/env_.*/Robot/robot_l_foot_link",
                 update_period=0.0,
                 history_length=3,
                 debug_vis=False,
@@ -225,7 +225,7 @@ class HumanoidWalkEnv(DirectRLEnv):
         )
         self.scene.sensors["right_foot_contact"] = ContactSensor(
             ContactSensorCfg(
-                prim_path="{ENV_REGEX_NS}/Robot/robot_r_foot_link",
+                prim_path="/World/envs/env_.*/Robot/robot_r_foot_link",
                 update_period=0.0,
                 history_length=3,
                 debug_vis=False,
