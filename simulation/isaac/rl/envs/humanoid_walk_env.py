@@ -63,7 +63,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     step_reward_command_threshold: float = 0.04
     min_step_forward_vel: float = 0
     step_cooldown_steps: int = 18
-    min_swing_air_steps: int = 4
+    min_swing_air_steps: int = 2
     touchdown_forward_margin: float = 0.08
 
     # Swing shaping
@@ -84,19 +84,19 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "lin_vel_y": 1.5,
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
-        "touchdown": 2.0,
-        "step_alternation": 3.0,
+        "touchdown": 2.5,
+        "step_alternation": 4.0,
         "stance_slip": 2.5,
         "stance_tilt": 1.0,
-        "swing_clearance": 1.2,
+        "swing_clearance": 1.5,
         "survival": 1.0,
         "double_swing": 0.5,
-        "repeat_step": 0.75,
-        "forward_step": 0.7,
-        "backward_vel": 2.0,
-        "pitch_lean": 1.5,
+        "repeat_step": 1.0,
+        "forward_step": 1.0,
+        "backward_vel": 0.5,
+        "pitch_lean": 0.5,
         "loaded_swing": 0.01,
-        "lateral_step": 1.5,
+        "lateral_step": 2.0,
     }
 
     # Termination
