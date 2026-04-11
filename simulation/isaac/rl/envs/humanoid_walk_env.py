@@ -92,7 +92,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "survival": 1.0,
         "double_swing": 0.5,
         "repeat_step": 0.75,
-        "forward_step": 2.0,
+        "forward_step": 1.0,
         "loaded_swing": 0.01,
         "lateral_step": 1.0,
     }
@@ -446,6 +446,10 @@ class HumanoidWalkEnv(DirectRLEnv):
                 + right_supported_swing.float() * right_clearance
         )
 
+        left_forward_swing = left_supported_swing.float() * torch.clamp(foot_kin["left_vel_b"][:, 0], min=0.0, max=0.5)
+        right_forward_swing = right_supported_swing.float() * torch.clamp(foot_kin["right_vel_b"][:, 0], min=0.0, max=0.5)
+        r_forward_swing = left_forward_swing + right_forward_swing
+
         left_bad_loaded_swing = left_supported_swing.float() * torch.clamp(left_force - 20.0, min=0.0)
         right_bad_loaded_swing = right_supported_swing.float() * torch.clamp(right_force - 20.0, min=0.0)
 
@@ -469,20 +473,6 @@ class HumanoidWalkEnv(DirectRLEnv):
         right_rewarded_touchdown = right_touchdown & left_contact
 
         r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
-
-        left_step_progress = left_rewarded_touchdown.float() * torch.clamp(
-            left_pos_w[:, 0] - self._prev_left_touchdown_x,
-            min=0.0,
-            max=0.10,
-        )
-
-        right_step_progress = right_rewarded_touchdown.float() * torch.clamp(
-            right_pos_w[:, 0] - self._prev_right_touchdown_x,
-            min=0.0,
-            max=0.10,
-        )
-
-        r_forward_step = left_step_progress + right_step_progress
 
         left_repeat = left_rewarded_touchdown & (self._last_step_side == 1)
         right_repeat = right_rewarded_touchdown & (self._last_step_side == 2)
@@ -530,7 +520,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             + self.cfg.reward_scales["step_alternation"] * r_step_alternation
             + self.cfg.reward_scales["swing_clearance"] * r_swing_clearance
             + self.cfg.reward_scales["survival"] * survival_term
-            + self.cfg.reward_scales["forward_step"] * r_forward_step
+            + self.cfg.reward_scales["forward_step"] * r_forward_swing
             - self.cfg.reward_scales["ang_vel"] * p_ang_vel
             - self.cfg.reward_scales["joint_vel"] * p_joint_vel
             - self.cfg.reward_scales["action_rate"] * p_action_rate
@@ -544,9 +534,6 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
             - self.cfg.reward_scales["lateral_step"] * p_lateral_step
         )
-
-        self._prev_left_touchdown_x[left_rewarded_touchdown] = left_pos_w[left_rewarded_touchdown, 0]
-        self._prev_right_touchdown_x[right_rewarded_touchdown] = right_pos_w[right_rewarded_touchdown, 0]
 
         if torch.isnan(reward).any():
             raise RuntimeError("NaN detected in rewards")
@@ -573,7 +560,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             survival_term = self.cfg.reward_scales["survival"] * survival_term
             double_swing_term = self.cfg.reward_scales["double_swing"] * p_double_swing
             repeat_step_term = self.cfg.reward_scales["repeat_step"] * p_repeat_step
-            forward_step_term = self.cfg.reward_scales["forward_step"] * r_forward_step
+            forward_step_term = self.cfg.reward_scales["forward_step"] * r_forward_swing
             loaded_swing_term = self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
             laterial_step_term = self.cfg.reward_scales["lateral_step"] * p_lateral_step
 
