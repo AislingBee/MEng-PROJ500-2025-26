@@ -52,7 +52,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
 
     # Velocity parameters and zero probability
     command_lin_vel_x_min: float = 0.0
-    command_lin_vel_x_max: float = 0.10
+    command_lin_vel_x_max: float = 0.25
     zero_command_prob: float = 0.0
 
     # Gait walking
