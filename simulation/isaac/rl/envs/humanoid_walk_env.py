@@ -46,8 +46,8 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     state_space: int = 0
 
     action_scale: tuple[float, ...] = (
-        0.08, 0.07, 0.18, 0.25, 0.12, 0.08,
-        0.08, 0.07, 0.18, 0.25, 0.12, 0.08,
+        0.05, 0.05, 0.15, 0.20, 0.10, 0.06,
+        0.05, 0.05, 0.15, 0.20, 0.10, 0.06,
     )
 
     usd_path: str = str(USD_PATH)
@@ -76,12 +76,13 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     pose_k: float = 1.0
     survival_reward = 0.2
     reward_scales = {
-        "vel_track": 5.0,
+        "vel_track": 3.0,
         "upright": 1.0,
         "pose": 0.0,
         "ang_vel": 0.10,
         "joint_vel": 0.02,
         "action_rate": 0.03,
+        "action_rate": 0.08,
         "lin_vel_y": 1.5,
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
@@ -89,7 +90,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "step_alternation": 0.5,
         "stance_slip": 2.5,
         "stance_tilt": 1.0,
-        "swing_clearance": 0.25,
+        "swing_clearance": 0.8,
         "survival": 1.0,
     }
 
