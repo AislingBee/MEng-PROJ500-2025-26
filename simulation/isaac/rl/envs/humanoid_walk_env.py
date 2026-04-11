@@ -59,12 +59,12 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     zero_command_prob: float = 0.0
 
     # Contact / gait logic
-    contact_force_threshold: float = 15.0
+    contact_force_threshold: float = 2.0
     step_reward_command_threshold: float = 0.04
-    min_step_forward_vel: float = 0.03
+    min_step_forward_vel: float = 0
     step_cooldown_steps: int = 18
     min_swing_air_steps: int = 4
-    touchdown_forward_margin: float = 0.00
+    touchdown_forward_margin: float = -0.05
 
     # Swing shaping
     swing_height_min: float = 0.045
