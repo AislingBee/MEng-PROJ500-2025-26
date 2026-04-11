@@ -92,11 +92,13 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "survival": 1.0,
         "double_swing": 0.5,
         "repeat_step": 1.0,
-        "forward_step": 1.0,
+        "forward_step": 1.5,
         "backward_vel": 0.5,
         "pitch_lean": 0.5,
         "loaded_swing": 0.01,
-        "lateral_step": 2.0,
+        "lateral_step": 3.0,
+        "lateral_swing": 1.5,
+        "forward_place": 0.75,
     }
 
     # Termination
@@ -454,6 +456,10 @@ class HumanoidWalkEnv(DirectRLEnv):
         right_forward_swing = right_supported_swing.float() * torch.clamp(foot_kin["right_vel_b"][:, 0], min=0.0, max=0.5)
         r_forward_swing = left_forward_swing + right_forward_swing
 
+        left_lateral_swing = left_supported_swing.float() * torch.clamp(torch.abs(foot_kin["left_vel_b"][:, 1]), min=0.0, max=0.5)
+        right_lateral_swing = right_supported_swing.float() * torch.clamp(torch.abs(foot_kin["right_vel_b"][:, 1]), min=0.0, max=0.5)
+        p_lateral_swing = left_lateral_swing + right_lateral_swing
+
         left_bad_loaded_swing = left_supported_swing.float() * torch.clamp(left_force - 20.0, min=0.0)
         right_bad_loaded_swing = right_supported_swing.float() * torch.clamp(right_force - 20.0, min=0.0)
 
@@ -477,6 +483,10 @@ class HumanoidWalkEnv(DirectRLEnv):
         right_rewarded_touchdown = right_touchdown & left_contact
 
         r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
+
+        left_forward_place = left_rewarded_touchdown.float() * torch.clamp(left_pos_b[:, 0], min=0.0, max=0.08)
+        right_forward_place = right_rewarded_touchdown.float() * torch.clamp(right_pos_b[:, 0], min=0.0, max=0.08)
+        r_forward_place = left_forward_place + right_forward_place
 
         left_repeat = left_rewarded_touchdown & (self._last_step_side == 1)
         right_repeat = right_rewarded_touchdown & (self._last_step_side == 2)
@@ -525,6 +535,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             + self.cfg.reward_scales["swing_clearance"] * r_swing_clearance
             + self.cfg.reward_scales["survival"] * survival_term
             + self.cfg.reward_scales["forward_step"] * r_forward_swing
+            + self.cfg.reward_scales["forward_place"] * r_forward_place
             - self.cfg.reward_scales["ang_vel"] * p_ang_vel
             - self.cfg.reward_scales["joint_vel"] * p_joint_vel
             - self.cfg.reward_scales["action_rate"] * p_action_rate
@@ -539,6 +550,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["repeat_step"] * p_repeat_step
             - self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
             - self.cfg.reward_scales["lateral_step"] * p_lateral_step
+            - self.cfg.reward_scales["lateral_swing"] * p_lateral_swing
         )
 
         if torch.isnan(reward).any():
@@ -569,8 +581,10 @@ class HumanoidWalkEnv(DirectRLEnv):
             double_swing_term = self.cfg.reward_scales["double_swing"] * p_double_swing
             repeat_step_term = self.cfg.reward_scales["repeat_step"] * p_repeat_step
             forward_step_term = self.cfg.reward_scales["forward_step"] * r_forward_swing
+            forward_place_term = self.cfg.reward_scales["forward_place"] * r_forward_place
             loaded_swing_term = self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
             laterial_step_term = self.cfg.reward_scales["lateral_step"] * p_lateral_step
+            lateral_swing_term = self.cfg.reward_scales["lateral_swing"] * p_lateral_swing
 
             print(
                 "reward contrib | "
@@ -594,8 +608,10 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"double_swing: {double_swing_term.mean().item():.4f} | "
                 f"repeat_step: {repeat_step_term.mean().item():.4f} | "
                 f"forward_step: {forward_step_term.mean().item():.4f} | "
+                f"forward_place: {forward_place_term.mean().item():.4f} | "
                 f"loaded_swing: {loaded_swing_term.mean().item():.4f} | "
                 f"laterial_step: {laterial_step_term.mean().item():.4f} | "
+                f"lateral_swing: {lateral_swing_term.mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
