@@ -91,6 +91,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "stance_tilt": 1.0,
         "swing_clearance": 1.2,
         "survival": 1.0,
+        "double_swing": 0.5,
     }
 
     # Termination
@@ -450,55 +451,19 @@ class HumanoidWalkEnv(DirectRLEnv):
             & (prev_right_air_steps >= self.cfg.min_swing_air_steps)
         )
 
-        # print(
-        #     "raw_td | "
-        #     f"L_contact: {left_contact.float().mean().item():.3f} | "
-        #     f"R_contact: {right_contact.float().mean().item():.3f} | "
-        #     f"L_td: {left_touchdown.float().mean().item():.3f} | "
-        #     f"R_td: {right_touchdown.float().mean().item():.3f} | "
-        #     f"L_air: {self._left_air_steps.float().mean().item():.3f} | "
-        #     f"R_air: {self._right_air_steps.float().mean().item():.3f}"
-        # )
 
-        # left_allowed = self._left_step_cooldown == 0
-        # right_allowed = self._right_step_cooldown == 0
-        # left_is_alternating = (self._last_step_side == 0) | (self._last_step_side == 2)
-        # right_is_alternating = (self._last_step_side == 0) | (self._last_step_side == 1)
-        # left_support_ok = right_contact
-        # right_support_ok = left_contact
-        # left_forward_place_ok = left_pos_b[:, 0] >= self.cfg.touchdown_forward_margin
-        # right_forward_place_ok = right_pos_b[:, 0] >= self.cfg.touchdown_forward_margin
-        # forward_ok = root_lin_vel_b[:, 0] > self.cfg.min_step_forward_vel
-        #
-        # left_rewarded_touchdown = (
-        #     left_touchdown
-        #     & left_allowed
-        #     & left_is_alternating
-        #     & left_support_ok
-        #     & left_forward_place_ok
-        #     & command_active_bool
-        #     & forward_ok
-        # )
-        # right_rewarded_touchdown = (
-        #     right_touchdown
-        #     & right_allowed
-        #     & right_is_alternating
-        #     & right_support_ok
-        #     & right_forward_place_ok
-        #     & command_active_bool
-        #     & forward_ok
-        # )
-        #
-        # r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
-        # r_step_alternation = r_touchdown.clone()
-        #
-        # self._left_step_cooldown[left_rewarded_touchdown] = self.cfg.step_cooldown_steps
-        # self._right_step_cooldown[right_rewarded_touchdown] = self.cfg.step_cooldown_steps
-        # self._last_step_side[left_rewarded_touchdown] = 1
-        # self._last_step_side[right_rewarded_touchdown] = 2
+        left_rewarded_touchdown = left_touchdown & right_contact
+        right_rewarded_touchdown = right_touchdown & left_contact
 
-        r_touchdown = left_touchdown.float() + right_touchdown.float()
-        r_step_alternation = torch.zeros_like(r_touchdown)
+        r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
+
+        left_alt = left_rewarded_touchdown & (self._last_step_side != 1)
+        right_alt = right_rewarded_touchdown & (self._last_step_side != 2)
+
+        r_step_alternation = left_alt.float() + right_alt.float()
+
+        self._last_step_side[left_alt] = 1
+        self._last_step_side[right_alt] = 2
 
         self._left_air_steps = torch.where(
             left_contact,
@@ -513,6 +478,9 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         self._prev_left_contact[:] = left_contact
         self._prev_right_contact[:] = right_contact
+
+        both_feet_airborne = (~left_contact) & (~right_contact)
+        p_double_swing = both_feet_airborne.float()
 
         survival_term = torch.ones(self.num_envs, device=self.device)
 
@@ -532,6 +500,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["roll_lean"] * p_roll_lean
             - self.cfg.reward_scales["stance_slip"] * p_stance_slip
             - self.cfg.reward_scales["stance_tilt"] * p_stance_tilt
+            - self.cfg.reward_scales["double_swing"] * p_double_swing
         )
 
         if torch.isnan(reward).any():
@@ -557,6 +526,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             touchdown_term = self.cfg.reward_scales["touchdown"] * r_touchdown
             step_alt_term = self.cfg.reward_scales["step_alternation"] * r_step_alternation
             survival_term = self.cfg.reward_scales["survival"] * survival_term
+            double_swing_term = self.cfg.reward_scales["double_swing"] * p_double_swing
 
             print(
                 "reward contrib | "
@@ -575,6 +545,7 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"touchdown: {touchdown_term.mean().item():.4f} | "
                 f"step_alt: {step_alt_term.mean().item():.4f} | "
                 f"survival: {survival_term.mean().item():.4f} | "
+                f"double_swing: {double_swing_term.mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
