@@ -86,12 +86,13 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
         "touchdown": 2.0,
-        "step_alternation": 0.5,
+        "step_alternation": 1.5,
         "stance_slip": 2.5,
         "stance_tilt": 1.0,
         "swing_clearance": 1.2,
         "survival": 1.0,
         "double_swing": 0.5,
+        "repeat_step": 0.75,
     }
 
     # Termination
@@ -433,8 +434,13 @@ class HumanoidWalkEnv(DirectRLEnv):
             min=0.0,
             max=1.0,
         )
+
+        left_supported_swing = (~left_contact) & right_contact
+        right_supported_swing = (~right_contact) & left_contact
+
         r_swing_clearance = command_active * (
-            (~left_contact).float() * left_clearance + (~right_contact).float() * right_clearance
+                left_supported_swing.float() * left_clearance
+                + right_supported_swing.float() * right_clearance
         )
 
         prev_left_air_steps = self._left_air_steps.clone()
@@ -454,8 +460,11 @@ class HumanoidWalkEnv(DirectRLEnv):
         left_forward_ok = left_pos_b[:, 0] > 0.02
         right_forward_ok = right_pos_b[:, 0] > 0.02
 
-        left_rewarded_touchdown = left_touchdown & right_contact & left_forward_ok
-        right_rewarded_touchdown = right_touchdown & left_contact & right_forward_ok
+        # left_rewarded_touchdown = left_touchdown & right_contact & left_forward_ok
+        # right_rewarded_touchdown = right_touchdown & left_contact & right_forward_ok
+
+        left_rewarded_touchdown = left_touchdown & right_contact
+        right_rewarded_touchdown = right_touchdown & left_contact
 
         r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
 
@@ -484,6 +493,11 @@ class HumanoidWalkEnv(DirectRLEnv):
         both_feet_airborne = (~left_contact) & (~right_contact)
         p_double_swing = both_feet_airborne.float()
 
+        left_repeat = left_rewarded_touchdown & (self._last_step_side == 1)
+        right_repeat = right_rewarded_touchdown & (self._last_step_side == 2)
+
+        p_repeat_step = left_repeat.float() + right_repeat.float()
+
         survival_term = torch.ones(self.num_envs, device=self.device)
 
         reward = (
@@ -503,6 +517,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["stance_slip"] * p_stance_slip
             - self.cfg.reward_scales["stance_tilt"] * p_stance_tilt
             - self.cfg.reward_scales["double_swing"] * p_double_swing
+            - self.cfg.reward_scales["repeat_step"] * p_repeat_step
         )
 
         if torch.isnan(reward).any():
@@ -529,6 +544,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             step_alt_term = self.cfg.reward_scales["step_alternation"] * r_step_alternation
             survival_term = self.cfg.reward_scales["survival"] * survival_term
             double_swing_term = self.cfg.reward_scales["double_swing"] * p_double_swing
+            repeat_step_term = self.cfg.reward_scales["repeat_step"] * p_repeat_step
 
             print(
                 "reward contrib | "
@@ -548,6 +564,7 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"step_alt: {step_alt_term.mean().item():.4f} | "
                 f"survival: {survival_term.mean().item():.4f} | "
                 f"double_swing: {double_swing_term.mean().item():.4f} | "
+                f"repeat_step: {repeat_step_term.mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
