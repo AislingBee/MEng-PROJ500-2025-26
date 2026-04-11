@@ -46,8 +46,8 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     state_space: int = 0
 
     action_scale: tuple[float, ...] = (
-        0.12, 0.10, 0.25, 0.35, 0.18, 0.12,
-        0.12, 0.10, 0.25, 0.35, 0.18, 0.12,
+        0.08, 0.07, 0.18, 0.25, 0.12, 0.08,
+        0.08, 0.07, 0.18, 0.25, 0.12, 0.08,
     )
 
     usd_path: str = str(USD_PATH)
@@ -74,9 +74,10 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     upright_k: float = 5.0
     vel_tracking_k: float = 8.0
     pose_k: float = 1.0
+    survival_reward = 0.2
     reward_scales = {
         "vel_track": 5.0,
-        "upright": 0.4,
+        "upright": 1.0,
         "pose": 0.0,
         "ang_vel": 0.10,
         "joint_vel": 0.02,
@@ -89,6 +90,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "stance_slip": 2.5,
         "stance_tilt": 1.0,
         "swing_clearance": 0.25,
+        "survival": 1.0,
     }
 
     # Termination
@@ -483,6 +485,8 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._prev_left_contact[:] = left_contact
         self._prev_right_contact[:] = right_contact
 
+        survival_term = torch.ones(self.num_envs, device=self.device)
+
         reward = (
             self.cfg.reward_scales["vel_track"] * r_vel_track
             + self.cfg.reward_scales["upright"] * r_upright
@@ -490,6 +494,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             + self.cfg.reward_scales["touchdown"] * r_touchdown
             + self.cfg.reward_scales["step_alternation"] * r_step_alternation
             + self.cfg.reward_scales["swing_clearance"] * r_swing_clearance
+            + self.cfg.reward_scales["survival"] * survival_term
             - self.cfg.reward_scales["ang_vel"] * p_ang_vel
             - self.cfg.reward_scales["joint_vel"] * p_joint_vel
             - self.cfg.reward_scales["action_rate"] * p_action_rate
@@ -522,6 +527,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             swing_clearance_term = self.cfg.reward_scales["swing_clearance"] * r_swing_clearance
             touchdown_term = self.cfg.reward_scales["touchdown"] * r_touchdown
             step_alt_term = self.cfg.reward_scales["step_alternation"] * r_step_alternation
+            survival_term = self.cfg.reward_scales["survival"] * survival_term
 
             print(
                 "reward contrib | "
@@ -539,6 +545,7 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"swing_clear: {swing_clearance_term.mean().item():.4f} | "
                 f"touchdown: {touchdown_term.mean().item():.4f} | "
                 f"step_alt: {step_alt_term.mean().item():.4f} | "
+                f"survival: {survival_term.mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
