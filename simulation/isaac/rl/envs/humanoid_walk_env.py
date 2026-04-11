@@ -92,9 +92,11 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "survival": 1.0,
         "double_swing": 0.5,
         "repeat_step": 0.75,
-        "forward_step": 1.0,
+        "forward_step": 0.7,
+        "backward_vel": 2.0,
+        "pitch_lean": 1.5,
         "loaded_swing": 0.01,
-        "lateral_step": 1.0,
+        "lateral_step": 1.5,
     }
 
     # Termination
@@ -414,6 +416,8 @@ class HumanoidWalkEnv(DirectRLEnv):
         p_lin_vel_y = root_lin_vel_b[:, 1] ** 2
         p_yaw_rate = root_ang_vel_b[:, 2] ** 2
         p_roll_lean = projected_gravity_b[:, 1] ** 2
+        p_pitch_lean = projected_gravity_b[:, 0] ** 2
+        p_backward_vel = torch.clamp(-root_lin_vel_b[:, 0], min=0.0)
 
         left_foot_vel_xy_w = torch.norm(left_vel_w[:, :2], dim=1)
         right_foot_vel_xy_w = torch.norm(right_vel_w[:, :2], dim=1)
@@ -527,6 +531,8 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["lin_vel_y"] * p_lin_vel_y
             - self.cfg.reward_scales["yaw_rate"] * p_yaw_rate
             - self.cfg.reward_scales["roll_lean"] * p_roll_lean
+            - self.cfg.reward_scales["pitch_lean"] * p_pitch_lean
+            - self.cfg.reward_scales["backward_vel"] * p_backward_vel
             - self.cfg.reward_scales["stance_slip"] * p_stance_slip
             - self.cfg.reward_scales["stance_tilt"] * p_stance_tilt
             - self.cfg.reward_scales["double_swing"] * p_double_swing
@@ -552,6 +558,8 @@ class HumanoidWalkEnv(DirectRLEnv):
             lin_y_term = self.cfg.reward_scales["lin_vel_y"] * p_lin_vel_y
             yaw_term = self.cfg.reward_scales["yaw_rate"] * p_yaw_rate
             roll_lean_term = self.cfg.reward_scales["roll_lean"] * p_roll_lean
+            pitch_lean_term = self.cfg.reward_scales["pitch_lean"] * p_pitch_lean
+            backward_vel_term = self.cfg.reward_scales["backward_vel"] * p_backward_vel
             stance_slip_term = self.cfg.reward_scales["stance_slip"] * p_stance_slip
             stance_tilt_term = self.cfg.reward_scales["stance_tilt"] * p_stance_tilt
             swing_clearance_term = self.cfg.reward_scales["swing_clearance"] * r_swing_clearance
@@ -575,6 +583,8 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"lin_vel_pen: {lin_y_term.mean().item():.4f} | "
                 f"yaw_rate_pen: {yaw_term.mean().item():.4f} | "
                 f"roll_lean_pen: {roll_lean_term.mean().item():.4f} | "
+                f"pitch_lean_pen: {pitch_lean_term.mean().item():.4f} | "
+                f"backward_vel_pen: {backward_vel_term.mean().item():.4f} | "
                 f"stance_slip_pen: {stance_slip_term.mean().item():.4f} | "
                 f"stance_tilt_pen: {stance_tilt_term.mean().item():.4f} | "
                 f"swing_clear: {swing_clearance_term.mean().item():.4f} | "
