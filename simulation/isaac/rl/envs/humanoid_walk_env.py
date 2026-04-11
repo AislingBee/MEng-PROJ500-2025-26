@@ -85,7 +85,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
         "touchdown": 2.0,
-        "step_alternation": 1.5,
+        "step_alternation": 2.0,
         "stance_slip": 2.5,
         "stance_tilt": 1.0,
         "swing_clearance": 1.2,
@@ -93,6 +93,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "double_swing": 0.5,
         "repeat_step": 0.75,
         "forward_step": 0.5,
+        "loaded_swing": 0.01,
     }
 
     # Termination
@@ -444,6 +445,11 @@ class HumanoidWalkEnv(DirectRLEnv):
                 + right_supported_swing.float() * right_clearance
         )
 
+        left_bad_loaded_swing = left_supported_swing.float() * torch.clamp(left_force - 20.0, min=0.0)
+        right_bad_loaded_swing = right_supported_swing.float() * torch.clamp(right_force - 20.0, min=0.0)
+
+        p_loaded_swing = left_bad_loaded_swing + right_bad_loaded_swing
+
         prev_left_air_steps = self._left_air_steps.clone()
         prev_right_air_steps = self._right_air_steps.clone()
 
@@ -458,13 +464,8 @@ class HumanoidWalkEnv(DirectRLEnv):
             & (prev_right_air_steps >= self.cfg.min_swing_air_steps)
         )
 
-        load_threshold = 0.3  # tune later
-
-        left_unloaded = left_force < (right_force * load_threshold)
-        right_unloaded = right_force < (left_force * load_threshold)
-
-        left_rewarded_touchdown = left_touchdown & right_contact & left_unloaded
-        right_rewarded_touchdown = right_touchdown & left_contact & right_unloaded
+        left_rewarded_touchdown = left_touchdown & right_contact
+        right_rewarded_touchdown = right_touchdown & left_contact
 
         r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
 
@@ -533,6 +534,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["stance_tilt"] * p_stance_tilt
             - self.cfg.reward_scales["double_swing"] * p_double_swing
             - self.cfg.reward_scales["repeat_step"] * p_repeat_step
+            - self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
         )
 
         self._prev_left_touchdown_x[left_rewarded_touchdown] = left_pos_w[left_rewarded_touchdown, 0]
@@ -564,6 +566,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             double_swing_term = self.cfg.reward_scales["double_swing"] * p_double_swing
             repeat_step_term = self.cfg.reward_scales["repeat_step"] * p_repeat_step
             forward_step_term = self.cfg.reward_scales["forward_step"] * r_forward_step
+            loaded_swing_term = self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
 
             print(
                 "reward contrib | "
@@ -585,6 +588,7 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"double_swing: {double_swing_term.mean().item():.4f} | "
                 f"repeat_step: {repeat_step_term.mean().item():.4f} | "
                 f"forward_step: {forward_step_term.mean().item():.4f} | "
+                f"loaded_swing: {loaded_swing_term.mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
