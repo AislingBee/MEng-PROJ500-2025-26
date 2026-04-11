@@ -81,8 +81,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "pose": 0.0,
         "ang_vel": 0.10,
         "joint_vel": 0.02,
-        "action_rate": 0.03,
-        "action_rate": 0.08,
+        "action_rate": 0.05,
         "lin_vel_y": 1.5,
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
@@ -90,7 +89,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "step_alternation": 0.5,
         "stance_slip": 2.5,
         "stance_tilt": 1.0,
-        "swing_clearance": 0.8,
+        "swing_clearance": 1.2,
         "survival": 1.0,
     }
 
