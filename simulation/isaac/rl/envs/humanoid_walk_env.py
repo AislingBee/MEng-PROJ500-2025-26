@@ -234,6 +234,8 @@ class HumanoidWalkEnv(DirectRLEnv):
             )
         )
 
+
+
     def _build_standing_pose_tensor(self) -> torch.Tensor:
         q = torch.zeros(self.num_dofs, dtype=torch.float32, device=self.device)
         for i, joint_name in enumerate(self.robot.joint_names):
@@ -353,6 +355,11 @@ class HumanoidWalkEnv(DirectRLEnv):
         return {"policy": obs}
 
     def _get_rewards(self) -> torch.Tensor:
+
+        # left_sensor = self.scene.sensors["left_foot_contact"]
+        # print(left_sensor.data.net_forces_w.shape)
+        # print(left_sensor.data.net_forces_w[0])
+
         self._left_step_cooldown = torch.clamp(self._left_step_cooldown - 1, min=0)
         self._right_step_cooldown = torch.clamp(self._right_step_cooldown - 1, min=0)
 
@@ -373,7 +380,16 @@ class HumanoidWalkEnv(DirectRLEnv):
         left_quat_w = foot_kin["left_quat_w"]
         right_quat_w = foot_kin["right_quat_w"]
 
-        left_contact, right_contact, _, _ = self._get_foot_contact_state()
+        left_sensor = self.scene.sensors["left_foot_contact"]
+        right_sensor = self.scene.sensors["right_foot_contact"]
+
+        left_force = left_sensor.data.net_forces_w[:, 0, 2]
+        right_force = right_sensor.data.net_forces_w[:, 0, 2]
+
+        threshold = 5.0
+        left_contact = left_force > threshold
+        right_contact = right_force > threshold
+
         command_active = (self._commands[:, 0] > self.cfg.step_reward_command_threshold).float()
         command_active_bool = self._commands[:, 0] > self.cfg.step_reward_command_threshold
 
