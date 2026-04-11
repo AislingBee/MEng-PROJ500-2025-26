@@ -74,7 +74,6 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     upright_k: float = 5.0
     vel_tracking_k: float = 8.0
     pose_k: float = 1.0
-    survival_reward = 0.2
     reward_scales = {
         "vel_track": 3.0,
         "upright": 1.0,
@@ -176,6 +175,8 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._prev_right_contact = torch.zeros(self.num_envs, device=self.device, dtype=torch.bool)
         self._left_air_steps = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
         self._right_air_steps = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
+        self._prev_left_touchdown_x = torch.zeros(self.num_envs, device=self.device)
+        self._prev_right_touchdown_x = torch.zeros(self.num_envs, device=self.device)
 
     def _setup_scene(self):
         ground_cfg = sim_utils.GroundPlaneCfg()
@@ -389,9 +390,8 @@ class HumanoidWalkEnv(DirectRLEnv):
         left_force = left_sensor.data.net_forces_w[:, 0, 2]
         right_force = right_sensor.data.net_forces_w[:, 0, 2]
 
-        threshold = 5.0
-        left_contact = left_force > threshold
-        right_contact = right_force > threshold
+        left_contact = left_force > self.cfg.contact_force_threshold
+        right_contact = right_force > self.cfg.contact_force_threshold
 
         command_active = (self._commands[:, 0] > self.cfg.step_reward_command_threshold).float()
         command_active_bool = self._commands[:, 0] > self.cfg.step_reward_command_threshold
@@ -458,20 +458,31 @@ class HumanoidWalkEnv(DirectRLEnv):
             & (prev_right_air_steps >= self.cfg.min_swing_air_steps)
         )
 
-        left_forward_ok = left_pos_b[:, 0] > 0.02
-        right_forward_ok = right_pos_b[:, 0] > 0.02
-
-        # left_rewarded_touchdown = left_touchdown & right_contact & left_forward_ok
-        # right_rewarded_touchdown = right_touchdown & left_contact & right_forward_ok
-
         left_rewarded_touchdown = left_touchdown & right_contact
         right_rewarded_touchdown = right_touchdown & left_contact
 
         r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
 
+        left_step_progress = left_rewarded_touchdown.float() * torch.clamp(
+            left_pos_w[:, 0] - self._prev_left_touchdown_x,
+            min=0.0,
+            max=0.10,
+        )
+
+        right_step_progress = right_rewarded_touchdown.float() * torch.clamp(
+            right_pos_w[:, 0] - self._prev_right_touchdown_x,
+            min=0.0,
+            max=0.10,
+        )
+
+        r_forward_step = left_step_progress + right_step_progress
+
+        left_repeat = left_rewarded_touchdown & (self._last_step_side == 1)
+        right_repeat = right_rewarded_touchdown & (self._last_step_side == 2)
+        p_repeat_step = left_repeat.float() + right_repeat.float()
+
         left_alt = left_rewarded_touchdown & (self._last_step_side != 1)
         right_alt = right_rewarded_touchdown & (self._last_step_side != 2)
-
         r_step_alternation = left_alt.float() + right_alt.float()
 
         self._last_step_side[left_alt] = 1
@@ -494,15 +505,7 @@ class HumanoidWalkEnv(DirectRLEnv):
         both_feet_airborne = (~left_contact) & (~right_contact)
         p_double_swing = both_feet_airborne.float()
 
-        left_repeat = left_rewarded_touchdown & (self._last_step_side == 1)
-        right_repeat = right_rewarded_touchdown & (self._last_step_side == 2)
 
-        p_repeat_step = left_repeat.float() + right_repeat.float()
-
-        left_forward_step = left_rewarded_touchdown.float() * torch.clamp(left_pos_b[:, 0], min=0.0, max=0.08)
-        right_forward_step = right_rewarded_touchdown.float() * torch.clamp(right_pos_b[:, 0], min=0.0, max=0.08)
-
-        r_forward_step = left_forward_step + right_forward_step
 
         survival_term = torch.ones(self.num_envs, device=self.device)
 
@@ -526,6 +529,9 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["double_swing"] * p_double_swing
             - self.cfg.reward_scales["repeat_step"] * p_repeat_step
         )
+
+        self._prev_left_touchdown_x[left_rewarded_touchdown] = left_pos_w[left_rewarded_touchdown, 0]
+        self._prev_right_touchdown_x[right_rewarded_touchdown] = right_pos_w[right_rewarded_touchdown, 0]
 
         if torch.isnan(reward).any():
             raise RuntimeError("NaN detected in rewards")
@@ -636,6 +642,8 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._prev_right_contact[env_ids] = False
         self._left_air_steps[env_ids] = 0
         self._right_air_steps[env_ids] = 0
+        self._prev_left_touchdown_x[env_ids] = 0.0
+        self._prev_right_touchdown_x[env_ids] = 0.0
 
         num_resets = len(env_ids)
         commands = torch.rand((num_resets, 1), device=self.device)
