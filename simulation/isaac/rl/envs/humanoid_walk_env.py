@@ -64,7 +64,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     min_step_forward_vel: float = 0
     step_cooldown_steps: int = 18
     min_swing_air_steps: int = 4
-    touchdown_forward_margin: float = -0.05
+    touchdown_forward_margin: float = 0.08
 
     # Swing shaping
     swing_height_min: float = 0.045
@@ -92,7 +92,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "survival": 1.0,
         "double_swing": 0.5,
         "repeat_step": 0.75,
-        "forward_step": 0.5,
+        "forward_step": 2.0,
         "loaded_swing": 0.01,
     }
 
