@@ -450,6 +450,16 @@ class HumanoidWalkEnv(DirectRLEnv):
             & (prev_right_air_steps >= self.cfg.min_swing_air_steps)
         )
 
+        print(
+            "raw_td | "
+            f"L_contact: {left_contact.float().mean().item():.3f} | "
+            f"R_contact: {right_contact.float().mean().item():.3f} | "
+            f"L_td: {left_touchdown.float().mean().item():.3f} | "
+            f"R_td: {right_touchdown.float().mean().item():.3f} | "
+            f"L_air: {self._left_air_steps.float().mean().item():.3f} | "
+            f"R_air: {self._right_air_steps.float().mean().item():.3f}"
+        )
+
         left_allowed = self._left_step_cooldown == 0
         right_allowed = self._right_step_cooldown == 0
         left_is_alternating = (self._last_step_side == 0) | (self._last_step_side == 2)
