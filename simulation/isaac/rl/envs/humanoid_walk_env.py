@@ -451,9 +451,11 @@ class HumanoidWalkEnv(DirectRLEnv):
             & (prev_right_air_steps >= self.cfg.min_swing_air_steps)
         )
 
+        left_forward_ok = left_pos_b[:, 0] > 0.02
+        right_forward_ok = right_pos_b[:, 0] > 0.02
 
-        left_rewarded_touchdown = left_touchdown & right_contact
-        right_rewarded_touchdown = right_touchdown & left_contact
+        left_rewarded_touchdown = left_touchdown & right_contact & left_forward_ok
+        right_rewarded_touchdown = right_touchdown & left_contact & right_forward_ok
 
         r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
 
