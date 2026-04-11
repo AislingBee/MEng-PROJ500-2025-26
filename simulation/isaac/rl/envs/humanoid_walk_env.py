@@ -93,6 +93,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "survival": 1.0,
         "double_swing": 0.5,
         "repeat_step": 0.75,
+        "forward_step": 0.5,
     }
 
     # Termination
@@ -498,6 +499,11 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         p_repeat_step = left_repeat.float() + right_repeat.float()
 
+        left_forward_step = left_rewarded_touchdown.float() * torch.clamp(left_pos_b[:, 0], min=0.0, max=0.08)
+        right_forward_step = right_rewarded_touchdown.float() * torch.clamp(right_pos_b[:, 0], min=0.0, max=0.08)
+
+        r_forward_step = left_forward_step + right_forward_step
+
         survival_term = torch.ones(self.num_envs, device=self.device)
 
         reward = (
@@ -508,6 +514,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             + self.cfg.reward_scales["step_alternation"] * r_step_alternation
             + self.cfg.reward_scales["swing_clearance"] * r_swing_clearance
             + self.cfg.reward_scales["survival"] * survival_term
+            + self.cfg.reward_scales["forward_step"] * r_forward_step
             - self.cfg.reward_scales["ang_vel"] * p_ang_vel
             - self.cfg.reward_scales["joint_vel"] * p_joint_vel
             - self.cfg.reward_scales["action_rate"] * p_action_rate
@@ -545,6 +552,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             survival_term = self.cfg.reward_scales["survival"] * survival_term
             double_swing_term = self.cfg.reward_scales["double_swing"] * p_double_swing
             repeat_step_term = self.cfg.reward_scales["repeat_step"] * p_repeat_step
+            forward_step_term = self.cfg.reward_scales["forward_step"] * r_forward_step
 
             print(
                 "reward contrib | "
@@ -565,6 +573,7 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"survival: {survival_term.mean().item():.4f} | "
                 f"double_swing: {double_swing_term.mean().item():.4f} | "
                 f"repeat_step: {repeat_step_term.mean().item():.4f} | "
+                f"forward_step: {forward_step_term.mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
