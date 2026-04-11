@@ -458,8 +458,13 @@ class HumanoidWalkEnv(DirectRLEnv):
             & (prev_right_air_steps >= self.cfg.min_swing_air_steps)
         )
 
-        left_rewarded_touchdown = left_touchdown & right_contact
-        right_rewarded_touchdown = right_touchdown & left_contact
+        load_threshold = 0.3  # tune later
+
+        left_unloaded = left_force < (right_force * load_threshold)
+        right_unloaded = right_force < (left_force * load_threshold)
+
+        left_rewarded_touchdown = left_touchdown & right_contact & left_unloaded
+        right_rewarded_touchdown = right_touchdown & left_contact & right_unloaded
 
         r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
 
