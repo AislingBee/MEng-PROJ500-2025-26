@@ -86,8 +86,8 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "roll_lean": 2.0,
         "touchdown": 2.5,
         "step_alternation": 4.0,
-        "stance_slip": 2.5,
-        "stance_tilt": 1.0,
+        "stance_slip": 3.0,
+        "stance_tilt": 1.5,
         "swing_clearance": 1.5,
         "survival": 1.0,
         "double_swing": 0.5,
@@ -97,7 +97,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "pitch_lean": 0.5,
         "loaded_swing": 0.01,
         "lateral_step": 3.0,
-        "lateral_swing": 1.0,
+        "lateral_swing": 2.0,
         "forward_place": 0.75,
     }
 
