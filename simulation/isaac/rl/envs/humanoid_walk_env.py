@@ -99,6 +99,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "lateral_step": 3.0,
         "lateral_swing": 2.0,
         "forward_place": 1.5,
+        "fast_steps": 1.0,
     }
 
     # Termination
@@ -141,6 +142,7 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._commands = torch.zeros((self.num_envs, 1), device=self.device)
         self._joint_pos_targets = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+        self._steps_since_touchdown = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
 
         self._action_scale = torch.tensor(self.cfg.action_scale, dtype=torch.float32, device=self.device).unsqueeze(0)
         self._gravity_vec_w = torch.tensor([0.0, 0.0, -1.0], device=self.device).repeat(self.num_envs, 1)
@@ -243,8 +245,6 @@ class HumanoidWalkEnv(DirectRLEnv):
                 debug_vis=False,
             )
         )
-
-
 
     def _build_standing_pose_tensor(self) -> torch.Tensor:
         q = torch.zeros(self.num_dofs, dtype=torch.float32, device=self.device)
@@ -370,6 +370,8 @@ class HumanoidWalkEnv(DirectRLEnv):
         # print(left_sensor.data.net_forces_w.shape)
         # print(left_sensor.data.net_forces_w[0])
 
+        self._steps_since_touchdown += 1
+
         self._left_step_cooldown = torch.clamp(self._left_step_cooldown - 1, min=0)
         self._right_step_cooldown = torch.clamp(self._right_step_cooldown - 1, min=0)
 
@@ -484,6 +486,10 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
 
+        any_touchdown = left_rewarded_touchdown | right_rewarded_touchdown
+        p_fast_steps = any_touchdown.float() * (self._steps_since_touchdown < 6).float()
+        self._steps_since_touchdown[any_touchdown] = 0
+
         left_forward_place = left_rewarded_touchdown.float() * torch.clamp(left_pos_b[:, 0], min=0.0, max=0.08)
         right_forward_place = right_rewarded_touchdown.float() * torch.clamp(right_pos_b[:, 0], min=0.0, max=0.08)
         r_forward_place = left_forward_place + right_forward_place
@@ -551,6 +557,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
             - self.cfg.reward_scales["lateral_step"] * p_lateral_step
             - self.cfg.reward_scales["lateral_swing"] * p_lateral_swing
+            - self.cfg.reward_scales["fast_steps"] * p_fast_steps
         )
 
         if torch.isnan(reward).any():
@@ -585,6 +592,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             loaded_swing_term = self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
             laterial_step_term = self.cfg.reward_scales["lateral_step"] * p_lateral_step
             lateral_swing_term = self.cfg.reward_scales["lateral_swing"] * p_lateral_swing
+            fast_steps_term = self.cfg.reward_scales["fast_steps"] * p_fast_steps
 
             print(
                 "reward contrib | "
@@ -612,6 +620,7 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"loaded_swing: {loaded_swing_term.mean().item():.4f} | "
                 f"laterial_step: {laterial_step_term.mean().item():.4f} | "
                 f"lateral_swing: {lateral_swing_term.mean().item():.4f} | "
+                f"fast_steps: {fast_steps_term.mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
@@ -676,6 +685,7 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._right_air_steps[env_ids] = 0
         self._prev_left_touchdown_x[env_ids] = 0.0
         self._prev_right_touchdown_x[env_ids] = 0.0
+        self._steps_since_touchdown[env_ids] = 100
 
         num_resets = len(env_ids)
         commands = torch.rand((num_resets, 1), device=self.device)
