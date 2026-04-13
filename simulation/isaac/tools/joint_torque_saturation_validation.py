@@ -34,7 +34,7 @@ Notes
    the script still runs and logs position/error data, but torque columns will be blank.
 """
 
-from simulation.isaac.configuration.actuator_config import (
+from simulation.isaac.configuration.walking_actuator_config import (
     ACTUATOR_SETTINGS,
     build_per_joint_limits_and_gains,
 )

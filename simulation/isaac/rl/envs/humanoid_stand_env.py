@@ -14,7 +14,7 @@ from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.math import quat_rotate_inverse
 
-from ...configuration.actuator_config import ACTUATOR_SETTINGS
+from ...configuration.walking_actuator_config import ACTUATOR_SETTINGS
 from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
 
 

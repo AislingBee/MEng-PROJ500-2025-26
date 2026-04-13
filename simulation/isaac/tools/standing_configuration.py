@@ -13,7 +13,7 @@ This is intended to define and validate a stable reset posture
 for future RL work.
 """
 
-from simulation.isaac.configuration.actuator_config import (
+from simulation.isaac.configuration.walking_actuator_config import (
     ACTUATOR_SETTINGS,
 )
 
