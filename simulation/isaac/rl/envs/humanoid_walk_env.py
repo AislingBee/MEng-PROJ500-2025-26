@@ -45,10 +45,8 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     observation_space: int = 82
     state_space: int = 0
 
-    action_scale: tuple[float, ...] = (
-        0.05, 0.05, 0.15, 0.20, 0.10, 0.06,
-        0.05, 0.05, 0.15, 0.20, 0.10, 0.06,
-    )
+    action_scale = (0.08, 0.08, 0.20, 0.30, 0.15, 0.10,
+                    0.08, 0.08, 0.20, 0.30, 0.15, 0.10)
 
     usd_path: str = str(USD_PATH)
     base_height: float = 0.0
