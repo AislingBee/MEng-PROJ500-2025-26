@@ -14,7 +14,7 @@ for future RL work.
 """
 
 from simulation.isaac.configuration.walking_actuator_config import (
-    ACTUATOR_SETTINGS,
+    WALKING_ACTUATOR_SETTINGS,
 )
 
 import argparse
@@ -119,7 +119,7 @@ def main():
 
     # Per-joint actuator setup
     actuators = {}
-    for group_name, cfg in ACTUATOR_SETTINGS.items():
+    for group_name, cfg in WALKING_ACTUATOR_SETTINGS.items():
         actuators[group_name] = ImplicitActuatorCfg(
             joint_names_expr=cfg["joint_names"],
             effort_limit_sim=cfg["effort_limit"],
@@ -157,7 +157,7 @@ def main():
 
     print(f"[INFO] Loaded robot: {args.usd}")
     print(f"[INFO] Number of joints: {len(joint_names)}")
-    print("[INFO] Per-joint actuator settings active from ACTUATOR_SETTINGS")
+    print("[INFO] Per-joint actuator settings active from WALKING_ACTUATOR_SETTINGS")
     print(f"[INFO] Base height: {args.base_height:.3f} m")
     print("[INFO] Standing targets:")
 
