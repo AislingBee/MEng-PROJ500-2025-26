@@ -257,13 +257,14 @@ class HumanoidWalkEnv(DirectRLEnv):
         self.scene.articulations["robot"] = Articulation(robot_cfg)
         self.robot = self.scene.articulations["robot"]
 
-        for name, actuator in self.robot.actuators.items():
-            print(f"\nActuator group: {name}")
-            print(f"  joint_names   : {actuator.joint_names}")
-            print(f"  joint_indices : {actuator.joint_indices}")
-            print(f"  stiffness     : {actuator.stiffness}")
-            print(f"  damping       : {actuator.damping}")
-            print(f"  effort_limit  : {actuator.effort_limit}")
+        print("\nConfigured actuator groups:")
+        for group_name, cfg in WALKING_ACTUATOR_SETTINGS.items():
+            print(f"\nActuator group: {group_name}")
+            print(f"  joint_names   : {cfg['joint_names']}")
+            print(f"  stiffness     : {cfg['stiffness']}")
+            print(f"  damping       : {cfg['damping']}")
+            print(f"  effort_limit  : {cfg['effort_limit']}")
+            print(f"  velocity_limit: {cfg['velocity_limit']}")
 
         self.scene.clone_environments(copy_from_source=False)
         self.scene.filter_collisions(global_prim_paths=[])
