@@ -78,7 +78,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     step_cooldown_steps: int = 18
     min_swing_air_steps: int = 2
     touchdown_forward_margin: float = 0.08
-    reset_mirror_prob: float = 0.5
+    reset_mirror_prob: float = 0.0 # This might be causing bias on leg as mirror code incorrect.
 
 
     # Swing shaping
