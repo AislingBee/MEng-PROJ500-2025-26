@@ -90,6 +90,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     vel_tracking_k: float = 8.0
     pose_k: float = 1.0
     reward_scales = {
+        # Stage 1 stripped-back reward: keep only the base locomotion terms active.
         "vel_track": 3.0,
         "upright": 1.0,
         "pose": 0.0,
@@ -99,23 +100,38 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "lin_vel_y": 1.5,
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
-        "touchdown": 1.5,
-        "step_alternation": 2.0,
-        "stance_slip": 3.5,
-        "stance_tilt": 2.5,
-        "swing_clearance": 1.8,
         "survival": 1.0,
-        "double_swing": 0.5,
-        "repeat_step": 1.5,
-        "forward_step": 2.5,
         "backward_vel": 0.5,
         "pitch_lean": 0.5,
-        "loaded_swing": 0.01,
-        "lateral_step": 3.0,
-        "lateral_swing": 2.0,
-        "forward_place": 1.5,
-        "fast_steps": 1.0,
-        "step_symmetry": 0.5,
+        "stance_slip": 1.0,
+
+        # Temporarily disabled gait-shaping terms for reset / rebuild.
+        # "touchdown": 1.5,
+        # "step_alternation": 2.0,
+        # "stance_tilt": 2.5,
+        # "swing_clearance": 1.8,
+        # "double_swing": 0.5,
+        # "repeat_step": 1.5,
+        # "forward_step": 2.5,
+        # "loaded_swing": 0.01,
+        # "lateral_step": 3.0,
+        # "lateral_swing": 2.0,
+        # "forward_place": 1.5,
+        # "fast_steps": 1.0,
+        # "step_symmetry": 0.5,
+        "touchdown": 0.0,
+        "step_alternation": 0.0,
+        "stance_tilt": 0.0,
+        "swing_clearance": 0.0,
+        "double_swing": 0.0,
+        "repeat_step": 0.0,
+        "forward_step": 0.0,
+        "loaded_swing": 0.0,
+        "lateral_step": 0.0,
+        "lateral_swing": 0.0,
+        "forward_place": 0.0,
+        "fast_steps": 0.0,
+        "step_symmetry": 0.0,
     }
 
     # Termination
@@ -656,6 +672,8 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         survival_term = torch.ones(self.num_envs, device=self.device)
 
+        # Stage 1 reward assembly: gait-shaping terms below remain computed for debug,
+        # but their scales are set to zero above so they do not influence learning.
         reward = (
             self.cfg.reward_scales["vel_track"] * r_vel_track
             + self.cfg.reward_scales["upright"] * r_upright
