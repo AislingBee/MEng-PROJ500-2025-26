@@ -475,27 +475,27 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         return command_active * single_support * torch.exp(-8.0 * forward_balance - 6.0 * lateral_balance)
 
-    def _mirror_leg_joint_positions(self, joint_pos: torch.Tensor) -> torch.Tensor:
-        mirrored = joint_pos.clone()
-        joint_names = list(self.robot.joint_names)
-        name_to_idx = {name: i for i, name in enumerate(joint_names)}
-
-        swap_pairs = [
-            ("robot_pelvis_link_l_yaw_joint", "robot_pelvis_link_r_yaw_joint"),
-            ("robot_l_hip_yaw_link_l_pitch_joint", "robot_r_hip_yaw_link_r_pitch_joint"),
-            ("robot_l_hip_pitch_link_l_roll_joint", "robot_r_hip_pitch_link_r_roll_joint"),
-            ("robot_l_thigh_link_l_knee_joint", "robot_r_thigh_link_r_knee_joint"),
-            ("robot_l_shank_link_l_ankle_joint", "robot_r_shank_link_r_ankle_joint"),
-            ("robot_l_ankle_link_l_foot_joint", "robot_r_ankle_link_r_foot_joint"),
-        ]
-
-        for left_name, right_name in swap_pairs:
-            left_idx = name_to_idx[left_name]
-            right_idx = name_to_idx[right_name]
-            mirrored[:, left_idx] = joint_pos[:, right_idx]
-            mirrored[:, right_idx] = joint_pos[:, left_idx]
-
-        return mirrored
+    # def _mirror_leg_joint_positions(self, joint_pos: torch.Tensor) -> torch.Tensor:
+    #     mirrored = joint_pos.clone()
+    #     joint_names = list(self.robot.joint_names)
+    #     name_to_idx = {name: i for i, name in enumerate(joint_names)}
+    # 
+    #     swap_pairs = [
+    #         ("robot_pelvis_link_l_yaw_joint", "robot_pelvis_link_r_yaw_joint"),
+    #         ("robot_l_hip_yaw_link_l_pitch_joint", "robot_r_hip_yaw_link_r_pitch_joint"),
+    #         ("robot_l_hip_pitch_link_l_roll_joint", "robot_r_hip_pitch_link_r_roll_joint"),
+    #         ("robot_l_thigh_link_l_knee_joint", "robot_r_thigh_link_r_knee_joint"),
+    #         ("robot_l_shank_link_l_ankle_joint", "robot_r_shank_link_r_ankle_joint"),
+    #         ("robot_l_ankle_link_l_foot_joint", "robot_r_ankle_link_r_foot_joint"),
+    #     ]
+    #
+    #     for left_name, right_name in swap_pairs:
+    #         left_idx = name_to_idx[left_name]
+    #         right_idx = name_to_idx[right_name]
+    #         mirrored[:, left_idx] = joint_pos[:, right_idx]
+    #         mirrored[:, right_idx] = joint_pos[:, left_idx]
+    #
+    #     return mirrored
     def _get_rewards(self) -> torch.Tensor:
         self._steps_since_touchdown += 1
 
@@ -810,10 +810,10 @@ class HumanoidWalkEnv(DirectRLEnv):
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
         joint_pos += 0.02 * torch.randn_like(joint_pos)
 
-        mirror_mask = torch.rand(len(env_ids), device=self.device) < self.cfg.reset_mirror_prob
-        if mirror_mask.any():
-            mirrored_joint_pos = self._mirror_leg_joint_positions(joint_pos)
-            joint_pos[mirror_mask] = mirrored_joint_pos[mirror_mask]
+        # mirror_mask = torch.rand(len(env_ids), device=self.device) < self.cfg.reset_mirror_prob
+        # if mirror_mask.any():
+        #     mirrored_joint_pos = self._mirror_leg_joint_positions(joint_pos)
+        #     joint_pos[mirror_mask] = mirrored_joint_pos[mirror_mask]
 
         joint_vel = 0.05 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
         joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
