@@ -102,6 +102,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         # Buffers
         self._actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+        self._commands = torch.zeros((self.num_envs, 1), device=self.device)
         self._joint_pos_targets = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
 
         # Action scale buffers
@@ -314,18 +315,31 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
         q_rel = q - self._standing_q.unsqueeze(0)
+        q_target_err = self._joint_pos_targets - q
 
         root_quat_w = self.robot.data.root_quat_w
         root_ang_vel_b = self.robot.data.root_ang_vel_b
+        root_lin_vel_b = self.robot.data.root_lin_vel_b
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
+
+        joint_effort = self._get_joint_effort_obs()
+        foot_kin = self._get_foot_kinematics()
+        foot_pos_b = torch.cat((foot_kin["left_pos_b"], foot_kin["right_pos_b"]), dim=-1)
+        foot_vel_b = torch.cat((foot_kin["left_vel_b"], foot_kin["right_vel_b"]), dim=-1)
 
         obs = torch.cat(
             (
-                q_rel,  # 12
-                qd,  # 12
-                projected_gravity_b,  # 3
-                root_ang_vel_b,  # 3
-                self._last_actions,  # 12
+                q_rel,
+                qd,
+                q_target_err,
+                joint_effort,
+                projected_gravity_b,
+                root_lin_vel_b,
+                root_ang_vel_b,
+                foot_pos_b,
+                foot_vel_b,
+                self._commands,
+                self._last_actions,
             ),
             dim=-1,
         )
