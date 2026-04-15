@@ -379,7 +379,6 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         p_action_rate = torch.mean(action_rate ** 2, dim=1)
         survival_reward = 0.2
 
-
         reward = (
                 survival_reward
                 + self.cfg.reward_scales["upright"] * r_upright
