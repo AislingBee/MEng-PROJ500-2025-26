@@ -479,7 +479,7 @@ class HumanoidWalkEnv(DirectRLEnv):
     #     mirrored = joint_pos.clone()
     #     joint_names = list(self.robot.joint_names)
     #     name_to_idx = {name: i for i, name in enumerate(joint_names)}
-    # 
+    #
     #     swap_pairs = [
     #         ("robot_pelvis_link_l_yaw_joint", "robot_pelvis_link_r_yaw_joint"),
     #         ("robot_l_hip_yaw_link_l_pitch_joint", "robot_r_hip_yaw_link_r_pitch_joint"),
