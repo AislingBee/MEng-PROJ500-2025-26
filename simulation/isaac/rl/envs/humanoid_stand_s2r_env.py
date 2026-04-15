@@ -356,6 +356,16 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         root_ang_vel_b = self.robot.data.root_ang_vel_b
         projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
 
+        # foot_kin = self._get_foot_kinematics()
+        # left_pos_w = foot_kin["left_pos_w"]
+        # right_pos_w = foot_kin["right_pos_w"]
+        # left_pos_b = foot_kin["left_pos_b"]
+        # right_pos_b = foot_kin["right_pos_b"]
+        # left_vel_w = foot_kin["left_vel_w"]
+        # right_vel_w = foot_kin["right_vel_w"]
+        # left_quat_w = foot_kin["left_quat_w"]
+        # right_quat_w = foot_kin["right_quat_w"]
+
         q_err = q - self._standing_q.unsqueeze(0)
         action_rate = self._actions - self._last_actions
 
