@@ -18,8 +18,8 @@ from ...configuration.walking_actuator_config import (
     build_per_joint_walking_actuator_cfg,
 )
 from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
-from .hardware_interface import ControlPacket
-from .isaac_hardware_interface import IsaacHardwareInterface
+from ..interface.hardware_interface import ControlPacket
+from ..interface.isaac_hardware_interface import IsaacHardwareInterface
 
 
 USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "skeleton" / "skeleton.usd"
