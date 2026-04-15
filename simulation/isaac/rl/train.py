@@ -13,11 +13,11 @@ from isaaclab.app import AppLauncher
 # -----------------------------------------------------------------------------
 # CLI
 # -----------------------------------------------------------------------------
-parser = argparse.ArgumentParser(description="Train PROJ500 humanoid walk with PPO.")
+parser = argparse.ArgumentParser(description="Train PROJ500 humanoid STAND Sim to Real with PPO.")
 AppLauncher.add_app_launcher_args(parser)
 parser.add_argument("--num_envs", type=int, default=12000) #
 parser.add_argument("--max_iterations", type=int, default=200)
-parser.add_argument("--task", type=str, default="Humanoid-Walk-v0")
+parser.add_argument("--task", type=str, default="Humanoid-Stand-s2r-v0")
 args = parser.parse_args()
 
 # launch Isaac Sim
@@ -54,31 +54,48 @@ ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
 # spec.loader.exec_module(ppo_cfg_module)
 # get_humanoid_stand_ppo_cfg = ppo_cfg_module.get_humanoid_stand_ppo_cfg
 
-# Walking Task #####################################################################
+# Standing Sim 2 Real Task #####################################################################
 
 # task registration
-task_file = ISAAC_DIR / "tasks" / "humanoid_walk_task.py"
-spec = importlib.util.spec_from_file_location("humanoid_walk_task", task_file)
+task_file = ISAAC_DIR / "tasks" / "humanoid_stand_s2r_task.py"
+spec = importlib.util.spec_from_file_location("humanoid_stand_s2r_task", task_file)
 task_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(task_module)
 
 # PPO config
-ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_walk_ppo_cfg.py"
-spec = importlib.util.spec_from_file_location("humanoid_walk_ppo_cfg", ppo_cfg_file)
+ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_stand_ppo_cfg.py"
+spec = importlib.util.spec_from_file_location("humanoid_stand_ppo_cfg", ppo_cfg_file)
 ppo_cfg_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ppo_cfg_module)
-get_humanoid_walk_ppo_cfg = ppo_cfg_module.get_humanoid_walk_ppo_cfg
+get_humanoid_stand_ppo_cfg = ppo_cfg_module.get_humanoid_stand_ppo_cfg
 
-torch.backends.cuda.matmul.allow_tf32 = True
-torch.backends.cudnn.allow_tf32 = True
+# Walking Task #####################################################################
+
+# # task registration
+# task_file = ISAAC_DIR / "tasks" / "humanoid_walk_task.py"
+# spec = importlib.util.spec_from_file_location("humanoid_walk_task", task_file)
+# task_module = importlib.util.module_from_spec(spec)
+# spec.loader.exec_module(task_module)
+#
+# # PPO config
+# ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_walk_ppo_cfg.py"
+# spec = importlib.util.spec_from_file_location("humanoid_walk_ppo_cfg", ppo_cfg_file)
+# ppo_cfg_module = importlib.util.module_from_spec(spec)
+# spec.loader.exec_module(ppo_cfg_module)
+# get_humanoid_walk_ppo_cfg = ppo_cfg_module.get_humanoid_walk_ppo_cfg
+#
+# torch.backends.cuda.matmul.allow_tf32 = True
+# torch.backends.cudnn.allow_tf32 = True
 
 
 def main():
     # from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnvCfg # Standing Training
-    from simulation.isaac.rl.envs.humanoid_walk_env import HumanoidWalkEnvCfg # Walking Training
+    from simulation.isaac.rl.envs.humanoid_stand_s2r_env import HumanoidStandEnvS2rCfg # Standing Training Sim to Real
+    # from simulation.isaac.rl.envs.humanoid_walk_env import HumanoidWalkEnvCfg # Walking Training
 
     # env_cfg = HumanoidStandEnvCfg() # Update this line with correct config.
-    env_cfg = HumanoidWalkEnvCfg()
+    env_cfg = HumanoidStandEnvS2rCfg() # Update this line with correct config.
+    # env_cfg = HumanoidWalkEnvCfg()
 
     env_cfg.scene.num_envs = args.num_envs
 
@@ -89,8 +106,8 @@ def main():
     print("Env ready.")
 
     # get PPO config
-    # agent_cfg = get_humanoid_stand_ppo_cfg() # Standing training PPO
-    agent_cfg = get_humanoid_walk_ppo_cfg() # Walking training PPO
+    agent_cfg = get_humanoid_stand_ppo_cfg() # Standing training PPO
+    # agent_cfg = get_humanoid_walk_ppo_cfg() # Walking training PPO
 
     agent_cfg.max_iterations = args.max_iterations
 

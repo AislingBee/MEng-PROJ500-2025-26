@@ -22,7 +22,7 @@ USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "s
 
 
 @configclass
-class HumanoidStandEnvCfg(DirectRLEnvCfg):
+class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     decimation: int = 2
     episode_length_s: float = 10.0
 
@@ -79,10 +79,10 @@ class HumanoidStandEnvCfg(DirectRLEnvCfg):
     forbidden_body_height_limit: float = 0.075
 
 
-class HumanoidStandEnv(DirectRLEnv):
-    cfg: HumanoidStandEnvCfg
+class HumanoidStandEnvS2r(DirectRLEnv):
+    cfg: HumanoidStandEnvS2rCfg
 
-    def __init__(self, cfg: HumanoidStandEnvCfg, render_mode: str | None = None, **kwargs):
+    def __init__(self, cfg: HumanoidStandEnvS2rCfg, render_mode: str | None = None, **kwargs):
         super().__init__(cfg, render_mode=render_mode, **kwargs)
 
         self.robot: Articulation = self.scene.articulations["robot"]
