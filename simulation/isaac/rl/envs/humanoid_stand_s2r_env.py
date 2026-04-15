@@ -134,6 +134,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
             dtype=torch.long,
         )
 
+        # Once the hardware data has been sorted, change this to = RobotHardwareInterface(...)
         self._hardware = IsaacHardwareInterface(
             robot=self.robot,
             joint_ids=self.joint_ids,
