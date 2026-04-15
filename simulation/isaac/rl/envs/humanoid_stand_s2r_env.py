@@ -6,7 +6,7 @@ from pathlib import Path
 import math
 import torch
 import isaaclab.sim as sim_utils
-from isaaclab.actuators import ImplicitActuatorCfg
+from isaaclab.actuators import IdealPDActuatorCfg
 from isaaclab.assets import Articulation, ArticulationCfg
 from isaaclab.envs import DirectRLEnv, DirectRLEnvCfg
 from isaaclab.scene import InteractiveSceneCfg
@@ -128,17 +128,26 @@ class HumanoidStandEnvS2r(DirectRLEnv):
 
         actuators = {}
         for group_name, cfg in WALKING_ACTUATOR_SETTINGS.items():
-            actuators[group_name] = ImplicitActuatorCfg(
+            actuators[group_name] = IdealPDActuatorCfg(
                 joint_names_expr=cfg["joint_names"],
-                effort_limit_sim=cfg["effort_limit"],
-                velocity_limit_sim=cfg["velocity_limit"],
+                effort_limit=cfg["effort_limit"],
+                effort_limit_sim=cfg.get("effort_limit_sim", cfg["effort_limit"]),
+                velocity_limit=cfg["velocity_limit"],
+                velocity_limit_sim=cfg.get("velocity_limit_sim", cfg["velocity_limit"]),
                 stiffness=cfg["stiffness"],
                 damping=cfg["damping"],
+                armature=cfg.get("armature", None),
+                friction=cfg.get("friction", None),
+                dynamic_friction=cfg.get("dynamic_friction", None),
+                viscous_friction=cfg.get("viscous_friction", None),
             )
 
         robot_cfg = ArticulationCfg(
             prim_path="/World/envs/env_.*/Robot",
-            spawn=sim_utils.UsdFileCfg(usd_path=self.cfg.usd_path),
+            spawn=sim_utils.UsdFileCfg(
+                usd_path=self.cfg.usd_path,
+                activate_contact_sensors=True,
+            ),
             init_state=ArticulationCfg.InitialStateCfg(
                 pos=(0.0, 0.0, 0.0),
                 rot=(1.0, 0.0, 0.0, 0.0),
