@@ -14,7 +14,10 @@ from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.math import quat_rotate_inverse
 
-from ...configuration.walking_actuator_config import WALKING_ACTUATOR_SETTINGS
+from ...configuration.walking_actuator_config import (
+    WALKING_ACTUATOR_SETTINGS,
+    build_per_joint_walking_actuator_cfg,
+)
 from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
 
 
@@ -85,6 +88,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
     def __init__(self, cfg: HumanoidStandEnvS2rCfg, render_mode: str | None = None, **kwargs):
         super().__init__(cfg, render_mode=render_mode, **kwargs)
 
+        # Define the robot articulation
         self.robot: Articulation = self.scene.articulations["robot"]
         self.num_dofs = self.robot.num_joints
         self.joint_ids = torch.arange(self.num_dofs, device=self.device, dtype=torch.long)
@@ -95,18 +99,38 @@ class HumanoidStandEnvS2r(DirectRLEnv):
                 f"Check USD / standing pose / actuator config alignment."
             )
 
+        # Buffers
         self._actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+        self._joint_pos_targets = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
 
+        # Action scale buffers
         self._action_scale = torch.tensor(
             self.cfg.action_scale, dtype=torch.float32, device=self.device
         ).unsqueeze(0)
 
+        # IMU Privileged Date, needs updating for IMU actual data
         self._gravity_vec_w = torch.tensor([0.0, 0.0, -1.0], device=self.device).repeat(self.num_envs, 1)
 
+        # Standing pose and limits data
         self._standing_q = self._build_standing_pose_tensor()
         self._joint_lower = self.robot.data.soft_joint_pos_limits[..., 0].clone()
         self._joint_upper = self.robot.data.soft_joint_pos_limits[..., 1].clone()
+
+        # Build per-joint actuator values in the articulation joint order.
+        self._per_joint_actuator_cfg = build_per_joint_walking_actuator_cfg(self.robot.joint_names)
+        self._kp_fixed = torch.tensor(
+            self._per_joint_actuator_cfg["stiffness"],
+            dtype=torch.float32,
+            device=self.device,
+        ).unsqueeze(0).repeat(self.num_envs, 1)
+        self._kd_fixed = torch.tensor(
+            self._per_joint_actuator_cfg["damping"],
+            dtype=torch.float32,
+            device=self.device,
+        ).unsqueeze(0).repeat(self.num_envs, 1)
+        self._tau_ff = torch.zeros((self.num_envs, self.num_dofs), dtype=torch.float32, device=self.device)
+        self._q_des = torch.zeros((self.num_envs, self.num_dofs), dtype=torch.float32, device=self.device)
 
         # Forbidden body contact with ground
         name_to_body_idx = {name: i for i, name in enumerate(self.robot.body_names)}
@@ -118,6 +142,22 @@ class HumanoidStandEnvS2r(DirectRLEnv):
             device=self.device,
             dtype=torch.long,
         )
+
+        # Foot Kinematics Setup
+        foot_name_candidates = {
+            "left": ["robot_l_foot_link"],
+            "right": ["robot_r_foot_link"],
+        }
+        self._foot_body_ids = {}
+        for side, names in foot_name_candidates.items():
+            found = None
+            for name in names:
+                if name in name_to_body_idx:
+                    found = name_to_body_idx[name]
+                    break
+            if found is None:
+                raise RuntimeError(f"Could not find {side} foot body in robot.body_names. Tried {names}")
+            self._foot_body_ids[side] = found
 
     def _setup_scene(self):
         ground_cfg = sim_utils.GroundPlaneCfg()
@@ -189,9 +229,86 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         self._actions = torch.clamp(actions, -1.0, 1.0)
 
     def _apply_action(self) -> None:
-        targets = self._standing_q.unsqueeze(0) + self._action_scale * self._actions
-        targets = torch.max(torch.min(targets, self._joint_upper), self._joint_lower)
-        self.robot.set_joint_position_target(targets, joint_ids=self.joint_ids)
+        q_des = self._standing_q.unsqueeze(0) + self._action_scale * self._actions
+        q_des = torch.max(torch.min(q_des, self._joint_upper), self._joint_lower)
+
+        self._q_des[:] = q_des
+        self._joint_pos_targets[:] = q_des
+        self._tau_ff.zero_()
+
+        # MIT-style packet fields in sim:
+        #   q_des  -> joint position target
+        #   Kp/Kd  -> fixed per-joint gains from the actuator config
+        #   tau_ff -> zero for now, but still surfaced as part of the packet interface
+        self.robot.set_joint_position_target(self._q_des, joint_ids=self.joint_ids)
+        self.robot.set_joint_effort_target(self._tau_ff, joint_ids=self.joint_ids)
+
+    def get_mit_style_control_packets(self, env_ids: Sequence[int] | None = None) -> dict:
+        """Return MIT-style control packets for one or more environments."""
+        if env_ids is None:
+            env_ids_t = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
+        else:
+            env_ids_t = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
+
+        return {
+            "joint_names": list(self.robot.joint_names),
+            "q_des": self._q_des[env_ids_t].clone(),
+            "Kp": self._kp_fixed[env_ids_t].clone(),
+            "Kd": self._kd_fixed[env_ids_t].clone(),
+            "tau_ff": self._tau_ff[env_ids_t].clone(),
+        }
+
+    def _get_joint_effort_obs(self) -> torch.Tensor:
+        applied_effort = getattr(self.robot.data, "applied_effort", None)
+        if applied_effort is not None:
+            return applied_effort
+        computed_effort = getattr(self.robot.data, "computed_effort", None)
+        if computed_effort is not None:
+            return computed_effort
+
+        # Fallbacks for older naming.
+        applied_torque = getattr(self.robot.data, "applied_torque", None)
+        if applied_torque is not None:
+            return applied_torque
+        computed_torque = getattr(self.robot.data, "computed_torque", None)
+        if computed_torque is not None:
+            return computed_torque
+
+        return torch.zeros_like(self.robot.data.joint_pos)
+
+    def _get_foot_kinematics(self):
+        root_pos_w = self.robot.data.root_pos_w
+        root_quat_w = self.robot.data.root_quat_w
+        root_lin_vel_w = self.robot.data.root_lin_vel_w
+
+        body_pos_w = self.robot.data.body_pos_w
+        body_quat_w = self.robot.data.body_quat_w
+        body_lin_vel_w = self.robot.data.body_lin_vel_w
+
+        left_pos_w = body_pos_w[:, self._foot_body_ids["left"], :]
+        right_pos_w = body_pos_w[:, self._foot_body_ids["right"], :]
+        left_vel_w = body_lin_vel_w[:, self._foot_body_ids["left"], :]
+        right_vel_w = body_lin_vel_w[:, self._foot_body_ids["right"], :]
+        left_quat_w = body_quat_w[:, self._foot_body_ids["left"], :]
+        right_quat_w = body_quat_w[:, self._foot_body_ids["right"], :]
+
+        left_pos_b = quat_rotate_inverse(root_quat_w, left_pos_w - root_pos_w)
+        right_pos_b = quat_rotate_inverse(root_quat_w, right_pos_w - root_pos_w)
+        left_vel_b = quat_rotate_inverse(root_quat_w, left_vel_w - root_lin_vel_w)
+        right_vel_b = quat_rotate_inverse(root_quat_w, right_vel_w - root_lin_vel_w)
+
+        return {
+            "left_pos_w": left_pos_w,
+            "right_pos_w": right_pos_w,
+            "left_vel_w": left_vel_w,
+            "right_vel_w": right_vel_w,
+            "left_pos_b": left_pos_b,
+            "right_pos_b": right_pos_b,
+            "left_vel_b": left_vel_b,
+            "right_vel_b": right_vel_b,
+            "left_quat_w": left_quat_w,
+            "right_quat_w": right_quat_w,
+        }
 
     def _get_observations(self) -> dict:
         q = self.robot.data.joint_pos
