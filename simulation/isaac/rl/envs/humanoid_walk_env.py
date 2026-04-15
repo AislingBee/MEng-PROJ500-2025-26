@@ -6,7 +6,7 @@ import math
 
 import torch
 import isaaclab.sim as sim_utils
-from isaaclab.actuators import DCMotorCfg
+from isaaclab.actuators import IdealPDActuatorCfg
 from isaaclab.assets import Articulation, ArticulationCfg
 from isaaclab.envs import DirectRLEnv, DirectRLEnvCfg
 from isaaclab.scene import InteractiveSceneCfg
@@ -15,7 +15,10 @@ from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.math import quat_rotate_inverse
 
-from ...configuration.walking_actuator_config import WALKING_ACTUATOR_SETTINGS
+from ...configuration.walking_actuator_config import (
+    WALKING_ACTUATOR_SETTINGS,
+    build_per_joint_walking_actuator_cfg,
+)
 from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
 
 
@@ -45,9 +48,19 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     observation_space: int = 82
     state_space: int = 0
 
-    action_scale: tuple[float, ...] = (
-        0.05, 0.05, 0.15, 0.20, 0.10, 0.06,
-        0.05, 0.05, 0.15, 0.20, 0.10, 0.06,
+    action_scale = (
+        0.08,
+        0.08,
+        0.20,
+        0.30,
+        0.15,
+        0.10,
+        0.08,
+        0.08,
+        0.20,
+        0.30,
+        0.15,
+        0.10,
     )
 
     usd_path: str = str(USD_PATH)
@@ -61,10 +74,12 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     # Contact / gait logic
     contact_force_threshold: float = 2.0
     step_reward_command_threshold: float = 0.04
-    min_step_forward_vel: float = 0
+    min_step_forward_vel: float = 0.02
     step_cooldown_steps: int = 18
     min_swing_air_steps: int = 2
     touchdown_forward_margin: float = 0.08
+    reset_mirror_prob: float = 0.0 # This might be causing bias on leg as mirror code incorrect.
+
 
     # Swing shaping
     swing_height_min: float = 0.045
@@ -75,6 +90,7 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
     vel_tracking_k: float = 8.0
     pose_k: float = 1.0
     reward_scales = {
+        # Stage 1 stripped-back reward: keep only the base locomotion terms active.
         "vel_track": 3.0,
         "upright": 1.0,
         "pose": 0.0,
@@ -84,21 +100,38 @@ class HumanoidWalkEnvCfg(DirectRLEnvCfg):
         "lin_vel_y": 1.5,
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
-        "touchdown": 2.5,
-        "step_alternation": 4.0,
-        "stance_slip": 2.5,
-        "stance_tilt": 1.0,
-        "swing_clearance": 1.5,
         "survival": 1.0,
-        "double_swing": 0.5,
-        "repeat_step": 1.0,
-        "forward_step": 1.5,
         "backward_vel": 0.5,
         "pitch_lean": 0.5,
-        "loaded_swing": 0.01,
-        "lateral_step": 3.0,
-        "lateral_swing": 1.0,
-        "forward_place": 0.75,
+        "stance_slip": 1.0,
+
+        # Temporarily disabled gait-shaping terms for reset / rebuild.
+        # "touchdown": 1.5,
+        # "step_alternation": 2.0,
+        # "stance_tilt": 2.5,
+        # "swing_clearance": 1.8,
+        # "double_swing": 0.5,
+        # "repeat_step": 1.5,
+        # "forward_step": 2.5,
+        # "loaded_swing": 0.01,
+        # "lateral_step": 3.0,
+        # "lateral_swing": 2.0,
+        # "forward_place": 1.5,
+        # "fast_steps": 1.0,
+        # "step_symmetry": 0.5,
+        "touchdown": 0.0,
+        "step_alternation": 0.0,
+        "stance_tilt": 0.0,
+        "swing_clearance": 0.0,
+        "double_swing": 0.0,
+        "repeat_step": 0.0,
+        "forward_step": 0.0,
+        "loaded_swing": 0.0,
+        "lateral_step": 0.0,
+        "lateral_swing": 0.0,
+        "forward_place": 0.0,
+        "fast_steps": 0.0,
+        "step_symmetry": 0.0,
     }
 
     # Termination
@@ -141,6 +174,7 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._commands = torch.zeros((self.num_envs, 1), device=self.device)
         self._joint_pos_targets = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+        self._steps_since_touchdown = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
 
         self._action_scale = torch.tensor(self.cfg.action_scale, dtype=torch.float32, device=self.device).unsqueeze(0)
         self._gravity_vec_w = torch.tensor([0.0, 0.0, -1.0], device=self.device).repeat(self.num_envs, 1)
@@ -148,6 +182,22 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._standing_q = self._build_standing_pose_tensor()
         self._joint_lower = self.robot.data.soft_joint_pos_limits[..., 0].clone()
         self._joint_upper = self.robot.data.soft_joint_pos_limits[..., 1].clone()
+
+        # Build per-joint actuator values in the articulation joint order.
+        self._per_joint_actuator_cfg = build_per_joint_walking_actuator_cfg(self.robot.joint_names)
+
+        self._kp_fixed = torch.tensor(
+            self._per_joint_actuator_cfg["stiffness"],
+            dtype=torch.float32,
+            device=self.device,
+        ).unsqueeze(0).repeat(self.num_envs, 1)
+        self._kd_fixed = torch.tensor(
+            self._per_joint_actuator_cfg["damping"],
+            dtype=torch.float32,
+            device=self.device,
+        ).unsqueeze(0).repeat(self.num_envs, 1)
+        self._tau_ff = torch.zeros((self.num_envs, self.num_dofs), dtype=torch.float32, device=self.device)
+        self._q_des = torch.zeros((self.num_envs, self.num_dofs), dtype=torch.float32, device=self.device)
 
         name_to_body_idx = {name: i for i, name in enumerate(self.robot.body_names)}
         missing_bodies = [name for name in self.cfg.forbidden_body_names if name not in name_to_body_idx]
@@ -193,9 +243,8 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         actuators = {}
         for group_name, cfg in WALKING_ACTUATOR_SETTINGS.items():
-            actuators[group_name] = DCMotorCfg(
+            actuators[group_name] = IdealPDActuatorCfg(
                 joint_names_expr=cfg["joint_names"],
-                saturation_effort=cfg["saturation_effort"],
                 effort_limit=cfg["effort_limit"],
                 effort_limit_sim=cfg.get("effort_limit_sim", cfg["effort_limit"]),
                 velocity_limit=cfg["velocity_limit"],
@@ -224,6 +273,15 @@ class HumanoidWalkEnv(DirectRLEnv):
         self.scene.articulations["robot"] = Articulation(robot_cfg)
         self.robot = self.scene.articulations["robot"]
 
+        print("\nConfigured actuator groups:")
+        for group_name, cfg in WALKING_ACTUATOR_SETTINGS.items():
+            print(f"\nActuator group: {group_name}")
+            print(f"  joint_names   : {cfg['joint_names']}")
+            print(f"  stiffness     : {cfg['stiffness']}")
+            print(f"  damping       : {cfg['damping']}")
+            print(f"  effort_limit  : {cfg['effort_limit']}")
+            print(f"  velocity_limit: {cfg['velocity_limit']}")
+
         self.scene.clone_environments(copy_from_source=False)
         self.scene.filter_collisions(global_prim_paths=[])
 
@@ -244,8 +302,6 @@ class HumanoidWalkEnv(DirectRLEnv):
             )
         )
 
-
-
     def _build_standing_pose_tensor(self) -> torch.Tensor:
         q = torch.zeros(self.num_dofs, dtype=torch.float32, device=self.device)
         for i, joint_name in enumerate(self.robot.joint_names):
@@ -260,18 +316,51 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._actions = torch.clamp(actions, -1.0, 1.0)
 
     def _apply_action(self) -> None:
-        targets = self._standing_q.unsqueeze(0) + self._action_scale * self._actions
-        targets = torch.max(torch.min(targets, self._joint_upper), self._joint_lower)
-        self._joint_pos_targets[:] = targets
-        self.robot.set_joint_position_target(targets, joint_ids=self.joint_ids)
+        q_des = self._standing_q.unsqueeze(0) + self._action_scale * self._actions
+        q_des = torch.max(torch.min(q_des, self._joint_upper), self._joint_lower)
+
+        self._q_des[:] = q_des
+        self._joint_pos_targets[:] = q_des
+        self._tau_ff.zero_()
+
+        # MIT-style packet fields in sim:
+        #   q_des  -> joint position target
+        #   Kp/Kd  -> fixed per-joint gains from the actuator config
+        #   tau_ff -> zero for now, but still surfaced as part of the packet interface
+        self.robot.set_joint_position_target(self._q_des, joint_ids=self.joint_ids)
+        self.robot.set_joint_effort_target(self._tau_ff, joint_ids=self.joint_ids)
+
+    def get_mit_style_control_packets(self, env_ids: Sequence[int] | None = None) -> dict:
+        """Return MIT-style control packets for one or more environments."""
+        if env_ids is None:
+            env_ids_t = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
+        else:
+            env_ids_t = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
+
+        return {
+            "joint_names": list(self.robot.joint_names),
+            "q_des": self._q_des[env_ids_t].clone(),
+            "Kp": self._kp_fixed[env_ids_t].clone(),
+            "Kd": self._kd_fixed[env_ids_t].clone(),
+            "tau_ff": self._tau_ff[env_ids_t].clone(),
+        }
 
     def _get_joint_effort_obs(self) -> torch.Tensor:
+        applied_effort = getattr(self.robot.data, "applied_effort", None)
+        if applied_effort is not None:
+            return applied_effort
+        computed_effort = getattr(self.robot.data, "computed_effort", None)
+        if computed_effort is not None:
+            return computed_effort
+
+        # Fallbacks for older naming.
         applied_torque = getattr(self.robot.data, "applied_torque", None)
         if applied_torque is not None:
             return applied_torque
         computed_torque = getattr(self.robot.data, "computed_torque", None)
         if computed_torque is not None:
             return computed_torque
+
         return torch.zeros_like(self.robot.data.joint_pos)
 
     def _get_foot_contact_state(self) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
@@ -364,11 +453,51 @@ class HumanoidWalkEnv(DirectRLEnv):
 
         return {"policy": obs}
 
-    def _get_rewards(self) -> torch.Tensor:
 
-        # left_sensor = self.scene.sensors["left_foot_contact"]
-        # print(left_sensor.data.net_forces_w.shape)
-        # print(left_sensor.data.net_forces_w[0])
+
+    def _compute_step_symmetry_reward(
+        self,
+        left_pos_b: torch.Tensor,
+        right_pos_b: torch.Tensor,
+        left_contact: torch.Tensor,
+        right_contact: torch.Tensor,
+        command_active: torch.Tensor,
+    ) -> torch.Tensor:
+        left_forward = torch.clamp(left_pos_b[:, 0], min=0.0)
+        right_forward = torch.clamp(right_pos_b[:, 0], min=0.0)
+        forward_balance = torch.abs(left_forward - right_forward)
+
+        left_lateral = torch.abs(left_pos_b[:, 1])
+        right_lateral = torch.abs(right_pos_b[:, 1])
+        lateral_balance = torch.abs(left_lateral - right_lateral)
+
+        single_support = torch.logical_xor(left_contact, right_contact).float()
+
+        return command_active * single_support * torch.exp(-8.0 * forward_balance - 6.0 * lateral_balance)
+
+    # def _mirror_leg_joint_positions(self, joint_pos: torch.Tensor) -> torch.Tensor:
+    #     mirrored = joint_pos.clone()
+    #     joint_names = list(self.robot.joint_names)
+    #     name_to_idx = {name: i for i, name in enumerate(joint_names)}
+    #
+    #     swap_pairs = [
+    #         ("robot_pelvis_link_l_yaw_joint", "robot_pelvis_link_r_yaw_joint"),
+    #         ("robot_l_hip_yaw_link_l_pitch_joint", "robot_r_hip_yaw_link_r_pitch_joint"),
+    #         ("robot_l_hip_pitch_link_l_roll_joint", "robot_r_hip_pitch_link_r_roll_joint"),
+    #         ("robot_l_thigh_link_l_knee_joint", "robot_r_thigh_link_r_knee_joint"),
+    #         ("robot_l_shank_link_l_ankle_joint", "robot_r_shank_link_r_ankle_joint"),
+    #         ("robot_l_ankle_link_l_foot_joint", "robot_r_ankle_link_r_foot_joint"),
+    #     ]
+    #
+    #     for left_name, right_name in swap_pairs:
+    #         left_idx = name_to_idx[left_name]
+    #         right_idx = name_to_idx[right_name]
+    #         mirrored[:, left_idx] = joint_pos[:, right_idx]
+    #         mirrored[:, right_idx] = joint_pos[:, left_idx]
+    #
+    #     return mirrored
+    def _get_rewards(self) -> torch.Tensor:
+        self._steps_since_touchdown += 1
 
         self._left_step_cooldown = torch.clamp(self._left_step_cooldown - 1, min=0)
         self._right_step_cooldown = torch.clamp(self._right_step_cooldown - 1, min=0)
@@ -390,17 +519,9 @@ class HumanoidWalkEnv(DirectRLEnv):
         left_quat_w = foot_kin["left_quat_w"]
         right_quat_w = foot_kin["right_quat_w"]
 
-        left_sensor = self.scene.sensors["left_foot_contact"]
-        right_sensor = self.scene.sensors["right_foot_contact"]
-
-        left_force = left_sensor.data.net_forces_w[:, 0, 2]
-        right_force = right_sensor.data.net_forces_w[:, 0, 2]
-
-        left_contact = left_force > self.cfg.contact_force_threshold
-        right_contact = right_force > self.cfg.contact_force_threshold
+        left_contact, right_contact, left_force, right_force = self._get_foot_contact_state()
 
         command_active = (self._commands[:, 0] > self.cfg.step_reward_command_threshold).float()
-        command_active_bool = self._commands[:, 0] > self.cfg.step_reward_command_threshold
 
         q_err = q - self._standing_q.unsqueeze(0)
         action_rate = self._actions - self._last_actions
@@ -448,8 +569,8 @@ class HumanoidWalkEnv(DirectRLEnv):
         right_supported_swing = (~right_contact) & left_contact
 
         r_swing_clearance = command_active * (
-                left_supported_swing.float() * left_clearance
-                + right_supported_swing.float() * right_clearance
+            left_supported_swing.float() * left_clearance
+            + right_supported_swing.float() * right_clearance
         )
 
         left_forward_swing = left_supported_swing.float() * torch.clamp(foot_kin["left_vel_b"][:, 0], min=0.0, max=0.5)
@@ -479,10 +600,27 @@ class HumanoidWalkEnv(DirectRLEnv):
             & (prev_right_air_steps >= self.cfg.min_swing_air_steps)
         )
 
-        left_rewarded_touchdown = left_touchdown & right_contact
-        right_rewarded_touchdown = right_touchdown & left_contact
+        left_forward_enough = (
+            left_pos_b[:, 0] > (right_pos_b[:, 0] + self.cfg.touchdown_forward_margin)
+        ) & (foot_kin["left_vel_b"][:, 0] > self.cfg.min_step_forward_vel)
+        right_forward_enough = (
+            right_pos_b[:, 0] > (left_pos_b[:, 0] + self.cfg.touchdown_forward_margin)
+        ) & (foot_kin["right_vel_b"][:, 0] > self.cfg.min_step_forward_vel)
+
+        left_cooldown_ready = self._left_step_cooldown == 0
+        right_cooldown_ready = self._right_step_cooldown == 0
+
+        left_rewarded_touchdown = left_touchdown & right_contact & left_forward_enough & left_cooldown_ready
+        right_rewarded_touchdown = right_touchdown & left_contact & right_forward_enough & right_cooldown_ready
+
+        self._left_step_cooldown[left_rewarded_touchdown] = self.cfg.step_cooldown_steps
+        self._right_step_cooldown[right_rewarded_touchdown] = self.cfg.step_cooldown_steps
 
         r_touchdown = left_rewarded_touchdown.float() + right_rewarded_touchdown.float()
+
+        any_touchdown = left_rewarded_touchdown | right_rewarded_touchdown
+        p_fast_steps = any_touchdown.float() * (self._steps_since_touchdown < 6).float()
+        self._steps_since_touchdown[any_touchdown] = 0
 
         left_forward_place = left_rewarded_touchdown.float() * torch.clamp(left_pos_b[:, 0], min=0.0, max=0.08)
         right_forward_place = right_rewarded_touchdown.float() * torch.clamp(right_pos_b[:, 0], min=0.0, max=0.08)
@@ -520,12 +658,22 @@ class HumanoidWalkEnv(DirectRLEnv):
         right_lateral_error = torch.abs(right_pos_b[:, 1])
 
         p_lateral_step = (
-                left_rewarded_touchdown.float() * left_lateral_error +
-                right_rewarded_touchdown.float() * right_lateral_error
+            left_rewarded_touchdown.float() * left_lateral_error
+            + right_rewarded_touchdown.float() * right_lateral_error
+        )
+
+        r_step_symmetry = self._compute_step_symmetry_reward(
+            left_pos_b=left_pos_b,
+            right_pos_b=right_pos_b,
+            left_contact=left_contact,
+            right_contact=right_contact,
+            command_active=command_active,
         )
 
         survival_term = torch.ones(self.num_envs, device=self.device)
 
+        # Stage 1 reward assembly: gait-shaping terms below remain computed for debug,
+        # but their scales are set to zero above so they do not influence learning.
         reward = (
             self.cfg.reward_scales["vel_track"] * r_vel_track
             + self.cfg.reward_scales["upright"] * r_upright
@@ -536,6 +684,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             + self.cfg.reward_scales["survival"] * survival_term
             + self.cfg.reward_scales["forward_step"] * r_forward_swing
             + self.cfg.reward_scales["forward_place"] * r_forward_place
+            + self.cfg.reward_scales["step_symmetry"] * r_step_symmetry
             - self.cfg.reward_scales["ang_vel"] * p_ang_vel
             - self.cfg.reward_scales["joint_vel"] * p_joint_vel
             - self.cfg.reward_scales["action_rate"] * p_action_rate
@@ -551,6 +700,7 @@ class HumanoidWalkEnv(DirectRLEnv):
             - self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
             - self.cfg.reward_scales["lateral_step"] * p_lateral_step
             - self.cfg.reward_scales["lateral_swing"] * p_lateral_swing
+            - self.cfg.reward_scales["fast_steps"] * p_fast_steps
         )
 
         if torch.isnan(reward).any():
@@ -577,14 +727,16 @@ class HumanoidWalkEnv(DirectRLEnv):
             swing_clearance_term = self.cfg.reward_scales["swing_clearance"] * r_swing_clearance
             touchdown_term = self.cfg.reward_scales["touchdown"] * r_touchdown
             step_alt_term = self.cfg.reward_scales["step_alternation"] * r_step_alternation
-            survival_term = self.cfg.reward_scales["survival"] * survival_term
+            survival_term_dbg = self.cfg.reward_scales["survival"] * survival_term
             double_swing_term = self.cfg.reward_scales["double_swing"] * p_double_swing
             repeat_step_term = self.cfg.reward_scales["repeat_step"] * p_repeat_step
             forward_step_term = self.cfg.reward_scales["forward_step"] * r_forward_swing
             forward_place_term = self.cfg.reward_scales["forward_place"] * r_forward_place
+            step_symmetry_term = self.cfg.reward_scales["step_symmetry"] * r_step_symmetry
             loaded_swing_term = self.cfg.reward_scales["loaded_swing"] * p_loaded_swing
             laterial_step_term = self.cfg.reward_scales["lateral_step"] * p_lateral_step
             lateral_swing_term = self.cfg.reward_scales["lateral_swing"] * p_lateral_swing
+            fast_steps_term = self.cfg.reward_scales["fast_steps"] * p_fast_steps
 
             print(
                 "reward contrib | "
@@ -604,14 +756,16 @@ class HumanoidWalkEnv(DirectRLEnv):
                 f"swing_clear: {swing_clearance_term.mean().item():.4f} | "
                 f"touchdown: {touchdown_term.mean().item():.4f} | "
                 f"step_alt: {step_alt_term.mean().item():.4f} | "
-                f"survival: {survival_term.mean().item():.4f} | "
+                f"survival: {survival_term_dbg.mean().item():.4f} | "
                 f"double_swing: {double_swing_term.mean().item():.4f} | "
                 f"repeat_step: {repeat_step_term.mean().item():.4f} | "
                 f"forward_step: {forward_step_term.mean().item():.4f} | "
                 f"forward_place: {forward_place_term.mean().item():.4f} | "
+                f"step_sym: {step_symmetry_term.mean().item():.4f} | "
                 f"loaded_swing: {loaded_swing_term.mean().item():.4f} | "
                 f"laterial_step: {laterial_step_term.mean().item():.4f} | "
                 f"lateral_swing: {lateral_swing_term.mean().item():.4f} | "
+                f"fast_steps: {fast_steps_term.mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
@@ -656,6 +810,11 @@ class HumanoidWalkEnv(DirectRLEnv):
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
         joint_pos += 0.02 * torch.randn_like(joint_pos)
 
+        # mirror_mask = torch.rand(len(env_ids), device=self.device) < self.cfg.reset_mirror_prob
+        # if mirror_mask.any():
+        #     mirrored_joint_pos = self._mirror_leg_joint_positions(joint_pos)
+        #     joint_pos[mirror_mask] = mirrored_joint_pos[mirror_mask]
+
         joint_vel = 0.05 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
         joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
 
@@ -663,10 +822,13 @@ class HumanoidWalkEnv(DirectRLEnv):
         self.robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
         self.robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
         self.robot.set_joint_position_target(joint_pos, env_ids=env_ids)
+        self.robot.set_joint_effort_target(torch.zeros_like(joint_pos), env_ids=env_ids)
 
         self._actions[env_ids] = 0.0
         self._last_actions[env_ids] = 0.0
         self._joint_pos_targets[env_ids] = joint_pos
+        self._q_des[env_ids] = joint_pos
+        self._tau_ff[env_ids] = 0.0
         self._left_step_cooldown[env_ids] = 0
         self._right_step_cooldown[env_ids] = 0
         self._last_step_side[env_ids] = 0
@@ -676,6 +838,7 @@ class HumanoidWalkEnv(DirectRLEnv):
         self._right_air_steps[env_ids] = 0
         self._prev_left_touchdown_x[env_ids] = 0.0
         self._prev_right_touchdown_x[env_ids] = 0.0
+        self._steps_since_touchdown[env_ids] = 100
 
         num_resets = len(env_ids)
         commands = torch.rand((num_resets, 1), device=self.device)

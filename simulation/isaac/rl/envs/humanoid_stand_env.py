@@ -14,7 +14,7 @@ from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.math import quat_rotate_inverse
 
-from ...configuration.actuator_config import ACTUATOR_SETTINGS
+from ...configuration.walking_actuator_config import WALKING_ACTUATOR_SETTINGS
 from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
 
 
@@ -127,7 +127,7 @@ class HumanoidStandEnv(DirectRLEnv):
         light_cfg.func("/World/light", light_cfg)
 
         actuators = {}
-        for group_name, cfg in ACTUATOR_SETTINGS.items():
+        for group_name, cfg in WALKING_ACTUATOR_SETTINGS.items():
             actuators[group_name] = ImplicitActuatorCfg(
                 joint_names_expr=cfg["joint_names"],
                 effort_limit_sim=cfg["effort_limit"],
