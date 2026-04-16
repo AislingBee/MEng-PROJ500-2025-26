@@ -111,6 +111,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         self._joint_upper = self.robot.data.soft_joint_pos_limits[..., 1].clone()
 
         self._per_joint_actuator_cfg = build_per_joint_walking_actuator_cfg(self.robot.joint_names)
+        print(self.robot.data.joint_names)
         self._kp_fixed = torch.tensor(
             self._per_joint_actuator_cfg["stiffness"],
             dtype=torch.float32,
