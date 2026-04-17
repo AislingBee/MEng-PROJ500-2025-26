@@ -88,6 +88,31 @@ get_humanoid_stand_ppo_cfg = ppo_cfg_module.get_humanoid_stand_ppo_cfg
 # torch.backends.cudnn.allow_tf32 = True
 
 
+def export_deployable_policy(runner, export_dir: str) -> None:
+    os.makedirs(export_dir, exist_ok=True)
+
+    # RSL-RL actor-critic is usually here
+    actor_critic = runner.alg.actor_critic
+    actor_critic.eval()
+
+    # Export full actor-critic checkpoint for reference
+    torch.save(actor_critic.state_dict(), os.path.join(export_dir, "actor_critic_state_dict.pt"))
+
+    # Export deployable TorchScript actor
+    actor = actor_critic.actor
+    actor.eval()
+
+    obs_dim = actor[0].in_features if hasattr(actor, "__getitem__") else None
+    if obs_dim is None:
+        raise RuntimeError("Could not infer actor input size for TorchScript export.")
+
+    example_obs = torch.zeros(1, obs_dim, device=next(actor.parameters()).device)
+    scripted_actor = torch.jit.trace(actor, example_obs)
+    scripted_actor.save(os.path.join(export_dir, "policy_jit.pt"))
+
+    print(f"Saved deployable policy to: {os.path.join(export_dir, 'policy_jit.pt')}")
+
+
 def main():
     # from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnvCfg # Standing Training
     from simulation.isaac.rl.envs.humanoid_stand_s2r_env import HumanoidStandEnvS2rCfg # Standing Training Sim to Real
@@ -151,8 +176,11 @@ def main():
         init_at_random_ep_len=True,
     )
 
+    export_deployable_policy(runner, os.path.join(log_dir, "exported"))
     env.close()
 
+    env.close()
+    
 
 if __name__ == "__main__":
     main()
