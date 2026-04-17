@@ -1,3 +1,6 @@
+# Notion Documenation for this script.
+# https://josephandrews.notion.site/Thor-Policy-Runner-Sim-to-Real-Deployment-Standing-Task-3456b3c9bc7680e99d5af51064cacd0f?source=copy_link
+
 from __future__ import annotations
 
 import math
