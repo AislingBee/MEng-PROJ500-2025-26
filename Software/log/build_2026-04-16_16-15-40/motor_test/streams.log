@@ -1,0 +1,39 @@
+[0.020s] Invoking command in '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/meng/meng/MEng-PROJ500-2025-26/Software/src/motor_test -DCMAKE_INSTALL_PREFIX=/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test
+[0.191s] -- The C compiler identification is GNU 13.3.0
+[0.386s] -- The CXX compiler identification is GNU 13.3.0
+[0.427s] -- Detecting C compiler ABI info
+[0.664s] -- Detecting C compiler ABI info - done
+[0.675s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.688s] -- Detecting C compile features
+[0.689s] -- Detecting C compile features - done
+[0.703s] -- Detecting CXX compiler ABI info
+[0.852s] -- Detecting CXX compiler ABI info - done
+[0.860s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.860s] -- Detecting CXX compile features
+[0.861s] -- Detecting CXX compile features - done
+[0.871s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.026s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.215s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[1.294s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[1.319s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[1.353s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.393s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.541s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[1.546s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[1.737s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[1.768s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[1.822s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.948s] -- Found rclpy: 7.1.9 (/opt/ros/jazzy/share/rclpy/cmake)
+[1.952s] -- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+[1.981s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[1.999s] -- Found rosidl_adapter: 4.6.7 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[2.438s] [31mCMake Error at /opt/ros/jazzy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:223 (message):
+[2.438s]   Packages installing interfaces must include
+[2.438s]   '<member_of_group>rosidl_interface_packages</member_of_group>' in their
+[2.438s]   package.xml
+[2.438s] Call Stack (most recent call first):
+[2.438s]   CMakeLists.txt:16 (rosidl_generate_interfaces)
+[2.438s] 
+[2.438s] [0m
+[2.438s] -- Configuring incomplete, errors occurred!
+[2.438s] Invoked command in '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/meng/meng/MEng-PROJ500-2025-26/Software/src/motor_test -DCMAKE_INSTALL_PREFIX=/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test

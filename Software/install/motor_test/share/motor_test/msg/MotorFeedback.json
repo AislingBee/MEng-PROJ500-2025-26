@@ -1,0 +1,66 @@
+{
+  "type_description_msg": {
+    "type_description": {
+      "type_name": "motor_test/msg/MotorFeedback",
+      "fields": [
+        {
+          "name": "motors",
+          "type": {
+            "type_id": 145,
+            "capacity": 0,
+            "string_capacity": 0,
+            "nested_type_name": "motor_test/msg/MotorFeedbackEntry"
+          },
+          "default_value": ""
+        }
+      ]
+    },
+    "referenced_type_descriptions": [
+      {
+        "type_name": "motor_test/msg/MotorFeedbackEntry",
+        "fields": [
+          {
+            "name": "name",
+            "type": {
+              "type_id": 17,
+              "capacity": 0,
+              "string_capacity": 0,
+              "nested_type_name": ""
+            },
+            "default_value": ""
+          },
+          {
+            "name": "q",
+            "type": {
+              "type_id": 11,
+              "capacity": 0,
+              "string_capacity": 0,
+              "nested_type_name": ""
+            },
+            "default_value": ""
+          },
+          {
+            "name": "q_dot",
+            "type": {
+              "type_id": 11,
+              "capacity": 0,
+              "string_capacity": 0,
+              "nested_type_name": ""
+            },
+            "default_value": ""
+          }
+        ]
+      }
+    ]
+  },
+  "type_hashes": [
+    {
+      "type_name": "motor_test/msg/MotorFeedback",
+      "hash_string": "RIHS01_82fb9798b30418c6234653d00692bb31193a9aa0712fe411b1f18ec54a6ce76d"
+    },
+    {
+      "type_name": "motor_test/msg/MotorFeedbackEntry",
+      "hash_string": "RIHS01_34ba882e49b1693048caf4fca9d0b871bcb64c74600f016c3d8d67c0b5361106"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "package_name": "motor_test",
+  "non_idl_tuples": [
+    "/home/meng/meng/MEng-PROJ500-2025-26/Software/src/motor_test:msg/MotorParam.msg",
+    "/home/meng/meng/MEng-PROJ500-2025-26/Software/src/motor_test:msg/MotorFeedbackEntry.msg",
+    "/home/meng/meng/MEng-PROJ500-2025-26/Software/src/motor_test:msg/MotorFeedback.msg"
+  ]
+}

@@ -6,13 +6,24 @@ from pathlib import Path
 from typing import Iterable, List
 
 
-def get_workspace_src_path() -> Path:
-    package_root = Path(__file__).resolve().parents[1]
-    return package_root.parent
+def find_descriptions_msgs_path() -> Path:
+    current = Path(__file__).resolve()
+    for parent in current.parents:
+        source_candidate = parent / 'descriptions' / 'msgs'
+        if source_candidate.is_dir():
+            return source_candidate
+
+        installed_candidate = parent / 'share' / 'motor_test' / 'descriptions' / 'msgs'
+        if installed_candidate.is_dir():
+            return installed_candidate
+
+    raise FileNotFoundError(
+        'Could not locate descriptions/msgs folder from %s' % current
+    )
 
 
 def get_description_file_path(filename: str) -> Path:
-    return get_workspace_src_path() / 'descriptions' / 'msgs' / filename
+    return find_descriptions_msgs_path() / filename
 
 
 def load_json_file(path: Path):

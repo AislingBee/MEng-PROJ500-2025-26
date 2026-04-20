@@ -1,0 +1,24 @@
+[0.024s] Invoking command in '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/meng/meng/MEng-PROJ500-2025-26/Software/src/motor_test -DCMAKE_INSTALL_PREFIX=/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test
+[0.137s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.453s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.522s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.537s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.561s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.586s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.689s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.694s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.791s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.897s] -- Found rclpy: 7.1.9 (/opt/ros/jazzy/share/rclpy/cmake)
+[0.899s] -- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+[0.926s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[0.947s] -- Found rosidl_adapter: 4.6.7 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[1.242s] [31mCMake Error at /opt/ros/jazzy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:223 (message):
+[1.242s]   Packages installing interfaces must include
+[1.242s]   '<member_of_group>rosidl_interface_packages</member_of_group>' in their
+[1.242s]   package.xml
+[1.242s] Call Stack (most recent call first):
+[1.242s]   CMakeLists.txt:16 (rosidl_generate_interfaces)
+[1.242s] 
+[1.242s] [0m
+[1.242s] -- Configuring incomplete, errors occurred!
+[1.254s] Invoked command in '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/meng/meng/MEng-PROJ500-2025-26/Software/src/motor_test -DCMAKE_INSTALL_PREFIX=/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test

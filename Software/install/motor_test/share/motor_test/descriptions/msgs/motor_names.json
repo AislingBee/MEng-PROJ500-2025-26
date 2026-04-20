@@ -1,0 +1,17 @@
+{
+  "motors": [
+    "motor_1",
+    "motor_2",
+    "motor_3",
+    "motor_4",
+    "motor_5",
+    "motor_6",
+    "motor_7",
+    "motor_8",
+    "motor_9",
+    "motor_10",
+    "motor_11",
+    "motor_12",
+    "motor_test"
+  ]
+}

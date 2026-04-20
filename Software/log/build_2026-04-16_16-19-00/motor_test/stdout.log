@@ -1,0 +1,103 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+-- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found rclpy: 7.1.9 (/opt/ros/jazzy/share/rclpy/cmake)
+-- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+-- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+-- Found rosidl_adapter: 4.6.7 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+-- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+-- Found PythonExtra: /usr/bin/python3  
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+-- Configuring done (4.6s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test
+[  1%] [34m[1mGenerating type hashes for ROS interfaces[0m
+[  1%] Built target motor_test__rosidl_generator_type_description
+[  1%] Built target ament_cmake_python_copy_motor_test
+[  3%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[  3%] Built target motor_test__cpp
+[  5%] [34m[1mGenerating C code for ROS interfaces[0m
+[  7%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_c.dir/rosidl_generator_c/motor_test/msg/detail/motor_param__description.c.o[0m
+[  8%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_c.dir/rosidl_generator_c/motor_test/msg/detail/motor_param__functions.c.o[0m
+[ 10%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_c.dir/rosidl_generator_c/motor_test/msg/detail/motor_param__type_support.c.o[0m
+[ 12%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_c.dir/rosidl_generator_c/motor_test/msg/detail/motor_feedback_entry__description.c.o[0m
+[ 14%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_c.dir/rosidl_generator_c/motor_test/msg/detail/motor_feedback_entry__functions.c.o[0m
+[ 16%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_c.dir/rosidl_generator_c/motor_test/msg/detail/motor_feedback_entry__type_support.c.o[0m
+[ 17%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_c.dir/rosidl_generator_c/motor_test/msg/detail/motor_feedback__description.c.o[0m
+[ 19%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_c.dir/rosidl_generator_c/motor_test/msg/detail/motor_feedback__functions.c.o[0m
+[ 21%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_c.dir/rosidl_generator_c/motor_test/msg/detail/motor_feedback__type_support.c.o[0m
+[ 23%] [32m[1mLinking C shared library libmotor_test__rosidl_generator_c.so[0m
+[ 23%] Built target motor_test__rosidl_generator_c
+running egg_info
+creating motor_test.egg-info
+writing motor_test.egg-info/PKG-INFO
+writing dependency_links to motor_test.egg-info/dependency_links.txt
+writing top-level names to motor_test.egg-info/top_level.txt
+writing manifest file 'motor_test.egg-info/SOURCES.txt'
+reading manifest file 'motor_test.egg-info/SOURCES.txt'
+writing manifest file 'motor_test.egg-info/SOURCES.txt'
+[ 23%] Built target ament_cmake_python_build_motor_test_egg
+[ 25%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[ 26%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/motor_test/msg/motor_param__type_support.cpp.o[0m
+[ 28%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/motor_test/msg/motor_feedback_entry__type_support.cpp.o[0m
+[ 30%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/motor_test/msg/motor_feedback__type_support.cpp.o[0m
+[ 32%] [32m[1mLinking CXX shared library libmotor_test__rosidl_typesupport_cpp.so[0m
+[ 32%] Built target motor_test__rosidl_typesupport_cpp
+[ 33%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/motor_test/msg/detail/motor_param__type_support_c.cpp.o[0m
+[ 37%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/motor_test/msg/detail/motor_feedback_entry__type_support_c.cpp.o[0m
+[ 39%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/motor_test/msg/detail/motor_feedback__type_support_c.cpp.o[0m
+[ 41%] [32m[1mLinking CXX shared library libmotor_test__rosidl_typesupport_fastrtps_c.so[0m
+[ 41%] Built target motor_test__rosidl_typesupport_fastrtps_c
+[ 42%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/motor_test/msg/detail/dds_fastrtps/motor_param__type_support.cpp.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/motor_test/msg/detail/dds_fastrtps/motor_feedback_entry__type_support.cpp.o[0m
+[ 48%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/motor_test/msg/detail/dds_fastrtps/motor_feedback__type_support.cpp.o[0m
+[ 50%] [32m[1mLinking CXX shared library libmotor_test__rosidl_typesupport_fastrtps_cpp.so[0m
+[ 50%] Built target motor_test__rosidl_typesupport_fastrtps_cpp
+[ 51%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[ 53%] [32mBuilding C object CMakeFiles/motor_test__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/motor_test/msg/detail/motor_param__type_support.c.o[0m
+[ 55%] [32mBuilding C object CMakeFiles/motor_test__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/motor_test/msg/detail/motor_feedback_entry__type_support.c.o[0m
+[ 57%] [32mBuilding C object CMakeFiles/motor_test__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/motor_test/msg/detail/motor_feedback__type_support.c.o[0m
+[ 58%] [32m[1mLinking C shared library libmotor_test__rosidl_typesupport_introspection_c.so[0m
+[ 58%] Built target motor_test__rosidl_typesupport_introspection_c
+[ 60%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_c.dir/rosidl_typesupport_c/motor_test/msg/motor_param__type_support.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_c.dir/rosidl_typesupport_c/motor_test/msg/motor_feedback_entry__type_support.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_c.dir/rosidl_typesupport_c/motor_test/msg/motor_feedback__type_support.cpp.o[0m
+[ 67%] [32m[1mLinking CXX shared library libmotor_test__rosidl_typesupport_c.so[0m
+[ 67%] Built target motor_test__rosidl_typesupport_c
+[ 69%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[ 71%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/motor_test/msg/detail/motor_param__type_support.cpp.o[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/motor_test/msg/detail/motor_feedback_entry__type_support.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/motor_test__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/motor_test/msg/detail/motor_feedback__type_support.cpp.o[0m
+[ 76%] [32m[1mLinking CXX shared library libmotor_test__rosidl_typesupport_introspection_cpp.so[0m
+[ 76%] Built target motor_test__rosidl_typesupport_introspection_cpp
+[ 76%] Built target motor_test
+[ 78%] [34m[1mGenerating Python code for ROS interfaces[0m
+[ 78%] Built target motor_test__py
+[ 80%] [32mBuilding CXX object CMakeFiles/motor_sub.dir/src/motor_sub.cpp.o[0m

@@ -1,0 +1,6 @@
+msg/MotorFeedback.idl
+msg/MotorFeedback.msg
+msg/MotorFeedbackEntry.idl
+msg/MotorFeedbackEntry.msg
+msg/MotorParam.idl
+msg/MotorParam.msg

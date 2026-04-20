@@ -1,0 +1,271 @@
+[0.011s] Invoking command in '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test -- -j2 -l2
+[0.041s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.140s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.168s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.178s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.186s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.196s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.258s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.261s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.325s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.391s] -- Found rclpy: 7.1.9 (/opt/ros/jazzy/share/rclpy/cmake)
+[0.392s] -- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+[0.405s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[0.419s] -- Found rosidl_adapter: 4.6.7 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[0.697s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[0.934s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.020s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.027s] -- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+[1.381s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+[1.405s] [0mCMake Deprecation Warning at /opt/ros/jazzy/share/rosidl_cmake/cmake/rosidl_target_interfaces.cmake:32 (message):
+[1.405s]   Use rosidl_get_typesupport_target() and target_link_libraries() instead of
+[1.406s]   rosidl_target_interfaces().  i.e:
+[1.406s] 
+[1.406s]     rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+[1.406s]     target_link_libraries(${PROJECT_NAME}_node "${cpp_typesupport_target}")
+[1.406s] 
+[1.406s] Call Stack (most recent call first):
+[1.406s]   CMakeLists.txt:27 (rosidl_target_interfaces)
+[1.406s] 
+[1.406s] [0m
+[1.427s] -- Configuring done (1.4s)
+[1.553s] -- Generating done (0.1s)
+[1.579s] -- Build files have been written to: /home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test
+[1.648s] [  1%] Built target motor_test__rosidl_generator_type_description
+[1.662s] [  1%] Built target ament_cmake_python_copy_motor_test
+[1.684s] [  3%] Built target motor_test__cpp
+[1.721s] [ 23%] Built target motor_test__rosidl_generator_c
+[1.774s] [ 32%] Built target motor_test__rosidl_typesupport_cpp
+[1.818s] [ 41%] Built target motor_test__rosidl_typesupport_fastrtps_c
+[1.856s] [ 50%] Built target motor_test__rosidl_typesupport_fastrtps_cpp
+[1.883s] [ 58%] Built target motor_test__rosidl_typesupport_introspection_c
+[1.906s] running egg_info
+[1.914s] [ 67%] Built target motor_test__rosidl_typesupport_c
+[1.921s] writing motor_test.egg-info/PKG-INFO
+[1.922s] writing dependency_links to motor_test.egg-info/dependency_links.txt
+[1.922s] writing top-level names to motor_test.egg-info/top_level.txt
+[1.949s] [ 76%] Built target motor_test__rosidl_typesupport_introspection_cpp
+[1.985s] reading manifest file 'motor_test.egg-info/SOURCES.txt'
+[1.985s] [ 76%] Built target motor_test
+[1.988s] writing manifest file 'motor_test.egg-info/SOURCES.txt'
+[2.042s] [ 76%] Built target ament_cmake_python_build_motor_test_egg
+[2.068s] [ 78%] Built target motor_test__py
+[2.102s] [ 80%] [32mBuilding CXX object CMakeFiles/motor_sub.dir/src/motor_sub.cpp.o[0m
+[2.160s] [ 82%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_py.dir/rosidl_generator_py/motor_test/msg/_motor_param_s.c.o[0m
+[2.755s] [ 83%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_py.dir/rosidl_generator_py/motor_test/msg/_motor_feedback_entry_s.c.o[0m
+[3.107s] [ 85%] [32mBuilding C object CMakeFiles/motor_test__rosidl_generator_py.dir/rosidl_generator_py/motor_test/msg/_motor_feedback_s.c.o[0m
+[3.420s] [ 87%] [32m[1mLinking C shared library libmotor_test__rosidl_generator_py.so[0m
+[3.637s] [ 87%] Built target motor_test__rosidl_generator_py
+[3.690s] [ 89%] [32mBuilding C object CMakeFiles/motor_test_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/motor_test/_motor_test_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[3.854s] [ 91%] [32m[1mLinking C shared module rosidl_generator_py/motor_test/motor_test_s__rosidl_typesupport_fastrtps_c.so[0m
+[3.903s] [ 91%] Built target motor_test_s__rosidl_typesupport_fastrtps_c
+[3.958s] [ 92%] [32mBuilding C object CMakeFiles/motor_test_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/motor_test/_motor_test_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[4.160s] [ 94%] [32m[1mLinking C shared module rosidl_generator_py/motor_test/motor_test_s__rosidl_typesupport_introspection_c.so[0m
+[4.241s] [ 94%] Built target motor_test_s__rosidl_typesupport_introspection_c
+[4.278s] [ 96%] [32mBuilding C object CMakeFiles/motor_test_s__rosidl_typesupport_c.dir/rosidl_generator_py/motor_test/_motor_test_s.ep.rosidl_typesupport_c.c.o[0m
+[4.630s] [ 98%] [32m[1mLinking C shared module rosidl_generator_py/motor_test/motor_test_s__rosidl_typesupport_c.so[0m
+[4.821s] [ 98%] Built target motor_test_s__rosidl_typesupport_c
+[12.641s] [100%] [32m[1mLinking CXX executable motor_sub[0m
+[13.031s] [100%] Built target motor_sub
+[13.052s] Invoked command in '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test -- -j2 -l2
+[13.070s] Invoking command in '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test
+[13.083s] -- Install configuration: ""
+[13.084s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/ament_index/resource_index/rosidl_interfaces/motor_test
+[13.084s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorParam.json
+[13.085s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedbackEntry.json
+[13.085s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedback.json
+[13.087s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test
+[13.087s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg
+[13.088s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_generator_c__visibility_control.h
+[13.088s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_feedback_entry.h
+[13.088s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail
+[13.089s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.h
+[13.089s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__struct.h
+[13.090s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__struct.h
+[13.090s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__description.c
+[13.091s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.c
+[13.091s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__description.c
+[13.092s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__functions.c
+[13.093s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__functions.h
+[13.094s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.h
+[13.094s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.h
+[13.095s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__struct.h
+[13.095s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__functions.c
+[13.095s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.c
+[13.096s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__functions.h
+[13.096s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__functions.h
+[13.097s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__functions.c
+[13.098s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__description.c
+[13.098s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.c
+[13.099s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_feedback.h
+[13.099s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_param.h
+[13.102s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/library_path.sh
+[13.104s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/library_path.dsv
+[13.104s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_generator_c.so
+[13.104s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_generator_c.so" to ""
+[13.104s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test
+[13.105s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg
+[13.105s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail
+[13.105s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__rosidl_typesupport_fastrtps_c.h
+[13.106s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__rosidl_typesupport_fastrtps_c.h
+[13.106s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__rosidl_typesupport_fastrtps_c.h
+[13.109s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[13.110s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_fastrtps_c.so
+[13.110s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_fastrtps_c.so" to ""
+[13.111s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test
+[13.111s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg
+[13.111s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_generator_cpp__visibility_control.hpp
+[13.111s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail
+[13.111s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__struct.hpp
+[13.111s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.hpp
+[13.112s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__traits.hpp
+[13.112s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.hpp
+[13.113s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__traits.hpp
+[13.113s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__builder.hpp
+[13.114s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__struct.hpp
+[13.114s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__builder.hpp
+[13.115s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__struct.hpp
+[13.116s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__builder.hpp
+[13.116s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.hpp
+[13.117s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__traits.hpp
+[13.118s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_feedback_entry.hpp
+[13.118s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_param.hpp
+[13.119s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_feedback.hpp
+[13.119s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test
+[13.119s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg
+[13.119s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[13.120s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail
+[13.120s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/dds_fastrtps
+[13.120s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__rosidl_typesupport_fastrtps_cpp.hpp
+[13.121s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__rosidl_typesupport_fastrtps_cpp.hpp
+[13.122s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__rosidl_typesupport_fastrtps_cpp.hpp
+[13.122s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_fastrtps_cpp.so
+[13.123s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_fastrtps_cpp.so" to ""
+[13.123s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test
+[13.123s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg
+[13.123s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[13.124s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail
+[13.125s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__rosidl_typesupport_introspection_c.h
+[13.125s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.c
+[13.126s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__rosidl_typesupport_introspection_c.h
+[13.127s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.c
+[13.128s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__rosidl_typesupport_introspection_c.h
+[13.128s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.c
+[13.129s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_introspection_c.so
+[13.129s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_introspection_c.so" to ""
+[13.129s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_c.so
+[13.130s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_c.so" to ""
+[13.130s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test
+[13.131s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg
+[13.131s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail
+[13.131s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.cpp
+[13.131s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__rosidl_typesupport_introspection_cpp.hpp
+[13.132s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__rosidl_typesupport_introspection_cpp.hpp
+[13.132s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__rosidl_typesupport_introspection_cpp.hpp
+[13.132s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.cpp
+[13.133s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.cpp
+[13.133s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_introspection_cpp.so
+[13.134s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_introspection_cpp.so" to ""
+[13.134s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_cpp.so
+[13.135s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_cpp.so" to ""
+[13.135s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/pythonpath.sh
+[13.135s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/pythonpath.dsv
+[13.136s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info
+[13.137s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info/SOURCES.txt
+[13.137s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info/PKG-INFO
+[13.138s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info/top_level.txt
+[13.138s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info/dependency_links.txt
+[13.138s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test
+[13.139s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/_motor_test_s.ep.rosidl_typesupport_c.c
+[13.139s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg
+[13.142s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback_entry_s.c
+[13.142s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback.py
+[13.143s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback_entry.py
+[13.143s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/__init__.py
+[13.144s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_param.py
+[13.144s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback_s.c
+[13.144s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_param_s.c
+[13.144s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_introspection_c.so
+[13.145s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_c.so
+[13.146s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/_motor_test_s.ep.rosidl_typesupport_fastrtps_c.c
+[13.147s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/__init__.py
+[13.147s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/_motor_test_s.ep.rosidl_typesupport_introspection_c.c
+[13.148s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_fastrtps_c.so
+[13.245s] Listing '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test'...
+[13.246s] Compiling '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/__init__.py'...
+[13.246s] Listing '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg'...
+[13.246s] Compiling '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/__init__.py'...
+[13.246s] Compiling '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback.py'...
+[13.246s] Compiling '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback_entry.py'...
+[13.246s] Compiling '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_param.py'...
+[13.254s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_fastrtps_c.so
+[13.254s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_fastrtps_c.so" to ""
+[13.254s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_introspection_c.so
+[13.254s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_introspection_c.so" to ""
+[13.254s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_c.so
+[13.255s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_c.so" to ""
+[13.255s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_generator_py.so
+[13.257s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_generator_py.so" to ""
+[13.258s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorParam.idl
+[13.259s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedbackEntry.idl
+[13.260s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedback.idl
+[13.260s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorParam.msg
+[13.261s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedbackEntry.msg
+[13.261s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedback.msg
+[13.262s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_sub
+[13.266s] -- Set non-toolchain portion of runtime path of "/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_sub" to ""
+[13.266s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include
+[13.267s] -- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test
+[13.267s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_sub.hpp
+[13.268s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_pub.py
+[13.269s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_can_bridge.py
+[13.270s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_feedback_listener.py
+[13.272s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_can_publisher.py
+[13.272s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_controller_test.py
+[13.273s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/serial_can_bridge.py
+[13.274s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch
+[13.274s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/motor_control_launch.py
+[13.276s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/__pycache__
+[13.277s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/__pycache__/motor_control_launch.cpython-312.pyc
+[13.279s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/__pycache__/motor_test_launch.cpython-312.pyc
+[13.280s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/motor_test_launch.py
+[13.281s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/ament_index/resource_index/package_run_dependencies/motor_test
+[13.281s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/ament_index/resource_index/parent_prefix_path/motor_test
+[13.285s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/ament_prefix_path.sh
+[13.286s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/ament_prefix_path.dsv
+[13.289s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/path.sh
+[13.292s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/path.dsv
+[13.292s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/local_setup.bash
+[13.292s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/local_setup.sh
+[13.292s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/local_setup.zsh
+[13.295s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/local_setup.dsv
+[13.300s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/package.dsv
+[13.301s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/ament_index/resource_index/packages/motor_test
+[13.301s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_cExport.cmake
+[13.301s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_cExport-noconfig.cmake
+[13.303s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_typesupport_fastrtps_cExport.cmake
+[13.305s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[13.307s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_cppExport.cmake
+[13.307s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_typesupport_fastrtps_cppExport.cmake
+[13.307s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[13.310s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_introspection_cExport.cmake
+[13.312s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[13.315s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_cExport.cmake
+[13.315s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_cExport-noconfig.cmake
+[13.315s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_introspection_cppExport.cmake
+[13.315s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[13.317s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_cppExport.cmake
+[13.317s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_cppExport-noconfig.cmake
+[13.319s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_pyExport.cmake
+[13.319s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_pyExport-noconfig.cmake
+[13.320s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/rosidl_cmake-extras.cmake
+[13.321s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/ament_cmake_export_dependencies-extras.cmake
+[13.322s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/ament_cmake_export_include_directories-extras.cmake
+[13.322s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/ament_cmake_export_libraries-extras.cmake
+[13.323s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/ament_cmake_export_targets-extras.cmake
+[13.324s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[13.326s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[13.327s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_testConfig.cmake
+[13.327s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_testConfig-version.cmake
+[13.328s] -- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/package.xml
+[13.332s] Invoked command in '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test

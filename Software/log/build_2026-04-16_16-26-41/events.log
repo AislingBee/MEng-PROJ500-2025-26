@@ -1,0 +1,290 @@
+[0.000000] (-) TimerEvent: {}
+[0.001113] (motor_test) JobQueued: {'identifier': 'motor_test', 'dependencies': OrderedDict()}
+[0.002746] (motor_test) JobStarted: {'identifier': 'motor_test'}
+[0.024072] (motor_test) JobProgress: {'identifier': 'motor_test', 'progress': 'cmake'}
+[0.025861] (motor_test) JobProgress: {'identifier': 'motor_test', 'progress': 'build'}
+[0.025989] (motor_test) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test', '--', '-j2', '-l2'], 'cwd': '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'meng', 'XDG_SESSION_TYPE': 'wayland', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/meng', 'OLDPWD': '/home/meng', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '1898', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'meng', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'meng', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/meng:@/tmp/.ICE-unix/1874,unix/meng:/tmp/.ICE-unix/1874', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/88687d88_f808_47a3_b5ad_b7752511647b', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.IE36N3', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.325', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.100099] (-) TimerEvent: {}
+[0.137633] (motor_test) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.172354] (motor_test) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter \n'}
+[0.203352] (-) TimerEvent: {}
+[0.285653] (motor_test) StdoutLine: {'line': b'-- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)\n'}
+[0.303713] (-) TimerEvent: {}
+[0.342416] (motor_test) StdoutLine: {'line': b'-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)\n'}
+[0.357382] (motor_test) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)\n'}
+[0.382357] (motor_test) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.404464] (-) TimerEvent: {}
+[0.415093] (motor_test) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.505446] (-) TimerEvent: {}
+[0.515367] (motor_test) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)\n'}
+[0.524167] (motor_test) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)\n'}
+[0.606058] (-) TimerEvent: {}
+[0.624939] (motor_test) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.707341] (-) TimerEvent: {}
+[0.723353] (motor_test) StdoutLine: {'line': b'-- Found rclpy: 7.1.9 (/opt/ros/jazzy/share/rclpy/cmake)\n'}
+[0.723558] (motor_test) StdoutLine: {'line': b'-- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)\n'}
+[0.746284] (motor_test) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)\n'}
+[0.761233] (motor_test) StdoutLine: {'line': b'-- Found rosidl_adapter: 4.6.7 (/opt/ros/jazzy/share/rosidl_adapter/cmake)\n'}
+[0.807556] (-) TimerEvent: {}
+[0.909327] (-) TimerEvent: {}
+[1.013705] (-) TimerEvent: {}
+[1.019441] (motor_test) StdoutLine: {'line': b'-- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)\n'}
+[1.114051] (-) TimerEvent: {}
+[1.219750] (-) TimerEvent: {}
+[1.283566] (motor_test) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[1.322759] (-) TimerEvent: {}
+[1.394865] (motor_test) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[1.400139] (motor_test) StdoutLine: {'line': b'-- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)\n'}
+[1.424088] (-) TimerEvent: {}
+[1.524661] (-) TimerEvent: {}
+[1.625251] (-) TimerEvent: {}
+[1.725660] (-) TimerEvent: {}
+[1.791752] (motor_test) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed \n'}
+[1.814184] (motor_test) StderrLine: {'line': b'\x1b[0mCMake Deprecation Warning at /opt/ros/jazzy/share/rosidl_cmake/cmake/rosidl_target_interfaces.cmake:32 (message):\n'}
+[1.814638] (motor_test) StderrLine: {'line': b'  Use rosidl_get_typesupport_target() and target_link_libraries() instead of\n'}
+[1.814705] (motor_test) StderrLine: {'line': b'  rosidl_target_interfaces().  i.e:\n'}
+[1.814796] (motor_test) StderrLine: {'line': b'\n'}
+[1.814841] (motor_test) StderrLine: {'line': b'    rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")\n'}
+[1.814882] (motor_test) StderrLine: {'line': b'    target_link_libraries(${PROJECT_NAME}_node "${cpp_typesupport_target}")\n'}
+[1.814921] (motor_test) StderrLine: {'line': b'\n'}
+[1.814960] (motor_test) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[1.814991] (motor_test) StderrLine: {'line': b'  CMakeLists.txt:27 (rosidl_target_interfaces)\n'}
+[1.815026] (motor_test) StderrLine: {'line': b'\n'}
+[1.815061] (motor_test) StderrLine: {'line': b'\x1b[0m\n'}
+[1.825896] (-) TimerEvent: {}
+[1.840048] (motor_test) StdoutLine: {'line': b'-- Configuring done (1.7s)\n'}
+[1.926063] (-) TimerEvent: {}
+[1.952637] (motor_test) StdoutLine: {'line': b'-- Generating done (0.1s)\n'}
+[1.971546] (motor_test) StdoutLine: {'line': b'-- Build files have been written to: /home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test\n'}
+[2.024498] (motor_test) StdoutLine: {'line': b'[  1%] Built target motor_test__rosidl_generator_type_description\n'}
+[2.026240] (-) TimerEvent: {}
+[2.075226] (motor_test) StdoutLine: {'line': b'[  1%] Built target ament_cmake_python_copy_motor_test\n'}
+[2.101396] (motor_test) StdoutLine: {'line': b'[  3%] Built target motor_test__cpp\n'}
+[2.126693] (-) TimerEvent: {}
+[2.143721] (motor_test) StdoutLine: {'line': b'[ 23%] Built target motor_test__rosidl_generator_c\n'}
+[2.251821] (-) TimerEvent: {}
+[2.321790] (motor_test) StdoutLine: {'line': b'running egg_info\n'}
+[2.333999] (motor_test) StdoutLine: {'line': b'writing motor_test.egg-info/PKG-INFO\n'}
+[2.334167] (motor_test) StdoutLine: {'line': b'writing dependency_links to motor_test.egg-info/dependency_links.txt\n'}
+[2.334219] (motor_test) StdoutLine: {'line': b'writing top-level names to motor_test.egg-info/top_level.txt\n'}
+[2.353506] (-) TimerEvent: {}
+[2.435614] (motor_test) StdoutLine: {'line': b"reading manifest file 'motor_test.egg-info/SOURCES.txt'\n"}
+[2.438864] (motor_test) StdoutLine: {'line': b"writing manifest file 'motor_test.egg-info/SOURCES.txt'\n"}
+[2.454165] (-) TimerEvent: {}
+[2.498883] (motor_test) StdoutLine: {'line': b'[ 23%] Built target ament_cmake_python_build_motor_test_egg\n'}
+[2.540573] (motor_test) StdoutLine: {'line': b'[ 32%] Built target motor_test__rosidl_typesupport_cpp\n'}
+[2.554504] (-) TimerEvent: {}
+[2.591395] (motor_test) StdoutLine: {'line': b'[ 41%] Built target motor_test__rosidl_typesupport_fastrtps_c\n'}
+[2.627451] (motor_test) StdoutLine: {'line': b'[ 50%] Built target motor_test__rosidl_typesupport_fastrtps_cpp\n'}
+[2.655278] (-) TimerEvent: {}
+[2.675001] (motor_test) StdoutLine: {'line': b'[ 58%] Built target motor_test__rosidl_typesupport_introspection_c\n'}
+[2.705336] (motor_test) StdoutLine: {'line': b'[ 67%] Built target motor_test__rosidl_typesupport_c\n'}
+[2.741669] (motor_test) StdoutLine: {'line': b'[ 76%] Built target motor_test__rosidl_typesupport_introspection_cpp\n'}
+[2.756009] (-) TimerEvent: {}
+[2.810528] (motor_test) StdoutLine: {'line': b'[ 76%] Built target motor_test\n'}
+[2.857291] (-) TimerEvent: {}
+[2.912876] (motor_test) StdoutLine: {'line': b'[ 78%] Built target motor_test__py\n'}
+[2.959478] (-) TimerEvent: {}
+[3.059972] (-) TimerEvent: {}
+[3.125440] (motor_test) StdoutLine: {'line': b'[ 82%] Built target motor_sub\n'}
+[3.160223] (-) TimerEvent: {}
+[3.267518] (-) TimerEvent: {}
+[3.302630] (motor_test) StdoutLine: {'line': b'[ 89%] Built target motor_test__rosidl_generator_py\n'}
+[3.368073] (-) TimerEvent: {}
+[3.422860] (motor_test) StdoutLine: {'line': b'[ 92%] Built target motor_test_s__rosidl_typesupport_fastrtps_c\n'}
+[3.473024] (-) TimerEvent: {}
+[3.487332] (motor_test) StdoutLine: {'line': b'[ 96%] Built target motor_test_s__rosidl_typesupport_introspection_c\n'}
+[3.575319] (-) TimerEvent: {}
+[3.597299] (motor_test) StdoutLine: {'line': b'[100%] Built target motor_test_s__rosidl_typesupport_c\n'}
+[3.634159] (motor_test) CommandEnded: {'returncode': 0}
+[3.643418] (motor_test) JobProgress: {'identifier': 'motor_test', 'progress': 'install'}
+[3.676328] (motor_test) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test'], 'cwd': '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'meng', 'XDG_SESSION_TYPE': 'wayland', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/meng', 'OLDPWD': '/home/meng', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '1898', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'meng', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'meng', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/meng:@/tmp/.ICE-unix/1874,unix/meng:/tmp/.ICE-unix/1874', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/88687d88_f808_47a3_b5ad_b7752511647b', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.IE36N3', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.325', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/meng/meng/MEng-PROJ500-2025-26/Software/build/motor_test', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[3.677028] (-) TimerEvent: {}
+[3.697962] (motor_test) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[3.699776] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/ament_index/resource_index/rosidl_interfaces/motor_test\n'}
+[3.701665] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorParam.json\n'}
+[3.704153] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedbackEntry.json\n'}
+[3.704275] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedback.json\n'}
+[3.704474] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test\n'}
+[3.707727] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg\n'}
+[3.708626] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_generator_c__visibility_control.h\n'}
+[3.708712] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_feedback_entry.h\n'}
+[3.709472] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail\n'}
+[3.709524] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.h\n'}
+[3.709562] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__struct.h\n'}
+[3.709599] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__struct.h\n'}
+[3.709711] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__description.c\n'}
+[3.709759] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.c\n'}
+[3.710745] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__description.c\n'}
+[3.711418] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__functions.c\n'}
+[3.711477] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__functions.h\n'}
+[3.711515] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.h\n'}
+[3.711551] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.h\n'}
+[3.711585] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__struct.h\n'}
+[3.711619] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__functions.c\n'}
+[3.711652] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.c\n'}
+[3.711688] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__functions.h\n'}
+[3.711722] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__functions.h\n'}
+[3.711755] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__functions.c\n'}
+[3.712939] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__description.c\n'}
+[3.713066] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.c\n'}
+[3.713633] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_feedback.h\n'}
+[3.713715] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_param.h\n'}
+[3.713756] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/library_path.sh\n'}
+[3.713792] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/library_path.dsv\n'}
+[3.715389] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_generator_c.so\n'}
+[3.715609] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test\n'}
+[3.715800] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg\n'}
+[3.716714] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail\n'}
+[3.716945] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__rosidl_typesupport_fastrtps_c.h\n'}
+[3.716995] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__rosidl_typesupport_fastrtps_c.h\n'}
+[3.717043] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__rosidl_typesupport_fastrtps_c.h\n'}
+[3.717994] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_typesupport_fastrtps_c__visibility_control.h\n'}
+[3.719229] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_fastrtps_c.so\n'}
+[3.720365] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test\n'}
+[3.721126] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg\n'}
+[3.721378] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_generator_cpp__visibility_control.hpp\n'}
+[3.721428] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail\n'}
+[3.722308] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__struct.hpp\n'}
+[3.722493] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.hpp\n'}
+[3.722597] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__traits.hpp\n'}
+[3.722721] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.hpp\n'}
+[3.722765] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__traits.hpp\n'}
+[3.722810] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__builder.hpp\n'}
+[3.722994] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__struct.hpp\n'}
+[3.723087] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__builder.hpp\n'}
+[3.723130] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__struct.hpp\n'}
+[3.723217] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__builder.hpp\n'}
+[3.723306] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.hpp\n'}
+[3.723395] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__traits.hpp\n'}
+[3.723439] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_feedback_entry.hpp\n'}
+[3.723476] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_param.hpp\n'}
+[3.723565] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/motor_feedback.hpp\n'}
+[3.723606] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test\n'}
+[3.723690] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg\n'}
+[3.723733] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h\n'}
+[3.726748] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail\n'}
+[3.727020] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/dds_fastrtps\n'}
+[3.727067] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[3.727107] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[3.727141] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[3.727174] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_fastrtps_cpp.so\n'}
+[3.727205] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test\n'}
+[3.727237] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg\n'}
+[3.727270] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/rosidl_typesupport_introspection_c__visibility_control.h\n'}
+[3.727303] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail\n'}
+[3.727335] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__rosidl_typesupport_introspection_c.h\n'}
+[3.727367] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.c\n'}
+[3.730448] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__rosidl_typesupport_introspection_c.h\n'}
+[3.731102] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.c\n'}
+[3.731396] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__rosidl_typesupport_introspection_c.h\n'}
+[3.731447] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.c\n'}
+[3.732639] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_introspection_c.so\n'}
+[3.733462] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_c.so\n'}
+[3.734555] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test\n'}
+[3.734794] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg\n'}
+[3.735095] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail\n'}
+[3.735222] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__type_support.cpp\n'}
+[3.735269] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__rosidl_typesupport_introspection_cpp.hpp\n'}
+[3.735310] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__rosidl_typesupport_introspection_cpp.hpp\n'}
+[3.735348] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_param__rosidl_typesupport_introspection_cpp.hpp\n'}
+[3.736679] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback_entry__type_support.cpp\n'}
+[3.739531] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_test/msg/detail/motor_feedback__type_support.cpp\n'}
+[3.739747] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_introspection_cpp.so\n'}
+[3.739949] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_typesupport_cpp.so\n'}
+[3.740884] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/pythonpath.sh\n'}
+[3.741128] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/pythonpath.dsv\n'}
+[3.741231] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info\n'}
+[3.741276] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info/SOURCES.txt\n'}
+[3.741625] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info/PKG-INFO\n'}
+[3.741808] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info/top_level.txt\n'}
+[3.742298] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test-0.0.0-py3.12.egg-info/dependency_links.txt\n'}
+[3.742380] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test\n'}
+[3.742421] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/_motor_test_s.ep.rosidl_typesupport_c.c\n'}
+[3.743072] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg\n'}
+[3.743180] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback_entry_s.c\n'}
+[3.747358] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback.py\n'}
+[3.747476] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback_entry.py\n'}
+[3.747641] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/__init__.py\n'}
+[3.747731] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_param.py\n'}
+[3.747776] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_feedback_s.c\n'}
+[3.747815] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg/_motor_param_s.c\n'}
+[3.747850] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_introspection_c.so\n'}
+[3.747887] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_c.so\n'}
+[3.747922] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/_motor_test_s.ep.rosidl_typesupport_fastrtps_c.c\n'}
+[3.747957] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/__init__.py\n'}
+[3.747993] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/_motor_test_s.ep.rosidl_typesupport_introspection_c.c\n'}
+[3.748030] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_fastrtps_c.so\n'}
+[3.779107] (-) TimerEvent: {}
+[3.851017] (motor_test) StdoutLine: {'line': b"Listing '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test'...\n"}
+[3.851565] (motor_test) StdoutLine: {'line': b"Compiling '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/__init__.py'...\n"}
+[3.851700] (motor_test) StdoutLine: {'line': b"Listing '/home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/msg'...\n"}
+[3.863605] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_fastrtps_c.so\n'}
+[3.864852] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_introspection_c.so\n'}
+[3.866099] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/python3.12/site-packages/motor_test/motor_test_s__rosidl_typesupport_c.so\n'}
+[3.867493] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/libmotor_test__rosidl_generator_py.so\n'}
+[3.868732] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorParam.idl\n'}
+[3.868847] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedbackEntry.idl\n'}
+[3.868890] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedback.idl\n'}
+[3.868926] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorParam.msg\n'}
+[3.868963] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedbackEntry.msg\n'}
+[3.869498] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/msg/MotorFeedback.msg\n'}
+[3.869699] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_sub\n'}
+[3.870179] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include\n'}
+[3.870321] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test\n'}
+[3.870550] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/include/motor_test/motor_sub.hpp\n'}
+[3.870656] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_pub.py\n'}
+[3.870755] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_can_bridge.py\n'}
+[3.870818] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_feedback_listener.py\n'}
+[3.870852] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_can_publisher.py\n'}
+[3.871454] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/motor_controller_test.py\n'}
+[3.871580] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/lib/motor_test/serial_can_bridge.py\n'}
+[3.871624] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch\n'}
+[3.871660] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/motor_control_launch.py\n'}
+[3.875111] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/__pycache__\n'}
+[3.875202] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/__pycache__/motor_control_launch.cpython-312.pyc\n'}
+[3.875242] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/__pycache__/motor_test_launch.cpython-312.pyc\n'}
+[3.875277] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/launch/motor_test_launch.py\n'}
+[3.875310] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/ament_index/resource_index/package_run_dependencies/motor_test\n'}
+[3.875348] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/ament_index/resource_index/parent_prefix_path/motor_test\n'}
+[3.875382] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/ament_prefix_path.sh\n'}
+[3.875412] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/ament_prefix_path.dsv\n'}
+[3.875471] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/path.sh\n'}
+[3.875517] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/environment/path.dsv\n'}
+[3.875553] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/local_setup.bash\n'}
+[3.875588] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/local_setup.sh\n'}
+[3.875626] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/local_setup.zsh\n'}
+[3.875660] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/local_setup.dsv\n'}
+[3.875695] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/package.dsv\n'}
+[3.875727] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/ament_index/resource_index/packages/motor_test\n'}
+[3.877122] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_cExport.cmake\n'}
+[3.877366] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_cExport-noconfig.cmake\n'}
+[3.878171] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_typesupport_fastrtps_cExport.cmake\n'}
+[3.878440] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_typesupport_fastrtps_cExport-noconfig.cmake\n'}
+[3.879283] (-) TimerEvent: {}
+[3.881628] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_cppExport.cmake\n'}
+[3.882282] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_typesupport_fastrtps_cppExport.cmake\n'}
+[3.882463] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake\n'}
+[3.883291] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_introspection_cExport.cmake\n'}
+[3.886409] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_introspection_cExport-noconfig.cmake\n'}
+[3.887397] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_cExport.cmake\n'}
+[3.887654] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_cExport-noconfig.cmake\n'}
+[3.889401] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_introspection_cppExport.cmake\n'}
+[3.889509] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_introspection_cppExport-noconfig.cmake\n'}
+[3.890209] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_cppExport.cmake\n'}
+[3.890490] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_test__rosidl_typesupport_cppExport-noconfig.cmake\n'}
+[3.890781] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_pyExport.cmake\n'}
+[3.891219] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/export_motor_test__rosidl_generator_pyExport-noconfig.cmake\n'}
+[3.891413] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/rosidl_cmake-extras.cmake\n'}
+[3.891576] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[3.891728] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[3.892228] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[3.892443] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/ament_cmake_export_targets-extras.cmake\n'}
+[3.892490] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake\n'}
+[3.892537] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake\n'}
+[3.892571] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_testConfig.cmake\n'}
+[3.893636] (motor_test) StdoutLine: {'line': b'-- Up-to-date: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/cmake/motor_testConfig-version.cmake\n'}
+[3.893712] (motor_test) StdoutLine: {'line': b'-- Installing: /home/meng/meng/MEng-PROJ500-2025-26/Software/install/motor_test/share/motor_test/package.xml\n'}
+[3.895134] (motor_test) CommandEnded: {'returncode': 0}
+[3.950202] (motor_test) JobEnded: {'identifier': 'motor_test', 'rc': 0}
+[3.956201] (-) EventReactorShutdown: {}
