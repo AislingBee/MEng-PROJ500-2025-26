@@ -3,17 +3,18 @@
 
 from __future__ import annotations
 
-import math
 import time
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
 import torch
 
-from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
-from simulation.isaac.configuration.walking_actuator_config import (
-    build_per_joint_walking_actuator_cfg,
+from simulation.isaac.configuration.standing_s2r_policy_contract import (
+    CONTRACT,
+    build_fixed_gains,
+    build_standing_q,
+    get_thor_runner_defaults,
 )
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
@@ -30,28 +31,31 @@ Tensor = torch.Tensor
 @dataclass
 class ThorPolicyRunnerConfig:
     policy_path: str
-    joint_names: tuple[str, ...]
-    joint_lower_rad: tuple[float, ...]
-    joint_upper_rad: tuple[float, ...]
-    action_scale: tuple[float, ...] = (
-        0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
-        0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
-    )
-    command_value: float = 0.0
+    joint_names: tuple[str, ...] = CONTRACT.joint_names
+    joint_lower_rad: tuple[float, ...] = CONTRACT.joint_lower_limits_rad
+    joint_upper_rad: tuple[float, ...] = CONTRACT.joint_upper_limits_rad
+    action_scale: tuple[float, ...] = CONTRACT.action_scale
+    command_value: float = CONTRACT.default_command_value
     device: str = "cpu"
-    loop_hz: float = 60.0
+    loop_hz: float = CONTRACT.policy_loop_hz
     send_standing_pose_on_exit: bool = True
 
     def __post_init__(self) -> None:
         n = len(self.joint_names)
-        if n != 12:
-            raise ValueError(f"Expected 12 joints, got {n}")
+        if self.joint_names != CONTRACT.joint_names:
+            raise ValueError("joint_names must match the standing S2R policy contract")
+        if n != CONTRACT.action_dim:
+            raise ValueError(f"Expected {CONTRACT.action_dim} joints, got {n}")
         if len(self.joint_lower_rad) != n:
             raise ValueError("joint_lower_rad length must match joint_names")
         if len(self.joint_upper_rad) != n:
             raise ValueError("joint_upper_rad length must match joint_names")
         if len(self.action_scale) != n:
             raise ValueError("action_scale length must match joint_names")
+        if tuple(self.joint_lower_rad) != CONTRACT.joint_lower_limits_rad:
+            raise ValueError("joint_lower_rad must match the standing S2R policy contract")
+        if tuple(self.joint_upper_rad) != CONTRACT.joint_upper_limits_rad:
+            raise ValueError("joint_upper_rad must match the standing S2R policy contract")
         if self.loop_hz <= 0.0:
             raise ValueError("loop_hz must be positive")
 
@@ -115,8 +119,9 @@ class DeployablePolicy:
         out = torch.as_tensor(out, dtype=torch.float32, device=self.device)
         if out.ndim == 1:
             out = out.unsqueeze(0)
-        if out.shape != (1, 12):
-            raise RuntimeError(f"Expected policy output shape (1, 12), got {tuple(out.shape)}")
+        expected_shape = (1, CONTRACT.action_dim)
+        if out.shape != expected_shape:
+            raise RuntimeError(f"Expected policy output shape {expected_shape}, got {tuple(out.shape)}")
         if torch.isnan(out).any():
             raise RuntimeError("NaN detected in policy output")
         return out
@@ -142,7 +147,7 @@ class ThorStandingPolicyRunner:
         self.policy = DeployablePolicy(runner_cfg.policy_path, device=self.device)
 
         self._joint_names = list(runner_cfg.joint_names)
-        self._standing_q = self._build_standing_pose_tensor(self._joint_names)
+        self._standing_q = build_standing_q(device=self.device)
         self._action_scale = torch.tensor(
             runner_cfg.action_scale, dtype=torch.float32, device=self.device
         ).unsqueeze(0)
@@ -155,23 +160,11 @@ class ThorStandingPolicyRunner:
         self._commands = torch.tensor(
             [[runner_cfg.command_value]], dtype=torch.float32, device=self.device
         )
-        self._last_actions = torch.zeros((1, 12), dtype=torch.float32, device=self.device)
-        self._tau_ff = torch.zeros((1, 12), dtype=torch.float32, device=self.device)
-
-        per_joint_cfg = build_per_joint_walking_actuator_cfg(self._joint_names)
-        self._kp_fixed = torch.tensor(
-            per_joint_cfg["stiffness"], dtype=torch.float32, device=self.device
-        ).unsqueeze(0)
-        self._kd_fixed = torch.tensor(
-            per_joint_cfg["damping"], dtype=torch.float32, device=self.device
-        ).unsqueeze(0)
-
-    @staticmethod
-    def _build_standing_pose_tensor(joint_names: Sequence[str]) -> Tensor:
-        q = torch.zeros((12,), dtype=torch.float32)
-        for i, joint_name in enumerate(joint_names):
-            q[i] = math.radians(STANDING_TARGETS_DEG.get(joint_name, 0.0))
-        return q
+        self._last_actions = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
+        self._tau_ff = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
+        kp_fixed, kd_fixed = build_fixed_gains(device=self.device)
+        self._kp_fixed = kp_fixed.unsqueeze(0)
+        self._kd_fixed = kd_fixed.unsqueeze(0)
 
     def build_observation(self) -> Tensor:
         packet = self.hardware.read_observation_packet()
@@ -191,8 +184,9 @@ class ThorStandingPolicyRunner:
         )
 
         obs = obs.to(self.device, dtype=torch.float32)
-        if obs.shape != (1, 55):
-            raise RuntimeError(f"Expected observation shape (1, 55), got {tuple(obs.shape)}")
+        expected_shape = (1, CONTRACT.obs_dim)
+        if obs.shape != expected_shape:
+            raise RuntimeError(f"Expected observation shape {expected_shape}, got {tuple(obs.shape)}")
         if torch.isnan(obs).any():
             raise RuntimeError("NaN detected in observations")
         return obs
@@ -262,40 +256,17 @@ def example_command_writer(msg: RobotCommandMessage) -> None:
 
 
 def main() -> None:
-    joint_names = (
-        "robot_l_hip_yaw_joint",
-        "robot_l_hip_roll_joint",
-        "robot_l_hip_pitch_joint",
-        "robot_l_knee_joint",
-        "robot_l_ankle_pitch_joint",
-        "robot_l_ankle_roll_joint",
-        "robot_r_hip_yaw_joint",
-        "robot_r_hip_roll_joint",
-        "robot_r_hip_pitch_joint",
-        "robot_r_knee_joint",
-        "robot_r_ankle_pitch_joint",
-        "robot_r_ankle_roll_joint",
-    )
-
-    # Fill these from the same trained robot definition used by Isaac.
-    # They must match the soft joint position limits used during training.
-    joint_lower_rad = (
-        -1.0, -1.0, -1.0, -1.0, -1.0, -1.0,
-        -1.0, -1.0, -1.0, -1.0, -1.0, -1.0,
-    )
-    joint_upper_rad = (
-        1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    )
+    contract_defaults = get_thor_runner_defaults()
+    joint_names = contract_defaults["joint_names"]
 
     runner_cfg = ThorPolicyRunnerConfig(
         policy_path="exports/standing_policy.pt",
         joint_names=joint_names,
-        joint_lower_rad=joint_lower_rad,
-        joint_upper_rad=joint_upper_rad,
+        joint_lower_rad=contract_defaults["joint_lower_limits_rad"],
+        joint_upper_rad=contract_defaults["joint_upper_limits_rad"],
         device="cpu",
-        loop_hz=60.0,
-        command_value=0.0,
+        loop_hz=contract_defaults["loop_hz"],
+        command_value=contract_defaults["command_value"],
     )
 
     hardware_cfg = RobotInterfaceConfig(

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from pathlib import Path
-import math
 import torch
 import isaaclab.sim as sim_utils
 from isaaclab.actuators import IdealPDActuatorCfg
@@ -15,9 +14,12 @@ from isaaclab.utils.math import quat_rotate_inverse
 
 from ...configuration.walking_actuator_config import (
     WALKING_ACTUATOR_SETTINGS,
-    build_per_joint_walking_actuator_cfg,
 )
-from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
+from simulation.isaac.configuration.standing_s2r_policy_contract import (
+    CONTRACT,
+    build_fixed_gains,
+    build_standing_q,
+)
 from ..interface.hardware_interface import ControlPacket
 from ..interface.isaac_hardware_interface import IsaacHardwareInterface
 
@@ -27,11 +29,11 @@ USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "s
 
 @configclass
 class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
-    decimation: int = 2
+    decimation: int = CONTRACT.decimation
     episode_length_s: float = 10.0
 
     sim: SimulationCfg = SimulationCfg(
-        dt=1.0 / 120.0,
+        dt=CONTRACT.sim_dt_s,
         render_interval=decimation,
     )
 
@@ -41,14 +43,12 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
         replicate_physics=True,
     )
 
-    action_space: int = 12
-    observation_space: int = 55
+    action_space: int = CONTRACT.action_dim
+    observation_space: int = CONTRACT.obs_dim
     state_space: int = 0
 
-    action_scale: tuple[float, ...] = (
-        0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
-        0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
-    )
+    action_scale: tuple[float, ...] = CONTRACT.action_scale
+    default_command_value: float = CONTRACT.default_command_value
 
     usd_path: str = str(USD_PATH)
     base_height: float = 0.0
@@ -95,10 +95,19 @@ class HumanoidStandEnvS2r(DirectRLEnv):
                 f"Expected {self.cfg.action_space} joints, got {self.num_dofs}. "
                 f"Check USD / standing pose / actuator config alignment."
             )
+        if tuple(self.robot.joint_names) != CONTRACT.joint_names:
+            raise RuntimeError(
+                "Robot joint_names do not match the standing S2R policy contract. "
+                "Training and deployment joint order must stay identical."
+            )
 
         self._actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
-        self._commands = torch.zeros((self.num_envs, 1), device=self.device)
+        self._commands = torch.full(
+            (self.num_envs, 1),
+            fill_value=self.cfg.default_command_value,
+            device=self.device,
+        )
         self._joint_pos_targets = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
 
         self._action_scale = torch.tensor(
@@ -106,22 +115,28 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         ).unsqueeze(0)
 
         self._gravity_vec_w = torch.tensor([0.0, 0.0, -1.0], device=self.device).repeat(self.num_envs, 1)
-        self._standing_q = self._build_standing_pose_tensor()
-        self._joint_lower = self.robot.data.soft_joint_pos_limits[..., 0].clone()
-        self._joint_upper = self.robot.data.soft_joint_pos_limits[..., 1].clone()
+        self._standing_q = build_standing_q(device=self.device)
+        self._joint_lower = torch.tensor(
+            CONTRACT.joint_lower_limits_rad,
+            dtype=torch.float32,
+            device=self.device,
+        ).unsqueeze(0).repeat(self.num_envs, 1)
+        self._joint_upper = torch.tensor(
+            CONTRACT.joint_upper_limits_rad,
+            dtype=torch.float32,
+            device=self.device,
+        ).unsqueeze(0).repeat(self.num_envs, 1)
 
-        self._per_joint_actuator_cfg = build_per_joint_walking_actuator_cfg(self.robot.joint_names)
-        print(self.robot.data.joint_names)
-        self._kp_fixed = torch.tensor(
-            self._per_joint_actuator_cfg["stiffness"],
-            dtype=torch.float32,
-            device=self.device,
-        ).unsqueeze(0).repeat(self.num_envs, 1)
-        self._kd_fixed = torch.tensor(
-            self._per_joint_actuator_cfg["damping"],
-            dtype=torch.float32,
-            device=self.device,
-        ).unsqueeze(0).repeat(self.num_envs, 1)
+        soft_joint_lower = self.robot.data.soft_joint_pos_limits[..., 0]
+        soft_joint_upper = self.robot.data.soft_joint_pos_limits[..., 1]
+        if not torch.allclose(soft_joint_lower[0], self._joint_lower[0], atol=1e-5, rtol=0.0):
+            raise RuntimeError("Robot soft joint lower limits do not match the standing S2R policy contract")
+        if not torch.allclose(soft_joint_upper[0], self._joint_upper[0], atol=1e-5, rtol=0.0):
+            raise RuntimeError("Robot soft joint upper limits do not match the standing S2R policy contract")
+
+        kp_fixed, kd_fixed = build_fixed_gains(device=self.device)
+        self._kp_fixed = kp_fixed.unsqueeze(0).repeat(self.num_envs, 1)
+        self._kd_fixed = kd_fixed.unsqueeze(0).repeat(self.num_envs, 1)
         self._tau_ff = torch.zeros((self.num_envs, self.num_dofs), dtype=torch.float32, device=self.device)
         self._q_des = torch.zeros((self.num_envs, self.num_dofs), dtype=torch.float32, device=self.device)
 
@@ -192,12 +207,6 @@ class HumanoidStandEnvS2r(DirectRLEnv):
 
         self.scene.clone_environments(copy_from_source=False)
         self.scene.filter_collisions(global_prim_paths=[])
-
-    def _build_standing_pose_tensor(self) -> torch.Tensor:
-        q = torch.zeros(self.num_dofs, dtype=torch.float32, device=self.device)
-        for i, joint_name in enumerate(self.robot.joint_names):
-            q[i] = math.radians(STANDING_TARGETS_DEG.get(joint_name, 0.0))
-        return q
 
     def _pre_physics_step(self, actions: torch.Tensor) -> None:
         if torch.isnan(actions).any():
