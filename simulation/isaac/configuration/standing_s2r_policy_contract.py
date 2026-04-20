@@ -116,15 +116,3 @@ def get_thor_runner_defaults() -> dict:
         "joint_lower_limits_rad": CONTRACT.joint_lower_limits_rad,
         "joint_upper_limits_rad": CONTRACT.joint_upper_limits_rad,
     }
-
-
-# Joint limits are intentionally not hard-coded here because the correct values
-# must match the exact articulation limits that Isaac used during training.
-# Populate these from the trained robot definition / runtime dump and keep the
-# ordering aligned with the joint_names loaded above.
-#
-# Example:
-# THOR_JOINT_LIMITS = {
-#     "lower_rad": (... 12 values ...),
-#     "upper_rad": (... 12 values ...),
-# }
