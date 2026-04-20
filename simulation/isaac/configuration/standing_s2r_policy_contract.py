@@ -22,21 +22,6 @@ from simulation.isaac.configuration.walking_actuator_config import (
 # This keeps deployment-critical constants aligned between training and Thor.
 
 
-JOINT_NAMES: Final[tuple[str, ...]] = (
-    "robot_l_hip_yaw_joint",
-    "robot_l_hip_roll_joint",
-    "robot_l_hip_pitch_joint",
-    "robot_l_knee_joint",
-    "robot_l_ankle_pitch_joint",
-    "robot_l_ankle_roll_joint",
-    "robot_r_hip_yaw_joint",
-    "robot_r_hip_roll_joint",
-    "robot_r_hip_pitch_joint",
-    "robot_r_knee_joint",
-    "robot_r_ankle_pitch_joint",
-    "robot_r_ankle_roll_joint",
-)
-
 ACTION_SCALE: Final[tuple[float, ...]] = (
     0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
     0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
@@ -78,7 +63,7 @@ if len(JOINT_LIMIT_NAMES) != ACTION_DIM:
 
 @dataclass(frozen=True)
 class StandingS2RPolicyContract:
-    joint_names: tuple[str, ...] = JOINT_NAMES
+    joint_names: tuple[str, ...] = JOINT_LIMIT_NAMES
     action_scale: tuple[float, ...] = ACTION_SCALE
     sim_dt_s: float = SIM_DT_S
     decimation: int = DECIMATION
@@ -136,7 +121,7 @@ def get_thor_runner_defaults() -> dict:
 # Joint limits are intentionally not hard-coded here because the correct values
 # must match the exact articulation limits that Isaac used during training.
 # Populate these from the trained robot definition / runtime dump and keep the
-# ordering aligned with JOINT_NAMES.
+# ordering aligned with the joint_names loaded above.
 #
 # Example:
 # THOR_JOINT_LIMITS = {
