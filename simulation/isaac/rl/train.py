@@ -95,9 +95,11 @@ def export_deployable_policy(runner, env_cfg, export_dir: str) -> None:
     actor.eval()
 
     device = next(actor.parameters()).device
-    example_obs = torch.zeros(1, env_cfg.observation_space, device=device)
+    example_obs = {
+        "policy": torch.zeros(1, env_cfg.observation_space, device=device)
+    }
 
-    scripted_actor = torch.jit.trace(actor, example_obs)
+    scripted_actor = torch.jit.trace(actor, (example_obs,))
     scripted_actor.save(os.path.join(export_dir, "policy_jit.pt"))
 
     torch.save(actor.state_dict(), os.path.join(export_dir, "actor_state_dict.pt"))
