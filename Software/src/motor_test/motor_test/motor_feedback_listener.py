@@ -8,7 +8,12 @@ import struct
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
-from motor_test.common import load_motor_names
+
+try:
+    from motor_test.common import load_motor_names
+except ModuleNotFoundError:
+    from common import load_motor_names
+
 from motor_test.msg import MotorFeedback, MotorFeedbackEntry
 
 
@@ -19,11 +24,12 @@ class MotorFeedbackListener(Node):
         self.declare_parameter('input', 'motor_can')
         self.declare_parameter('motor_count', 13)
         self.declare_parameter('names_file', 'motor_names.json')
+        self.declare_parameter('all_logging_info', False)
 
         self.input_topic = self.get_parameter('input').value
         self.motor_count = int(self.get_parameter('motor_count').value)
         self.names_file = self.get_parameter('names_file').value
-        self.all_logging_info = bool(self.get_parameter_or('all_logging_info', False))
+        self.all_logging_info = bool(self.get_parameter('all_logging_info').value)
         self.record_format = '<ff'
         self.record_size = struct.calcsize(self.record_format)
 

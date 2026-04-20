@@ -51,11 +51,12 @@ def generate_launch_description():
         output='screen',
         parameters=[
             {
-                'serial_port': 'COM3',
+                'serial_port': '/dev/ttyACM0',
                 'baud_rate': 115200,
                 'timeout': 0.1,
                 'command_topic': 'motor_can',
                 'feedback_topic': 'motor_can_feedback',
+                'can_id': 0x7F,
                 'all_logging_info': True,
             }
         ],

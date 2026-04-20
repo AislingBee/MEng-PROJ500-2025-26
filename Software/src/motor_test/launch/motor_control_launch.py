@@ -42,21 +42,6 @@ def generate_launch_description():
         ],
     )
 
-    motor_can_publisher_node = Node(
-        package='motor_test',
-        executable='motor_can_publisher.py',
-        name='motor_can_publisher',
-        output='screen',
-        parameters=[
-            {
-                'input': 'motor_can',
-                'output': 'motor_can_tx',
-                'frame': 0x201,
-                'all_logging_info': True,
-            }
-        ],
-    )
-
     serial_can_bridge_node = Node(
         package='motor_test',
         executable='serial_can_bridge.py',
@@ -67,8 +52,9 @@ def generate_launch_description():
                 'serial_port': '/dev/ttyACM0',
                 'baud_rate': 115200,
                 'timeout': 0.1,
-                'command_topic': 'motor_can_tx',
+                'command_topic': 'motor_can',
                 'feedback_topic': 'motor_can_feedback',
+                'can_id': 0x7F,
                 'all_logging_info': True,
             }
         ],
@@ -100,7 +86,6 @@ def generate_launch_description():
     return LaunchDescription([
         motor_controller_test_node,
         json_can_convert_node,
-        motor_can_publisher_node,
         serial_can_bridge_node,
         motor_feedback_node,
         motor_sub_node,

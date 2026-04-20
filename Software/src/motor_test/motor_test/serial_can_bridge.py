@@ -6,9 +6,9 @@ as ASCII commands over a serial port, and publishes incoming STM32 motor
 feedback back onto a ROS CAN-like topic `motor_can_feedback`.
 
 The STM firmware should expose the following serial protocol:
-  CMD <q> <kp> <kd> <tau>\n
+  CMD 0xNN <q> <kp> <kd> <tau>\n
 and reply as:
-  FBK 0x201 <q> <q_dot>\n
+  FBK 0xNN <q> <q_dot>\n
 The ROS side can then feed `motor_can_feedback` into the existing
 `motor_feedback_listener.py` node.
 """
@@ -38,6 +38,7 @@ class SerialCanBridge(Node):
         self.declare_parameter('timeout', 0.1)
         self.declare_parameter('command_topic', 'motor_can_tx')
         self.declare_parameter('feedback_topic', 'motor_can_feedback')
+        self.declare_parameter('can_id', 0x7F)
         self.declare_parameter('all_logging_info', True)
 
         self.port = self.get_parameter('serial_port').value
@@ -45,7 +46,8 @@ class SerialCanBridge(Node):
         self.timeout = float(self.get_parameter('timeout').value)
         self.command_topic = self.get_parameter('command_topic').value
         self.feedback_topic = self.get_parameter('feedback_topic').value
-        self.all_logging_info = bool(self.get_parameter_or('all_logging_info', False))
+        self.can_id = int(self.get_parameter('can_id').value)
+        self.all_logging_info = bool(self.get_parameter('all_logging_info').value)
 
         self.publisher = self.create_publisher(UInt8MultiArray, self.feedback_topic, 10)
         self.subscription = self.create_subscription(
@@ -97,7 +99,7 @@ class SerialCanBridge(Node):
         for offset in range(0, len(payload) - (len(payload) % 16), 16):
             chunk = payload[offset:offset + 16]
             q, kp, kd, tau = struct.unpack('<ffff', chunk)
-            line = f'CMD {q:.6f} {kp:.6f} {kd:.6f} {tau:.6f}\n'
+            line = f'CMD 0x{self.can_id:X} {q:.6f} {kp:.6f} {kd:.6f} {tau:.6f}\n'
             try:
                 self.serial.write(line.encode('ascii'))
                 self.serial.flush()

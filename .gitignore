@@ -1,2 +1,21 @@
-logs/
+# Python
+__pycache__/
 *.pyc
+*.pyo
+.venv/
+
+# ROS / colcon build artifacts
+build/
+install/
+log/
+logs/
+
+# STM32 firmware build outputs
+*.o
+*.d
+*.elf
+*.bin
+
+# Editor files
+.vscode/
+.idea/

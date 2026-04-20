@@ -6,7 +6,12 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
-from motor_test.common import bytes_to_uint8_list, pack_floats
+
+try:
+    from motor_test.common import bytes_to_uint8_list, pack_floats
+except ModuleNotFoundError:
+    from common import bytes_to_uint8_list, pack_floats
+
 from motor_test.msg import MotorParam
 
 
@@ -17,11 +22,12 @@ class MotorCanPublisher(Node):
         self.declare_parameter('input', 'test_motor_params')
         self.declare_parameter('output', 'motor_can')
         self.declare_parameter('frame', 0x201)
+        self.declare_parameter('all_logging_info', False)
 
         self.input_topic = self.get_parameter('input').value
         self.output_topic = self.get_parameter('output').value
         self.frame = self.get_parameter('frame').value
-        self.all_logging_info = bool(self.get_parameter_or('all_logging_info', False))
+        self.all_logging_info = bool(self.get_parameter('all_logging_info').value)
 
         # Set up subscriber and publisher
         self.subscription = self.create_subscription(

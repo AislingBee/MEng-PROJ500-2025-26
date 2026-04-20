@@ -21,6 +21,7 @@ class MotorControllerTest(Node):
         self.declare_parameter('tau', 0.0)
         self.declare_parameter('step_duration', 4.0)
         self.declare_parameter('motor_index', 0)
+        self.declare_parameter('all_logging_info', False)
 
         self.command_topic = self.get_parameter('command_topic').value
         self.feedback_topic = self.get_parameter('feedback_topic').value
@@ -31,7 +32,7 @@ class MotorControllerTest(Node):
         self.tau = float(self.get_parameter('tau').value)
         self.step_duration = float(self.get_parameter('step_duration').value)
         self.motor_index = int(self.get_parameter('motor_index').value)
-        self.all_logging_info = bool(self.get_parameter_or('all_logging_info', False))
+        self.all_logging_info = bool(self.get_parameter('all_logging_info').value)
 
         self.publisher = self.create_publisher(MotorParam, self.command_topic, 10)
         self.subscription = self.create_subscription(

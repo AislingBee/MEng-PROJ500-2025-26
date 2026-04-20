@@ -22,9 +22,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   DEPENDENCIES std_msgs
 )
 ament_export_dependencies(rosidl_default_runtime)
-if(NOT TARGET ament_cmake_python_copy_${PROJECT_NAME})
-  ament_python_install_package(${PROJECT_NAME})
-endif()
 
 add_executable(motor_sub src/motor_sub.cpp)
 ament_target_dependencies(motor_sub rclcpp std_msgs)
@@ -46,6 +43,11 @@ install(PROGRAMS
   motor_test/motor_can_publisher.py
   motor_test/motor_controller_test.py
   motor_test/serial_can_bridge.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(FILES
+  motor_test/common.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

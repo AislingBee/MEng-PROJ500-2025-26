@@ -5,7 +5,12 @@
 
 import rclpy
 from rclpy.node import Node
-from motor_test.common import clamp_rate
+
+try:
+    from motor_test.common import clamp_rate
+except ModuleNotFoundError:
+    from common import clamp_rate
+
 from motor_test.msg import MotorParam
 
 
@@ -19,6 +24,7 @@ class MotorPub(Node):
         self.declare_parameter('kp', 0.0)
         self.declare_parameter('kd', 0.0)
         self.declare_parameter('tau', 0.0)
+        self.declare_parameter('all_logging_info', False)
 
         self.topic = self.get_parameter('topic').value
         self.rate = clamp_rate(self.get_parameter('rate').value)
@@ -26,7 +32,7 @@ class MotorPub(Node):
         self.kp = self.get_parameter('kp').value
         self.kd = self.get_parameter('kd').value
         self.tau = self.get_parameter('tau').value
-        self.all_logging_info = bool(self.get_parameter_or('all_logging_info', False))
+        self.all_logging_info = bool(self.get_parameter('all_logging_info').value)
 
         # TODO: explain the publisher, topic, and timer setup
         self.publisher = self.create_publisher(MotorParam, self.topic, 10)
