@@ -91,10 +91,7 @@ get_humanoid_stand_ppo_cfg = ppo_cfg_module.get_humanoid_stand_ppo_cfg
 def export_deployable_policy(runner, env_cfg, export_dir: str) -> None:
     os.makedirs(export_dir, exist_ok=True)
 
-    actor_critic = runner.alg.actor_critic
-    actor_critic.eval()
-
-    actor = actor_critic.actor
+    actor = runner.alg.actor
     actor.eval()
 
     device = next(actor.parameters()).device
@@ -103,7 +100,7 @@ def export_deployable_policy(runner, env_cfg, export_dir: str) -> None:
     scripted_actor = torch.jit.trace(actor, example_obs)
     scripted_actor.save(os.path.join(export_dir, "policy_jit.pt"))
 
-    torch.save(actor_critic.state_dict(), os.path.join(export_dir, "actor_critic_state_dict.pt"))
+    torch.save(actor.state_dict(), os.path.join(export_dir, "actor_state_dict.pt"))
 
     print(f"Deployable TorchScript actor saved to: {os.path.join(export_dir, 'policy_jit.pt')}")
 
