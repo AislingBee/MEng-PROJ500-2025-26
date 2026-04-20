@@ -100,7 +100,7 @@ class DeployablePolicy:
 
     @torch.inference_mode()
     def act(self, obs: Tensor) -> Tensor:
-        out = self.policy(obs)
+        out = self.policy({"policy": obs})
 
         if isinstance(out, dict):
             if "actions" in out:
