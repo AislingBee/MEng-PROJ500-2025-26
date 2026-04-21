@@ -12,7 +12,7 @@ from simulation.isaac.rl.interface.robot_hardware_interface import (
     RobotInterfaceConfig,
     RobotStateSample,
 )
-from simulation.isaac.rl.thor_policy_runner import (
+from hardware.thor.thor_policy_runner import (
     ThorPolicyRunnerConfig,
     ThorStandingPolicyRunner,
 )
