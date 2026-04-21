@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import torch
+import math
 
 from simulation.isaac.configuration.standing_s2r_policy_contract import (
     CONTRACT,
@@ -21,8 +22,8 @@ from hardware.thor.thor_policy_runner import (
 def rad_to_encoder_counts(q_rad: list[float]) -> list[int]:
     counts = []
     for q in q_rad:
-        q_wrapped = ((q + torch.pi) % (2.0 * torch.pi)) - torch.pi
-        count = int(round((float(q_wrapped) % (2.0 * torch.pi)) / (2.0 * torch.pi) * 16384.0))
+        q_0_2pi = q % (2.0 * math.pi)
+        count = int(round((q_0_2pi / (2.0 * math.pi)) * 16384.0))
         count = max(0, min(16383, count))
         counts.append(count)
     return counts
