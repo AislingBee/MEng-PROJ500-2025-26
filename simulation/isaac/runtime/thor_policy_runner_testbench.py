@@ -91,6 +91,11 @@ def main() -> None:
     print("kd shape:", tuple(packet.kd.shape))
     print("tau_ff shape:", tuple(packet.tau_ff.shape))
 
+    actions = runner.policy.act(obs)
+    
+    print("actions:", actions)
+    print("actions min/max:", actions.min().item(), actions.max().item())
+
 
 if __name__ == "__main__":
     main()
