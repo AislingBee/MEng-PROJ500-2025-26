@@ -17,6 +17,10 @@ logs/
 *.bin
 !Software/stm_firmware/stm_firmware/firmware.bin
 
+# Ignore portable toolchains and downloaded tools used for building on the build PC
+# (keeps large binaries out of the repo)
+Software/stm_firmware/tools/
+
 # Editor files
 .vscode/
 .idea/
