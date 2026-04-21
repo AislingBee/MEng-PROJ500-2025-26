@@ -191,7 +191,8 @@ def main() -> None:
         print("q_des min/max:", packet.q_des.min().item(), packet.q_des.max().item())
 
         q_rel = obs[:, :12]
-        print("q_rel first 6:", q_rel[0, :6])
+        print("q_rel full:", q_rel)
+        print("q_rel knee joints:", q_rel[0, 6], q_rel[0, 7])
 
         gravity_slice = obs[:, 36:39]
         gyro_slice = obs[:, 39:42]
