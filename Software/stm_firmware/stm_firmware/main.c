@@ -52,7 +52,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_CAN1_Init(void);
 static void process_uart_line(const char *line);
-static void send_motor_command(uint32_t can_id, float q, float kp, float kd, float tau);
+static void send_motor_command(uint32_t can_id, float q, float qd, float kp, float kd, float tau);
 static void send_uart_feedback(uint32_t can_id, float q, float q_dot);
 static void service_uart_rx(void);
 static void service_can_rx(void);
@@ -175,12 +175,12 @@ static void process_uart_line(const char *line)
 
     if (sscanf(line, "CMD 0x%lx %f %f %f %f", &can_id_ul, &q, &kp, &kd, &tau) == 5) {
         motor_can_id = (uint32_t)(can_id_ul & 0xFFUL);
-        send_motor_command(motor_can_id, q, kp, kd, tau);
+        send_motor_command(motor_can_id, q, 0.0f, kp, kd, tau);
         return;
     }
 
     if (sscanf(line, "CMD %f %f %f %f", &q, &kp, &kd, &tau) == 4) {
-        send_motor_command(motor_can_id, q, kp, kd, tau);
+        send_motor_command(motor_can_id, q, 0.0f, kp, kd, tau);
         return;
     }
 
@@ -232,7 +232,7 @@ static bool can_send_frame(uint32_t ext_id, const uint8_t *data, uint8_t dlc)
     return false;
 }
 
-static void send_motor_command(uint32_t can_id, float q, float kp, float kd, float tau)
+static void send_motor_command(uint32_t can_id, float q, float qd, float kp, float kd, float tau)
 {
     const uint8_t enable_cmd[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     const uint8_t mode_cmd[8] = {
@@ -246,6 +246,7 @@ static void send_motor_command(uint32_t can_id, float q, float kp, float kd, flo
     char err_msg[96];
 
     q = clampf_local(q, P_MIN, P_MAX);
+    qd = clampf_local(qd, V_MIN, V_MAX);
     kp = clampf_local(kp, KP_MIN, KP_MAX);
     kd = clampf_local(kd, KD_MIN, KD_MAX);
     tau = clampf_local(tau, T_MIN, T_MAX);
@@ -270,7 +271,7 @@ static void send_motor_command(uint32_t can_id, float q, float kp, float kd, flo
 
     {
         const uint32_t p_int = float_to_uint(q, P_MIN, P_MAX, 16);
-        const uint32_t v_int = float_to_uint(0.0f, V_MIN, V_MAX, 16);
+        const uint32_t v_int = float_to_uint(qd, V_MIN, V_MAX, 16);
         const uint32_t kp_int = float_to_uint(kp, KP_MIN, KP_MAX, 16);
         const uint32_t kd_int = float_to_uint(kd, KD_MIN, KD_MAX, 16);
         const uint32_t t_int = float_to_uint(tau, T_MIN, T_MAX, 16);
