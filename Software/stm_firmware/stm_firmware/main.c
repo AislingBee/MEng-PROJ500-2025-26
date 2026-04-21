@@ -1,12 +1,18 @@
 /*
  * main.c
- * STM32 serial-to-CAN bridge for RobStride RS04 motor control.
+ * STM32 Ethernet-to-CAN bridge for RobStride RS04 motor control.
  *
- * Serial protocol from the host:
+ * Network protocol (UDP, port 7777, static IP 192.168.1.100):
  *   CMD 0xNN <q> <kp> <kd> <tau>\n
+ *   CMD <q> <kp> <kd> <tau>\n
+ *   ID?\n
+ *   ZERO\n
+ *   STOP\n
  *
- * Feedback back to the host:
+ * Responses (UDP back to sender):
  *   FBK 0xNN <q> <q_dot>\n
+ *   ID 0xNN\n
+ *   ERR ...\n
  */
 
 #include "stm32f4xx_hal.h"
@@ -16,8 +22,28 @@
 #include <string.h>
 
 CAN_HandleTypeDef hcan1;
+ETH_HandleTypeDef heth;
 
-#define UART_RX_BUF_SIZE 128U
+/* Network configuration */
+#define ETH_UDP_PORT        7777U
+#define ETH_PHY_ADDR        0U
+
+/* DMA descriptor counts and buffer sizes */
+#define ETH_RXBUFNB         4U
+#define ETH_TXBUFNB         4U
+#define ETH_RX_BUF_SIZE     1524U
+#define ETH_TX_BUF_SIZE     1524U
+
+/* Ethernet frame offsets */
+#define ETH_HEADER_SIZE       14U
+#define ETHERTYPE_ARP         0x0806U
+#define ETHERTYPE_IP          0x0800U
+#define ARP_PACKET_SIZE       28U
+#define ARP_OPER_REQUEST      0x0001U
+#define IP_PROTO_UDP          17U
+#define IP_HEADER_MIN_SIZE    20U
+
+#define LINE_BUF_SIZE 128U
 #define DEFAULT_MOTOR_CAN_ID 0x7FU
 
 #define RS04_COMM_GET_ID            0x00U
@@ -42,20 +68,41 @@ CAN_HandleTypeDef hcan1;
 #define T_MIN  (-17.0f)
 #define T_MAX  (17.0f)
 
-static char uart_rx_buf[UART_RX_BUF_SIZE];
-static uint16_t uart_rx_len = 0U;
+/* DMA descriptors and buffers (aligned for DMA access) */
+static ETH_DMADescTypeDef DMARxDscrTab[ETH_RXBUFNB] __attribute__((aligned(4)));
+static ETH_DMADescTypeDef DMATxDscrTab[ETH_TXBUFNB] __attribute__((aligned(4)));
+static uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __attribute__((aligned(4)));
+static uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __attribute__((aligned(4)));
+
+static const uint8_t my_mac[6] = {0x02U, 0x00U, 0x00U, 0x00U, 0x00U, 0x01U};
+static const uint8_t my_ip[4]  = {192U, 168U, 1U, 100U};
+
+/* Last host that sent a UDP packet — responses go here */
+static uint8_t host_mac[6]  = {0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU};
+static uint8_t host_ip[4]   = {192U, 168U, 1U, 1U};
+static uint16_t host_port   = 0U;
+static bool host_known       = false;
+
 static bool motor_mode_enabled = false;
-static uint32_t motor_can_id = DEFAULT_MOTOR_CAN_ID;
+static uint32_t motor_can_id   = DEFAULT_MOTOR_CAN_ID;
+
+static char line_buf[LINE_BUF_SIZE];
 
 static void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_USART3_UART_Init(void);
+static void MX_ETH_Init(void);
 static void MX_CAN1_Init(void);
-static void process_uart_line(const char *line);
-static void send_motor_command(uint32_t can_id, float q, float qd, float kp, float kd, float tau);
-static void send_uart_feedback(uint32_t can_id, float q, float q_dot);
-static void service_uart_rx(void);
+static void service_eth_rx(void);
 static void service_can_rx(void);
+static void process_line(const char *line);
+static void eth_send_udp(const char *data, uint16_t len);
+static void send_text(const char *str);
+static void send_feedback(uint32_t can_id, float q, float q_dot);
+static void handle_arp(const uint8_t *frame, uint16_t frame_len);
+static void handle_ip(const uint8_t *frame, uint16_t frame_len);
+static void handle_udp(const uint8_t *udp, uint16_t udp_len,
+                       const uint8_t *src_mac, const uint8_t *src_ip);
+static void send_motor_command(uint32_t can_id, float q, float qd, float kp, float kd, float tau);
 static bool can_send_frame(uint32_t ext_id, const uint8_t *data, uint8_t dlc);
 
 static float clampf_local(float value, float min_value, float max_value)
@@ -85,18 +132,22 @@ static float uint_to_float(uint32_t x_int, float x_min, float x_max, uint8_t bit
     return (((float)x_int) * span / (float)max_int) + offset;
 }
 
-static void uart_send_char(char c)
+/* One's-complement IP checksum */
+static uint16_t ip_checksum(const uint8_t *buf, uint16_t len)
 {
-    while ((USART3->SR & USART_SR_TXE) == 0U) {
+    uint32_t sum = 0U;
+    while (len > 1U) {
+        sum += ((uint32_t)buf[0] << 8) | buf[1];
+        buf += 2;
+        len -= 2U;
     }
-    USART3->DR = (uint8_t)c;
-}
-
-static void uart_send_string(const char *str)
-{
-    while (*str != '\0') {
-        uart_send_char(*str++);
+    if (len == 1U) {
+        sum += (uint32_t)buf[0] << 8;
     }
+    while ((sum >> 16) != 0U) {
+        sum = (sum & 0xFFFFUL) + (sum >> 16);
+    }
+    return (uint16_t)(~sum);
 }
 
 int main(void)
@@ -104,34 +155,225 @@ int main(void)
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
-    MX_USART3_UART_Init();
+    MX_ETH_Init();
     MX_CAN1_Init();
 
     while (1) {
-        service_uart_rx();
+        service_eth_rx();
         service_can_rx();
     }
 }
 
-static void service_uart_rx(void)
+/* Poll ETH DMA for a received frame, dispatch to handlers, release descriptors */
+static void service_eth_rx(void)
 {
-    while ((USART3->SR & USART_SR_RXNE) != 0U) {
-        const char c = (char)(USART3->DR & 0xFFU);
+    if (HAL_ETH_GetReceivedFrame(&heth) != HAL_OK) {
+        return;
+    }
 
-        if (c == '\r' || c == '\n') {
-            if (uart_rx_len > 0U) {
-                uart_rx_buf[uart_rx_len] = '\0';
-                process_uart_line(uart_rx_buf);
-                uart_rx_len = 0U;
+    const uint8_t *frame = (const uint8_t *)heth.RxFrameInfos.buffer;
+    const uint16_t flen  = (uint16_t)heth.RxFrameInfos.length;
+
+    if (flen >= ETH_HEADER_SIZE) {
+        const uint16_t etype = (uint16_t)(((uint16_t)frame[12] << 8) | frame[13]);
+        if (etype == ETHERTYPE_ARP && flen >= (ETH_HEADER_SIZE + ARP_PACKET_SIZE)) {
+            handle_arp(frame, flen);
+        } else if (etype == ETHERTYPE_IP && flen >= (ETH_HEADER_SIZE + IP_HEADER_MIN_SIZE)) {
+            handle_ip(frame, flen);
+        }
+    }
+
+    /* Release descriptors back to DMA */
+    ETH_DMADescTypeDef *desc = heth.RxFrameInfos.FSRxDesc;
+    for (uint32_t i = 0U; i < heth.RxFrameInfos.SegCount; ++i) {
+        desc->Status |= ETH_DMARXDESC_OWN;
+        desc = (ETH_DMADescTypeDef *)(desc->Buffer2NextDescAddr);
+    }
+    heth.RxFrameInfos.SegCount = 0U;
+
+    /* Resume DMA reception if suspended */
+    if ((heth.Instance->DMASR & ETH_DMASR_RBUS) != 0U) {
+        heth.Instance->DMASR = ETH_DMASR_RBUS;
+        heth.Instance->DMARPDR = 0U;
+    }
+}
+
+/* Respond to ARP requests for our IP */
+static void handle_arp(const uint8_t *frame, uint16_t frame_len)
+{
+    (void)frame_len;
+    const uint8_t *arp = frame + ETH_HEADER_SIZE;
+    /* ARP layout (after Ethernet header):
+       0-1: HTYPE  2-3: PTYPE  4: HLEN  5: PLEN  6-7: OPER
+       8-13: SHA  14-17: SPA  18-23: THA  24-27: TPA */
+    const uint16_t oper = (uint16_t)(((uint16_t)arp[6] << 8) | arp[7]);
+    if (oper != ARP_OPER_REQUEST) {
+        return;
+    }
+    if (memcmp(arp + 24, my_ip, 4) != 0) {
+        return;
+    }
+
+    uint8_t *tx = (uint8_t *)heth.TxDesc->Buffer1Addr;
+
+    /* Ethernet header */
+    memcpy(tx,      arp + 8, 6);   /* dst = sender MAC */
+    memcpy(tx + 6,  my_mac,  6);
+    tx[12] = 0x08U; tx[13] = 0x06U;
+
+    /* ARP reply */
+    uint8_t *rep = tx + ETH_HEADER_SIZE;
+    rep[0] = 0x00U; rep[1] = 0x01U; /* HTYPE Ethernet */
+    rep[2] = 0x08U; rep[3] = 0x00U; /* PTYPE IP */
+    rep[4] = 6U;    rep[5] = 4U;    /* HLEN, PLEN */
+    rep[6] = 0x00U; rep[7] = 0x02U; /* OPER reply */
+    memcpy(rep + 8,  my_mac,   6);  /* SHA = our MAC */
+    memcpy(rep + 14, my_ip,    4);  /* SPA = our IP */
+    memcpy(rep + 18, arp + 8,  6);  /* THA = requester MAC */
+    memcpy(rep + 22, arp + 14, 4);  /* TPA = requester IP */
+
+    HAL_ETH_TransmitFrame(&heth, ETH_HEADER_SIZE + ARP_PACKET_SIZE);
+}
+
+/* Dispatch IPv4 frames (UDP only) */
+static void handle_ip(const uint8_t *frame, uint16_t frame_len)
+{
+    const uint8_t *ip       = frame + ETH_HEADER_SIZE;
+    const uint16_t ip_total = (uint16_t)(((uint16_t)ip[2] << 8) | ip[3]);
+    const uint8_t  ihl      = (uint8_t)((ip[0] & 0x0FU) * 4U);
+
+    if (ihl < IP_HEADER_MIN_SIZE) {
+        return;
+    }
+    if ((uint32_t)ETH_HEADER_SIZE + ip_total > frame_len) {
+        return;
+    }
+    if (memcmp(ip + 16, my_ip, 4) != 0) {
+        return;
+    }
+    if (ip[9] == IP_PROTO_UDP) {
+        handle_udp(ip + ihl, (uint16_t)(ip_total - ihl),
+                   frame + 6, ip + 12);
+    }
+}
+
+/* Parse UDP datagram, remember host, process command lines */
+static void handle_udp(const uint8_t *udp, uint16_t udp_len,
+                       const uint8_t *src_mac, const uint8_t *src_ip)
+{
+    if (udp_len < 8U) {
+        return;
+    }
+    const uint16_t dst_port    = (uint16_t)(((uint16_t)udp[2] << 8) | udp[3]);
+    const uint16_t payload_len = (uint16_t)((((uint16_t)udp[4] << 8) | udp[5]) - 8U);
+
+    if (dst_port != ETH_UDP_PORT) {
+        return;
+    }
+    if (payload_len == 0U || payload_len >= LINE_BUF_SIZE) {
+        return;
+    }
+
+    memcpy(host_mac, src_mac, 6);
+    memcpy(host_ip,  src_ip,  4);
+    host_port  = (uint16_t)(((uint16_t)udp[0] << 8) | udp[1]);
+    host_known = true;
+
+    const uint8_t *payload = udp + 8U;
+    uint16_t i = 0U;
+    uint16_t line_len = 0U;
+    while (i < payload_len) {
+        const char c = (char)payload[i++];
+        if (c == '\r') {
+            continue;
+        }
+        if (c == '\n') {
+            if (line_len > 0U) {
+                line_buf[line_len] = '\0';
+                process_line(line_buf);
+                line_len = 0U;
             }
             continue;
         }
-
-        if (uart_rx_len < (UART_RX_BUF_SIZE - 1U)) {
-            uart_rx_buf[uart_rx_len++] = c;
-        } else {
-            uart_rx_len = 0U;
+        if (line_len < (LINE_BUF_SIZE - 1U)) {
+            line_buf[line_len++] = c;
         }
+    }
+    if (line_len > 0U) {
+        line_buf[line_len] = '\0';
+        process_line(line_buf);
+    }
+}
+
+/* Send a UDP datagram to the last known host */
+static void eth_send_udp(const char *data, uint16_t payload_len)
+{
+    if (!host_known) {
+        return;
+    }
+
+    uint32_t timeout = 100000U;
+    while ((heth.TxDesc->Status & ETH_DMATXDESC_OWN) != 0U) {
+        if (--timeout == 0U) {
+            return;
+        }
+    }
+
+    const uint16_t udp_len   = (uint16_t)(8U + payload_len);
+    const uint16_t ip_len    = (uint16_t)(IP_HEADER_MIN_SIZE + udp_len);
+    const uint16_t frame_len = (uint16_t)(ETH_HEADER_SIZE + ip_len);
+
+    uint8_t *tx = (uint8_t *)heth.TxDesc->Buffer1Addr;
+
+    /* Ethernet header */
+    memcpy(tx,     host_mac, 6);
+    memcpy(tx + 6, my_mac,   6);
+    tx[12] = 0x08U; tx[13] = 0x00U;
+
+    /* IP header */
+    uint8_t *ip = tx + ETH_HEADER_SIZE;
+    ip[0]  = 0x45U;
+    ip[1]  = 0x00U;
+    ip[2]  = (uint8_t)(ip_len >> 8);
+    ip[3]  = (uint8_t)(ip_len & 0xFFU);
+    ip[4]  = 0x00U; ip[5]  = 0x00U;     /* ID */
+    ip[6]  = 0x00U; ip[7]  = 0x00U;     /* flags/fragment */
+    ip[8]  = 64U;                         /* TTL */
+    ip[9]  = IP_PROTO_UDP;
+    ip[10] = 0x00U; ip[11] = 0x00U;     /* checksum filled below */
+    memcpy(ip + 12, my_ip,   4);
+    memcpy(ip + 16, host_ip, 4);
+    const uint16_t ip_csum = ip_checksum(ip, IP_HEADER_MIN_SIZE);
+    ip[10] = (uint8_t)(ip_csum >> 8);
+    ip[11] = (uint8_t)(ip_csum & 0xFFU);
+
+    /* UDP header */
+    uint8_t *udph = ip + IP_HEADER_MIN_SIZE;
+    udph[0] = (uint8_t)(ETH_UDP_PORT >> 8);
+    udph[1] = (uint8_t)(ETH_UDP_PORT & 0xFFU);
+    udph[2] = (uint8_t)(host_port >> 8);
+    udph[3] = (uint8_t)(host_port & 0xFFU);
+    udph[4] = (uint8_t)(udp_len >> 8);
+    udph[5] = (uint8_t)(udp_len & 0xFFU);
+    udph[6] = 0x00U; udph[7] = 0x00U;   /* checksum (optional) */
+
+    memcpy(udph + 8, data, payload_len);
+
+    HAL_ETH_TransmitFrame(&heth, frame_len);
+}
+
+static void send_text(const char *str)
+{
+    eth_send_udp(str, (uint16_t)strlen(str));
+}
+
+static void send_feedback(uint32_t can_id, float q, float q_dot)
+{
+    char msg[80];
+    const int len = snprintf(msg, sizeof(msg), "FBK 0x%02lX %.6f %.6f\r\n",
+                             (unsigned long)can_id, (double)q, (double)q_dot);
+    if (len > 0) {
+        eth_send_udp(msg, (uint16_t)len);
     }
 }
 
@@ -146,29 +388,29 @@ static void service_can_rx(void)
         }
 
         if (rx_header.IDE == CAN_ID_EXT) {
-            const uint32_t ext_id = rx_header.ExtId;
-            const uint8_t comm_type = (uint8_t)((ext_id >> 24) & 0x3FU);
-            const uint8_t node_id = (uint8_t)((ext_id >> 8) & 0xFFU);
+            const uint32_t ext_id    = rx_header.ExtId;
+            const uint8_t  comm_type = (uint8_t)((ext_id >> 24) & 0x3FU);
+            const uint8_t  node_id   = (uint8_t)((ext_id >> 8)  & 0xFFU);
 
             if (comm_type == RS04_COMM_MOTOR_FEEDBACK && rx_header.DLC >= 8U) {
-                const uint16_t p_int = ((uint16_t)rx_data[0] << 8) | rx_data[1];
-                const uint16_t v_int = ((uint16_t)rx_data[2] << 8) | rx_data[3];
-                const float q = uint_to_float(p_int, P_MIN, P_MAX, 16);
-                const float q_dot = uint_to_float(v_int, V_MIN, V_MAX, 16);
-                send_uart_feedback(node_id, q, q_dot);
+                const uint16_t p_int  = ((uint16_t)rx_data[0] << 8) | rx_data[1];
+                const uint16_t v_int  = ((uint16_t)rx_data[2] << 8) | rx_data[3];
+                const float    q      = uint_to_float(p_int, P_MIN, P_MAX, 16);
+                const float    q_dot  = uint_to_float(v_int, V_MIN, V_MAX, 16);
+                send_feedback(node_id, q, q_dot);
             } else if (comm_type == RS04_COMM_GET_ID && (ext_id & 0xFFU) == 0xFEU) {
                 char id_msg[32];
                 motor_can_id = node_id;
                 const int len = snprintf(id_msg, sizeof(id_msg), "ID 0x%02X\r\n", node_id);
                 if (len > 0) {
-                    uart_send_string(id_msg);
+                    send_text(id_msg);
                 }
             }
         }
     }
 }
 
-static void process_uart_line(const char *line)
+static void process_line(const char *line)
 {
     float q, kp, kd, tau;
     unsigned long can_id_ul = 0UL;
@@ -203,7 +445,7 @@ static void process_uart_line(const char *line)
         return;
     }
 
-    uart_send_string("ERR unsupported command\r\n");
+    send_text("ERR unsupported command\r\n");
 }
 
 static bool can_send_frame(uint32_t ext_id, const uint8_t *data, uint8_t dlc)
@@ -253,13 +495,13 @@ static void send_motor_command(uint32_t can_id, float q, float qd, float kp, flo
 
     if (!motor_mode_enabled) {
         if (!can_send_frame((RS04_COMM_SET_SINGLE_PARAM << 24) | (RS04_MASTER_CAN_ID << 8) | (can_id & 0xFFU), mode_cmd, 8U)) {
-            uart_send_string("ERR RS04 mode set failed\r\n");
+            send_text("ERR RS04 mode set failed\r\n");
             return;
         }
         if (!can_send_frame((RS04_COMM_MOTOR_ENABLE << 24) | (RS04_MASTER_CAN_ID << 8) | (can_id & 0xFFU), enable_cmd, 8U)) {
             const int len = snprintf(err_msg, sizeof(err_msg), "ERR CAN enable failed id=0x%02lX esr=0x%08lX\r\n", (unsigned long)can_id, (unsigned long)hcan1.Instance->ESR);
             if (len > 0) {
-                uart_send_string(err_msg);
+                send_text(err_msg);
             }
             return;
         }
@@ -289,68 +531,121 @@ static void send_motor_command(uint32_t can_id, float q, float qd, float kp, flo
         if (!can_send_frame(ext_id, payload, 8U)) {
             const int len = snprintf(err_msg, sizeof(err_msg), "ERR CAN TX failed id=0x%02lX esr=0x%08lX\r\n", (unsigned long)can_id, (unsigned long)hcan1.Instance->ESR);
             if (len > 0) {
-                uart_send_string(err_msg);
+                send_text(err_msg);
             }
         }
     }
 }
 
-static void send_uart_feedback(uint32_t can_id, float q, float q_dot)
-{
-    char msg[80];
-    const int len = snprintf(
-        msg,
-        sizeof(msg),
-        "FBK 0x%02lX %.6f %.6f\r\n",
-        (unsigned long)can_id,
-        (double)q,
-        (double)q_dot
-    );
-
-    if (len > 0) {
-        uart_send_string(msg);
-    }
-}
-
 static void SystemClock_Config(void)
 {
+    /*
+     * Configure PLL on HSI to reach 168 MHz SYSCLK.
+     * ETH MAC requires HCLK >= 25 MHz; 168 MHz provides ample headroom.
+     *
+     *  HSI = 16 MHz
+     *  PLLM = 8  → VCO input = 2 MHz
+     *  PLLN = 168 → VCO output = 336 MHz
+     *  PLLP = 2   → SYSCLK = 168 MHz
+     *  PLLQ = 7   → USB/SDIO clock = 48 MHz
+     *
+     *  AHB  /1 → HCLK  = 168 MHz
+     *  APB1 /4 → PCLK1 = 42 MHz  (CAN max APB1 ≤ 45 MHz)
+     *  APB2 /2 → PCLK2 = 84 MHz
+     */
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+    RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI;
+    RCC_OscInitStruct.HSIState            = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    RCC_OscInitStruct.PLL.PLLState        = RCC_PLL_ON;
+    RCC_OscInitStruct.PLL.PLLSource       = RCC_PLLSOURCE_HSI;
+    RCC_OscInitStruct.PLL.PLLM            = 8U;
+    RCC_OscInitStruct.PLL.PLLN            = 168U;
+    RCC_OscInitStruct.PLL.PLLP            = RCC_PLLP_DIV2;
+    RCC_OscInitStruct.PLL.PLLQ            = 7U;
     HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
-                                  RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-    HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0);
+    /* Enable power controller and set voltage scale 1 for 168 MHz */
+    __HAL_RCC_PWR_CLK_ENABLE();
+    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-    HAL_SYSTICK_Config(16000000U / 1000U);
+    RCC_ClkInitStruct.ClockType      = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
+                                       RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK;
+    RCC_ClkInitStruct.AHBCLKDivider  = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+    HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+
+    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000U);
+    HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 }
 
-static void MX_USART3_UART_Init(void)
+/*
+ * MX_ETH_Init — configure the STM32F429ZI built-in Ethernet MAC
+ * connected to the on-board LAN8742A PHY via RMII.
+ *
+ * RMII pins on Nucleo-F429ZI (fixed by board hardware):
+ *   PA1  – REF_CLK   PA2  – MDIO    PA7  – CRS_DV
+ *   PB13 – TXD1      PC1  – MDC     PC4  – RXD0
+ *   PC5  – RXD1      PG2  – TXEN    PG13 – TXD0
+ */
+static void MX_ETH_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    __HAL_RCC_GPIOD_CLK_ENABLE();
-    __HAL_RCC_USART3_CLK_ENABLE();
+    /* Enable all required GPIO clocks */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOG_CLK_ENABLE();
 
-    GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
 
-    USART3->CR1 = 0U;
-    USART3->BRR = 139U;
-    USART3->CR1 = USART_CR1_TE | USART_CR1_RE | USART_CR1_UE;
+    /* PA1, PA2, PA7 */
+    GPIO_InitStruct.Pin = GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_7;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* PB13 */
+    GPIO_InitStruct.Pin = GPIO_PIN_13;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /* PC1, PC4, PC5 */
+    GPIO_InitStruct.Pin = GPIO_PIN_1 | GPIO_PIN_4 | GPIO_PIN_5;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    /* PG2 (ETH_TXEN on Nucleo-F429ZI), PG13 (ETH_TXD0) */
+    GPIO_InitStruct.Pin = GPIO_PIN_2 | GPIO_PIN_13;
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+
+    /* Enable SYSCFG and select RMII mode */
+    __HAL_RCC_SYSCFG_CLK_ENABLE();
+    SYSCFG->PMC |= SYSCFG_PMC_MII_RMII_SEL;
+
+    /* Enable ETHERNET clocks */
+    __HAL_RCC_ETHMAC_CLK_ENABLE();
+    __HAL_RCC_ETHMACTX_CLK_ENABLE();
+    __HAL_RCC_ETHMACRX_CLK_ENABLE();
+
+    heth.Instance               = ETH;
+    heth.Init.AutoNegotiation   = ETH_AUTONEGOTIATION_ENABLE;
+    heth.Init.PhyAddress        = ETH_PHY_ADDR;
+    heth.Init.MACAddr           = (uint8_t *)my_mac;
+    heth.Init.RxMode            = ETH_RXPOLLING_MODE;
+    heth.Init.ChecksumMode      = ETH_CHECKSUM_BY_SOFTWARE;
+    heth.Init.MediaInterface    = ETH_MEDIA_INTERFACE_RMII;
+
+    HAL_ETH_Init(&heth);
+
+    HAL_ETH_DMATxDescListInit(&heth, DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);
+    HAL_ETH_DMARxDescListInit(&heth, DMARxDscrTab, &Rx_Buff[0][0], ETH_RXBUFNB);
+
+    HAL_ETH_Start(&heth);
 }
 
 void HAL_CAN_MspInit(CAN_HandleTypeDef *hcan)
@@ -381,11 +676,11 @@ static void MX_CAN1_Init(void)
     CAN_FilterTypeDef can_filter = {0};
 
     hcan1.Instance = CAN1;
-    hcan1.Init.Prescaler = 2;
+    hcan1.Init.Prescaler = 3;
     hcan1.Init.Mode = CAN_MODE_NORMAL;
     hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-    hcan1.Init.TimeSeg1 = CAN_BS1_5TQ;
-    hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
+    hcan1.Init.TimeSeg1 = CAN_BS1_10TQ;
+    hcan1.Init.TimeSeg2 = CAN_BS2_3TQ;
     hcan1.Init.TimeTriggeredMode = DISABLE;
     hcan1.Init.AutoBusOff = ENABLE;
     hcan1.Init.AutoWakeUp = DISABLE;

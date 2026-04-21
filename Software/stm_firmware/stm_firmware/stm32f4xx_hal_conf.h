@@ -43,11 +43,12 @@
 /* #define HAL_DCMI_MODULE_ENABLED     */ 
 #define HAL_DMA_MODULE_ENABLED
 /* #define HAL_DMA2D_MODULE_ENABLED    */ 
+/* #define HAL_ETH_MODULE_ENABLED      */
 #define HAL_FLASH_MODULE_ENABLED
 /* #define HAL_NAND_MODULE_ENABLED     */
 /* #define HAL_NOR_MODULE_ENABLED      */
 /* #define HAL_PCCARD_MODULE_ENABLED   */
-#define HAL_SRAM_MODULE_ENABLED
+/* #define HAL_SRAM_MODULE_ENABLED     */
 /* #define HAL_SDRAM_MODULE_ENABLED    */
 /* #define HAL_HASH_MODULE_ENABLED     */  
 #define HAL_GPIO_MODULE_ENABLED
@@ -62,9 +63,9 @@
 /* #define HAL_RTC_MODULE_ENABLED      */
 /* #define HAL_SAI_MODULE_ENABLED      */   
 /* #define HAL_SD_MODULE_ENABLED       */
-#define HAL_SPI_MODULE_ENABLED
+/* #define HAL_SPI_MODULE_ENABLED      */
 /* #define HAL_TIM_MODULE_ENABLED      */
-#define HAL_UART_MODULE_ENABLED 
+/* #define HAL_UART_MODULE_ENABLED     */
 /* #define HAL_USART_MODULE_ENABLED    */ 
 /* #define HAL_IRDA_MODULE_ENABLED     */
 /* #define HAL_SMARTCARD_MODULE_ENABLED*/
@@ -72,7 +73,7 @@
 #define HAL_CORTEX_MODULE_ENABLED   
 /* #define HAL_PCD_MODULE_ENABLED      */
 /* #define HAL_HCD_MODULE_ENABLED      */
-#define HAL_FMPI2C_MODULE_ENABLED
+/* #define HAL_FMPI2C_MODULE_ENABLED   */
 /* #define HAL_SPDIFRX_MODULE_ENABLED */
 
 
@@ -151,6 +152,24 @@
 #define  USE_HAL_DMA2D_REGISTER_CALLBACKS       0U /* DMA2D register callback disabled     */
 #define  USE_HAL_DSI_REGISTER_CALLBACKS         0U /* DSI register callback disabled       */
 #define  USE_HAL_ETH_REGISTER_CALLBACKS         0U /* ETH register callback disabled       */
+
+/* LAN8742A PHY definitions required by the legacy ETH HAL driver.
+ * Register 0x1F = Special Control/Status Indicator (SCSR).
+ * Bits [4:2]: 001=10half, 101=10full, 010=100half, 110=100full. */
+#define PHY_ADDRESS                             0U
+#define PHY_BCR                                 ((uint16_t)0x00U) /* Basic Control Register          */
+#define PHY_BSR                                 ((uint16_t)0x01U) /* Basic Status Register           */
+#define PHY_SR                                  ((uint16_t)0x1FU) /* PHY special control/status      */
+#define PHY_RESET                               ((uint16_t)0x8000U)
+#define PHY_LINKED_STATUS                       ((uint16_t)0x0004U) /* BSR bit2: link up               */
+#define PHY_AUTONEGOTIATION                     ((uint16_t)0x1000U) /* BCR bit12: enable auto-neg      */
+#define PHY_AUTONEGO_COMPLETE                   ((uint16_t)0x0020U) /* BSR bit5: auto-neg complete     */
+#define PHY_SPEED_STATUS                        ((uint16_t)0x0004U) /* SCSR bit2: speed indicator      */
+#define PHY_DUPLEX_STATUS                       ((uint16_t)0x0010U) /* SCSR bit4: duplex indicator     */
+#define PHY_CONFIG_DELAY                        300U
+#define PHY_RESET_DELAY                         500U
+#define PHY_READ_TO                             0x0000FFFFU
+#define PHY_WRITE_TO                            0x0000FFFFU
 #define  USE_HAL_HASH_REGISTER_CALLBACKS        0U /* HASH register callback disabled      */
 #define  USE_HAL_HCD_REGISTER_CALLBACKS         0U /* HCD register callback disabled       */
 #define  USE_HAL_I2C_REGISTER_CALLBACKS         0U /* I2C register callback disabled       */
@@ -254,6 +273,11 @@
 #ifdef HAL_FLASH_MODULE_ENABLED
   #include "stm32f4xx_hal_flash.h"
 #endif /* HAL_FLASH_MODULE_ENABLED */
+
+#define HAL_ETH_LEGACY_MODULE_ENABLED
+#ifdef HAL_ETH_LEGACY_MODULE_ENABLED
+  #include "Legacy/stm32f4xx_hal_eth_legacy.h"
+#endif /* HAL_ETH_LEGACY_MODULE_ENABLED */
  
 #ifdef HAL_SRAM_MODULE_ENABLED
   #include "stm32f4xx_hal_sram.h"

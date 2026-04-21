@@ -44,19 +44,19 @@ def generate_launch_description():
         ],
     )
 
-    serial_can_bridge_node = Node(
+    ethernet_can_bridge_node = Node(
         package='motor_test',
-        executable='serial_can_bridge.py',
-        name='serial_can_bridge',
+        executable='ethernet_can_bridge.py',
+        name='ethernet_can_bridge',
         output='screen',
         parameters=[
             {
-                'serial_port': '/dev/ttyACM0',
-                'baud_rate': 115200,
-                'timeout': 0.1,
-                'command_topic': 'motor_can',
+                'stm32_ip':       '192.168.1.100',
+                'stm32_port':     7777,
+                'listen_port':    7777,
+                'command_topic':  'motor_can',
                 'feedback_topic': 'motor_can_feedback',
-                'can_id': 0x7F,
+                'can_id':         0x7F,
                 'all_logging_info': True,
             }
         ],
@@ -80,6 +80,6 @@ def generate_launch_description():
     return LaunchDescription([
         motor_pub_node,
         motor_can_publisher_node,
-        serial_can_bridge_node,
+        ethernet_can_bridge_node,
         motor_feedback_listener_node,
     ])

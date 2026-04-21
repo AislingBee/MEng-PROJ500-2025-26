@@ -43,6 +43,7 @@ install(PROGRAMS
   motor_test/motor_can_publisher.py
   motor_test/motor_controller_test.py
   motor_test/serial_can_bridge.py
+  motor_test/ethernet_can_bridge.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

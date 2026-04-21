@@ -22,6 +22,7 @@ endif
 # Includes
 INCLUDES = -I.
 INCLUDES += -I$(HAL_DIR)/Inc
+INCLUDES += -I$(HAL_DIR)/Inc/Legacy
 INCLUDES += -I$(DEVICE_DIR)/Include
 INCLUDES += -I$(CMSIS_DIR)/Include
 
@@ -30,9 +31,10 @@ C_SOURCES = main.c
 C_SOURCES += system_stm32f4xx.c
 C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal.c
 C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal_can.c
-C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal_uart.c
+C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal_eth.c
 C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal_gpio.c
 C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal_rcc.c
+C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal_rcc_ex.c
 C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal_cortex.c
 C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal_dma.c
 C_SOURCES += $(HAL_DIR)/Src/stm32f4xx_hal_flash.c
@@ -54,8 +56,9 @@ LDFLAGS = $(MCU) -specs=nosys.specs -TSTM32F429ZITX_FLASH.ld -Wl,--gc-sections
 # Objects
 OBJ_DIR = .
 OBJECTS = $(OBJ_DIR)/main.o $(OBJ_DIR)/system_stm32f4xx.o $(OBJ_DIR)/startup_stm32f429xx.o
-OBJECTS += $(OBJ_DIR)/stm32f4xx_hal.o $(OBJ_DIR)/stm32f4xx_hal_can.o $(OBJ_DIR)/stm32f4xx_hal_uart.o
-OBJECTS += $(OBJ_DIR)/stm32f4xx_hal_gpio.o $(OBJ_DIR)/stm32f4xx_hal_rcc.o $(OBJ_DIR)/stm32f4xx_hal_cortex.o
+OBJECTS += $(OBJ_DIR)/stm32f4xx_hal.o $(OBJ_DIR)/stm32f4xx_hal_can.o $(OBJ_DIR)/stm32f4xx_hal_eth.o
+OBJECTS += $(OBJ_DIR)/stm32f4xx_hal_gpio.o $(OBJ_DIR)/stm32f4xx_hal_rcc.o $(OBJ_DIR)/stm32f4xx_hal_rcc_ex.o
+OBJECTS += $(OBJ_DIR)/stm32f4xx_hal_cortex.o
 OBJECTS += $(OBJ_DIR)/stm32f4xx_hal_dma.o $(OBJ_DIR)/stm32f4xx_hal_flash.o $(OBJ_DIR)/stm32f4xx_hal_flash_ex.o
 OBJECTS += $(OBJ_DIR)/stm32f4xx_hal_pwr.o $(OBJ_DIR)/stm32f4xx_hal_pwr_ex.o
 
@@ -83,13 +86,16 @@ $(OBJ_DIR)/stm32f4xx_hal.o: $(HAL_DIR)/Src/stm32f4xx_hal.c
 $(OBJ_DIR)/stm32f4xx_hal_can.o: $(HAL_DIR)/Src/stm32f4xx_hal_can.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/stm32f4xx_hal_uart.o: $(HAL_DIR)/Src/stm32f4xx_hal_uart.c
+$(OBJ_DIR)/stm32f4xx_hal_eth.o: $(HAL_DIR)/Src/Legacy/stm32f4xx_hal_eth.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/stm32f4xx_hal_gpio.o: $(HAL_DIR)/Src/stm32f4xx_hal_gpio.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/stm32f4xx_hal_rcc.o: $(HAL_DIR)/Src/stm32f4xx_hal_rcc.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/stm32f4xx_hal_rcc_ex.o: $(HAL_DIR)/Src/stm32f4xx_hal_rcc_ex.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/stm32f4xx_hal_cortex.o: $(HAL_DIR)/Src/stm32f4xx_hal_cortex.c
