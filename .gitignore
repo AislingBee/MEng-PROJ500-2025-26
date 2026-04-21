@@ -15,6 +15,7 @@ logs/
 *.d
 *.elf
 *.bin
+!Software/stm_firmware/stm_firmware/firmware.bin
 
 # Editor files
 .vscode/
