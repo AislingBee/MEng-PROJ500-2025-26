@@ -18,12 +18,22 @@ from hardware.thor.thor_policy_runner import (
 )
 
 
+def rad_to_encoder_counts(q_rad: list[float]) -> list[int]:
+    counts = []
+    for q in q_rad:
+        q_wrapped = ((q + torch.pi) % (2.0 * torch.pi)) - torch.pi
+        count = int(round((float(q_wrapped) % (2.0 * torch.pi)) / (2.0 * torch.pi) * 16384.0))
+        count = max(0, min(16383, count))
+        counts.append(count)
+    return counts
+
+
 def fake_state_reader() -> RobotStateSample:
     standing_q = build_standing_q(device="cpu")
+    encoder_counts = rad_to_encoder_counts(standing_q.tolist())
 
     return RobotStateSample(
-        joint_names=CONTRACT.joint_names,
-        joint_pos=standing_q.tolist(),
+        encoder_counts=encoder_counts,
         joint_vel=[0.0] * CONTRACT.action_dim,
         joint_effort=[0.0] * CONTRACT.action_dim,
         projected_gravity_b=[0.0, 0.0, -1.0],
@@ -45,7 +55,7 @@ def main() -> None:
     joint_names = contract_defaults["joint_names"]
 
     runner_cfg = ThorPolicyRunnerConfig(
-        policy_path="exports/standing_policy.pt",  # change if needed
+        policy_path=r"hardware\policy\policy_jit.pt",
         joint_names=joint_names,
         joint_lower_rad=contract_defaults["joint_lower_limits_rad"],
         joint_upper_rad=contract_defaults["joint_upper_limits_rad"],
