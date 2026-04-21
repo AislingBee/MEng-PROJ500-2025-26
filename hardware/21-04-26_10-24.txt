@@ -1,0 +1,1446 @@
+PS C:\Users\jandr\Git\MEng-PROJ500-2025-26> cmd /c "C:\Users\jandr\Git\IsaacLab\isaaclab.bat -p simulation/isaac/runtime/thor_policy_runner_testbench.py"
+[INFO] Using python from: C:\Users\jandr\Git\IsaacLab\\_isaac_sim\python.bat
+
+ --- TEST A --- STEP TEST ---
+obs shape: (1, 55)
+obs: tensor([[ 0.0000e+00,  0.0000e+00,  1.7899e-04,  1.7899e-04,  0.0000e+00,
+          0.0000e+00,  1.2773e-04,  1.2773e-04, -4.2707e-05, -4.2707e-05,
+          0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,
+          0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,
+          0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,
+          0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,
+          0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,
+          0.0000e+00,  0.0000e+00,  0.0000e+00, -1.0000e+00,  0.0000e+00,
+          0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,
+          0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,
+          0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00]])
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003507657442241907, 0.0014977941755205393, 0.0672156810760498, 0.06434550881385803, -0.00046635925536975265, -0.00039422870031557977, 0.26162856817245483, 0.25764521956443787, 0.18589474260807037, 0.18031316995620728, 0.0018183114007115364, -0.005129444412887096]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Returned control packet ---
+q_des shape: (1, 12)
+q_des min/max: -0.005129444412887096 0.26162856817245483
+kp shape: (1, 12)
+kd shape: (1, 12)
+tau_ff shape: (1, 12)
+actions: tensor([[-0.0351,  0.0187,  0.0990,  0.0599, -0.0039, -0.0049, -0.0017, -0.0519,
+          0.0757,  0.0289,  0.0152, -0.0641]])
+actions min/max: -0.06411805748939514 0.09903868287801743
+
+ --- TEST B --- LOOP TEST ---
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003539860714226961, 0.0012564945500344038, 0.06731949746608734, 0.0631420835852623, -0.0008744701044633985, -0.0006670926231890917, 0.2616772949695587, 0.25760185718536377, 0.18618172407150269, 0.18030637502670288, 0.0012653301237151027, -0.005464848130941391]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 0 | q_des min/max: -0.005464848130941391 0.2616772949695587
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035675892140716314, 0.0012569098034873605, 0.06727282702922821, 0.06312188506126404, -0.0008834252948872745, -0.0006531176040880382, 0.2616629898548126, 0.25758716464042664, 0.18620654940605164, 0.180338516831398, 0.0012259387876838446, -0.005478087347000837]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686574410647154, 0.0012571944389492273, 0.06727047264575958, 0.06312280893325806, -0.000883976521436125, -0.0006524513592012227, 0.26166191697120667, 0.25758588314056396, 0.18620765209197998, 0.18033824861049652, 0.001225848332978785, -0.005478591192513704]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840241353027523, -0.0006524574710056186, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.001225871266797185, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686653573065996, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258731294423342, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568668384104967, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258699862286448, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.0008840272203087807, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840252412483096, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871965289116, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.001257198746316135, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258690549060702, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.000652456539683044, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258714996278286, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840283844619989, -0.0006524532800540328, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012572006089612842, 0.06727039813995361, 0.0631227195262909, -0.0008840272203087807, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258731294423342, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012572009582072496, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.000884026347193867, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258726637810469, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258699862286448, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 20 | q_des min/max: -0.005478595849126577 0.2616618573665619
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258695205673575, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258699862286448, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258706847205758, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524555501528084, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840272203087807, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258699862286448, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840258815325797, -0.000652455841191113, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258731294423342, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258690549060702, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258699862286448, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572008417919278, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.000652455841191113, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258731294423342, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 40 | q_des min/max: -0.00547859538346529 0.2616618573665619
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686653573065996, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258706847205758, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524555501528084, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258726637810469, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258714996278286, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840254740789533, -0.000652455841191113, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.001225871266797185, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840281516313553, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572008417919278, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258724309504032, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524543277919292, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572010746225715, 0.06727039813995361, 0.0631227195262909, -0.000884026347193867, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.000884027685970068, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258692877367139, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.0008840258815325797, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258714996278286, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.001257198746316135, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258714996278286, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 60 | q_des min/max: -0.00547859538346529 0.2616618573665619
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.000884026347193867, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572008417919278, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258710339665413, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840283844619989, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258699862286448, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571988627314568, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524538621306419, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258702190592885, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.0008840272203087807, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258733622729778, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258728966116905, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.005478593986481428]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 80 | q_des min/max: -0.00547859538346529 0.2616618573665619
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524538621306419, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258706847205758, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258735951036215, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524561322294176, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258714996278286, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572009582072496, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478597711771727]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012572008417919278, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524555501528084, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.000884026347193867, -0.0006524562486447394, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871965289116, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572009582072496, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524555501528084, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.000884027685970068, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.001225871266797185, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686653573065996, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 100 | q_des min/max: -0.00547859538346529 0.2616618573665619
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012572010746225715, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258726637810469, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258699862286448, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572008417919278, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.000652455841191113, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258714996278286, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.000884026347193867, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.0008840272203087807, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012572006089612842, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258699862286448, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258714996278286, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258714996278286, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572008417919278, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524562486447394, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258733622729778, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571988627314568, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258726637810469, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.001257198746316135, 0.06727039813995361, 0.0631227195262909, -0.000884027685970068, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258706847205758, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 120 | q_des min/max: -0.005478595849126577 0.2616618573665619
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686686169356108, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.000884026347193867, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258721981197596, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258721981197596, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.000884027685970068, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524543277919292, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.001257198746316135, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258728966116905, -0.005478593986481428]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258744100108743, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686686169356108, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.000652455841191113, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258741771802306, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012572013074532151, 0.06727039068937302, 0.0631227195262909, -0.0008840261143632233, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568668384104967, 0.0012572006089612842, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524562486447394, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258710339665413, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524559576064348, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840258815325797, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258708011358976, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.000884027685970068, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258721981197596, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.0008840283844619989, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258702190592885, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258726637810469, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 140 | q_des min/max: -0.00547859538346529 0.2616618573665619
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258695205673575, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572006089612842, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840283844619989, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258706847205758, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.0008840281516313553, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524561322294176, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258702190592885, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.0008840272203087807, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258708011358976, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568668384104967, 0.0012571995612233877, 0.06727039068937302, 0.06312272697687149, -0.0008840261143632233, -0.0006524555501528084, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258733622729778, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524543277919292, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686653573065996, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.0008840283844619989, -0.0006524555501528084, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258726637810469, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524555501528084, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.0008840281516313553, -0.0006524546188302338, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258706847205758, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258721981197596, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 160 | q_des min/max: -0.005478595849126577 0.2616618573665619
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.000884026347193867, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.0008840281516313553, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524543277919292, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840287919156253, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871965289116, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.0006524538621306419, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258699862286448, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.0008840272203087807, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258721981197596, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840258815325797, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.0008840283844619989, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571992119774222, 0.06727039813995361, 0.0631227195262909, -0.0008840281516313553, -0.0006524556665681303, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258726637810469, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258731294423342, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524561322294176, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.000884027685970068, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.001225871266797185, -0.005478593986481428]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.001257199328392744, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258728966116905, -0.005478594917804003]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012572006089612842, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+step 180 | q_des min/max: -0.00547859538346529 0.2616618573665619
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258714996278286, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012571999104693532, 0.06727039813995361, 0.0631227195262909, -0.0008840258815325797, -0.0006524553755298257, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667685613036, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.0008840279188007116, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258702190592885, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686660557985306, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.001225871266797185, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568665822967887, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.000884026987478137, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258699862286448, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.0008840268128551543, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012572002597153187, 0.06727039813995361, 0.0631227195262909, -0.000884025648701936, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.001257200026884675, 0.06727039813995361, 0.0631227195262909, -0.0008840252412483096, -0.000652454502414912, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258710339665413, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572008417919278, 0.06727039813995361, 0.0631227195262909, -0.000884026347193867, -0.0006524547934532166, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568667219951749, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571994448080659, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.0006524549098685384, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258708011358976, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572003761306405, 0.06727039813995361, 0.0631227195262909, -0.0008840265800245106, -0.0006524550844915211, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258702190592885, -0.005478595849126577]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.00356866791844368, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.0008840261143632233, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258697533980012, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012571989791467786, 0.06727039813995361, 0.0631227195262909, -0.0008840274531394243, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620766699314117, 0.18033823370933533, 0.0012258717324584723, -0.005478593986481428]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.003568666521459818, 0.0012571997940540314, 0.06727039813995361, 0.0631227195262909, -0.0008840281516313553, -0.000652455200906843, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258717324584723, -0.00547859538346529]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686667542904615, 0.0012572004925459623, 0.06727039813995361, 0.0631227195262909, -0.000884027685970068, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des: [-0.0035686653573065996, 0.0012571995612233877, 0.06727039813995361, 0.0631227195262909, -0.000884026347193867, -0.0006524542113766074, 0.2616618573665619, 0.2575858235359192, 0.18620768189430237, 0.18033823370933533, 0.0012258704518899322, -0.005478596780449152]
+kp: [130.0, 130.0, 220.0, 220.0, 190.0, 190.0, 280.0, 280.0, 160.0, 160.0, 120.0, 120.0]
+kd: [4.0, 4.0, 8.0, 8.0, 7.0, 7.0, 10.0, 10.0, 6.0, 6.0, 5.0, 5.0]
+tau_ff: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+PS C:\Users\jandr\Git\MEng-PROJ500-2025-26>

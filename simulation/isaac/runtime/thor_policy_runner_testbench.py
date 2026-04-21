@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import torch
 import math
+import time
 
 from simulation.isaac.configuration.standing_s2r_policy_contract import (
     CONTRACT,
@@ -78,11 +79,17 @@ def main() -> None:
         command_writer=fake_command_writer,
     )
 
+
+
+    print("\n --- TEST A --- STEP TEST ---")
+
     obs = runner.build_observation()
     print("obs shape:", tuple(obs.shape))
     print("obs:", obs)
 
     packet = runner.step()
+
+    print("joint_names:", packet.joint_names)
 
     print("\n--- Returned control packet ---")
     print("q_des shape:", tuple(packet.q_des.shape))
@@ -92,9 +99,22 @@ def main() -> None:
     print("tau_ff shape:", tuple(packet.tau_ff.shape))
 
     actions = runner.policy.act(obs)
-    
+
     print("actions:", actions)
     print("actions min/max:", actions.min().item(), actions.max().item())
+
+    print("\n --- TEST B --- LOOP TEST ---")
+
+    for i in range(10): # Increase for better test (200)
+        packet = runner.step()
+
+        if i % 20 == 0:
+            print(f"step {i} | q_des min/max:",
+                  packet.q_des.min().item(),
+                  packet.q_des.max().item())
+
+        time.sleep(1.0 / runner_cfg.loop_hz)
+
 
 
 if __name__ == "__main__":
