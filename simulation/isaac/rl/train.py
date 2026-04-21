@@ -31,6 +31,7 @@ import gymnasium as gym
 import torch
 from rsl_rl.runners import OnPolicyRunner
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
+from simulation.isaac.configuration.standing_s2r_policy_contract import CONTRACT
 
 THIS_DIR = Path(__file__).resolve().parent
 ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
@@ -88,6 +89,31 @@ get_humanoid_stand_ppo_cfg = ppo_cfg_module.get_humanoid_stand_ppo_cfg
 # torch.backends.cudnn.allow_tf32 = True
 
 
+def export_deployable_policy(runner, env_cfg, export_dir: str) -> None:
+    os.makedirs(export_dir, exist_ok=True)
+
+    if env_cfg.observation_space != CONTRACT.obs_dim:
+        raise RuntimeError(
+            f"Standing S2R contract expects observation dim {CONTRACT.obs_dim}, "
+            f"but env config uses {env_cfg.observation_space}."
+        )
+
+    actor = runner.alg.actor
+    actor.eval()
+
+    device = next(actor.parameters()).device
+    example_obs = {
+        "policy": torch.zeros(1, CONTRACT.obs_dim, device=device)
+    }
+
+    scripted_actor = torch.jit.trace(actor, (example_obs,))
+    scripted_actor.save(os.path.join(export_dir, "policy_jit.pt"))
+
+    torch.save(actor.state_dict(), os.path.join(export_dir, "actor_state_dict.pt"))
+
+    print(f"Deployable TorchScript actor saved to: {os.path.join(export_dir, 'policy_jit.pt')}")
+
+
 def main():
     # from simulation.isaac.rl.envs.humanoid_stand_env import HumanoidStandEnvCfg # Standing Training
     from simulation.isaac.rl.envs.humanoid_stand_s2r_env import HumanoidStandEnvS2rCfg # Standing Training Sim to Real
@@ -96,6 +122,27 @@ def main():
     # env_cfg = HumanoidStandEnvCfg() # Update this line with correct config.
     env_cfg = HumanoidStandEnvS2rCfg() # Update this line with correct config.
     # env_cfg = HumanoidWalkEnvCfg()
+
+    if env_cfg.action_space != CONTRACT.action_dim:
+        raise RuntimeError(
+            f"Standing S2R contract expects action dim {CONTRACT.action_dim}, "
+            f"but env config uses {env_cfg.action_space}."
+        )
+    if env_cfg.observation_space != CONTRACT.obs_dim:
+        raise RuntimeError(
+            f"Standing S2R contract expects observation dim {CONTRACT.obs_dim}, "
+            f"but env config uses {env_cfg.observation_space}."
+        )
+    if env_cfg.decimation != CONTRACT.decimation:
+        raise RuntimeError(
+            f"Standing S2R contract expects decimation {CONTRACT.decimation}, "
+            f"but env config uses {env_cfg.decimation}."
+        )
+    if env_cfg.sim.dt != CONTRACT.sim_dt_s:
+        raise RuntimeError(
+            f"Standing S2R contract expects sim dt {CONTRACT.sim_dt_s}, "
+            f"but env config uses {env_cfg.sim.dt}."
+        )
 
     env_cfg.scene.num_envs = args.num_envs
 
@@ -150,6 +197,8 @@ def main():
         num_learning_iterations=agent_cfg.max_iterations,
         init_at_random_ep_len=True,
     )
+
+    export_deployable_policy(runner, env_cfg, os.path.join(log_dir, "exported"))
 
     env.close()
 

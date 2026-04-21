@@ -1,0 +1,104 @@
+PS C:\Users\jandr\Git\MEng-PROJ500-2025-26> cmd /c "C:\Users\jandr\Git\IsaacLab\isaaclab.bat -p simulation/isaac/runtime/thor_policy_runner_testbench.py"
+[INFO] Using python from: C:\Users\jandr\Git\IsaacLab\\_isaac_sim\python.bat
+
+--- STAGE B: CONTROLLED VALIDATION ---
+joint order from runner:
+00: robot_pelvis_link_l_yaw_joint
+01: robot_pelvis_link_r_yaw_joint
+02: robot_l_hip_yaw_link_l_pitch_joint
+03: robot_r_hip_yaw_link_r_pitch_joint
+04: robot_l_hip_pitch_link_l_roll_joint
+05: robot_r_hip_pitch_link_r_roll_joint
+06: robot_l_thigh_link_l_knee_joint
+07: robot_r_thigh_link_r_knee_joint
+08: robot_l_shank_link_l_ankle_joint
+09: robot_r_shank_link_r_ankle_joint
+10: robot_l_ankle_link_l_foot_joint
+11: robot_r_ankle_link_r_foot_joint
+
+===== CASE: upright =====
+obs shape: (1, 55)
+actions: tensor([[-0.0351,  0.0187,  0.0990,  0.0599, -0.0039, -0.0049, -0.0017, -0.0519,
+          0.0757,  0.0289,  0.0152, -0.0641]])
+actions min/max: -0.06411805748939514 0.09903868287801743
+q_des min/max: -0.005129444412887096 0.26162856817245483
+q_rel first 6: tensor([0.0000, 0.0000, 0.0002, 0.0002, 0.0000, 0.0000])
+gravity in obs: tensor([[ 0.,  0., -1.]])
+gyro in obs: tensor([[0., 0., 0.]])
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des min/max: -0.005129444412887096 0.26162856817245483
+first 4 q_des: [-0.003507657442241907, 0.0014977941755205393, 0.0672156810760498, 0.06434550881385803]
+first 4 kp: [130.0, 130.0, 220.0, 220.0]
+first 4 kd: [4.0, 4.0, 8.0, 8.0]
+
+===== CASE: roll_tilt_left =====
+obs shape: (1, 55)
+actions: tensor([[-0.0369,  0.0186,  0.0983,  0.0543, -0.0067, -0.0092,  0.0009, -0.0530,
+          0.0785,  0.0318,  0.0104, -0.0670]])
+actions min/max: -0.06700348854064941 0.09825724363327026
+q_des min/max: -0.005360278766602278 0.2618919312953949
+q_rel first 6: tensor([0.0000, 0.0000, 0.0002, 0.0002, 0.0000, 0.0000])
+gravity in obs: tensor([[ 0.1000,  0.0000, -0.9950]])
+gyro in obs: tensor([[0., 0., 0.]])
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des min/max: -0.005360278766602278 0.2618919312953949
+first 4 q_des: [-0.0036857312079519033, 0.0014845171244814992, 0.067098468542099, 0.06321535259485245]
+first 4 kp: [130.0, 130.0, 220.0, 220.0]
+first 4 kd: [4.0, 4.0, 8.0, 8.0]
+
+===== CASE: pitch_tilt_forward =====
+obs shape: (1, 55)
+actions: tensor([[-0.0364,  0.0141,  0.0976,  0.0561, -0.0069, -0.0088, -0.0012, -0.0516,
+          0.0751,  0.0296,  0.0104, -0.0684]])
+actions min/max: -0.06839601695537567 0.09755226969718933
+q_des min/max: -0.005471681244671345 0.2616797387599945
+q_rel first 6: tensor([0.0000, 0.0000, 0.0002, 0.0002, 0.0000, 0.0000])
+gravity in obs: tensor([[ 0.0000,  0.1000, -0.9950]])
+gyro in obs: tensor([[0., 0., 0.]])
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des min/max: -0.005471681244671345 0.2616797387599945
+first 4 q_des: [-0.0036426333244889975, 0.0011301691411063075, 0.06699272245168686, 0.06358671933412552]
+first 4 kp: [130.0, 130.0, 220.0, 220.0]
+first 4 kd: [4.0, 4.0, 8.0, 8.0]
+
+===== CASE: yaw_rate =====
+obs shape: (1, 55)
+actions: tensor([[-0.0208,  0.0126,  0.1073,  0.0511, -0.0119, -0.0072,  0.0018, -0.0524,
+          0.0753,  0.0244,  0.0180, -0.0639]])
+actions min/max: -0.0639401227235794 0.10733785480260849
+q_des min/max: -0.005115209612995386 0.2619802951812744
+q_rel first 6: tensor([0.0000, 0.0000, 0.0002, 0.0002, 0.0000, 0.0000])
+gravity in obs: tensor([[ 0.,  0., -1.]])
+gyro in obs: tensor([[0.0000, 0.0000, 0.5000]])
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des min/max: -0.005115209612995386 0.2619802951812744
+first 4 q_des: [-0.002079883823171258, 0.0010060978820547462, 0.06846055388450623, 0.06258247792720795]
+first 4 kp: [130.0, 130.0, 220.0, 220.0]
+first 4 kd: [4.0, 4.0, 8.0, 8.0]
+
+===== CASE: left_knee_offset =====
+obs shape: (1, 55)
+actions: tensor([[-3.5158e-02,  1.6039e-02,  9.9607e-02,  5.4919e-02, -7.3299e-03,
+         -1.0015e-02, -5.1502e-05, -5.4341e-02,  7.8628e-02,  2.9896e-02,
+          1.1168e-02, -6.7619e-02]])
+actions min/max: -0.06761883199214935 0.09960656613111496
+q_des min/max: -0.005409506615251303 0.26179423928260803
+q_rel first 6: tensor([0.0000, 0.0000, 0.0002, 0.0002, 0.0000, 0.0000])
+gravity in obs: tensor([[ 0.,  0., -1.]])
+gyro in obs: tensor([[0., 0., 0.]])
+
+--- Command written ---
+joint_names: ('robot_pelvis_link_l_yaw_joint', 'robot_pelvis_link_r_yaw_joint', 'robot_l_hip_yaw_link_l_pitch_joint', 'robot_r_hip_yaw_link_r_pitch_joint', 'robot_l_hip_pitch_link_l_roll_joint', 'robot_r_hip_pitch_link_r_roll_joint', 'robot_l_thigh_link_l_knee_joint', 'robot_r_thigh_link_r_knee_joint', 'robot_l_shank_link_l_ankle_joint', 'robot_r_shank_link_r_ankle_joint', 'robot_l_ankle_link_l_foot_joint', 'robot_r_ankle_link_r_foot_joint')
+q_des min/max: -0.005409506615251303 0.26179423928260803
+first 4 q_des: [-0.003515844000503421, 0.0012830804334953427, 0.06730086356401443, 0.06334363669157028]
+first 4 kp: [130.0, 130.0, 220.0, 220.0]
+first 4 kd: [4.0, 4.0, 8.0, 8.0]
+PS C:\Users\jandr\Git\MEng-PROJ500-2025-26>

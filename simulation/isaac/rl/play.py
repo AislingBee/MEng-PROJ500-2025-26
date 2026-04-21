@@ -14,7 +14,7 @@ from isaaclab.app import AppLauncher
 # -----------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Play back PROJ500 humanoid walk PPO checkpoint.")
 AppLauncher.add_app_launcher_args(parser)
-parser.add_argument("--task", type=str, default="Humanoid-Walk-v0")
+parser.add_argument("--task", type=str, default="Humanoid-Stand-s2r-v0")
 parser.add_argument("--num_envs", type=int, default=1)
 parser.add_argument("--checkpoint", type=str, required=True, help="Path to .pt checkpoint file")
 args = parser.parse_args()
@@ -37,34 +37,49 @@ ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
 # -----------------------------------------------------------------------------
 # Task registration
 # -----------------------------------------------------------------------------
+#
+# # Walking Task #################################################################
+#
+# # task registration
+# task_file = ISAAC_DIR / "tasks" / "humanoid_walk_task.py"
+# spec = importlib.util.spec_from_file_location("humanoid_walk_task", task_file)
+# task_module = importlib.util.module_from_spec(spec)
+# spec.loader.exec_module(task_module)
+#
+# # PPO config
+# ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_walk_ppo_cfg.py"
+# spec = importlib.util.spec_from_file_location("humanoid_walk_ppo_cfg", ppo_cfg_file)
+# ppo_cfg_module = importlib.util.module_from_spec(spec)
+# spec.loader.exec_module(ppo_cfg_module)
+# get_humanoid_walk_ppo_cfg = ppo_cfg_module.get_humanoid_walk_ppo_cfg
 
-# Walking Task #################################################################
+# Standing S2R Task #################################################################
 
 # task registration
-task_file = ISAAC_DIR / "tasks" / "humanoid_walk_task.py"
-spec = importlib.util.spec_from_file_location("humanoid_walk_task", task_file)
+task_file = ISAAC_DIR / "tasks" / "humanoid_stand_s2r_task.py"
+spec = importlib.util.spec_from_file_location("humanoid_stand_s2r_task", task_file)
 task_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(task_module)
 
 # PPO config
-ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_walk_ppo_cfg.py"
-spec = importlib.util.spec_from_file_location("humanoid_walk_ppo_cfg", ppo_cfg_file)
+ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_stand_ppo_cfg.py"
+spec = importlib.util.spec_from_file_location("humanoid_stand_ppo_cfg", ppo_cfg_file)
 ppo_cfg_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ppo_cfg_module)
-get_humanoid_walk_ppo_cfg = ppo_cfg_module.get_humanoid_walk_ppo_cfg
+get_humanoid_stand_ppo_cfg = ppo_cfg_module.get_humanoid_stand_ppo_cfg
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 
 
 def main():
-    from simulation.isaac.rl.envs.humanoid_walk_env import HumanoidWalkEnvCfg
+    from simulation.isaac.rl.envs.humanoid_stand_s2r_env import HumanoidStandEnvS2rCfg
 
     checkpoint_path = Path(args.checkpoint).resolve()
     if not checkpoint_path.is_file():
         raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
 
-    env_cfg = HumanoidWalkEnvCfg()
+    env_cfg = HumanoidStandEnvS2rCfg()
     env_cfg.scene.num_envs = args.num_envs
 
     # GUI visual inspection, so no video wrapper and no rgb_array needed
@@ -75,7 +90,7 @@ def main():
     print("Env ready.")
 
     # PPO config
-    agent_cfg = get_humanoid_walk_ppo_cfg()
+    agent_cfg = get_humanoid_stand_ppo_cfg()
 
     # convert deprecated Isaac Lab / rsl_rl config fields
     try:
