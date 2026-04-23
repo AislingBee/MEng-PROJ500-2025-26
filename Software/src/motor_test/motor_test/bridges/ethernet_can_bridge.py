@@ -1,26 +1,20 @@
 #!/usr/bin/env python3
-"""ROS Ethernet (UDP) bridge for the STM32 Ethernet-to-CAN firmware.
+"""UDP bridge between ROS and the STM32 CAN firmware.
 
-This node is a drop-in replacement for serial_can_bridge.py.  Instead of a
-serial port it communicates with the STM32 over a UDP socket, using the same
-ASCII protocol:
+Sends CMD lines to the STM32 and receives FBK/ID/ERR replies over UDP.
+Default STM32 address: 192.168.1.100:7777.
 
-  Host → STM32 (UDP to STM32_IP:STM32_PORT):
-    CMD 0xNN <q> <kp> <kd> <tau>\\n
-
-  STM32 → Host (UDP reply):
-    FBK 0xNN <q> <q_dot>\\n
-    ID 0xNN\\n
-    ERR ...\\n
-
-Default STM32 address: 192.168.1.100 port 7777.
-The host socket is bound to LISTEN_PORT (default 7777) so the STM32 knows
-where to send replies.
+Logs are written to ~/motor_test_logs/<timestamp>/udp_events.csv
+  time_s, direction, can_id_hex, data
 """
 
+import csv
+import datetime
 import socket
 import struct
 import threading
+import time
+from pathlib import Path
 
 import rclpy
 from rclpy.node import Node
@@ -31,21 +25,41 @@ class EthernetCanBridge(Node):
     def __init__(self):
         super().__init__('ethernet_can_bridge')
 
-        self.declare_parameter('stm32_ip',       '192.168.1.100')
-        self.declare_parameter('stm32_port',     7777)
-        self.declare_parameter('listen_port',    7777)
-        self.declare_parameter('command_topic',  'motor_can_tx')
-        self.declare_parameter('feedback_topic', 'motor_can_feedback')
-        self.declare_parameter('can_id',         0x7F)
-        self.declare_parameter('all_logging_info', True)
+        self.declare_parameter('stm32_ip',           '192.168.1.100')
+        self.declare_parameter('stm32_port',         7777)
+        self.declare_parameter('listen_port',        7777)
+        self.declare_parameter('command_topic',      'motor_can_tx')
+        self.declare_parameter('feedback_topic',     'motor_can_feedback')
+        self.declare_parameter('can_id',             0x7F)
+        # When True, assigns sequential CAN IDs per joint (can_id_base, base+1, ...).
+        # When False, all joints use the same can_id.
+        self.declare_parameter('can_id_per_joint',   True)
+        self.declare_parameter('can_id_base',        0x201)
+        self.declare_parameter('all_logging_info',   True)
+        self.declare_parameter('log_dir', str(Path.home() / 'motor_test_logs'))
 
-        self.stm32_ip       = self.get_parameter('stm32_ip').value
-        self.stm32_port     = int(self.get_parameter('stm32_port').value)
-        self.listen_port    = int(self.get_parameter('listen_port').value)
-        self.command_topic  = self.get_parameter('command_topic').value
-        self.feedback_topic = self.get_parameter('feedback_topic').value
-        self.can_id         = int(self.get_parameter('can_id').value)
-        self.all_logging    = bool(self.get_parameter('all_logging_info').value)
+        self.stm32_ip         = self.get_parameter('stm32_ip').value
+        self.stm32_port       = int(self.get_parameter('stm32_port').value)
+        self.listen_port      = int(self.get_parameter('listen_port').value)
+        self.command_topic    = self.get_parameter('command_topic').value
+        self.feedback_topic   = self.get_parameter('feedback_topic').value
+        self.can_id           = int(self.get_parameter('can_id').value)
+        self.can_id_per_joint = bool(self.get_parameter('can_id_per_joint').value)
+        self.can_id_base      = int(self.get_parameter('can_id_base').value)
+        self.all_logging      = bool(self.get_parameter('all_logging_info').value)
+        log_base              = self.get_parameter('log_dir').value
+
+        # -- Log file setup --------------------------------------------------
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        log_dir = Path(log_base) / timestamp
+        log_dir.mkdir(parents=True, exist_ok=True)
+        self._t0 = time.monotonic()
+        self._udp_csv  = open(log_dir / 'udp_events.csv', 'w', newline='', encoding='utf-8')
+        self._udp_writer = csv.writer(self._udp_csv)
+        self._udp_writer.writerow(['time_s', 'direction', 'can_id_hex', 'data'])
+        self._udp_csv.flush()
+        self.get_logger().info(f'UDP event log: {log_dir / "udp_events.csv"}')
+        # --------------------------------------------------------------------
 
         self.publisher = self.create_publisher(UInt8MultiArray, self.feedback_topic, 10)
         self.subscription = self.create_subscription(
@@ -101,13 +115,26 @@ class EthernetCanBridge(Node):
             )
 
         commands_sent = 0
+        chunk_index = 0
         for offset in range(0, len(payload) - (len(payload) % 16), 16):
             chunk = payload[offset:offset + 16]
             q, kp, kd, tau = struct.unpack('<ffff', chunk)
-            line = f'CMD 0x{self.can_id:X} {q:.6f} {kp:.6f} {kd:.6f} {tau:.6f}\n'
+
+            # Choose CAN ID: sequential per-joint or uniform single-motor mode.
+            if self.can_id_per_joint:
+                can_id = self.can_id_base + chunk_index
+            else:
+                can_id = self.can_id
+
+            line = f'CMD 0x{can_id:X} {q:.6f} {kp:.6f} {kd:.6f} {tau:.6f}\n'
             try:
                 self.sock.sendto(line.encode('ascii'), (self.stm32_ip, self.stm32_port))
+                self._udp_writer.writerow(
+                    [f'{time.monotonic() - self._t0:.4f}', 'TX',
+                     f'0x{can_id:X}', f'q={q:.6f} kp={kp:.6f} kd={kd:.6f} tau={tau:.6f}'])
+                self._udp_csv.flush()
                 commands_sent += 1
+                chunk_index += 1
                 if self.all_logging:
                     self.get_logger().info(f'Sent UDP command: {line.strip()}')
             except OSError as exc:
@@ -159,6 +186,11 @@ class EthernetCanBridge(Node):
             out.data = list(payload)
             self.publisher.publish(out)
 
+            self._udp_writer.writerow(
+                [f'{time.monotonic() - self._t0:.4f}', 'RX_FBK',
+                 f'0x{can_id:02X}', f'q={q:.6f} q_dot={q_dot:.6f}'])
+            self._udp_csv.flush()
+
             if self.all_logging:
                 self.get_logger().info(
                     f'Published feedback: id=0x{can_id:02X} q={q:.6f} q_dot={q_dot:.6f}'
@@ -169,6 +201,9 @@ class EthernetCanBridge(Node):
 
         elif parts[0] == 'ERR':
             self.get_logger().error(f'STM32 error: {line}')
+            self._udp_writer.writerow(
+                [f'{time.monotonic() - self._t0:.4f}', 'RX_ERR', '', line])
+            self._udp_csv.flush()
 
         else:
             if self.all_logging:
@@ -181,6 +216,7 @@ class EthernetCanBridge(Node):
             self.reader_thread.join(timeout=1.0)
         if self.sock is not None:
             self.sock.close()
+        self._udp_csv.close()
         super().destroy_node()
 
 

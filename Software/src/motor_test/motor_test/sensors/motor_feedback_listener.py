@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # Subscribes: /motor_can (UInt8MultiArray)
 # Publishes: /motor_feedback (MotorFeedback)
-# TODO: add a short description of what this does
 
 import struct
 
@@ -9,10 +8,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
 
-try:
-    from motor_test.common import load_motor_names
-except ModuleNotFoundError:
-    from common import load_motor_names
+from motor_test.common import load_motor_names
 
 from motor_test.msg import MotorFeedback, MotorFeedbackEntry
 
@@ -33,7 +29,6 @@ class MotorFeedbackListener(Node):
         self.record_format = '<ff'
         self.record_size = struct.calcsize(self.record_format)
 
-        # TODO: sort out motor names in config file
         self.motor_names = self.load_motor_names()
         if self.all_logging_info:
             self.get_logger().info(
@@ -57,7 +52,6 @@ class MotorFeedbackListener(Node):
         return load_motor_names(self.names_file, self.motor_count, self.get_logger())
 
     def motor_can_callback(self, msg: UInt8MultiArray):
-        # TODO:  check that this works?? it may need editing to be the right file time
         payload = bytes(msg.data)
         packet_count = len(payload) // self.record_size
 
