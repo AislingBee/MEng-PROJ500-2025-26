@@ -3,7 +3,7 @@ import serial, struct, time, math, sys
 
 sys.stdout.reconfigure(errors='replace')
 
-COM_PORT = 'COM8'
+COM_PORT = 'COM6'
 BAUD = 921600
 MOTOR_ID = 127
 HOST_ID = 0xFD
@@ -67,22 +67,35 @@ resp = s.read_all()
 for ct, eid, d in parse_response(resp):
     print(f"   Response: comm_type={ct} data={d.hex()}")
 
-# Jog right briefly
-print("4. Jog right (1 rad/s for 1s)...")
-vel = 1.0
-vel_u16 = int(((vel / 15.0) + 1.0) * 32767)
+# Continuous jog — runs until Ctrl+C
+VEL_RAD_S = 1.0  # rad/s, change as needed
+vel_u16 = int(((VEL_RAD_S / 15.0) + 1.0) * 32767)
 payload = bytes([0x07, 0x01]) + struct.pack(">H", vel_u16)
-s.write(build_frame(MOTOR_ID, 0x7005, payload))
+jog_frame = build_frame(MOTOR_ID, 0x7005, payload)
+
+stop_payload = bytes([0x07, 0x00, 0x7F, 0xFF])
+stop_frame = build_frame(MOTOR_ID, 0x7005, stop_payload)
+
+print(f"4. Jogging continuously at {VEL_RAD_S} rad/s — press Ctrl+C to stop...")
+s.write(jog_frame)
 s.flush()
-time.sleep(1.0)
 
-# Stop jog
-print("5. Stop jog...")
-payload = bytes([0x07, 0x00, 0x7F, 0xFF])
-s.write(build_frame(MOTOR_ID, 0x7005, payload))
-s.flush(); time.sleep(0.3)
+try:
+    t_print = time.time()
+    while True:
+        time.sleep(0.1)
+        resp = s.read_all()
+        if resp and time.time() - t_print > 1.0:
+            for ct, eid, d in parse_response(resp):
+                print(f"   Feedback: comm_type={ct} data={d.hex()}")
+            t_print = time.time()
+except KeyboardInterrupt:
+    print("\n5. Stopping motor...")
+
+s.write(stop_frame)
+s.flush()
+time.sleep(0.3)
 resp = s.read_all()
-print(f"   Got {len(resp)} bytes response")
-
-print("\n=== ALL TESTS PASSED ===")
+print(f"   Stop response: {len(resp)} bytes")
+print("\n=== DONE ===")
 s.close()

@@ -24,3 +24,14 @@ Software/stm_firmware/tools/
 # Editor files
 .vscode/
 .idea/
+nucleo_can_bridge/test_motor.py
+nucleo_can_bridge copy/test_motor.py
+nucleo_can_bridge copy/test_bridge.py
+nucleo_can_bridge copy/test_boot.py
+nucleo_can_bridge copy/test/README
+nucleo_can_bridge copy/src/stm32f4xx_hal_conf.h
+nucleo_can_bridge copy/src/main.c
+nucleo_can_bridge copy/platformio.ini
+nucleo_can_bridge copy/pc_control.py
+nucleo_can_bridge copy/lib/README
+nucleo_can_bridge copy/include/README
