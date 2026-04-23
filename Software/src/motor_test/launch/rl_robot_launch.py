@@ -1,23 +1,10 @@
-# Build and source before launching:
-#   colcon build --packages-select motor_test
-#   source install/setup.bash
+# Build: colcon build --packages-select motor_test && source install/setup.bash
 #
-# This launch file starts the full RL-to-hardware pipeline:
+# Full RL-to-hardware pipeline:
+#   robot_command_bridge → ethernet_can_bridge ↔ STM32
+#   motor_feedback_listener → robot_observation_bridge → RL policy
 #
-#   Ros2RobotBridge (simulation side)
-#       │  /robot_command  ──►  robot_command_bridge
-#       │                              │  /motor_can_tx
-#       │                              ▼
-#       │                      ethernet_can_bridge  ◄──►  STM32
-#       │                              │  /motor_can_feedback
-#       │                              ▼
-#       │                      motor_feedback_listener ──► /motor_feedback
-#       │                                                        │  (+/imu)
-#       │  /robot_observation  ◄──  robot_observation_bridge ◄──┘
-#       ▼
-#   RL policy reads ObservationPacket
-#
-# Adjust the parameters below to match your hardware setup.
+# Adjust parameters below to match your hardware setup.
 
 from launch import LaunchDescription
 from launch_ros.actions import Node
@@ -45,10 +32,7 @@ _CAN_ID_BASE = 0x201
 
 
 def generate_launch_description():
-    # ------------------------------------------------------------------
-    # 1. robot_command_bridge
-    #    Converts /robot_command (RobotCommand) → /motor_can_tx (UInt8MultiArray)
-    # ------------------------------------------------------------------
+    # 1. robot_command_bridge: /robot_command → /motor_can_tx
     robot_command_bridge_node = Node(
         package='motor_test',
         executable='robot_command_bridge.py',
@@ -61,13 +45,7 @@ def generate_launch_description():
         }],
     )
 
-    # ------------------------------------------------------------------
-    # 2. ethernet_can_bridge
-    #    Forwards /motor_can_tx bytes to STM32 over UDP; receives FBK lines
-    #    and publishes raw CAN feedback on /motor_can_feedback.
-    #
-    #    can_id_per_joint=True: joint 0 → 0x201, joint 1 → 0x202, …
-    # ------------------------------------------------------------------
+    # 2. ethernet_can_bridge: /motor_can_tx → STM32 (UDP) → /motor_can_feedback
     ethernet_can_bridge_node = Node(
         package='motor_test',
         executable='ethernet_can_bridge.py',
@@ -85,10 +63,7 @@ def generate_launch_description():
         }],
     )
 
-    # ------------------------------------------------------------------
-    # 3. motor_feedback_listener
-    #    Decodes /motor_can_feedback bytes → /motor_feedback (MotorFeedback)
-    # ------------------------------------------------------------------
+    # 3. motor_feedback_listener: /motor_can_feedback → /motor_feedback
     motor_feedback_node = Node(
         package='motor_test',
         executable='motor_feedback_listener.py',
@@ -102,13 +77,7 @@ def generate_launch_description():
         }],
     )
 
-    # ------------------------------------------------------------------
-    # 4. robot_observation_bridge
-    #    Aggregates /motor_feedback + /imu → /robot_observation (RobotObservation)
-    #
-    #    If no IMU is available the gravity vector defaults to [0,0,-1].
-    #    Remap the imu_topic parameter if your IMU publishes on a different topic.
-    # ------------------------------------------------------------------
+    # 4. robot_observation_bridge: /motor_feedback + /imu → /robot_observation
     robot_observation_bridge_node = Node(
         package='motor_test',
         executable='robot_observation_bridge.py',
@@ -122,9 +91,24 @@ def generate_launch_description():
         }],
     )
 
+    # 5. imu_publisher: reads hardware IMU → /imu (sensor_msgs/Imu)
+    #    TODO: fill in imu_publisher.py with your hardware read calls.
+    imu_publisher_node = Node(
+        package='motor_test',
+        executable='imu_publisher.py',
+        name='imu_publisher',
+        output='screen',
+        parameters=[{
+            'imu_topic': 'imu',
+            'frame_id':  'imu_link',
+            'rate_hz':   100.0,
+        }],
+    )
+
     return LaunchDescription([
         robot_command_bridge_node,
         ethernet_can_bridge_node,
         motor_feedback_node,
         robot_observation_bridge_node,
+        imu_publisher_node,
     ])

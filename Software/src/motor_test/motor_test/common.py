@@ -9,16 +9,16 @@ from typing import Iterable, List
 def find_descriptions_msgs_path() -> Path:
     current = Path(__file__).resolve()
     for parent in current.parents:
-        source_candidate = parent / 'descriptions' / 'msgs'
+        source_candidate = parent / 'config' / 'json'
         if source_candidate.is_dir():
             return source_candidate
 
-        installed_candidate = parent / 'share' / 'motor_test' / 'descriptions' / 'msgs'
+        installed_candidate = parent / 'share' / 'motor_test' / 'config' / 'json'
         if installed_candidate.is_dir():
             return installed_candidate
 
     raise FileNotFoundError(
-        'Could not locate descriptions/msgs folder from %s' % current
+        'Could not locate config/json folder from %s' % current
     )
 
 

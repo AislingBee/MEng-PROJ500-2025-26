@@ -1,21 +1,5 @@
 #!/usr/bin/env python3
-"""ROS2 bridge: MotorFeedback + IMU → RobotObservation.
-
-Subscribes:
-  /{feedback_topic}     (motor_test/MotorFeedback)  – joint positions & velocities
-  /{imu_topic}          (sensor_msgs/Imu)            – orientation & angular velocity
-
-Publishes:
-  /{observation_topic}  (motor_test/RobotObservation)
-
-The node publishes a new RobotObservation each time a MotorFeedback message
-arrives.  If an IMU message has been received at least once the latest cached
-value is used; otherwise gravity and gyro default to [0, 0, -1] and [0, 0, 0].
-
-IMU orientation (quaternion) is used to project the gravity vector into the
-body frame – matching the convention used by IsaacHardwareInterface and
-RobotHardwareInterface in simulation/isaac/rl/interface/.
-"""
+"""Merges MotorFeedback and IMU data into a RobotObservation message."""
 
 import math
 import threading
@@ -31,11 +15,7 @@ def _quat_rotate_inverse(
     qw: float, qx: float, qy: float, qz: float,
     vx: float, vy: float, vz: float,
 ) -> tuple[float, float, float]:
-    """Rotate vector v by the *inverse* (conjugate) of unit quaternion q.
-
-    Implements: v' = q* ⊗ v ⊗ q  (passive rotation / body-frame projection).
-    Equivalent to IsaacLab's quat_rotate_inverse with scalar-first convention.
-    """
+    """Rotate a vector by the inverse of a unit quaternion (body-frame projection)."""  
     # Cross product  q_vec × v  where q_vec = (qx, qy, qz)
     tx = 2.0 * (qy * vz - qz * vy)
     ty = 2.0 * (qz * vx - qx * vz)
@@ -111,7 +91,7 @@ class RobotObservationBridge(Node):
             qy = imu.orientation.y
             qz = imu.orientation.z
 
-            # Normalise quaternion to guard against near-zero edge cases
+            # Normalise quaternion
             norm = math.sqrt(qw * qw + qx * qx + qy * qy + qz * qz)
             if norm > 1e-6:
                 qw /= norm
@@ -129,7 +109,7 @@ class RobotObservationBridge(Node):
                 imu.angular_velocity.z,
             ]
         else:
-            # Safe fallback: robot assumed upright, no rotation
+            # No IMU: assume upright
             obs.projected_gravity_b = [0.0, 0.0, -1.0]
             obs.imu_gyro_b = [0.0, 0.0, 0.0]
 

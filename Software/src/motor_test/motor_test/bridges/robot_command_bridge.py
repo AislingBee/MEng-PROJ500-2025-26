@@ -1,17 +1,7 @@
 #!/usr/bin/env python3
-"""ROS2 bridge: RobotCommand → per-joint CAN byte payload.
+"""Converts RobotCommand to a packed CAN byte payload (UInt8MultiArray).
 
-Subscribes:  /{command_topic}  (motor_test/RobotCommand)
-Publishes:   /{can_tx_topic}   (std_msgs/UInt8MultiArray)
-
-Each joint is packed as 4 × little-endian float32 (16 bytes):
-  [q_des, kp, kd, tau_ff]
-
-All joints are concatenated into a single UInt8MultiArray so that
-ethernet_can_bridge.py can iterate over each 16-byte chunk and send
-one UDP CMD line per joint to the STM32.  The ethernet bridge must
-have can_id_per_joint=True so it assigns CAN IDs sequentially starting
-from can_id_base.
+Each joint is packed as 4 × float32 LE: [q_des, kp, kd, tau_ff] (16 bytes).
 """
 
 import struct
@@ -37,7 +27,7 @@ class RobotCommandBridge(Node):
         self.can_tx_topic = self.get_parameter('can_tx_topic').value
         self.all_logging_info = bool(self.get_parameter('all_logging_info').value)
 
-        # Use QoS depth 1 so the CAN layer always gets the newest command.
+        # QoS depth 1: always forward the newest command.
         self.subscription = self.create_subscription(
             RobotCommand,
             self.command_topic,
@@ -58,7 +48,7 @@ class RobotCommandBridge(Node):
             self.get_logger().warn('Received RobotCommand with no joints; ignoring.')
             return
 
-        # Validate that all control arrays have the expected length.
+        # Validate array lengths.
         lengths = {
             'q_des':   len(msg.q_des),
             'qd_des':  len(msg.qd_des),
@@ -73,8 +63,7 @@ class RobotCommandBridge(Node):
             )
             return
 
-        # Pack each joint as 4 × float32 LE (16 bytes).
-        # Field order matches the STM32 CMD protocol: q kp kd tau
+        # Pack each joint as 4 × float32 LE (16 bytes): q kp kd tau.
         payload = bytearray()
         for i in range(n):
             payload += struct.pack(

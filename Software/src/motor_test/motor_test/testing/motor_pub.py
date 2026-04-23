@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 # Subscribes: None
 # Publishes: /motor_params (MotorParam)
-# TODO: add a short explanation of what this node does and why
+# Publishes a fixed motor command at a set rate for single-joint testing.
 
 import rclpy
 from rclpy.node import Node
 
-try:
-    from motor_test.common import clamp_rate
-except ModuleNotFoundError:
-    from common import clamp_rate
+from motor_test.common import clamp_rate
 
 from motor_test.msg import MotorParam
 
@@ -17,7 +14,6 @@ from motor_test.msg import MotorParam
 class MotorPub(Node):
     def __init__(self):
         super().__init__('motor_pub')
-        # TODO: explain the parameters used by this node
         self.declare_parameter('topic', 'motor_params')
         self.declare_parameter('rate', 10.0)
         self.declare_parameter('q', 0.0)
@@ -34,7 +30,6 @@ class MotorPub(Node):
         self.tau = self.get_parameter('tau').value
         self.all_logging_info = bool(self.get_parameter('all_logging_info').value)
 
-        # TODO: explain the publisher, topic, and timer setup
         self.publisher = self.create_publisher(MotorParam, self.topic, 10)
         self.timer = self.create_timer(1.0 / self.rate, self.timer_callback)
 

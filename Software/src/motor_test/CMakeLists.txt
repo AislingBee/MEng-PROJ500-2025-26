@@ -25,13 +25,15 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 ament_export_dependencies(rosidl_default_runtime)
 
 install(PROGRAMS
-  motor_test/motor_pub.py
-  motor_test/motor_feedback_listener.py
-  motor_test/motor_controller_test.py
-  motor_test/serial_can_bridge.py
-  motor_test/ethernet_can_bridge.py
-  motor_test/robot_command_bridge.py
-  motor_test/robot_observation_bridge.py
+  motor_test/bridges/ethernet_can_bridge.py
+  motor_test/bridges/serial_can_bridge.py
+  motor_test/bridges/robot_command_bridge.py
+  motor_test/bridges/robot_observation_bridge.py
+  motor_test/sensors/imu_publisher.py
+  motor_test/sensors/motor_feedback_listener.py
+  motor_test/testing/motor_controller_test.py
+  motor_test/testing/motor_pub.py
+  motor_test/testing/single_motor_test.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -46,8 +48,9 @@ install(DIRECTORY
 )
 
 install(DIRECTORY
-  ${CMAKE_CURRENT_LIST_DIR}/../../descriptions
+  ${CMAKE_CURRENT_LIST_DIR}/../../config
   DESTINATION share/${PROJECT_NAME}
+  FILES_MATCHING PATTERN "*.json"
 )
 
 ament_package()

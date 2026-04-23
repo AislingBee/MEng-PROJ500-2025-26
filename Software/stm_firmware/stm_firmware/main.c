@@ -86,6 +86,8 @@ static bool host_known       = false;
 static bool motor_mode_enabled = false;
 static uint32_t motor_can_id   = DEFAULT_MOTOR_CAN_ID;
 
+static bool can_loopback_ok = false;
+
 static char line_buf[LINE_BUF_SIZE];
 
 static void SystemClock_Config(void);
@@ -104,6 +106,77 @@ static void handle_udp(const uint8_t *udp, uint16_t udp_len,
                        const uint8_t *src_mac, const uint8_t *src_ip);
 static void send_motor_command(uint32_t can_id, float q, float qd, float kp, float kd, float tau);
 static bool can_send_frame(uint32_t ext_id, const uint8_t *data, uint8_t dlc);
+
+/* Run CAN loopback self-test. Returns 1 on pass, 0 on fail.
+ * Call immediately after MX_CAN1_Init(); restores normal mode before returning. */
+static int loopback_test(void)
+{
+    CAN_FilterTypeDef can_filter = {0};
+
+    HAL_CAN_Stop(&hcan1);
+    hcan1.Init.Mode = CAN_MODE_LOOPBACK;
+    if (HAL_CAN_Init(&hcan1) != HAL_OK) { goto restore; }
+
+    can_filter.FilterBank          = 0;
+    can_filter.FilterMode          = CAN_FILTERMODE_IDMASK;
+    can_filter.FilterScale         = CAN_FILTERSCALE_32BIT;
+    can_filter.FilterFIFOAssignment = CAN_RX_FIFO0;
+    can_filter.FilterActivation    = ENABLE;
+    can_filter.SlaveStartFilterBank = 14;
+    HAL_CAN_ConfigFilter(&hcan1, &can_filter);
+
+    if (HAL_CAN_Start(&hcan1) != HAL_OK) { goto restore; }
+
+    {
+        CAN_TxHeaderTypeDef txH = {0};
+        uint32_t mb = 0U;
+        uint8_t td[8] = {0xDE, 0xAD, 0xBE, 0xEF, 0x01, 0x02, 0x03, 0x04};
+        txH.ExtId = 0x12345U; txH.IDE = CAN_ID_EXT;
+        txH.RTR   = CAN_RTR_DATA; txH.DLC = 8U;
+        txH.TransmitGlobalTime = DISABLE;
+
+        if (HAL_CAN_AddTxMessage(&hcan1, &txH, td, &mb) != HAL_OK) { goto restore; }
+
+        uint32_t t0 = HAL_GetTick();
+        while (HAL_CAN_IsTxMessagePending(&hcan1, mb)) {
+            if (HAL_GetTick() - t0 > 100U) { goto restore; }
+        }
+
+        t0 = HAL_GetTick();
+        while (HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0) == 0U) {
+            if (HAL_GetTick() - t0 > 100U) { goto restore; }
+        }
+
+        CAN_RxHeaderTypeDef rxH;
+        uint8_t rd[8];
+        HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &rxH, rd);
+
+        if (rxH.ExtId == 0x12345U && rd[0] == 0xDEU && rd[3] == 0xEFU) {
+            /* Restore normal mode */
+            HAL_CAN_Stop(&hcan1);
+            hcan1.Init.Mode = CAN_MODE_NORMAL;
+            HAL_CAN_Init(&hcan1);
+            HAL_CAN_ConfigFilter(&hcan1, &can_filter);
+            HAL_CAN_Start(&hcan1);
+            return 1;
+        }
+    }
+
+restore:
+    HAL_CAN_Stop(&hcan1);
+    hcan1.Init.Mode = CAN_MODE_NORMAL;
+    HAL_CAN_Init(&hcan1);
+    {
+        CAN_FilterTypeDef f = {0};
+        f.FilterBank = 0; f.FilterMode = CAN_FILTERMODE_IDMASK;
+        f.FilterScale = CAN_FILTERSCALE_32BIT;
+        f.FilterFIFOAssignment = CAN_RX_FIFO0;
+        f.FilterActivation = ENABLE; f.SlaveStartFilterBank = 14;
+        HAL_CAN_ConfigFilter(&hcan1, &f);
+    }
+    HAL_CAN_Start(&hcan1);
+    return 0;
+}
 
 static float clampf_local(float value, float min_value, float max_value)
 {
@@ -155,12 +228,39 @@ int main(void)
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
-    MX_ETH_Init();
     MX_CAN1_Init();
+
+    /* CAN loopback self-test — validates the CAN peripheral before going live.
+     * 3 fast LED blinks = PASS; 1 long blink = FAIL. */
+    can_loopback_ok = (loopback_test() == 1);
+    if (can_loopback_ok) {
+        for (int i = 0; i < 6; i++) {
+            HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
+            HAL_Delay(80U);
+        }
+    } else {
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+        HAL_Delay(600U);
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+    }
+
+    MX_ETH_Init();
+
+    /* Report boot status on first UDP packet from host */
+    bool boot_reported = false;
 
     while (1) {
         service_eth_rx();
         service_can_rx();
+
+        if (!boot_reported && host_known) {
+            boot_reported = true;
+            if (can_loopback_ok) {
+                send_text("BOOT CAN loopback PASS\r\n");
+            } else {
+                send_text("BOOT CAN loopback FAIL — check transceiver and bus termination\r\n");
+            }
+        }
     }
 }
 
@@ -540,36 +640,45 @@ static void send_motor_command(uint32_t can_id, float q, float qd, float kp, flo
 static void SystemClock_Config(void)
 {
     /*
-     * Configure PLL on HSI to reach 168 MHz SYSCLK.
-     * ETH MAC requires HCLK >= 25 MHz; 168 MHz provides ample headroom.
+     * Primary:  HSE bypass (8 MHz ST-Link MCO) → PLL → 180 MHz + overdrive
+     *   PLLM=8, PLLN=360, PLLP=2 → SYSCLK=180 MHz; APB1=45 MHz
+     *   CAN: Prescaler=3, BS1=10TQ, BS2=4TQ → 1 Mbps at 45 MHz APB1
      *
-     *  HSI = 16 MHz
-     *  PLLM = 8  → VCO input = 2 MHz
-     *  PLLN = 168 → VCO output = 336 MHz
-     *  PLLP = 2   → SYSCLK = 168 MHz
-     *  PLLQ = 7   → USB/SDIO clock = 48 MHz
-     *
-     *  AHB  /1 → HCLK  = 168 MHz
-     *  APB1 /4 → PCLK1 = 42 MHz  (CAN max APB1 ≤ 45 MHz)
-     *  APB2 /2 → PCLK2 = 84 MHz
+     * Fallback: HSI 16 MHz → PLL → 168 MHz
+     *   PLLM=16, PLLN=336, PLLP=2 → SYSCLK=168 MHz; APB1=42 MHz
+     *   CAN: Prescaler=3, BS1=10TQ, BS2=4TQ → ~934 kbps (within motor tolerance)
      */
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-    RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI;
-    RCC_OscInitStruct.HSIState            = RCC_HSI_ON;
-    RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-    RCC_OscInitStruct.PLL.PLLState        = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource       = RCC_PLLSOURCE_HSI;
-    RCC_OscInitStruct.PLL.PLLM            = 8U;
-    RCC_OscInitStruct.PLL.PLLN            = 168U;
-    RCC_OscInitStruct.PLL.PLLP            = RCC_PLLP_DIV2;
-    RCC_OscInitStruct.PLL.PLLQ            = 7U;
-    HAL_RCC_OscConfig(&RCC_OscInitStruct);
-
-    /* Enable power controller and set voltage scale 1 for 168 MHz */
     __HAL_RCC_PWR_CLK_ENABLE();
     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+    /* Try HSE bypass first (8 MHz from ST-Link MCO on Nucleo-F429ZI) */
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    RCC_OscInitStruct.HSEState       = RCC_HSE_BYPASS;
+    RCC_OscInitStruct.PLL.PLLState   = RCC_PLL_ON;
+    RCC_OscInitStruct.PLL.PLLSource  = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLM       = 8U;
+    RCC_OscInitStruct.PLL.PLLN       = 360U;
+    RCC_OscInitStruct.PLL.PLLP       = RCC_PLLP_DIV2;
+    RCC_OscInitStruct.PLL.PLLQ       = 7U;
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+        /* HSE unavailable — fall back to HSI, 168 MHz */
+        memset(&RCC_OscInitStruct, 0, sizeof(RCC_OscInitStruct));
+        RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI;
+        RCC_OscInitStruct.HSIState            = RCC_HSI_ON;
+        RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+        RCC_OscInitStruct.PLL.PLLState        = RCC_PLL_ON;
+        RCC_OscInitStruct.PLL.PLLSource       = RCC_PLLSOURCE_HSI;
+        RCC_OscInitStruct.PLL.PLLM            = 16U;
+        RCC_OscInitStruct.PLL.PLLN            = 336U;
+        RCC_OscInitStruct.PLL.PLLP            = RCC_PLLP_DIV2;
+        RCC_OscInitStruct.PLL.PLLQ            = 7U;
+        HAL_RCC_OscConfig(&RCC_OscInitStruct);
+    }
+
+    HAL_PWREx_EnableOverDrive();
 
     RCC_ClkInitStruct.ClockType      = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
                                        RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
@@ -654,19 +763,17 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef *hcan)
 
     if (hcan->Instance == CAN1) {
         __HAL_RCC_CAN1_CLK_ENABLE();
-        __HAL_RCC_GPIOB_CLK_ENABLE();
         __HAL_RCC_GPIOD_CLK_ENABLE();
 
-        /* Common CAN1 mappings on the Nucleo-F429ZI: PB8/PB9 and PD0/PD1. */
-        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+        /* CAN1 on PD0 (RX) / PD1 (TX) — AF9.
+         * Only configure one pin set. Driving both PB8/PB9 and PD0/PD1 as
+         * CAN1 AF simultaneously corrupts the bus since both sets feed the
+         * same CAN RX line. */
+        GPIO_InitStruct.Pin       = GPIO_PIN_0 | GPIO_PIN_1;
+        GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+        GPIO_InitStruct.Pull      = GPIO_NOPULL;
+        GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
         GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
-
-        GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
-        HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-        GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1;
         HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
     }
 }
@@ -680,10 +787,10 @@ static void MX_CAN1_Init(void)
     hcan1.Init.Mode = CAN_MODE_NORMAL;
     hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
     hcan1.Init.TimeSeg1 = CAN_BS1_10TQ;
-    hcan1.Init.TimeSeg2 = CAN_BS2_3TQ;
+    hcan1.Init.TimeSeg2 = CAN_BS2_4TQ;  /* 1 Mbps at 180 MHz/APB1=45 MHz (tested) */
     hcan1.Init.TimeTriggeredMode = DISABLE;
     hcan1.Init.AutoBusOff = ENABLE;
-    hcan1.Init.AutoWakeUp = DISABLE;
+    hcan1.Init.AutoWakeUp = ENABLE;
     hcan1.Init.AutoRetransmission = DISABLE;
     hcan1.Init.ReceiveFifoLocked = DISABLE;
     hcan1.Init.TransmitFifoPriority = DISABLE;

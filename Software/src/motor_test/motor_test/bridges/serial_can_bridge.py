@@ -1,16 +1,7 @@
 #!/usr/bin/env python3
-"""ROS serial bridge for STM32 on COM3.
+"""Serial bridge between ROS and the STM32 CAN firmware.
 
-This bridge listens for ROS CAN command frames on `motor_can_tx`, sends them
-as ASCII commands over a serial port, and publishes incoming STM32 motor
-feedback back onto a ROS CAN-like topic `motor_can_feedback`.
-
-The STM firmware should expose the following serial protocol:
-  CMD 0xNN <q> <kp> <kd> <tau>\n
-and reply as:
-  FBK 0xNN <q> <q_dot>\n
-The ROS side can then feed `motor_can_feedback` into the existing
-`motor_feedback_listener.py` node.
+Sends CMD lines over serial and publishes FBK replies as UInt8MultiArray.
 """
 
 import threading
@@ -39,8 +30,8 @@ class SerialCanBridge(Node):
         self.declare_parameter('command_topic', 'motor_can_tx')
         self.declare_parameter('feedback_topic', 'motor_can_feedback')
         self.declare_parameter('can_id', 0x7F)
-        # When can_id_per_joint=True the bridge increments the CAN ID for each
-        # 16-byte chunk (joint 0 → can_id_base, joint 1 → can_id_base+1, …).
+        # When True, assigns sequential CAN IDs per joint (can_id_base, base+1, ...).
+        # When False, all joints use the same can_id.
         self.declare_parameter('can_id_per_joint', True)
         self.declare_parameter('can_id_base', 0x201)
         self.declare_parameter('all_logging_info', True)
