@@ -2,7 +2,7 @@
 # Publishes: /robot_command (RobotCommand) - 1 joint, steps between +target_q and -target_q
 # Subscribes: /motor_feedback (MotorFeedback) - logs position and velocity
 #
-# Logs are written to ~/motor_test_logs/<timestamp>/
+# Logs are written to <Software>/logs/<timestamp>/
 #   commands.csv  - time_s, q_des_rad, kp, kd, tau_ff_Nm
 #   feedback.csv  - time_s, joint_name, q_rad, q_dot_rad_s
 
@@ -13,6 +13,7 @@ from pathlib import Path
 import rclpy
 from rclpy.node import Node
 from motor_test.msg import RobotCommand, MotorFeedback
+from motor_test.common import get_software_log_dir
 
 
 class SingleMotorTest(Node):
@@ -28,7 +29,7 @@ class SingleMotorTest(Node):
         self.declare_parameter('rate_hz',       50.0)
         self.declare_parameter('command_topic', 'robot_command')
         self.declare_parameter('feedback_topic', 'motor_feedback')
-        self.declare_parameter('log_dir', str(Path.home() / 'motor_test_logs'))
+        self.declare_parameter('log_dir', str(get_software_log_dir()))
 
         self.joint_name     = self.get_parameter('joint_name').value
         self.target_q       = float(self.get_parameter('target_q').value)
@@ -48,6 +49,7 @@ class SingleMotorTest(Node):
 
         self._cmd_csv = open(log_dir / 'commands.csv',  'w', newline='', encoding='utf-8')
         self._fbk_csv = open(log_dir / 'feedback.csv',  'w', newline='', encoding='utf-8')
+        self._log     = open(log_dir / 'motor_test.log', 'w', encoding='utf-8')
         self._cmd_writer = csv.writer(self._cmd_csv)
         self._fbk_writer = csv.writer(self._fbk_csv)
         self._cmd_writer.writerow(['time_s', 'q_des_rad', 'kp', 'kd', 'tau_ff_Nm'])
@@ -96,6 +98,10 @@ class SingleMotorTest(Node):
                                    f'{self.kp:.4f}', f'{self.kd:.4f}',
                                    f'{self.tau_ff:.4f}'])
         self._cmd_csv.flush()
+        self._log.write(
+            f'[{elapsed_s:.4f}]  CMD   joint={self.joint_name}'
+            f'  q_des={q_des:.6f}  kp={self.kp:.4f}  kd={self.kd:.4f}  tau={self.tau_ff:.4f}\n')
+        self._log.flush()
 
     # ------------------------------------------------------------------
     def _feedback_callback(self, msg: MotorFeedback) -> None:
@@ -103,7 +109,11 @@ class SingleMotorTest(Node):
         for motor in msg.motors:
             self._fbk_writer.writerow([f'{t:.4f}', motor.name,
                                        f'{motor.q:.6f}', f'{motor.q_dot:.6f}'])
+            self._log.write(
+                f'[{t:.4f}]  FBK   joint={motor.name}'
+                f'  q={motor.q:.6f}  q_dot={motor.q_dot:.6f}\n')
         self._fbk_csv.flush()
+        self._log.flush()
 
         for motor in msg.motors:
             if motor.name == self.joint_name:
@@ -121,6 +131,7 @@ class SingleMotorTest(Node):
     def destroy_node(self):
         self._cmd_csv.close()
         self._fbk_csv.close()
+        self._log.close()
         super().destroy_node()
 
 

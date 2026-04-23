@@ -4,7 +4,7 @@
 Sends CMD lines to the STM32 and receives FBK/ID/ERR replies over UDP.
 Default STM32 address: 192.168.1.100:7777.
 
-Logs are written to ~/motor_test_logs/<timestamp>/udp_events.csv
+Logs are written to <Software>/logs/<timestamp>/udp_events.csv
   time_s, direction, can_id_hex, data
 """
 
@@ -19,6 +19,7 @@ from pathlib import Path
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
+from motor_test.common import get_software_log_dir
 
 
 class EthernetCanBridge(Node):
@@ -36,7 +37,7 @@ class EthernetCanBridge(Node):
         self.declare_parameter('can_id_per_joint',   True)
         self.declare_parameter('can_id_base',        0x201)
         self.declare_parameter('all_logging_info',   True)
-        self.declare_parameter('log_dir', str(Path.home() / 'motor_test_logs'))
+        self.declare_parameter('log_dir', str(get_software_log_dir()))
 
         self.stm32_ip         = self.get_parameter('stm32_ip').value
         self.stm32_port       = int(self.get_parameter('stm32_port').value)
@@ -55,10 +56,11 @@ class EthernetCanBridge(Node):
         log_dir.mkdir(parents=True, exist_ok=True)
         self._t0 = time.monotonic()
         self._udp_csv  = open(log_dir / 'udp_events.csv', 'w', newline='', encoding='utf-8')
+        self._udp_log  = open(log_dir / 'udp_events.log', 'w', encoding='utf-8')
         self._udp_writer = csv.writer(self._udp_csv)
         self._udp_writer.writerow(['time_s', 'direction', 'can_id_hex', 'data'])
         self._udp_csv.flush()
-        self.get_logger().info(f'UDP event log: {log_dir / "udp_events.csv"}')
+        self.get_logger().info(f'UDP event log: {log_dir / "udp_events.csv"}  +  udp_events.log')
         # --------------------------------------------------------------------
 
         self.publisher = self.create_publisher(UInt8MultiArray, self.feedback_topic, 10)
@@ -129,10 +131,15 @@ class EthernetCanBridge(Node):
             line = f'CMD 0x{can_id:X} {q:.6f} {kp:.6f} {kd:.6f} {tau:.6f}\n'
             try:
                 self.sock.sendto(line.encode('ascii'), (self.stm32_ip, self.stm32_port))
+                _t = time.monotonic() - self._t0
                 self._udp_writer.writerow(
-                    [f'{time.monotonic() - self._t0:.4f}', 'TX',
+                    [f'{_t:.4f}', 'TX',
                      f'0x{can_id:X}', f'q={q:.6f} kp={kp:.6f} kd={kd:.6f} tau={tau:.6f}'])
                 self._udp_csv.flush()
+                self._udp_log.write(
+                    f'[{_t:.4f}]  TX   CAN=0x{can_id:X}'
+                    f'  q={q:.6f}  kp={kp:.6f}  kd={kd:.6f}  tau={tau:.6f}\n')
+                self._udp_log.flush()
                 commands_sent += 1
                 chunk_index += 1
                 if self.all_logging:
@@ -186,10 +193,15 @@ class EthernetCanBridge(Node):
             out.data = list(payload)
             self.publisher.publish(out)
 
+            _t = time.monotonic() - self._t0
             self._udp_writer.writerow(
-                [f'{time.monotonic() - self._t0:.4f}', 'RX_FBK',
+                [f'{_t:.4f}', 'RX_FBK',
                  f'0x{can_id:02X}', f'q={q:.6f} q_dot={q_dot:.6f}'])
             self._udp_csv.flush()
+            self._udp_log.write(
+                f'[{_t:.4f}]  RX_FBK  CAN=0x{can_id:02X}'
+                f'  q={q:.6f}  q_dot={q_dot:.6f}\n')
+            self._udp_log.flush()
 
             if self.all_logging:
                 self.get_logger().info(
@@ -201,9 +213,12 @@ class EthernetCanBridge(Node):
 
         elif parts[0] == 'ERR':
             self.get_logger().error(f'STM32 error: {line}')
+            _t = time.monotonic() - self._t0
             self._udp_writer.writerow(
-                [f'{time.monotonic() - self._t0:.4f}', 'RX_ERR', '', line])
+                [f'{_t:.4f}', 'RX_ERR', '', line])
             self._udp_csv.flush()
+            self._udp_log.write(f'[{_t:.4f}]  RX_ERR  {line}\n')
+            self._udp_log.flush()
 
         else:
             if self.all_logging:
@@ -217,6 +232,7 @@ class EthernetCanBridge(Node):
         if self.sock is not None:
             self.sock.close()
         self._udp_csv.close()
+        self._udp_log.close()
         super().destroy_node()
 
 

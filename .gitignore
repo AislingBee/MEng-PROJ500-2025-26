@@ -15,11 +15,9 @@ logs/
 *.d
 *.elf
 *.bin
-!Software/stm_firmware/stm_firmware/firmware.bin
 
-# Ignore portable toolchains and downloaded tools used for building on the build PC
-# (keeps large binaries out of the repo)
-Software/stm_firmware/tools/
+# PlatformIO build output (Software/nucleo)
+Software/nucleo/.pio/
 
 # Editor files
 .vscode/

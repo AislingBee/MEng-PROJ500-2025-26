@@ -54,6 +54,26 @@ def bytes_to_uint8_list(payload: bytes) -> List[int]:
     return list(payload)
 
 
+def get_software_log_dir() -> Path:
+    """Return the Software/logs directory, searching up the directory tree.
+
+    Works from both the source tree and the colcon-installed tree:
+      source:    .../Software/src/motor_test/motor_test/common.py
+      installed: .../Software/install/.../site-packages/motor_test/common.py
+
+    Falls back to ~/motor_test_logs if the Software root cannot be located.
+    """
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        # Source tree: Software/ contains src/motor_test/
+        if (parent / 'src' / 'motor_test').is_dir():
+            return parent / 'logs'
+        # Installed tree: Software/ contains both src/ and install/
+        if (parent / 'src').is_dir() and (parent / 'install').is_dir():
+            return parent / 'logs'
+    return Path.home() / 'motor_test_logs'
+
+
 def clamp_rate(rate: float, default: float = 10.0) -> float:
     try:
         value = float(rate)
