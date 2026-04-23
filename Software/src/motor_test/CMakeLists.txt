@@ -24,6 +24,18 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 ament_export_dependencies(rosidl_default_runtime)
 
+# Determine the Python site-packages install path so common.py is importable
+# as motor_test.common alongside the generated message stubs.
+execute_process(
+  COMMAND python3 -c
+    "import sys; print('lib/python{}.{}/site-packages'.format(sys.version_info.major, sys.version_info.minor))"
+  OUTPUT_VARIABLE MOTOR_TEST_PYTHON_INSTALL_DIR
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+install(FILES motor_test/common.py
+  DESTINATION ${MOTOR_TEST_PYTHON_INSTALL_DIR}/motor_test
+)
+
 install(PROGRAMS
   motor_test/bridges/ethernet_can_bridge.py
   motor_test/bridges/serial_can_bridge.py
@@ -34,11 +46,6 @@ install(PROGRAMS
   motor_test/testing/motor_controller_test.py
   motor_test/testing/motor_pub.py
   motor_test/testing/single_motor_test.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-install(FILES
-  motor_test/common.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
