@@ -41,6 +41,9 @@ def generate_launch_description():
         parameters=[{
             'command_topic': 'robot_command',
             'can_tx_topic':  'motor_can_tx',
+            'enforce_joint_order': True,
+            'strict_joint_names': True,
+            'names_file': 'motor_names.json',
             'all_logging_info': False,
         }],
     )

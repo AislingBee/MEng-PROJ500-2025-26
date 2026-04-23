@@ -19,7 +19,8 @@ from launch_ros.actions import Node
 # Serial port of the ST-Link VCP (Nucleo).
 # Linux: /dev/ttyACM0  or  /dev/ttyUSB0
 # Windows: COM6  (match platformio.ini monitor_port)
-_SERIAL_PORT = '/dev/ttyACM0'
+_USE_WINDOWS_SERIAL = False  # False -> /dev/ttyACM0, True -> COM6
+_SERIAL_PORT = 'COM6' if _USE_WINDOWS_SERIAL else '/dev/ttyACM0'
 _BAUD_RATE   = 921600
 
 # RS04 motor CAN ID (default factory ID = 1).
@@ -83,17 +84,6 @@ def generate_launch_description():
         parameters=[{
             'serial_port':      _SERIAL_PORT,
             'baud_rate':        _BAUD_RATE,
-            'command_topic':    'motor_can_tx',
-            'feedback_topic':   'motor_can_feedback',
-            'can_id_per_joint': False,
-            'can_id':           _CAN_ID,
-            'all_logging_info': False,
-        }],
-    )
-        parameters=[{
-            'stm32_ip':         _STM32_IP,
-            'stm32_port':       _STM32_PORT,
-            'listen_port':      _STM32_PORT,
             'command_topic':    'motor_can_tx',
             'feedback_topic':   'motor_can_feedback',
             'can_id_per_joint': False,

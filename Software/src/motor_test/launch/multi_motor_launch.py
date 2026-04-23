@@ -15,7 +15,8 @@
 # Serial port of the ST-Link VCP (Nucleo).
 # Linux: /dev/ttyACM0  or  /dev/ttyUSB0
 # Windows: COM6  (match platformio.ini monitor_port)
-_SERIAL_PORT = '/dev/ttyACM0'
+_USE_WINDOWS_SERIAL = False  # False -> /dev/ttyACM0, True -> COM6
+_SERIAL_PORT = 'COM6' if _USE_WINDOWS_SERIAL else '/dev/ttyACM0'
 _BAUD_RATE   = 921600
 
 # ── Motor configuration ────────────────────────────────────────────────────────

@@ -3,7 +3,7 @@ import serial, struct, time, math, sys
 
 sys.stdout.reconfigure(errors='replace')
 
-COM_PORT = 'COM6'
+COM_PORT = '/dev/ttyACM0'
 BAUD = 921600
 MOTOR_ID = 127
 HOST_ID = 0xFD

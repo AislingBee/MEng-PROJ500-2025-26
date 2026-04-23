@@ -42,7 +42,9 @@ _HOST_ID                = 0x00   # master CAN node ID
 _P_MIN,  _P_MAX  = -12.5,  12.5   # position [rad]
 _V_MIN,  _V_MAX  = -44.0,  44.0   # velocity [rad/s]
 _KP_MIN, _KP_MAX =   0.0, 500.0   # position gain [Nm/rad]
-_KD_MIN, _KD_MAX =   0.0,   5.0   # damping gain  [Nm·s/rad]
+# Stage-A/B validation and walking actuator config command kd up to 10.0.
+# Using 10.0 avoids silent damping clipping in MIT packing.
+_KD_MIN, _KD_MAX =   0.0,  10.0   # damping gain  [Nm·s/rad]
 _T_MIN,  _T_MAX  = -17.0,  17.0   # torque [Nm]
 
 
