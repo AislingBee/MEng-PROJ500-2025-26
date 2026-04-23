@@ -31,21 +31,29 @@ class EthernetCanBridge(Node):
     def __init__(self):
         super().__init__('ethernet_can_bridge')
 
-        self.declare_parameter('stm32_ip',       '192.168.1.100')
-        self.declare_parameter('stm32_port',     7777)
-        self.declare_parameter('listen_port',    7777)
-        self.declare_parameter('command_topic',  'motor_can_tx')
-        self.declare_parameter('feedback_topic', 'motor_can_feedback')
-        self.declare_parameter('can_id',         0x7F)
-        self.declare_parameter('all_logging_info', True)
+        self.declare_parameter('stm32_ip',           '192.168.1.100')
+        self.declare_parameter('stm32_port',         7777)
+        self.declare_parameter('listen_port',        7777)
+        self.declare_parameter('command_topic',      'motor_can_tx')
+        self.declare_parameter('feedback_topic',     'motor_can_feedback')
+        self.declare_parameter('can_id',             0x7F)
+        # When can_id_per_joint=True the bridge increments the CAN ID for each
+        # 16-byte chunk in the payload (joint 0 → can_id_base, joint 1 →
+        # can_id_base+1, …).  Set to False to keep backwards-compatible
+        # single-motor behaviour where every chunk uses the same can_id.
+        self.declare_parameter('can_id_per_joint',   True)
+        self.declare_parameter('can_id_base',        0x201)
+        self.declare_parameter('all_logging_info',   True)
 
-        self.stm32_ip       = self.get_parameter('stm32_ip').value
-        self.stm32_port     = int(self.get_parameter('stm32_port').value)
-        self.listen_port    = int(self.get_parameter('listen_port').value)
-        self.command_topic  = self.get_parameter('command_topic').value
-        self.feedback_topic = self.get_parameter('feedback_topic').value
-        self.can_id         = int(self.get_parameter('can_id').value)
-        self.all_logging    = bool(self.get_parameter('all_logging_info').value)
+        self.stm32_ip         = self.get_parameter('stm32_ip').value
+        self.stm32_port       = int(self.get_parameter('stm32_port').value)
+        self.listen_port      = int(self.get_parameter('listen_port').value)
+        self.command_topic    = self.get_parameter('command_topic').value
+        self.feedback_topic   = self.get_parameter('feedback_topic').value
+        self.can_id           = int(self.get_parameter('can_id').value)
+        self.can_id_per_joint = bool(self.get_parameter('can_id_per_joint').value)
+        self.can_id_base      = int(self.get_parameter('can_id_base').value)
+        self.all_logging      = bool(self.get_parameter('all_logging_info').value)
 
         self.publisher = self.create_publisher(UInt8MultiArray, self.feedback_topic, 10)
         self.subscription = self.create_subscription(
@@ -101,13 +109,22 @@ class EthernetCanBridge(Node):
             )
 
         commands_sent = 0
+        chunk_index = 0
         for offset in range(0, len(payload) - (len(payload) % 16), 16):
             chunk = payload[offset:offset + 16]
             q, kp, kd, tau = struct.unpack('<ffff', chunk)
-            line = f'CMD 0x{self.can_id:X} {q:.6f} {kp:.6f} {kd:.6f} {tau:.6f}\n'
+
+            # Choose CAN ID: sequential per-joint or uniform single-motor mode.
+            if self.can_id_per_joint:
+                can_id = self.can_id_base + chunk_index
+            else:
+                can_id = self.can_id
+
+            line = f'CMD 0x{can_id:X} {q:.6f} {kp:.6f} {kd:.6f} {tau:.6f}\n'
             try:
                 self.sock.sendto(line.encode('ascii'), (self.stm32_ip, self.stm32_port))
                 commands_sent += 1
+                chunk_index += 1
                 if self.all_logging:
                     self.get_logger().info(f'Sent UDP command: {line.strip()}')
             except OSError as exc:

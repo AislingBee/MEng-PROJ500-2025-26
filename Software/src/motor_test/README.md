@@ -23,12 +23,3 @@ colcon build --packages-select motor_test
 source install/setup.bash
 ros2 run <launch file name.py>
 ```
-
-## Serial bridge dependency
-
-The serial bridge node uses `pyserial`.
-Install it before running the serial bridge launch file:
-
-```
-python3 -m pip install pyserial
-```
