@@ -73,10 +73,10 @@ static void TX(const char *s);
 static void TX_Hex32(uint32_t v);
 static void TX_Dec(uint32_t v);
 
-static void MotorController_Init(void);
-static MotorState_t* MotorController_GetMotor(uint8_t motor_id);
-static void MotorController_ProcessCommand(uint32_t ext_id, uint8_t *data, uint8_t dlc);
-static void MotorController_ControlLoop(void);
+void MotorController_Init(void);
+MotorState_t* MotorController_GetMotor(uint8_t motor_id);
+void MotorController_ProcessCommand(uint32_t ext_id, uint8_t *data, uint8_t dlc);
+void MotorController_ControlLoop(void);
 static void MotorController_SendTelemetry(MotorState_t *motor);
 
 static void SendCanFrame(uint32_t ext_id, uint8_t *data, uint8_t dlc);
@@ -123,7 +123,7 @@ static void TX_Dec(uint32_t v) {
 /* MOTOR CONTROLLER IMPLEMENTATION */
 /* ═══════════════════════════════════════════════════════════════════ */
 
-static void MotorController_Init(void) {
+void MotorController_Init(void) {
     /* Initialize motors from configuration array */
     for (uint32_t i = 0; i < NUM_MOTOR_CONFIGS; i++) {
         const MotorConfig_t *cfg = &MOTOR_CONFIGS[i];
@@ -157,7 +157,7 @@ static void MotorController_Init(void) {
     }
 }
 
-static MotorState_t* MotorController_GetMotor(uint8_t motor_id) {
+MotorState_t* MotorController_GetMotor(uint8_t motor_id) {
     for (uint32_t i = 0; i < NUM_MOTOR_CONFIGS; i++) {
         if (motors[i].motor_id == motor_id) {
             return &motors[i];
@@ -169,7 +169,7 @@ static MotorState_t* MotorController_GetMotor(uint8_t motor_id) {
 /**
  * Process incoming CAN commands
  */
-static void MotorController_ProcessCommand(uint32_t ext_id, uint8_t *data, uint8_t dlc) {
+void MotorController_ProcessCommand(uint32_t ext_id, uint8_t *data, uint8_t dlc) {
     uint8_t comm_type = (ext_id >> 24) & 0x1F;
     uint8_t sender_id = (ext_id >> 8) & 0xFF;
     uint8_t motor_id = ext_id & 0xFF;
@@ -212,7 +212,8 @@ static void MotorController_ProcessCommand(uint32_t ext_id, uint8_t *data, uint8
         uint16_t param_id = ((uint16_t)data[1] << 8) | data[0];
         uint32_t raw_value = ((uint32_t)data[5] << 24) | ((uint32_t)data[4] << 16) |
                              ((uint32_t)data[3] << 8) | data[2];
-        float float_value = *(float*)&raw_value;
+        float float_value;
+        memcpy(&float_value, &raw_value, sizeof(float));
 
         switch (param_id) {
         case PARAM_MODE: {
@@ -299,7 +300,7 @@ static void MotorController_ProcessCommand(uint32_t ext_id, uint8_t *data, uint8
  * Main control loop - runs at ~1kHz via timer
  * Updates motor state based on mode and control targets
  */
-static void MotorController_ControlLoop(void) {
+void MotorController_ControlLoop(void) {
     static uint32_t last_telemetry[NUM_MOTOR_CONFIGS] = {0};
     uint32_t now = HAL_GetTick();
 
