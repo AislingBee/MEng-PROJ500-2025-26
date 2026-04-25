@@ -51,7 +51,7 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     default_command_value: float = CONTRACT.default_command_value
 
     usd_path: str = str(USD_PATH)
-    base_height: float = 0.83
+    base_height: float = 0.8072024583816528
 
     upright_k: float = 8.0
     pose_k: float = 4.0

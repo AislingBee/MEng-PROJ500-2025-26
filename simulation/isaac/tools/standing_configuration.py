@@ -34,7 +34,7 @@ parser.add_argument("--usd", type=str, required=True, help="Path to robot USD")
 parser.add_argument("--dt", type=float, default=1.0 / 120.0, help="Simulation timestep")
 parser.add_argument("--gravity", type=float, nargs=3, default=(0.0, 0.0, -9.81), help="Gravity vector")
 
-parser.add_argument("--base_height", type=float, default=0.83, help="Robot base height")
+parser.add_argument("--base_height", type=float, default=0.05, help="Robot base height")
 parser.add_argument("--settle_steps", type=int, default=240, help="Steps to hold standing pose")
 parser.add_argument("--camera_eye", type=float, nargs=3, default=(3.0, 3.0, 2.0), help="Camera eye")
 parser.add_argument("--camera_target", type=float, nargs=3, default=(0.0, 0.0, 1.0), help="Camera target")
@@ -191,6 +191,8 @@ def main():
             f"final={final_deg:+7.2f} deg  "
             f"err={err_deg:+7.2f} deg"
         )
+
+    print("root z:", robot.data.root_pos_w[0, 2].item())
 
     print("\n[INFO] Holding pose. Close app window to exit.")
 

@@ -289,7 +289,7 @@
         <joint name="ori_correct" type="fixed">
         <parent link="ori_correct" />
         <child link="pelvis_link" />
-        <origin xyz="0 0 0" rpy="0 0 1.57079632679" />
+        <origin xyz="0 0 0.84" rpy="0 0 1.57079632679" />
     </joint>
     <joint name="pelvis_link_torso_joint" type="fixed">
         <origin xyz="-7.659717486428201e-12 -0.0004999999969337935 0.015" rpy="0 0 -1.570796326794897" />
