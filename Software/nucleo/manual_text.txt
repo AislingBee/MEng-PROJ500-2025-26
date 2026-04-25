@@ -1,0 +1,195 @@
+--- Page 1 ---
+RobStride Motor User Manual
+ROBSTRIDE 04
+120N.M Quasi-Direct Drive Integrated Motor Module
+User Manual
+RobStride Dynamics
+https://www.robstride.com/
+--- Page 2 ---
+RobStride Motor User Manual
+
+--- Page 3 ---
+1
+RS04 instruction manual
+Precautions
+1. Please use according to the working parameters specified in this article,
+otherwise it may cause serious damage to the product!
+2. Do not switch the control mode when the joint is running. If you need to
+switch, send the command to stop the operation before switching.
+3. Check whether the parts are in good condition before use. If the parts are
+missing or damaged, contact technical support in time.
+4. Do not disassemble the motor at will, so as to avoid unrecoverable failure.
+5. Ensure that there is no short circuit when the motor is connected, and the
+interface is correctly connected as required.
+Legal Statement
+Before using this product, please read this manual carefully and operate the
+product according to the contents of this manual. If the user violates the
+contents of this manual to use this product, resulting in any property damage,
+personal injury accident, the company does not assume any responsibility.
+Because this product is composed of many parts, do not allow children to
+touch this product to avoid accidents. In order to prolong the service life of
+the product, do not use this product in high temperature and high pressure
+environment. This manual has been printed to the extent possible to include a
+description of the functions and instructions for use. However, due to the
+continuous improvement of product functions, design changes, etc., there may
+still be discrepancies with the products purchased by users.
+The color and appearance of this manual may differ from the actual product.
+Please refer to the actual product. This manual is published by Beijing Lingfoot
+--- Page 4 ---
+RobStride Motor User Manual
+2
+Times Technology Co., LTD. (hereinafter referred to as Lingfoot), and Lingfoot
+may at any time make necessary improvements and changes to the inaccurate
+and up-to-date information in this manual, or make improvements to
+procedures and/or equipment. Such changes will be uploaded to the
+company's official website in electronic format. Details can be found in the
+download center (www.robstride.com). All images are for reference only.
+Please refer to actual objects.
+After-sales Policy
+The after-sales service of this product is implemented in strict accordance with
+the Law of the People's Republic of China on the Protection of Consumer
+Rights and Interests and the Product Quality Law of the People's Republic of
+China. The service content is as follows:
+1. Warranty period and contents
+a. Users who place orders on the online channel to purchase this
+product can enjoy the return service without reason within seven days
+from the day after signing. When returning goods, the user must present
+a valid proof of purchase and return the invoice. The user must ensure
+that the returned goods maintain the original quality and function, the
+appearance is intact, the trademarks and various logos of the goods
+themselves and accessories are complete, and if there are gifts, they
+should be returned together. If the goods are artificially damaged,
+artificially disassembled, missing packaging boxes, missing parts and
+accessories, they will not be returned. The logistics cost incurred during
+the return shall be borne by the user (see "After-sales Service Fee
+Standard"). If the user does not settle the logistics cost, it will be deducted
+from the refund amount according to the actual amount incurred. Refund
+the amount paid to the user within seven days from the date of receipt of
+the returned item. Refund method is the same as payment method. The
+--- Page 5 ---
+RobStride Motor User Manual
+3
+specific arrival date may be affected by factors such as banks and
+payment institutions.
+b. The warranty period of this product is 1 year.
+c. Within 7 days after the user signs for the next day, non-human
+damage performance failure occurs, through the Lingzhu after-sales
+service center test and confirmation, for the user to handle the return
+business, the user must present a valid purchase voucher, and return the
+invoice. Any freebies should be returned.
+d. From 7 days to 15 days after the user signs for the next day, non-
+human damage performance failure occurs, through the Lingfoot after-
+sales service center test and confirmation, for the user to replace the
+whole set of goods. After the replacement, the three guarantee period of
+the goods themselves is recalculated.
+e. From 15 days to 365 days after the user signed the next day, after
+the inspection and confirmation of the Lingfoot after-sales service center,
+it is a quality fault of the product itself, and can provide free maintenance
+services. The replacement of the faulty product is owned by Lingzu
+Company. The product is not faulty and will be returned as is. This product
+has been strictly tested after the factory, if there is a quality fault other
+than the product itself, we will have the right to refuse the user's return
+demand.
+2. Non-warranty regulations The following circumstances are not covered
+by the warranty:
+3. Exceed the warranty period specified in the warranty terms.
+4. Failure to follow the instructions, resulting in product damage caused by
+wrong use.
+5. Damage caused by improper operation, maintenance, installation,
+modification, testing and other improper use.
+--- Page 6 ---
+RobStride Motor User Manual
+4
+6. Non-quality failure caused by conventional mechanical loss, wear.
+7. Damage caused by abnormal working conditions, including but not
+limited to falling, impact, liquid immersion, violent impact, etc.
+8. Damage caused by natural disasters (such as floods, fires, lightning strikes,
+earthquakes, etc.) or incapacitated forces.
+9. Damage caused by exceeding peak torque.
+10. Damage caused by exceeding peak torque.
+11. Failure or damage caused by other non-product design, technology,
+manufacturing, quality and other problems.
+12. Use this product for commercial purposes.
+In the case of the above situation, the user must pay the cost.
+--- Page 7 ---
+RobStride Motor User Manual
+5
+Table of contents
+Precautions ...................................................................................................................................... 1
+Legal Statement ............................................................................................................................. 1
+After-sales Policy ........................................................................................................................... 2
+1. Motor specification ...................................................................................................................8
+1.1. Outline and mounting dimensions ...........................................................................8
+1.2. Standard service condition ......................................................................................... 8
+1.3. Electrical characteristics ............................................................................................... 9
+1.4. Mechanical characteristic .......................................................................................... 11
+2. Driver Product Information .................................................................................................. 13
+2.1. Driver product Specifications ...................................................................................13
+2.2. Driver interface definition ......................................................................................... 13
+2.3. Driver harness definition ........................................................................................... 13
+2.4. Driver interface recommended brand and model .............................................14
+2.5. Driver function pin and device description ..........................................................14
+3. Upper computer instructions .............................................................................................. 15
+3.1. Hardware disposition ..................................................................................................15
+3.2. Upper computer interface and description ......................................................... 16
+3.3. Motor settings .............................................................................................................. 17
+3.3.1. Motor connection settings ............................................................................ 17
+3.3.2. Motor configuration module ........................................................................18
+3.3.3. Motor upgrade module ..................................................................................18
+3.3.4. Parameter settings ...........................................................................................21
+3.3.5. Oscilloscope .......................................................................................................29
+3.3.6. can communication failure protection .......................................................31
+3.3.7. Motor fault instructions ..................................................................................31
+3.4. Control Demo ............................................................................................................... 33
+3.4.1. Operation and control mode ........................................................................34
+3.4.2. Current mode .................................................................................................... 35
+3.4.3. Speed Mode .......................................................................................................36
+3.4.4. Position Mode (PP) .......................................................................................... 38
+3.4.5. Position Mode（CSP） ................................................................................... 40
+4. Driver protocol and instructions .........................................................................................42
+4.1. Description of the communication protocol type ............................................. 42
+4.1.1. Communication type 0: Get device ID ....................................................... 42
+4.1.2. Communication Type 1: operation control mode motor control
+instruction......................................................................................................................43
+4.1.3. Communication Type 3: Motor enabled to run ...................................... 44
+--- Page 8 ---
+RobStride Motor User Manual
+6
+4.1.4. Communication Type 4: Motor stops running ........................................ 44
+4.1.5. Communication type 6: Set motor mechanical zero ............................. 44
+4.1.6. Communication type 17: Single parameter read ....................................45
+4.1.7. Communication type 18: Single parameter write (lost in power
+failure) ............................................................................................................................. 45
+4.1.8. Communication type 21: Fault feedback frame ......................................46
+4.1.9. Communication type 22: Motor data save frame ...................................46
+4.1.10. Communication type 23: Motor baud rate modification frame (re-
+power-on effect) .......................................................................................................... 47
+4.1.11. Communication type 24: The motor actively reports frames ...........47
+4.1.12. Communication type 25: Motor protocol modification frame (re-
+power-on effect) .......................................................................................................... 48
+4.1.13. Communication type 26：Version number read frame ..................... 48
+4.1.14. Read and write a single parameter list ....................................................50
+4.2. Motor Function Description ..................................................................................... 52
+4.2.1. Active Reporting ...............................................................................................52
+4.2.2. Zero-Point Flag (zero_sta) ..............................................................................52
+4.2.3. Type 2 Update ...................................................................................................53
+4.2.4. Protocol Switching (Requires CAN adapter) ............................................ 53
+4.2.5. Post-Power-Off Anti-Backdrive Protection ...............................................53
+4.2.6. Zero Calibration Rules .....................................................................................54
+4.2.7. Position Offset (add_offset) ...........................................................................54
+4.2.8. CANopen ID ....................................................................................................... 54
+4.2.9. Notes for Implementation .............................................................................54
+4.3. Control mode instructions ........................................................................................ 55
+4.3.1. Operation control mode ................................................................................ 55
+4.3.2. Current mode .................................................................................................... 56
+4.3.3. Velocity mode ................................................................................................... 56
+4.3.4. Location Mode (CSP) .......................................................................................57
+4.3.5. Location Mode (PP) ......................................................................................... 57
+4.3.6. Stop running ......................................................................................................58
+4.4. Program sample ...........................................................................................................58
+4.4.1. Motor Enabled Run frame (communication type 3) ..............................60
+4.4.2. Operation control mode Motor control instruction (communication
+type 1) ............................................................................................................................. 61
+4.4.3. Motor mode parameter write command (communication type 18,
+running mode switch) ................................................................................................ 62
+4.4.4. Motor mode parameter write command (communication type 18,

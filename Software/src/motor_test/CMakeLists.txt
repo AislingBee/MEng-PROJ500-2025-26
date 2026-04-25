@@ -47,6 +47,7 @@ install(PROGRAMS
   motor_test/testing/motor_pub.py
   motor_test/testing/single_motor_test.py
   motor_test/testing/multi_motor_test.py
+  motor_test/testing/multi_state_motor_test.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

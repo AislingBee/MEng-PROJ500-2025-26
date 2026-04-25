@@ -1,19 +1,28 @@
 #!/usr/bin/env python3
-"""Serial bridge between ROS and the STM32 CAN firmware (AT-frame binary protocol).
+"""Serial bridge between ROS and STM32 Motor Controller (AT-frame binary protocol).
 
-Translates 16-byte packed motor commands from /motor_can_tx into RS04 MIT
-control AT-frames sent over USART3, and parses incoming AT-frames to publish
+Translates 16-byte packed motor commands from /motor_can_tx into point-to-point
+position control AT-frames sent over USART3, and parses incoming AT-frames to publish
 motor feedback to /motor_can_feedback.
 
-AT-frame format (nucleo_can_bridge / test_motor.py protocol):
+AT-frame format (nucleo_can_bridge / motor_controller.c protocol):
     0x41 0x54  [4-byte big-endian (ext_id << 3 | 0x04)]  [1-byte DLC]  [data]  0x0D 0x0A
 
 Handshake:  host sends  AT+AT\r\n  (0x41 0x54 0x2B 0x41 0x54 0x0D 0x0A)
             firmware replies OK\r\n
+
+Motor Control Protocol:
+- COMM_ENABLE (3):             Enable motor, set to position control mode
+- COMM_DISABLE (4):            Disable motor
+- COMM_SET_ZERO (6):           Zero the position
+- COMM_OPERATION_STATUS (2):   Motor telemetry feedback
+- PARAM_MODE (0x7005):         Motor control mode
+- PARAM_POSITION_TARGET (0x7016): Target position in radians
 """
 
 import csv
 import datetime
+import math
 import struct
 import threading
 import time
@@ -30,37 +39,32 @@ except ImportError as exc:
     raise RuntimeError(
         'pyserial is required. Install with `pip install pyserial`.' ) from exc
 
-# ── RS04 MIT protocol ──────────────────────────────────────────────────────────
-_COMM_MOTION_CONTROL    = 0x01
-_COMM_MOTOR_FEEDBACK    = 0x02
-_COMM_MOTOR_ENABLE      = 0x03
-_COMM_SET_SINGLE_PARAM  = 0x12
-_RUN_MODE_INDEX         = 0x7005  # param index for run-mode register
-_CONTROL_MODE_MIT       = 0x00    # MIT position-velocity-torque mode
-_HOST_ID                = 0x00   # master CAN node ID
+# ── STM32 Motor Controller Protocol ─────────────────────────────────────────
+_COMM_OPERATION_STATUS  = 2   # Motor telemetry (firmware → host)
+_COMM_ENABLE            = 3   # Enable motor
+_COMM_DISABLE           = 4   # Disable motor
+_COMM_SET_ZERO          = 6   # Zero position
+_HOST_ID                = 0xFD   # Host CAN ID
 
-_P_MIN,  _P_MAX  = -12.5,  12.5   # position [rad]
-_V_MIN,  _V_MAX  = -44.0,  44.0   # velocity [rad/s]
-_KP_MIN, _KP_MAX =   0.0, 500.0   # position gain [Nm/rad]
-# Stage-A/B validation and walking actuator config command kd up to 10.0.
-# Using 10.0 avoids silent damping clipping in MIT packing.
-_KD_MIN, _KD_MAX =   0.0,  10.0   # damping gain  [Nm·s/rad]
-_T_MIN,  _T_MAX  = -17.0,  17.0   # torque [Nm]
+# Parameter IDs (for parameter write commands)
+_PARAM_MODE             = 0x7005
+_PARAM_KP               = 0x7014   # Proportional gain
+_PARAM_KD               = 0x7015   # Damping gain
+_PARAM_POSITION_TARGET  = 0x7016
+_PARAM_PP_SPEED_LIMIT   = 0x7024
+_PARAM_PP_ACCEL         = 0x7025
+_PARAM_FEEDFORWARD_TORQUE = 0x7026
 
+# Motor modes
+_MODE_DISABLED          = 0
+_MODE_POSITION_CONTROL  = 1
+_MODE_VELOCITY_JOG      = 7
 
-def _clamp(x: float, lo: float, hi: float) -> float:
-    return max(lo, min(hi, x))
-
-
-def _f2u(x: float, x_min: float, x_max: float, bits: int) -> int:
-    """Float to unsigned integer (RS04 encoding)."""
-    x = _clamp(x, x_min, x_max)
-    return int((x - x_min) / (x_max - x_min) * ((1 << bits) - 1))
-
-
-def _u2f(x_int: int, x_min: float, x_max: float, bits: int) -> float:
-    """Unsigned integer to float (RS04 decoding)."""
-    return x_int / ((1 << bits) - 1) * (x_max - x_min) + x_min
+# Motor parameter ranges
+_POS_RANGE              = 4.0 * math.pi   # ±2π radians
+_VEL_RANGE              = 15.0            # ±15 rad/s
+_TORQUE_RANGE           = 120.0           # ±120 Nm
+_TEMP_SCALE             = 0.1             # °C per unit
 
 
 def _at_frame(ext_id: int, data: bytes) -> bytes:
@@ -73,38 +77,74 @@ def _at_frame(ext_id: int, data: bytes) -> bytes:
             + b'\x0D\x0A')
 
 
-def _motion_frame(motor_id: int, q: float, kp: float, kd: float, tau: float) -> bytes:
-    """Build an RS04 MIT motion-control AT-frame."""
-    p_int  = _f2u(q,   _P_MIN,  _P_MAX,  16)
-    v_int  = _f2u(0.0, _V_MIN,  _V_MAX,  16)   # velocity setpoint = 0
-    kp_int = _f2u(kp,  _KP_MIN, _KP_MAX, 16)
-    kd_int = _f2u(kd,  _KD_MIN, _KD_MAX, 16)
-    t_int  = _f2u(tau, _T_MIN,  _T_MAX,  16)
-    ext_id = (_COMM_MOTION_CONTROL << 24) | (t_int << 8) | (motor_id & 0xFF)
-    payload = bytes([
-        (p_int  >> 8) & 0xFF, p_int  & 0xFF,
-        (v_int  >> 8) & 0xFF, v_int  & 0xFF,
-        (kp_int >> 8) & 0xFF, kp_int & 0xFF,
-        (kd_int >> 8) & 0xFF, kd_int & 0xFF,
-    ])
+def _encode_float_le(value: float) -> bytes:
+    """Encode float as little-endian 4 bytes."""
+    return struct.pack('<f', value)
+
+
+def _position_target_frame(motor_id: int, position_rad: float) -> bytes:
+    """Build a position target parameter frame."""
+    # Data format: param_id (LE uint16), param_value (LE float), reserved (2 bytes)
+    param_id_bytes = struct.pack('<H', _PARAM_POSITION_TARGET)
+    param_val_bytes = _encode_float_le(position_rad)
+    payload = param_id_bytes + param_val_bytes + b'\x00\x00'
+    
+    ext_id = (0x10 << 24) | (_HOST_ID << 8) | (motor_id & 0xFF)
     return _at_frame(ext_id, payload)
 
 
-def _enable_frames(motor_id: int) -> list:
-    """Return [mode_frame, enable_frame] to put motor into MIT control mode."""
-    mode_data = bytes([
-        _RUN_MODE_INDEX & 0xFF,
-        (_RUN_MODE_INDEX >> 8) & 0xFF,
-        0x00, 0x00,
-        _CONTROL_MODE_MIT,
-        0x00, 0x00, 0x00,
-    ])
-    mode_ext_id   = (_COMM_SET_SINGLE_PARAM << 24) | (_HOST_ID << 8) | (motor_id & 0xFF)
-    enable_ext_id = (_COMM_MOTOR_ENABLE     << 24) | (_HOST_ID << 8) | (motor_id & 0xFF)
-    return [
-        _at_frame(mode_ext_id,   mode_data),
-        _at_frame(enable_ext_id, bytes(8)),
-    ]
+def _kp_frame(motor_id: int, kp: float) -> bytes:
+    """Build a Kp (proportional gain) parameter frame."""
+    param_id_bytes = struct.pack('<H', _PARAM_KP)
+    param_val_bytes = _encode_float_le(kp)
+    payload = param_id_bytes + param_val_bytes + b'\x00\x00'
+    
+    ext_id = (0x10 << 24) | (_HOST_ID << 8) | (motor_id & 0xFF)
+    return _at_frame(ext_id, payload)
+
+
+def _kd_frame(motor_id: int, kd: float) -> bytes:
+    """Build a Kd (damping gain) parameter frame."""
+    param_id_bytes = struct.pack('<H', _PARAM_KD)
+    param_val_bytes = _encode_float_le(kd)
+    payload = param_id_bytes + param_val_bytes + b'\x00\x00'
+    
+    ext_id = (0x10 << 24) | (_HOST_ID << 8) | (motor_id & 0xFF)
+    return _at_frame(ext_id, payload)
+
+
+def _feedforward_torque_frame(motor_id: int, tau: float) -> bytes:
+    """Build a feedforward torque parameter frame."""
+    param_id_bytes = struct.pack('<H', _PARAM_FEEDFORWARD_TORQUE)
+    param_val_bytes = _encode_float_le(tau)
+    payload = param_id_bytes + param_val_bytes + b'\x00\x00'
+    
+    ext_id = (0x10 << 24) | (_HOST_ID << 8) | (motor_id & 0xFF)
+    return _at_frame(ext_id, payload)
+
+
+def _enable_frame(motor_id: int) -> bytes:
+    """Build an enable motor command frame."""
+    ext_id = (_COMM_ENABLE << 24) | (_HOST_ID << 8) | (motor_id & 0xFF)
+    return _at_frame(ext_id, b'\x00' * 8)
+
+
+def _disable_frame(motor_id: int) -> bytes:
+    """Build a disable motor command frame."""
+    ext_id = (_COMM_DISABLE << 24) | (_HOST_ID << 8) | (motor_id & 0xFF)
+    return _at_frame(ext_id, b'\x00' * 8)
+
+
+def _zero_frame(motor_id: int) -> bytes:
+    """Build a zero position command frame."""
+    ext_id = (_COMM_SET_ZERO << 24) | (_HOST_ID << 8) | (motor_id & 0xFF)
+    return _at_frame(ext_id, b'\x01' + b'\x00' * 7)
+
+
+def _u16_to_float(val_u16: int, range_min: float, range_max: float) -> float:
+    """Decode uint16 to float using normalization."""
+    normalized = (float(val_u16) / 32767.0 - 1.0)
+    return normalized * (range_max - range_min) / 2.0
 
 
 # ── ROS2 node ──────────────────────────────────────────────────────────────────
@@ -201,6 +241,7 @@ class SerialCanBridge(Node):
 
     # ------------------------------------------------------------------
     def command_callback(self, msg: UInt8MultiArray):
+        """Process motor command. Expects 16-byte chunks: [q, kp, kd, tau]"""
         if self.serial is None or not self.serial.is_open:
             return
 
@@ -215,19 +256,9 @@ class SerialCanBridge(Node):
 
             motor_id = (self.can_id_base + chunk_idx) if self.can_id_per_joint else self.can_id
 
-            # Send enable sequence on first command for this motor ID
+            # Send enable frame on first command for this motor ID
             if motor_id not in self._enabled_motors:
-                mode_frame, enable_frame = _enable_frames(motor_id)
-                self._serial_write(mode_frame)
-                with self._log_lock:
-                    _t = time.monotonic() - self._t0
-                    self._can_writer.writerow([
-                        f'{_t:.4f}', 'TX', motor_id,
-                        'SET_PARAM(MIT_MODE)', '', '', '', '', ''])
-                    self._can_csv.flush()
-                    self._can_log.write(f'[{_t:.4f}]  TX   motor={motor_id}  SET_PARAM(MIT_MODE)\n')
-                    self._can_log.flush()
-                time.sleep(0.01)
+                enable_frame = _enable_frame(motor_id)
                 self._serial_write(enable_frame)
                 with self._log_lock:
                     _t = time.monotonic() - self._t0
@@ -242,15 +273,34 @@ class SerialCanBridge(Node):
                 if self.all_logging:
                     self.get_logger().info(f'Enabled motor id={motor_id}')
 
-            self._serial_write(_motion_frame(motor_id, q, kp, kd, tau))
+            # Send control gains (Kp, Kd)
+            if kp > 0:
+                kp_frame = _kp_frame(motor_id, kp)
+                self._serial_write(kp_frame)
+                time.sleep(0.005)
+            
+            if kd > 0:
+                kd_frame = _kd_frame(motor_id, kd)
+                self._serial_write(kd_frame)
+                time.sleep(0.005)
+            
+            # Send feedforward torque
+            if tau != 0:
+                tau_frame = _feedforward_torque_frame(motor_id, tau)
+                self._serial_write(tau_frame)
+                time.sleep(0.005)
+
+            # Send position target command
+            pos_frame = _position_target_frame(motor_id, q)
+            self._serial_write(pos_frame)
             with self._log_lock:
                 _t = time.monotonic() - self._t0
                 self._can_writer.writerow([
-                    f'{_t:.4f}', 'TX', motor_id, 'MOTION',
+                    f'{_t:.4f}', 'TX', motor_id, 'POSITION_TARGET',
                     f'{q:.6f}', f'{kp:.4f}', f'{kd:.4f}', f'{tau:.6f}', ''])
                 self._can_csv.flush()
                 self._can_log.write(
-                    f'[{_t:.4f}]  TX   motor={motor_id}  MOTION'
+                    f'[{_t:.4f}]  TX   motor={motor_id}  POSITION_TARGET'
                     f'  q={q:.6f}  kp={kp:.4f}  kd={kd:.4f}  tau={tau:.6f}\n')
                 self._can_log.flush()
 
@@ -319,16 +369,24 @@ class SerialCanBridge(Node):
         self._rx_buf = buf
 
     def _handle_can_frame(self, ext_id: int, data: bytes, dlc: int):
-        """Decode an RS04 motor feedback frame and publish q/q_dot."""
+        """Decode STM32 motor telemetry frame and publish position/velocity."""
         comm_type = (ext_id >> 24) & 0x3F
         motor_id  = ext_id & 0xFF
 
-        if comm_type == _COMM_MOTOR_FEEDBACK and dlc >= 4:
-            p_int = (data[0] << 8) | data[1]
-            v_int = (data[2] << 8) | data[3]
-            q     = _u2f(p_int, _P_MIN, _P_MAX, 16)
-            q_dot = _u2f(v_int, _V_MIN, _V_MAX, 16)
+        if comm_type == _COMM_OPERATION_STATUS and dlc >= 8:
+            # Telemetry format: [pos(2), vel(2), torq(2), temp(2)] - all big-endian uint16
+            pos_u16  = (data[0] << 8) | data[1]
+            vel_u16  = (data[2] << 8) | data[3]
+            torq_u16 = (data[4] << 8) | data[5]
+            temp_u16 = (data[6] << 8) | data[7]
 
+            # Decode normalized uint16 back to float
+            q     = _u16_to_float(pos_u16, -_POS_RANGE / 2.0, _POS_RANGE / 2.0)
+            q_dot = _u16_to_float(vel_u16, -_VEL_RANGE, _VEL_RANGE)
+            torque = _u16_to_float(torq_u16, -_TORQUE_RANGE, _TORQUE_RANGE)
+            temp = float(temp_u16) * _TEMP_SCALE
+
+            # Publish position and velocity
             out = UInt8MultiArray()
             out.data = list(struct.pack('<ff', q, q_dot))
             self.publisher.publish(out)
@@ -336,17 +394,17 @@ class SerialCanBridge(Node):
             with self._log_lock:
                 _t = time.monotonic() - self._t0
                 self._can_writer.writerow([
-                    f'{_t:.4f}', 'RX', motor_id, 'FEEDBACK',
+                    f'{_t:.4f}', 'RX', motor_id, 'TELEMETRY',
                     f'{q:.6f}', '', '', '', f'{q_dot:.6f}'])
                 self._can_csv.flush()
                 self._can_log.write(
-                    f'[{_t:.4f}]  RX   motor={motor_id}  FEEDBACK'
-                    f'  q={q:.6f}  q_dot={q_dot:.6f}\n')
+                    f'[{_t:.4f}]  RX   motor={motor_id}  TELEMETRY'
+                    f'  q={q:.6f}  q_dot={q_dot:.6f}  tau={torque:.3f}  temp={temp:.1f}C\n')
                 self._can_log.flush()
 
             if self.all_logging:
                 self.get_logger().info(
-                    f'FBK motor={motor_id} q={q:.4f} q_dot={q_dot:.4f}')
+                    f'FBK motor={motor_id} q={q:.4f} q_dot={q_dot:.4f} torque={torque:.2f} temp={temp:.1f}')
 
     # ------------------------------------------------------------------
     def destroy_node(self):
