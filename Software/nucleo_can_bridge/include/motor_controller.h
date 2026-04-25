@@ -1,5 +1,5 @@
-/**
- * Motor Controller Header - RobStride Motor Control
+/*
+ // Motor Controller Header - RobStride Motor Control
  * ==================================================
  * 
  * Public API for motor controller firmware

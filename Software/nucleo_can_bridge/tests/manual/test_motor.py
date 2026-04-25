@@ -8,9 +8,9 @@ import sys
 
 sys.stdout.reconfigure(errors="replace")
 
-COM_PORT = "COM8"
+COM_PORT = "COM6"
 BAUD = 921600
-MOTOR_ID = 127
+MOTOR_ID = 2
 HOST_ID = 0xFD
 
 

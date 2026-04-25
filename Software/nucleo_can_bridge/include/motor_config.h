@@ -43,7 +43,7 @@ typedef struct {
  * RobStride motor with standard settings
  */
 static const MotorConfig_t MOTOR1_CONFIG = {
-    .motor_id = 127,
+    .motor_id = 1,
     .pp_speed_limit = 10.0f,          /* 10 rad/s */
     .pp_accel = 10.0f,                /* 10 rad/s² */
     .position_range = 2.0f * M_PI,    /* ±2π radians (±360°) */
@@ -59,7 +59,7 @@ static const MotorConfig_t MOTOR1_CONFIG = {
  * RobStride motor with standard settings
  */
 static const MotorConfig_t MOTOR2_CONFIG = {
-    .motor_id = 1,
+    .motor_id = 2,
     .pp_speed_limit = 10.0f,
     .pp_accel = 10.0f,
     .position_range = 2.0f * M_PI,
