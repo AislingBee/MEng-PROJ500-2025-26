@@ -52,6 +52,7 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
 
     usd_path: str = str(USD_PATH)
     base_height: float = 0.83
+    imu_body_name: str = "imu_link"
 
     upright_k: float = 8.0
     pose_k: float = 4.0
@@ -155,6 +156,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
             robot=self.robot,
             joint_ids=self.joint_ids,
             device=self.device,
+            imu_body_name=self.cfg.imu_body_name,
         )
 
     def _setup_scene(self):
@@ -284,12 +286,19 @@ class HumanoidStandEnvS2r(DirectRLEnv):
 
         return {"policy": obs}
 
+    def _get_imu_projected_gravity_and_gyro(self) -> tuple[torch.Tensor, torch.Tensor]:
+        imu_quat_w = self.robot.data.body_quat_w[:, self._hardware._imu_body_id]
+        imu_ang_vel_w = self.robot.data.body_ang_vel_w[:, self._hardware._imu_body_id]
+
+        projected_gravity_b = quat_rotate_inverse(imu_quat_w, self._gravity_vec_w)
+        imu_gyro_b = quat_rotate_inverse(imu_quat_w, imu_ang_vel_w)
+
+        return projected_gravity_b, imu_gyro_b
+
     def _get_rewards(self) -> torch.Tensor:
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
-        root_quat_w = self.robot.data.root_quat_w
-        root_ang_vel_b = self.robot.data.root_ang_vel_b
-        projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
+        projected_gravity_b, imu_gyro_b = self._get_imu_projected_gravity_and_gyro()
 
         q_err = q - self._standing_q.unsqueeze(0)
         action_rate = self._actions - self._last_actions
@@ -299,7 +308,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         r_upright = torch.exp(-self.cfg.upright_k * tilt_metric)
         r_pose = torch.exp(-self.cfg.pose_k * torch.mean(q_err ** 2, dim=1))
 
-        p_ang_vel = torch.mean(root_ang_vel_b ** 2, dim=1)
+        p_ang_vel = torch.mean(imu_gyro_b ** 2, dim=1)
         p_joint_vel = torch.mean(qd ** 2, dim=1)
         p_action_rate = torch.mean(action_rate ** 2, dim=1)
         survival_reward = 0.2
@@ -321,8 +330,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
     def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
-        root_quat_w = self.robot.data.root_quat_w
-        projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
+        projected_gravity_b, _ = self._get_imu_projected_gravity_and_gyro()
         tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
         over_tilted = tilt_metric > self.cfg.tilt_limit
 

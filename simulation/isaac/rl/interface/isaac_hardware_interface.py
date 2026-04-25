@@ -14,11 +14,26 @@ from .hardware_interface import BaseHardwareInterface, ControlPacket, Observatio
 class IsaacHardwareInterface(BaseHardwareInterface):
     """Isaac-backed implementation of the common hardware interface."""
 
-    def __init__(self, robot: Articulation, joint_ids: torch.Tensor, device: torch.device):
+    def __init__(
+            self,
+            robot: Articulation,
+            joint_ids: torch.Tensor,
+            device: torch.device,
+            imu_body_name: str,
+    ):
         self.robot = robot
         self.joint_ids = joint_ids
         self.device = device
         self._gravity_vec_w = torch.tensor([0.0, 0.0, -1.0], dtype=torch.float32, device=device)
+
+        name_to_body_idx = {name: i for i, name in enumerate(self.robot.body_names)}
+        if imu_body_name not in name_to_body_idx:
+            raise RuntimeError(
+                f"IMU body '{imu_body_name}' not found in robot.body_names. "
+                f"Available bodies: {self.robot.body_names}"
+            )
+
+        self._imu_body_id = name_to_body_idx[imu_body_name]
 
         self._noise_cfg = {
             "joint_pos": AdditiveGaussianNoiseCfg(std=0.002),
@@ -55,17 +70,20 @@ class IsaacHardwareInterface(BaseHardwareInterface):
     def read_observation_packet(self, env_ids: Sequence[int] | None = None) -> ObservationPacket:
         env_ids_t = self._resolve_env_ids(env_ids)
 
-        root_quat_w = self.robot.data.root_quat_w[env_ids_t]
+        imu_quat_w = self.robot.data.body_quat_w[env_ids_t, self._imu_body_id]
+        imu_ang_vel_w = self.robot.data.body_ang_vel_w[env_ids_t, self._imu_body_id]
+
         projected_gravity_b = quat_rotate_inverse(
-            root_quat_w,
+            imu_quat_w,
             self._gravity_vec_w.unsqueeze(0).expand(len(env_ids_t), -1),
         )
+
+        imu_gyro_b = quat_rotate_inverse(imu_quat_w, imu_ang_vel_w)
 
         joint_pos = self.robot.data.joint_pos[env_ids_t].clone()
         joint_vel = self.robot.data.joint_vel[env_ids_t].clone()
         joint_effort = self._get_joint_effort_obs()[env_ids_t].clone()
         projected_gravity_b = projected_gravity_b.clone()
-        imu_gyro_b = self.robot.data.root_ang_vel_b[env_ids_t].clone()
 
         joint_pos = gaussian_noise(joint_pos, self._noise_cfg["joint_pos"])
         joint_vel = gaussian_noise(joint_vel, self._noise_cfg["joint_vel"])
