@@ -52,7 +52,6 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
 
     usd_path: str = str(USD_PATH)
     base_height: float = 0.83
-    imu_body_name: str = "imu_link"
 
     upright_k: float = 8.0
     pose_k: float = 4.0
@@ -151,12 +150,20 @@ class HumanoidStandEnvS2r(DirectRLEnv):
             dtype=torch.long,
         )
 
+        # From URDF fixed joint rpy="0 -1.5707963267948963 0"
+        # Quaternion order is [w, x, y, z]
+        self._root_to_imu_quat = torch.tensor(
+            [0.7071068, 0.0, -0.7071068, 0.0],
+            dtype=torch.float32,
+            device=self.device,
+        )
+
         # Once the hardware data has been sorted, change this to = RobotHardwareInterface(...)
         self._hardware = IsaacHardwareInterface(
             robot=self.robot,
             joint_ids=self.joint_ids,
             device=self.device,
-            imu_body_name=self.cfg.imu_body_name,
+            root_to_imu_quat=self._root_to_imu_quat,
         )
 
     def _setup_scene(self):
@@ -286,19 +293,13 @@ class HumanoidStandEnvS2r(DirectRLEnv):
 
         return {"policy": obs}
 
-    def _get_imu_projected_gravity_and_gyro(self) -> tuple[torch.Tensor, torch.Tensor]:
-        imu_quat_w = self.robot.data.body_quat_w[:, self._hardware._imu_body_id]
-        imu_ang_vel_w = self.robot.data.body_ang_vel_w[:, self._hardware._imu_body_id]
-
-        projected_gravity_b = quat_rotate_inverse(imu_quat_w, self._gravity_vec_w)
-        imu_gyro_b = quat_rotate_inverse(imu_quat_w, imu_ang_vel_w)
-
-        return projected_gravity_b, imu_gyro_b
-
     def _get_rewards(self) -> torch.Tensor:
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
-        projected_gravity_b, imu_gyro_b = self._get_imu_projected_gravity_and_gyro()
+
+        packet = self._hardware.read_observation_packet()
+        projected_gravity_b = packet.projected_gravity_b
+        imu_gyro_b = packet.imu_gyro_b
 
         q_err = q - self._standing_q.unsqueeze(0)
         action_rate = self._actions - self._last_actions
@@ -330,7 +331,9 @@ class HumanoidStandEnvS2r(DirectRLEnv):
     def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
-        projected_gravity_b, _ = self._get_imu_projected_gravity_and_gyro()
+
+        packet = self._hardware.read_observation_packet()
+        projected_gravity_b = packet.projected_gravity_b
         tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
         over_tilted = tilt_metric > self.cfg.tilt_limit
 

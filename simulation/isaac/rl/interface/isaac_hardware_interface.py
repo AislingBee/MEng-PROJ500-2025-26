@@ -4,7 +4,7 @@ from collections.abc import Sequence
 
 import torch
 from isaaclab.assets import Articulation
-from isaaclab.utils.math import quat_rotate_inverse
+from isaaclab.utils.math import quat_rotate_inverse, quat_mul
 from isaaclab.utils.noise import gaussian_noise
 from isaaclab.utils.noise import AdditiveGaussianNoiseCfg
 
@@ -19,21 +19,17 @@ class IsaacHardwareInterface(BaseHardwareInterface):
             robot: Articulation,
             joint_ids: torch.Tensor,
             device: torch.device,
-            imu_body_name: str,
+            root_to_imu_quat: torch.Tensor,
     ):
         self.robot = robot
         self.joint_ids = joint_ids
         self.device = device
         self._gravity_vec_w = torch.tensor([0.0, 0.0, -1.0], dtype=torch.float32, device=device)
 
-        name_to_body_idx = {name: i for i, name in enumerate(self.robot.body_names)}
-        if imu_body_name not in name_to_body_idx:
-            raise RuntimeError(
-                f"IMU body '{imu_body_name}' not found in robot.body_names. "
-                f"Available bodies: {self.robot.body_names}"
-            )
-
-        self._imu_body_id = name_to_body_idx[imu_body_name]
+        self._root_to_imu_quat = root_to_imu_quat.to(
+            device=device,
+            dtype=torch.float32,
+        ).view(1, 4)
 
         self._noise_cfg = {
             "joint_pos": AdditiveGaussianNoiseCfg(std=0.002),
@@ -70,15 +66,17 @@ class IsaacHardwareInterface(BaseHardwareInterface):
     def read_observation_packet(self, env_ids: Sequence[int] | None = None) -> ObservationPacket:
         env_ids_t = self._resolve_env_ids(env_ids)
 
-        imu_quat_w = self.robot.data.body_quat_w[env_ids_t, self._imu_body_id]
-        imu_ang_vel_w = self.robot.data.body_ang_vel_w[env_ids_t, self._imu_body_id]
+        root_quat_w = self.robot.data.root_quat_w[env_ids_t]
+        root_to_imu_quat = self._root_to_imu_quat.expand(len(env_ids_t), -1)
+        imu_quat_w = quat_mul(root_quat_w, root_to_imu_quat)
 
         projected_gravity_b = quat_rotate_inverse(
             imu_quat_w,
             self._gravity_vec_w.unsqueeze(0).expand(len(env_ids_t), -1),
         )
 
-        imu_gyro_b = quat_rotate_inverse(imu_quat_w, imu_ang_vel_w)
+        root_ang_vel_w = self.robot.data.root_ang_vel_w[env_ids_t]
+        imu_gyro_b = quat_rotate_inverse(imu_quat_w, root_ang_vel_w)
 
         joint_pos = self.robot.data.joint_pos[env_ids_t].clone()
         joint_vel = self.robot.data.joint_vel[env_ids_t].clone()
