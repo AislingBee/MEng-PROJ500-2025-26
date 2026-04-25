@@ -170,6 +170,18 @@ def _add_imu_sensor_to_imu_link(
     if stage is None:
         raise RuntimeError(f"Failed to open USD stage: {root_usd_path}")
 
+    print("[DEBUG] Searching for IMU link prim...")
+    print("[DEBUG] Available prim names containing 'imu':")
+
+    found_imu_like_prim = False
+    for prim in stage.Traverse():
+        if "imu" in prim.GetName().lower():
+            print(f"  {prim.GetPath()}")
+            found_imu_like_prim = True
+
+    if not found_imu_like_prim:
+        print("[DEBUG] No prim names containing 'imu' were found.")
+
     imu_link_prim = _find_prim_by_name(stage, imu_link_name)
     if imu_link_prim is None or not imu_link_prim.IsValid():
         raise RuntimeError(
@@ -202,6 +214,8 @@ def _add_imu_sensor_to_imu_link(
     print(f"[OK] Added IMU sensor at: {imu_sensor_path}")
     return imu_sensor_path
 
+
+
 def main():
     urdf_path = os.path.abspath(os.path.normpath(args.urdf))
     out_usd = os.path.abspath(os.path.normpath(args.out_usd))
@@ -233,13 +247,15 @@ def main():
     root_usd_path = os.path.abspath(os.path.normpath(converter.usd_path))
     print(f"[OK] Generated USD at: {root_usd_path}")
 
+    print("[DEBUG] Starting post-processing...")
+
     changed = _fix_sublayer_paths(root_usd_path)
-    if changed:
-        print("[OK] Fixed broken subLayerPaths to use ./configuration/...")
+    print(f"[DEBUG] Sublayer fix changed: {changed}")
 
-    if _ensure_default_prim(root_usd_path):
-        print("[OK] Set defaultPrim on root USD")
+    default_prim_changed = _ensure_default_prim(root_usd_path)
+    print(f"[DEBUG] Default prim changed: {default_prim_changed}")
 
+    print("[DEBUG] Attempting to add IMU sensor...")
     imu_sensor_path = _add_imu_sensor_to_imu_link(
         root_usd_path=root_usd_path,
         imu_link_name="imu_link",
@@ -252,6 +268,7 @@ def main():
         out_usd_path=root_usd_path,
         out_config_path=out_joint_limits,
     )
+
     print(f"[OK] Generated joint limits config: {out_joint_limits}")
     print(f"[OK] Wrote limits for {joint_count} joints")
     if skipped:
