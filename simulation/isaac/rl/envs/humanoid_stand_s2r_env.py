@@ -354,27 +354,25 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         # terminated = bad_state | body_hit_ground
         time_out = self.episode_length_buf >= self.max_episode_length - 1
 
-
-
-        if torch.any(over_tilted | bad_state | body_hit_ground):
-            idx = torch.where(over_tilted | bad_state | body_hit_ground)[0][0]
-
-            print("\n=== RESET DEBUG ===")
-            print(f"env_id: {idx.item()}")
-            print(f"over_tilted      : {over_tilted[idx].item()}")
-            print(f"bad_state        : {bad_state[idx].item()}")
-            print(f"body_hit_ground  : {body_hit_ground[idx].item()}")
-            print(f"tilt_metric      : {tilt_metric[idx].item()}")
-
-            print(f"root_z           : {self.robot.data.root_pos_w[idx, 2].item()}")
-
-            body_heights = self.robot.data.body_pos_w[idx, self._forbidden_body_ids, 2]
-            print(f"min_body_z       : {body_heights.min().item()}")
-
-            print(f"projected_gravity_b: {projected_gravity_b[idx].detach().cpu().numpy()}")
-            print(f"root_quat_w        : {self.robot.data.root_quat_w[idx].detach().cpu().numpy()}")
-
-            print("===================\n")
+        # if torch.any(over_tilted | bad_state | body_hit_ground):
+        #     idx = torch.where(over_tilted | bad_state | body_hit_ground)[0][0]
+        #
+        #     print("\n=== RESET DEBUG ===")
+        #     print(f"env_id: {idx.item()}")
+        #     print(f"over_tilted      : {over_tilted[idx].item()}")
+        #     print(f"bad_state        : {bad_state[idx].item()}")
+        #     print(f"body_hit_ground  : {body_hit_ground[idx].item()}")
+        #     print(f"tilt_metric      : {tilt_metric[idx].item()}")
+        #
+        #     print(f"root_z           : {self.robot.data.root_pos_w[idx, 2].item()}")
+        #
+        #     body_heights = self.robot.data.body_pos_w[idx, self._forbidden_body_ids, 2]
+        #     print(f"min_body_z       : {body_heights.min().item()}")
+        #
+        #     print(f"projected_gravity_b: {projected_gravity_b[idx].detach().cpu().numpy()}")
+        #     print(f"root_quat_w        : {self.robot.data.root_quat_w[idx].detach().cpu().numpy()}")
+        #
+        #     print("===================\n")
 
         return terminated, time_out
 
