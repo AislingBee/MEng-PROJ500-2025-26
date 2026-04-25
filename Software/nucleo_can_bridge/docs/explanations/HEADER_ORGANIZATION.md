@@ -19,7 +19,7 @@ Source Files:
 
 ## File Breakdown
 
-### 📄 **motor_types.h** (NEW)
+### **motor_types.h** (NEW)
 **Purpose**: Core data structures and command/parameter constants
 
 **Contains**:
@@ -34,13 +34,8 @@ Source Files:
 - `motor_controller.c` → `motor_types.h`
 - Any code that needs `MotorState_t` or command constants
 
-**Why**:
-- Single source of truth for types
-- Avoids duplication across .c and .h files
-- Easy to find command/parameter definitions
-- Clear dependencies
 
-### 📄 **motor_config.h** (EXISTING)
+### **motor_config.h** (EXISTING)
 **Purpose**: Motor parameter configurations
 
 **Contains**:
@@ -55,12 +50,7 @@ Source Files:
 - `motor_types.h` → `motor_config.h`
 - `motor_controller.c` → (via motor_types.h)
 
-**Why**:
-- All motor configurations in one place
-- Easy to add/remove motors
-- Easy to tweak parameters
-
-### 📄 **motor_controller.h** (UPDATED)
+### **motor_controller.h** (UPDATED)
 **Purpose**: Public API for motor controller
 
 **Contains**:
@@ -75,12 +65,7 @@ Source Files:
 - `motor_controller.c` - Implementation
 - External code that uses motor controller (like tests)
 
-**Why**:
-- Single include point for public API
-- Clean interface to the firmware
-- Hides internal implementation details
-
-### 📄 **motor_controller.c** (SIMPLIFIED)
+### **motor_controller.c** (SIMPLIFIED)
 **Purpose**: Core implementation
 
 **Contains**:
@@ -90,12 +75,6 @@ Source Files:
 - Implementation of all public functions
 - Internal helper functions (SendCanFrame, ProcessSerialData, etc.)
 - ISR handlers
-
-**Cleaner than before**:
-- No duplicate `MotorState_t` typedef
-- No duplicate command/parameter defines
-- No duplicate function declarations
-- Just the actual implementation
 
 ---
 
@@ -137,15 +116,6 @@ static const MotorConfig_t MOTOR_CONFIGS[] = {
 };
 ```
 
-**No changes needed to**:
-- ❌ motor_controller.c
-- ❌ motor_controller.h
-- ❌ motor_types.h
-
-Everything auto-updates!
-
----
-
 ## Modifying Command Types
 
 To add a new CAN command (hypothetically), you edit **motor_types.h**:
@@ -164,52 +134,19 @@ else if (comm_type == COMM_NEW_COMMAND) {
 }
 ```
 
----
-
-## File Sizes
-
-| File | Lines | Purpose |
-|------|-------|---------|
-| motor_types.h | ~100 | Types & constants |
-| motor_config.h | ~150 | Motor configs |
-| motor_controller.h | ~50 | Public API |
-| motor_controller.c | ~650 | Implementation |
-| **Total** | **~950** | **Complete firmware** |
-
----
-
 ## Best Practices
 
-### ✅ DO:
+### DO:
 - Include `motor_controller.h` when using the public API
 - Edit `motor_config.h` to add motors
 - Edit `motor_types.h` to change command types
 - Keep internal functions in `motor_controller.c`
 
-### ❌ DON'T:
+### DON'T:
 - Include `motor_types.h` directly if you can use `motor_controller.h`
 - Modify `motor_controller.c` to add motors
 - Add motor configs in `motor_controller.c`
 - Change public API without updating `.h` files
-
----
-
-## Migration Summary
-
-What changed:
-1. ✅ Created `motor_types.h` with MotorState_t and all defines
-2. ✅ Updated `motor_controller.h` to include `motor_types.h`
-3. ✅ Removed duplicate definitions from `motor_controller.c`
-4. ✅ Simplified `motor_controller.c` to focus on implementation
-
-Result:
-- 🎯 Cleaner code organization
-- 🎯 Single source of truth for each concept
-- 🎯 Easier to extend (add motors, commands, etc.)
-- 🎯 Better separation of concerns
-- 🎯 More professional codebase
-
----
 
 ## Testing
 
@@ -219,6 +156,3 @@ The firmware should compile with no changes:
 cd Software/nucleo_can_bridge
 python -m platformio run -e nucleo_f429zi
 ```
-
-All functionality is identical to before - just reorganized! 🚀
-

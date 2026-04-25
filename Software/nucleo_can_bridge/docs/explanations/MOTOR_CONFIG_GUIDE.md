@@ -64,12 +64,10 @@ static const MotorConfig_t MOTOR_CONFIGS[] = {
 #### Step 3: Done!
 
 That's it! The firmware automatically:
-- ✅ Allocates motor state for the new motor
-- ✅ Initializes it with your parameters
-- ✅ Starts accepting commands for it
-- ✅ Sends telemetry for it
-
-**No changes needed to C code!**
+-  Allocates motor state for the new motor
+-  Initializes it with your parameters
+-  Starts accepting commands for it
+-  Sends telemetry for it
 
 ---
 
@@ -256,15 +254,6 @@ if (motor) {
 }
 ```
 
-### Scalability
-
-- ✅ Add motors: Just add to `MOTOR_CONFIGS` array
-- ✅ Remove motors: Remove from array
-- ✅ Different parameters: Each motor has its own config
-- ✅ No hardcoded limits: Works with any number of motors
-
----
-
 ## PC Control Integration
 
 The PC control script works **automatically** with the new configuration:
@@ -281,23 +270,6 @@ ctrl.enable_targets([1, 2, 5, 10])      # All configured motors
 ctrl.goto_targets(90, [2])              # Motor 2 only
 ctrl.jog_targets(1, [5])                # Motor 5 only
 ```
-
----
-
-## Best Practices
-
-### ✅ DO:
-- Define motor configs as `const static` (saves RAM)
-- Use meaningful names: `MOTOR_LEFT_CONFIG`, `MOTOR_RIGHT_CONFIG`
-- Group similar motors (e.g., all fast motors together)
-- Document special motor types with comments
-- Test each motor ID before deployment
-
-### ❌ DON'T:
-- Modify `MotorController_Init()` to add motors
-- Hardcode motor IDs in C code
-- Skip the `motor_id` field (must be unique)
-- Use duplicate motor IDs (firmware won't detect it!)
 
 ---
 
@@ -328,16 +300,6 @@ static const MotorConfig_t MOTOR_CONFIGS[] = {
     MOTOR3_CONFIG,  // NEW
 };
 ```
-
-**Firmware automatically:**
-- Allocates state for motor 3
-- Initializes motor 3 with config
-- Accepts CAN commands for ID 3
-- Sends telemetry from ID 3
-- Prints: `Motors: 127, 1, 3`
-
-**That's all! No C code changes needed.**
-
 ---
 
 ## Troubleshooting
@@ -371,5 +333,4 @@ static const MotorConfig_t MOTOR_CONFIGS[] = {
 3. **Tune parameters:** Adjust `pp_speed_limit` for your motors
 4. **Scale up:** Add as many motors as needed
 
-That's it! The configuration system handles all the complexity. 🚀
 

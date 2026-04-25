@@ -10,6 +10,7 @@
 
 import csv
 import datetime
+import json
 from pathlib import Path
 
 import rclpy
@@ -23,6 +24,7 @@ class MultiStateMotorTest(Node):
         super().__init__('multi_state_motor_test')
 
         self.declare_parameter('motor_count',    2)
+        self.declare_parameter('config_file',    '')          # JSON config path (optional)
         self.declare_parameter('joint_names',    '')           # comma-separated
         self.declare_parameter('states_json',    '[]')         # JSON list of states
         self.declare_parameter('kp',             50.0)
@@ -35,6 +37,7 @@ class MultiStateMotorTest(Node):
         self.declare_parameter('log_dir',        str(get_software_log_dir()))
 
         motor_count    = int(self.get_parameter('motor_count').value)
+        config_file    = str(self.get_parameter('config_file').value).strip()
         names_param    = self.get_parameter('joint_names').value
         states_str     = self.get_parameter('states_json').value
         self.kp        = float(self.get_parameter('kp').value)
@@ -45,6 +48,25 @@ class MultiStateMotorTest(Node):
         cmd_topic      = self.get_parameter('command_topic').value
         fbk_topic      = self.get_parameter('feedback_topic').value
         log_base       = self.get_parameter('log_dir').value
+
+        # Optional config file for joint names/states. Explicit launch args still win.
+        if config_file:
+            try:
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    cfg = json.load(f)
+
+                cfg_joint_names = cfg.get('joint_names', [])
+                cfg_states = cfg.get('states', [])
+
+                if not names_param.strip() and isinstance(cfg_joint_names, list):
+                    names_param = ','.join(str(n) for n in cfg_joint_names)
+
+                if states_str.strip() in ('', '[]') and isinstance(cfg_states, list):
+                    states_str = json.dumps(cfg_states)
+
+                self.get_logger().info(f'Loaded multi-state config from {config_file}')
+            except Exception as e:
+                self.get_logger().warning(f'Failed to load config_file={config_file}: {e}')
 
         # Build joint name list
         if names_param.strip():
@@ -60,7 +82,6 @@ class MultiStateMotorTest(Node):
         self.n = len(self.joint_names)
 
         # Parse states from JSON
-        import json
         try:
             states_raw = json.loads(states_str) if states_str.strip() else []
             self.states = []
@@ -98,6 +119,7 @@ class MultiStateMotorTest(Node):
         self.get_logger().info(f'Logging to {log_dir}')
         # --------------------------------------------------------------------
 
+        # ROS2 publishers/subscribers
         self.publisher = self.create_publisher(RobotCommand, cmd_topic, 1)
         self.subscription = self.create_subscription(
             MotorFeedback, fbk_topic, self._feedback_callback, 10)
@@ -106,6 +128,7 @@ class MultiStateMotorTest(Node):
         self.timer = self.create_timer(1.0 / self.rate_hz, self._timer_callback)
         self.last_state_idx = -1
 
+        # Log completed set-up
         self.get_logger().info(
             f'MultiStateMotorTest ready: {self.n} motors {self.joint_names} '
             f'states={self.states}  kp={self.kp}  kd={self.kd}  '

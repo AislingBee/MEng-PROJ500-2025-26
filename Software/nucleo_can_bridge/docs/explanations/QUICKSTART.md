@@ -3,12 +3,12 @@
 ## What You Get
 
 A complete, production-ready STM32F429ZI firmware that controls two RobStride motors with:
-- ✅ CAN-based communication protocol (matches pc_control_2motors.py)
-- ✅ Real-time position/velocity control
-- ✅ 1 kHz control loop with proportional tracking
-- ✅ Telemetry feedback (position, velocity, torque, temperature)
-- ✅ Motor enable/disable, zero calibration, jogging, point-to-point motion
-- ✅ Drop-in replacement for existing motor bridge
+-  CAN-based communication protocol (matches pc_control_2motors.py)
+-  Real-time position/velocity control
+-  1 kHz control loop with proportional tracking
+-  Telemetry feedback (position, velocity, torque, temperature)
+-  Motor enable/disable, zero calibration, jogging, point-to-point motion
+-  Drop-in replacement for existing motor bridge
 
 ## Files
 
@@ -88,7 +88,7 @@ cd Software/nucleo_can_bridge
 python3 example_integration.py
 ```
 
-This runs `basic_control_example()`. Edit to try other examples.
+This runs `basic_control_example()`.
 
 ## LED Status
 
@@ -215,9 +215,7 @@ The new controller is a drop-in replacement that can work **standalone** or **wi
 
 ---
 
-**Ready?** Go to `Software/nucleo_can_bridge/` and run:
+`Software/nucleo_can_bridge/` run:
 ```bash
 platformio run -e nucleo_f429zi --target upload
 ```
-
-Then test with the PC control script! 🎉
