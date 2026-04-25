@@ -24,7 +24,7 @@ from ..interface.hardware_interface import ControlPacket
 from ..interface.isaac_hardware_interface import IsaacHardwareInterface
 
 
-USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "skeleton" / "skeleton.usd"
+USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "robot" / "robot.usd"
 
 
 @configclass
