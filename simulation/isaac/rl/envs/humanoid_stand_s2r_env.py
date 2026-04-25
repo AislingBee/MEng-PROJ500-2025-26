@@ -412,4 +412,4 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         self._q_des[env_ids] = joint_pos
         self._tau_ff[env_ids] = 0.0
 
-        print("Reset!-----------------------------------------")
+        # print("Reset!-----------------------------------------")
