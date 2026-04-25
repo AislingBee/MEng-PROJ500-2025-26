@@ -51,7 +51,7 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     default_command_value: float = CONTRACT.default_command_value
 
     usd_path: str = str(USD_PATH)
-    base_height: float = 0.0
+    base_height: float = 0.83
 
     upright_k: float = 8.0
     pose_k: float = 4.0
@@ -66,16 +66,16 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     tilt_limit: float = 0.25
 
     forbidden_body_names: tuple[str, ...] = (
-        "robot_l_hip_yaw_link",
-        "robot_r_hip_yaw_link",
-        "robot_l_hip_pitch_link",
-        "robot_r_hip_pitch_link",
-        "robot_l_thigh_link",
-        "robot_r_thigh_link",
-        "robot_l_shank_link",
-        "robot_r_shank_link",
-        "robot_l_ankle_link",
-        "robot_r_ankle_link",
+        "l_hip_yaw_link",
+        "r_hip_yaw_link",
+        "l_hip_pitch_link",
+        "r_hip_pitch_link",
+        "l_thigh_link",
+        "r_thigh_link",
+        "l_shank_link",
+        "r_shank_link",
+        "l_ankle_link",
+        "r_ankle_link",
     )
     forbidden_body_height_limit: float = 0.075
 
