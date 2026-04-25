@@ -51,7 +51,7 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     default_command_value: float = CONTRACT.default_command_value
 
     usd_path: str = str(USD_PATH)
-    base_height: float = 0.8072024583816528
+    base_height: float = 0.00
 
     upright_k: float = 8.0
     pose_k: float = 4.0
@@ -77,7 +77,7 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
         "l_ankle_link",
         "r_ankle_link",
     )
-    forbidden_body_height_limit: float = 0.075
+    forbidden_body_height_limit: float = -1.0
 
 
 class HumanoidStandEnvS2r(DirectRLEnv):
@@ -153,7 +153,8 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         # From URDF fixed joint rpy="0 -1.5707963267948963 0"
         # Quaternion order is [w, x, y, z]
         self._root_to_imu_quat = torch.tensor(
-            [0.7071068, 0.0, -0.7071068, 0.0],
+            # [0.7071068, 0.0, -0.7071068, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
             dtype=torch.float32,
             device=self.device,
         )
@@ -350,7 +351,31 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         )
 
         terminated = over_tilted | bad_state | body_hit_ground
+        # terminated = bad_state | body_hit_ground
         time_out = self.episode_length_buf >= self.max_episode_length - 1
+
+
+
+        if torch.any(over_tilted | bad_state | body_hit_ground):
+            idx = torch.where(over_tilted | bad_state | body_hit_ground)[0][0]
+
+            print("\n=== RESET DEBUG ===")
+            print(f"env_id: {idx.item()}")
+            print(f"over_tilted      : {over_tilted[idx].item()}")
+            print(f"bad_state        : {bad_state[idx].item()}")
+            print(f"body_hit_ground  : {body_hit_ground[idx].item()}")
+            print(f"tilt_metric      : {tilt_metric[idx].item()}")
+
+            print(f"root_z           : {self.robot.data.root_pos_w[idx, 2].item()}")
+
+            body_heights = self.robot.data.body_pos_w[idx, self._forbidden_body_ids, 2]
+            print(f"min_body_z       : {body_heights.min().item()}")
+
+            print(f"projected_gravity_b: {projected_gravity_b[idx].detach().cpu().numpy()}")
+            print(f"root_quat_w        : {self.robot.data.root_quat_w[idx].detach().cpu().numpy()}")
+
+            print("===================\n")
+
         return terminated, time_out
 
     def _reset_idx(self, env_ids: Sequence[int] | None):
@@ -388,3 +413,5 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         self._joint_pos_targets[env_ids] = joint_pos
         self._q_des[env_ids] = joint_pos
         self._tau_ff[env_ids] = 0.0
+
+        print("Reset!-----------------------------------------")
