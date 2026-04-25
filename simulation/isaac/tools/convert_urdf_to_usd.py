@@ -21,7 +21,8 @@ args = parser.parse_args()
 app = AppLauncher(args).app
 
 # Imports AFTER app launch (pxr is available only after this)
-from pxr import Sdf, Usd
+from pxr import Sdf, Usd, Gf
+import omni.kit.commands
 from isaaclab.sim.converters import UrdfConverter, UrdfConverterCfg
 
 
@@ -146,6 +147,61 @@ def _write_joint_limits_config(urdf_path: str, out_usd_path: str, out_config_pat
     return len(joint_limits), skipped
 
 
+def _find_prim_by_name(stage: Usd.Stage, prim_name: str):
+    """Find the first prim in the stage with the given name."""
+    for prim in stage.Traverse():
+        if prim.GetName() == prim_name:
+            return prim
+    return None
+
+
+def _add_imu_sensor_to_imu_link(
+    root_usd_path: str,
+    imu_link_name: str = "imu_link",
+    imu_sensor_name: str = "imu_sensor",
+):
+    """
+    Add an Isaac IMU sensor under the CAD imu_link prim.
+
+    The sensor is placed at zero local offset relative to imu_link, so it inherits
+    the imu_link transform.
+    """
+    stage = Usd.Stage.Open(root_usd_path)
+    if stage is None:
+        raise RuntimeError(f"Failed to open USD stage: {root_usd_path}")
+
+    imu_link_prim = _find_prim_by_name(stage, imu_link_name)
+    if imu_link_prim is None or not imu_link_prim.IsValid():
+        raise RuntimeError(
+            f"Could not find imu link prim named '{imu_link_name}' in USD: {root_usd_path}"
+        )
+
+    imu_link_path = str(imu_link_prim.GetPath())
+    imu_sensor_path = f"{imu_link_path}/{imu_sensor_name}"
+
+    if stage.GetPrimAtPath(imu_sensor_path).IsValid():
+        print(f"[INFO] IMU sensor already exists at: {imu_sensor_path}")
+        return imu_sensor_path
+
+    success, _sensor_prim = omni.kit.commands.execute(
+        "IsaacSensorCreateImuSensor",
+        path=imu_sensor_name,
+        parent=imu_link_path,
+        sensor_period=0.0,
+        linear_acceleration_filter_size=1,
+        angular_velocity_filter_size=1,
+        orientation_filter_size=1,
+        translation=Gf.Vec3d(0.0, 0.0, 0.0),
+        orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
+    )
+
+    if not success:
+        raise RuntimeError(f"Failed to create IMU sensor under: {imu_link_path}")
+
+    stage.GetRootLayer().Save()
+    print(f"[OK] Added IMU sensor at: {imu_sensor_path}")
+    return imu_sensor_path
+
 def main():
     urdf_path = os.path.abspath(os.path.normpath(args.urdf))
     out_usd = os.path.abspath(os.path.normpath(args.out_usd))
@@ -183,6 +239,13 @@ def main():
 
     if _ensure_default_prim(root_usd_path):
         print("[OK] Set defaultPrim on root USD")
+
+    imu_sensor_path = _add_imu_sensor_to_imu_link(
+        root_usd_path=root_usd_path,
+        imu_link_name="imu_link",
+        imu_sensor_name="imu_sensor",
+    )
+    print(f"[OK] IMU sensor prim path: {imu_sensor_path}")
 
     joint_count, skipped = _write_joint_limits_config(
         urdf_path=urdf_path,
