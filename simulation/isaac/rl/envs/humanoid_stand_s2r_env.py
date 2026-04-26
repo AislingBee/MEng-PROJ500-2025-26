@@ -31,7 +31,7 @@ USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "r
 class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     decimation: int = CONTRACT.decimation
     episode_length_s: float = 10.0
-    action_delay_steps: int = 2
+    action_delay_steps: int = 1
 
     sim: SimulationCfg = SimulationCfg(
         dt=CONTRACT.sim_dt_s,
