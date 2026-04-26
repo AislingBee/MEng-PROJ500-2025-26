@@ -306,10 +306,10 @@ class ThorStandingPolicyRunner:
         for i, name in enumerate(packet.joint_names):
             print(
                 f"{i:02d} {name:40s} "
-                f"q_des={q_des[0, i]:+ .5f} rad | "
-                f"kp={kp[0, i]:+ .3f} | "
-                f"kd={kd[0, i]:+ .3f} | "
-                f"tau_ff={tau_ff[0, i]:+ .3f}"
+                f"q_des={q_des[0, i]:+.5f} rad | "
+                f"kp={kp[0, i]:+.3f} | "
+                f"kd={kd[0, i]:+.3f} | "
+                f"tau_ff={tau_ff[0, i]:+.3f}"
             )
 
         print("=" * 90)
