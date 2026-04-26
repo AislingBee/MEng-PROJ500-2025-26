@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from pathlib import Path
-import math
 
 import torch
 import isaaclab.sim as sim_utils
@@ -15,25 +14,26 @@ from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.math import quat_rotate_inverse
 
-from ...configuration.walking_actuator_config import (
-    WALKING_ACTUATOR_SETTINGS,
-    build_per_joint_walking_actuator_cfg,
+from ...configuration.walking_actuator_config import WALKING_ACTUATOR_SETTINGS
+from simulation.isaac.configuration.standing_s2r_policy_contract import (
+    CONTRACT,
+    build_fixed_gains,
+    build_standing_q,
 )
-from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
 from ..interface.hardware_interface import ControlPacket
 from ..interface.isaac_hardware_interface import IsaacHardwareInterface
 
 
-USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "skeleton" / "skeleton.usd"
+USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "robot" / "robot.usd"
 
 
 @configclass
 class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
-    decimation: int = 2
+    decimation: int = CONTRACT.decimation
     episode_length_s: float = 10.0
 
     sim: SimulationCfg = SimulationCfg(
-        dt=1.0 / 120.0,
+        dt=CONTRACT.sim_dt_s,
         render_interval=decimation,
     )
 
@@ -43,27 +43,14 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         replicate_physics=True,
     )
 
-    action_space: int = 12
+    action_space: int = CONTRACT.action_dim
     # q_rel(12) + qd(12) + target_err(12) + joint_effort(12) + projected_gravity(3)
     # + root_lin_vel_b(3) + root_ang_vel_b(3) + foot_pos_b(6) + foot_vel_b(6)
     # + command(1) + last_actions(12)
     observation_space: int = 82
     state_space: int = 0
 
-    action_scale = (
-        0.08,
-        0.08,
-        0.20,
-        0.30,
-        0.15,
-        0.10,
-        0.08,
-        0.08,
-        0.20,
-        0.30,
-        0.15,
-        0.10,
-    )
+    action_scale: tuple[float, ...] = CONTRACT.action_scale
 
     usd_path: str = str(USD_PATH)
     base_height: float = 0.0
@@ -153,16 +140,16 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # Termination.
     tilt_limit: float = 0.25
     forbidden_body_names: tuple[str, ...] = (
-        "robot_l_hip_yaw_link",
-        "robot_r_hip_yaw_link",
-        "robot_l_hip_pitch_link",
-        "robot_r_hip_pitch_link",
-        "robot_l_thigh_link",
-        "robot_r_thigh_link",
-        "robot_l_shank_link",
-        "robot_r_shank_link",
-        "robot_l_ankle_link",
-        "robot_r_ankle_link",
+        "l_hip_yaw_link",
+        "r_hip_yaw_link",
+        "l_hip_pitch_link",
+        "r_hip_pitch_link",
+        "l_thigh_link",
+        "r_thigh_link",
+        "l_shank_link",
+        "r_shank_link",
+        "l_ankle_link",
+        "r_ankle_link",
     )
     forbidden_body_height_limit: float = 0.075
 
@@ -185,6 +172,11 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"Expected {self.cfg.action_space} joints, got {self.num_dofs}. "
                 f"Check USD / standing pose / actuator config alignment."
             )
+        if tuple(self.robot.joint_names) != CONTRACT.joint_names:
+            raise RuntimeError(
+                "Robot joint_names do not match the shared S2R policy contract. "
+                "Walking and standing must use the same deployment joint order."
+            )
 
         self._step_dt = float(self.cfg.sim.dt * self.cfg.decimation)
         self._common_step_counter = 0
@@ -197,23 +189,28 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         self._action_scale = torch.tensor(self.cfg.action_scale, dtype=torch.float32, device=self.device).unsqueeze(0)
         self._gravity_vec_w = torch.tensor([0.0, 0.0, -1.0], device=self.device).repeat(self.num_envs, 1)
 
-        self._standing_q = self._build_standing_pose_tensor()
-        self._joint_lower = self.robot.data.soft_joint_pos_limits[..., 0].clone()
-        self._joint_upper = self.robot.data.soft_joint_pos_limits[..., 1].clone()
-
-        # Build per-joint actuator values in the articulation joint order.
-        self._per_joint_actuator_cfg = build_per_joint_walking_actuator_cfg(self.robot.joint_names)
-
-        self._kp_fixed = torch.tensor(
-            self._per_joint_actuator_cfg["stiffness"],
+        self._standing_q = build_standing_q(device=self.device)
+        self._joint_lower = torch.tensor(
+            CONTRACT.joint_lower_limits_rad,
             dtype=torch.float32,
             device=self.device,
         ).unsqueeze(0).repeat(self.num_envs, 1)
-        self._kd_fixed = torch.tensor(
-            self._per_joint_actuator_cfg["damping"],
+        self._joint_upper = torch.tensor(
+            CONTRACT.joint_upper_limits_rad,
             dtype=torch.float32,
             device=self.device,
         ).unsqueeze(0).repeat(self.num_envs, 1)
+
+        soft_joint_lower = self.robot.data.soft_joint_pos_limits[..., 0]
+        soft_joint_upper = self.robot.data.soft_joint_pos_limits[..., 1]
+        if not torch.allclose(soft_joint_lower[0], self._joint_lower[0], atol=1e-5, rtol=0.0):
+            raise RuntimeError("Robot soft joint lower limits do not match the shared S2R policy contract")
+        if not torch.allclose(soft_joint_upper[0], self._joint_upper[0], atol=1e-5, rtol=0.0):
+            raise RuntimeError("Robot soft joint upper limits do not match the shared S2R policy contract")
+
+        kp_fixed, kd_fixed = build_fixed_gains(device=self.device)
+        self._kp_fixed = kp_fixed.unsqueeze(0).repeat(self.num_envs, 1)
+        self._kd_fixed = kd_fixed.unsqueeze(0).repeat(self.num_envs, 1)
         self._tau_ff = torch.zeros((self.num_envs, self.num_dofs), dtype=torch.float32, device=self.device)
         self._q_des = torch.zeros((self.num_envs, self.num_dofs), dtype=torch.float32, device=self.device)
 
@@ -228,8 +225,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         )
 
         foot_name_candidates = {
-            "left": ["robot_l_foot_link"],
-            "right": ["robot_r_foot_link"],
+            "left": ["l_foot_link", "robot_l_foot_link"],
+            "right": ["r_foot_link", "robot_r_foot_link"],
         }
         self._foot_body_ids = {}
         for side, names in foot_name_candidates.items():
@@ -260,11 +257,20 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         self._current_command_lin_vel_x_max = float(self.cfg.command_lin_vel_x_max)
         self._current_push_velocity_xy = float(self.cfg.push_velocity_xy_initial)
 
+        # From URDF fixed joint rpy="0 -1.5707963267948963 0"
+        # Quaternion order is [w, x, y, z]
+        self._root_to_imu_quat = torch.tensor(
+            [1.0, 0.0, 0.0, 0.0],
+            dtype=torch.float32,
+            device=self.device,
+        )
+
         # Once the hardware data has been sorted, change this to = RobotHardwareInterface(...)
         self._hardware = IsaacHardwareInterface(
             robot=self.robot,
             joint_ids=self.joint_ids,
             device=self.device,
+            root_to_imu_quat=self._root_to_imu_quat,
         )
 
     def _setup_scene(self):
@@ -320,7 +326,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         self.scene.sensors["left_foot_contact"] = ContactSensor(
             ContactSensorCfg(
-                prim_path="/World/envs/env_.*/Robot/robot_l_foot_link",
+                prim_path="/World/envs/env_.*/Robot/l_foot_link",
                 update_period=0.0,
                 history_length=3,
                 debug_vis=False,
@@ -328,18 +334,12 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         )
         self.scene.sensors["right_foot_contact"] = ContactSensor(
             ContactSensorCfg(
-                prim_path="/World/envs/env_.*/Robot/robot_r_foot_link",
+                prim_path="/World/envs/env_.*/Robot/r_foot_link",
                 update_period=0.0,
                 history_length=3,
                 debug_vis=False,
             )
         )
-
-    def _build_standing_pose_tensor(self) -> torch.Tensor:
-        q = torch.zeros(self.num_dofs, dtype=torch.float32, device=self.device)
-        for i, joint_name in enumerate(self.robot.joint_names):
-            q[i] = math.radians(STANDING_TARGETS_DEG.get(joint_name, 0.0))
-        return q
 
     def _pre_physics_step(self, actions: torch.Tensor) -> None:
         if torch.isnan(actions).any():
@@ -501,6 +501,11 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             dim=-1,
         )
 
+        if obs.shape[1] != self.cfg.observation_space:
+            raise RuntimeError(
+                f"Observation size mismatch. Expected {self.cfg.observation_space}, got {obs.shape[1]}"
+            )
+
         if torch.isnan(obs).any():
             raise RuntimeError("NaN detected in observations")
 
@@ -660,10 +665,10 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
     def _get_rewards(self) -> torch.Tensor:
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
-        root_quat_w = self.robot.data.root_quat_w
         root_lin_vel_b = self.robot.data.root_lin_vel_b
-        root_ang_vel_b = self.robot.data.root_ang_vel_b
-        projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
+        packet = self._hardware.read_observation_packet()
+        root_ang_vel_b = packet.imu_gyro_b
+        projected_gravity_b = packet.projected_gravity_b
 
         foot_kin = self._get_foot_kinematics()
         left_pos_w = foot_kin["left_pos_w"]
@@ -781,8 +786,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
     def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
-        root_quat_w = self.robot.data.root_quat_w
-        projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
+        packet = self._hardware.read_observation_packet()
+        projected_gravity_b = packet.projected_gravity_b
         tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
         over_tilted = tilt_metric > self.cfg.tilt_limit
 
