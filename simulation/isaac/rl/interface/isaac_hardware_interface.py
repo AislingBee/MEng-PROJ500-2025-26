@@ -35,7 +35,7 @@ class IsaacHardwareInterface(BaseHardwareInterface):
             "joint_pos": AdditiveGaussianNoiseCfg(std=0.002),
             "joint_vel": AdditiveGaussianNoiseCfg(std=0.02),
             "joint_effort": AdditiveGaussianNoiseCfg(std=0.5),
-            "gravity": AdditiveGaussianNoiseCfg(std=0.015),
+            "gravity": AdditiveGaussianNoiseCfg(std=0.02),
             "gyro": AdditiveGaussianNoiseCfg(std=0.035),
         }
 
