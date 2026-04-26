@@ -64,7 +64,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     command_curriculum_interval_steps: int = 2000
     command_curriculum_success_threshold: float = 0.70
     zero_command_prob: float = 0.0
-    enable_command_curriculum: bool = True
+    enable_command_curriculum: bool = False
 
     # Contact / gait logic.
     contact_force_threshold: float = 2.0
@@ -92,13 +92,13 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # now contact-time based, not hand-built touchdown logic.  This mirrors the
     # Berkeley reward scripts more closely for a biped.
     reward_scales = {
-        "vel_track": 3.0,
+        "vel_track": 1.5,
         "upright": 1.0,
         "survival": 0.5,
         "pose": 0.05,
-        "feet_air_time": 1.25,
-        "single_stance": 0.75,
-        "swing_clearance": 0.35,
+        "feet_air_time": 4.0,
+        "single_stance": 3.0,
+        "swing_clearance": 1.5,
         "ang_vel": 0.10,
         "joint_vel": 0.02,
         "action_rate": 0.05,
@@ -107,7 +107,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "roll_lean": 2.0,
         "pitch_lean": 0.5,
         "backward_vel": 0.5,
-        "feet_slide": 1.0,
+        "feet_slide": 3.0,
         "double_swing": 0.5,
     }
 
@@ -692,6 +692,9 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         r_feet_air_time = self._compute_feet_air_time_reward(left_contact, right_contact, command_active)
         r_single_stance = self._compute_feet_air_time_positive_biped_reward(left_contact, right_contact, command_active)
+
+        step_gate = torch.clamp(r_single_stance / 0.10, min=0.0, max=1.0)
+        r_vel_track = r_vel_track * (0.25 + 0.75 * step_gate)
 
         left_clearance = torch.clamp(
             (left_pos_w[:, 2] - self.cfg.swing_height_min)
