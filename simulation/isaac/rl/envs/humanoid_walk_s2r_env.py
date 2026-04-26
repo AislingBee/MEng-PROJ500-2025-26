@@ -69,7 +69,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # Contact / gait logic.
     contact_force_threshold: float = 2.0
     foot_slide_contact_threshold: float = 1.0
-    command_active_threshold: float = 0.10
+    command_active_threshold: float = 0.02
     reset_mirror_prob: float = 0.0  # Keep disabled until the joint sign convention is verified.
 
     # Berkeley-style feet air-time reward settings.
@@ -109,11 +109,12 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "backward_vel": 0.5,
         "feet_slide": 3.0,
         "double_swing": 0.5,
+        "bootstrap_lift": 1.0,
     }
 
     # Curriculum equivalent of modify_reward_weight(...).  The gait terms are
     # ramped in after the policy can stand and track low forward speed.
-    enable_reward_curriculum: bool = True
+    enable_reward_curriculum: bool = False
     reward_curriculum_start_step: int = 1000
     reward_curriculum_ramp_steps: int = 4000
     reward_curriculum_terms = (
@@ -686,8 +687,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         r_upright = torch.exp(-self.cfg.upright_k * tilt_metric)
 
         # Forward-only walking: do not reward overspeeding, but punish being below command.
-        lin_vel_error = torch.clamp(self._commands[:, 0] - root_lin_vel_b[:, 0], min=0.0)
-        r_vel_track = torch.exp(-self.cfg.vel_tracking_k * lin_vel_error**2)
+        lin_vel_error = self._commands[:, 0] - root_lin_vel_b[:, 0]
+        r_vel_track = torch.exp(-self.cfg.vel_tracking_k * lin_vel_error ** 2)
         r_pose = torch.exp(-self.cfg.pose_k * torch.mean(q_err**2, dim=1))
 
         r_feet_air_time = self._compute_feet_air_time_reward(left_contact, right_contact, command_active)
@@ -715,6 +716,11 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             + right_swing.float() * right_clearance
         )
 
+        left_lift = torch.clamp((left_pos_w[:, 2] - self.cfg.swing_height_min) / 0.04, min=0.0, max=1.0)
+        right_lift = torch.clamp((right_pos_w[:, 2] - self.cfg.swing_height_min) / 0.04, min=0.0, max=1.0)
+
+        r_bootstrap_lift = command_active * torch.clamp(left_lift + right_lift, max=1.0)
+
         p_ang_vel = torch.mean(root_ang_vel_b**2, dim=1)
         p_joint_vel = torch.mean(qd**2, dim=1)
         p_action_rate = torch.mean(action_rate**2, dim=1)
@@ -736,6 +742,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "feet_air_time": r_feet_air_time,
             "single_stance": r_single_stance,
             "swing_clearance": r_swing_clearance,
+            "bootstrap_lift": r_bootstrap_lift,
         }
         penalty_terms = {
             "ang_vel": p_ang_vel,
