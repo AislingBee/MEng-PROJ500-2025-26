@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot name="robot">
-    <link name="ori_correct" />
+    <link name="root" />
     <link name="imu_link">
         <inertial>
             <origin xyz="-1.5026528643602432e-09 9.498352104841956e-10 1.0161999197677574e-09" rpy="0 0 0" />
@@ -286,8 +286,9 @@
             </geometry>
         </collision>
     </link>
-        <joint name="ori_correct" type="fixed">
-        <parent link="ori_correct" />
+    
+    <joint name="root" type="fixed">
+        <parent link="root" />
         <child link="pelvis_link" />
         <origin xyz="0 0 0.84" rpy="0 0 1.57079632679" />
     </joint>
