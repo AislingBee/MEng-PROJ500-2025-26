@@ -42,7 +42,7 @@ class ThorPolicyRunnerConfig:
 
     # Debug print control
     debug_print: bool = False
-    debug_print_every_n_steps: int = 50
+    debug_print_every_n_steps: int = 50 # Set the frequency of DEBUG message.
 
     def __post_init__(self) -> None:
         n = len(self.joint_names)
