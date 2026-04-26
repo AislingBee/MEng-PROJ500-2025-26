@@ -15,8 +15,8 @@ from isaaclab.app import AppLauncher
 # -----------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Train PROJ500 humanoid STAND Sim to Real with PPO.")
 AppLauncher.add_app_launcher_args(parser)
-parser.add_argument("--num_envs", type=int, default=4) #
-parser.add_argument("--max_iterations", type=int, default=200)
+parser.add_argument("--num_envs", type=int, default=12000) #
+parser.add_argument("--max_iterations", type=int, default=150)
 parser.add_argument("--task", type=str, default="Humanoid-Stand-s2r-v0")
 args = parser.parse_args()
 

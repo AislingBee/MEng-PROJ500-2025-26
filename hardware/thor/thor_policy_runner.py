@@ -40,6 +40,10 @@ class ThorPolicyRunnerConfig:
     loop_hz: float = CONTRACT.policy_loop_hz
     send_standing_pose_on_exit: bool = True
 
+    # Debug print control
+    debug_print: bool = False
+    debug_print_every_n_steps: int = 50 # Set the frequency of DEBUG message.
+
     def __post_init__(self) -> None:
         n = len(self.joint_names)
         if self.joint_names != CONTRACT.joint_names:
@@ -58,6 +62,9 @@ class ThorPolicyRunnerConfig:
             raise ValueError("joint_upper_rad must match the standing S2R policy contract")
         if self.loop_hz <= 0.0:
             raise ValueError("loop_hz must be positive")
+
+        if self.debug_print_every_n_steps <= 0:
+            raise ValueError("debug_print_every_n_steps must be positive")
 
 
 class DeployablePolicy:
@@ -166,6 +173,10 @@ class ThorStandingPolicyRunner:
         self._kp_fixed = kp_fixed.unsqueeze(0)
         self._kd_fixed = kd_fixed.unsqueeze(0)
 
+        self._step_count = 0
+        self._last_obs: Tensor | None = None
+        self._last_actions_debug: Tensor | None = None
+
     def build_observation(self) -> Tensor:
         packet = self.hardware.read_observation_packet()
 
@@ -209,7 +220,15 @@ class ThorStandingPolicyRunner:
         actions = self.policy.act(obs)
         packet = self.generate_control_packet(actions)
         self.hardware.write_control_packet(packet)
+
+        self._last_obs = obs.detach().clone()
+        self._last_actions_debug = actions.detach().clone()
+
         self._last_actions = torch.clamp(actions, -1.0, 1.0).detach().clone()
+
+        self._step_count += 1
+        self._debug_print_step(packet)
+
         return packet
 
     def send_standing_pose(self) -> None:
@@ -240,6 +259,61 @@ class ThorStandingPolicyRunner:
                 self.send_standing_pose()
 
 
+    def _debug_print_step(self, packet: ControlPacket) -> None:
+        if not self.cfg.debug_print:
+            return
+
+        if self._step_count % self.cfg.debug_print_every_n_steps != 0:
+            return
+
+        if self._last_obs is None or self._last_actions_debug is None:
+            return
+
+        obs = self._last_obs.detach().cpu()
+        actions = self._last_actions_debug.detach().cpu()
+        q_des = packet.q_des.detach().cpu()
+        kp = packet.kp.detach().cpu()
+        kd = packet.kd.detach().cpu()
+        tau_ff = packet.tau_ff.detach().cpu()
+
+        q_rel = obs[:, 0:12]
+        joint_vel = obs[:, 12:24]
+        joint_effort = obs[:, 24:36]
+        gravity_b = obs[:, 36:39]
+        gyro_b = obs[:, 39:42]
+        command = obs[:, 42:43]
+        last_actions = obs[:, 43:55]
+
+        print("\n" + "=" * 90)
+        print(f"[THOR DEBUG] step={self._step_count}")
+        print("-" * 90)
+
+        print("[RECEIVED / OBSERVATION INPUT]")
+        print("q_rel:", q_rel)
+        print("joint_vel:", joint_vel)
+        print("joint_effort:", joint_effort)
+        print("projected_gravity_b:", gravity_b)
+        print("imu_gyro_b:", gyro_b)
+        print("command:", command)
+        print("last_actions:", last_actions)
+
+        print("\n[POLICY OUTPUT]")
+        print("actions:", actions)
+        print("actions min/max:", actions.min().item(), actions.max().item())
+
+        print("\n[SENT / CONTROL OUTPUT]")
+        print("joint order:")
+        for i, name in enumerate(packet.joint_names):
+            print(
+                f"{i:02d} {name:40s} "
+                f"q_des={q_des[0, i]:+.5f} rad | "
+                f"kp={kp[0, i]:+.3f} | "
+                f"kd={kd[0, i]:+.3f} | "
+                f"tau_ff={tau_ff[0, i]:+.3f}"
+            )
+
+        print("=" * 90)
+
 # -----------------------------------------------------------------------------
 # Wiring example
 # Replace these with the actual Thor ROS/CAN hooks.
@@ -267,6 +341,8 @@ def main() -> None:
         device="cpu",
         loop_hz=contract_defaults["loop_hz"],
         command_value=contract_defaults["command_value"],
+        debug_print=True,
+        debug_print_every_n_steps=50,
     )
 
     hardware_cfg = RobotInterfaceConfig(

@@ -93,6 +93,50 @@ def step_with_target(
         sim.step()
         robot.update(dt)
 
+def print_root_body_debug(robot: Articulation):
+    print("\n=== ROOT / BODY FRAME DEBUG ===")
+
+    print("ROOT BODY NAME:", robot.body_names[0])
+
+    print("\n[INFO] Root/orientation-related bodies:")
+    for i, name in enumerate(robot.body_names):
+        if any(k in name.lower() for k in ["ori", "root", "pelvis", "torso", "imu"]):
+            print(f"  {i}: {name}")
+
+    print("[INFO] Body names:")
+    for i, name in enumerate(robot.body_names):
+        print(f"  {i}: {name}")
+
+    print("\n[INFO] Root state:")
+    print("  root_pos_w :", robot.data.root_pos_w[0].detach().cpu().numpy())
+    print("  root_quat_w:", robot.data.root_quat_w[0].detach().cpu().numpy())
+
+    pelvis_idx = None
+    for i, name in enumerate(robot.body_names):
+        if "pelvis" in name.lower():
+            pelvis_idx = i
+            break
+
+    if pelvis_idx is None:
+        print("[WARN] No pelvis body found in robot.body_names")
+        print("================================\n")
+        return
+
+    print(f"\n[INFO] Pelvis body index: {pelvis_idx}")
+    print("  pelvis name  :", robot.body_names[pelvis_idx])
+    print("  pelvis_pos_w :", robot.data.body_pos_w[0, pelvis_idx].detach().cpu().numpy())
+    print("  pelvis_quat_w:", robot.data.body_quat_w[0, pelvis_idx].detach().cpu().numpy())
+
+    pos_error = robot.data.body_pos_w[0, pelvis_idx] - robot.data.root_pos_w[0]
+    print("\n[INFO] pelvis_pos_w - root_pos_w:")
+    print(" ", pos_error.detach().cpu().numpy())
+
+    quat_error = robot.data.body_quat_w[0, pelvis_idx] - robot.data.root_quat_w[0]
+    print("[INFO] pelvis_quat_w - root_quat_w:")
+    print(" ", quat_error.detach().cpu().numpy())
+
+    print("================================\n")
+
 
 # -----------------------------------------------------------------------------
 # Main
@@ -148,9 +192,22 @@ def main():
     # Let buffers populate
     robot.update(args.dt)
 
-    print("[INFO] Waiting for viewer to initialise...")
-    time.sleep(5.0)   # Small delay to allow pc to catch 
+    print_root_body_debug(robot)
+
+    # print("[INFO] Waiting for viewer to initialise...")
+    # time.sleep(5.0)   # Small delay to allow pc to catch
+    # print("[INFO] Starting standing pose...")
+
+    print("[INFO] Robot spawned. Holding viewer before physics starts...")
+
+    pause_seconds = 15.0
+    t0 = time.time()
+
+    while simulation_app.is_running() and (time.time() - t0) < pause_seconds:
+        sim.render()
+
     print("[INFO] Starting standing pose...")
+
 
     joint_names = list(robot.joint_names)
     q_target = build_standing_target_tensor(robot, args.device)
@@ -180,6 +237,8 @@ def main():
             f"final={final_deg:+7.2f} deg  "
             f"err={err_deg:+7.2f} deg"
         )
+
+    print("root z:", robot.data.root_pos_w[0, 2].item())
 
     print("\n[INFO] Holding pose. Close app window to exit.")
 

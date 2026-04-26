@@ -15,8 +15,8 @@ from isaaclab.app import AppLauncher
 # -----------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Train PROJ500 humanoid WALK Sim to Real with PPO.")
 AppLauncher.add_app_launcher_args(parser)
-parser.add_argument("--num_envs", type=int, default=4) #
-parser.add_argument("--max_iterations", type=int, default=200)
+parser.add_argument("--num_envs", type=int, default=12000) #
+parser.add_argument("--max_iterations", type=int, default=400)
 parser.add_argument("--task", type=str, default="Humanoid-Walk-s2r-v0")
 args = parser.parse_args()
 
@@ -31,6 +31,7 @@ import gymnasium as gym
 import torch
 from rsl_rl.runners import OnPolicyRunner
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
+from simulation.isaac.configuration.standing_s2r_policy_contract import CONTRACT
 
 THIS_DIR = Path(__file__).resolve().parent
 ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
@@ -57,6 +58,16 @@ get_humanoid_walk_ppo_cfg = ppo_cfg_module.get_humanoid_walk_ppo_cfg
 def export_deployable_policy(runner, env_cfg, export_dir: str) -> None:
     os.makedirs(export_dir, exist_ok=True)
 
+    if env_cfg.action_space != CONTRACT.action_dim:
+        raise RuntimeError(
+            f"Shared S2R contract expects action dim {CONTRACT.action_dim}, "
+            f"but env config uses {env_cfg.action_space}."
+        )
+    if tuple(env_cfg.action_scale) != CONTRACT.action_scale:
+        raise RuntimeError("Walking action_scale no longer matches the shared S2R policy contract.")
+    if env_cfg.observation_space <= 0:
+        raise RuntimeError(f"Walking env observation_space must be positive, got {env_cfg.observation_space}.")
+
     actor = runner.alg.actor
     actor.eval()
 
@@ -77,6 +88,24 @@ def main():
     from simulation.isaac.rl.envs.humanoid_walk_s2r_env import HumanoidWalkEnvS2rCfg
 
     env_cfg = HumanoidWalkEnvS2rCfg()
+
+    if env_cfg.action_space != CONTRACT.action_dim:
+        raise RuntimeError(
+            f"Shared S2R contract expects action dim {CONTRACT.action_dim}, "
+            f"but env config uses {env_cfg.action_space}."
+        )
+    if tuple(env_cfg.action_scale) != CONTRACT.action_scale:
+        raise RuntimeError("Walking action_scale no longer matches the shared S2R policy contract.")
+    if env_cfg.decimation != CONTRACT.decimation:
+        raise RuntimeError(
+            f"Shared S2R contract expects decimation {CONTRACT.decimation}, "
+            f"but env config uses {env_cfg.decimation}."
+        )
+    if env_cfg.sim.dt != CONTRACT.sim_dt_s:
+        raise RuntimeError(
+            f"Shared S2R contract expects sim dt {CONTRACT.sim_dt_s}, "
+            f"but env config uses {env_cfg.sim.dt}."
+        )
 
     env_cfg.scene.num_envs = args.num_envs
 

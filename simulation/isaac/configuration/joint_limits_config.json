@@ -1,19 +1,19 @@
 {
-    "generated_from_urdf": "C:\\Users\\jandr\\Git\\MEng-PROJ500-2025-26\\simulation\\isaac\\assets\\skeleton\\skeleton.urdf",
-    "generated_for_usd": "C:\\Users\\jandr\\Git\\MEng-PROJ500-2025-26\\simulation\\isaac\\assets\\usd_generated\\skeleton\\skeleton.usd",
+    "generated_from_urdf": "C:\\Users\\jandr\\Git\\MEng-PROJ500-2025-26\\simulation\\isaac\\assets\\robot\\robot.urdf",
+    "generated_for_usd": "C:\\Users\\jandr\\Git\\MEng-PROJ500-2025-26\\simulation\\isaac\\assets\\usd_generated\\robot\\robot.usd",
     "joint_names": [
-        "robot_pelvis_link_l_yaw_joint",
-        "robot_pelvis_link_r_yaw_joint",
-        "robot_l_hip_yaw_link_l_pitch_joint",
-        "robot_r_hip_yaw_link_r_pitch_joint",
-        "robot_l_hip_pitch_link_l_roll_joint",
-        "robot_r_hip_pitch_link_r_roll_joint",
-        "robot_l_thigh_link_l_knee_joint",
-        "robot_r_thigh_link_r_knee_joint",
-        "robot_l_shank_link_l_ankle_joint",
-        "robot_r_shank_link_r_ankle_joint",
-        "robot_l_ankle_link_l_foot_joint",
-        "robot_r_ankle_link_r_foot_joint"
+        "pelvis_link_l_yaw_joint",
+        "pelvis_link_r_yaw_joint",
+        "l_hip_yaw_link_l_pitch_joint",
+        "r_hip_yaw_link_r_pitch_joint",
+        "l_hip_pitch_link_l_roll_joint",
+        "r_hip_pitch_link_r_roll_joint",
+        "l_thigh_link_l_knee_joint",
+        "r_thigh_link_r_knee_joint",
+        "l_shank_link_l_ankle_joint",
+        "r_shank_link_r_ankle_joint",
+        "l_ankle_link_l_foot_joint",
+        "r_ankle_link_r_foot_joint"
     ],
     "joint_lower_limits": [
         -0.523599,
@@ -26,8 +26,8 @@
         0.0,
         -0.610865,
         -0.610865,
-        -0.261799,
-        -0.261799
+        -0.349066,
+        -0.349066
     ],
     "joint_upper_limits": [
         0.523599,
@@ -40,69 +40,69 @@
         2.094395,
         0.610865,
         0.610865,
-        0.261799,
-        0.261799
+        0.349066,
+        0.349066
     ],
     "joints": [
         {
-            "name": "robot_pelvis_link_l_yaw_joint",
+            "name": "pelvis_link_l_yaw_joint",
             "lower": -0.523599,
             "upper": 0.523599
         },
         {
-            "name": "robot_pelvis_link_r_yaw_joint",
+            "name": "pelvis_link_r_yaw_joint",
             "lower": -0.523599,
             "upper": 0.523599
         },
         {
-            "name": "robot_l_hip_yaw_link_l_pitch_joint",
+            "name": "l_hip_yaw_link_l_pitch_joint",
             "lower": -0.698132,
             "upper": 1.047198
         },
         {
-            "name": "robot_r_hip_yaw_link_r_pitch_joint",
+            "name": "r_hip_yaw_link_r_pitch_joint",
             "lower": -0.698132,
             "upper": 1.047198
         },
         {
-            "name": "robot_l_hip_pitch_link_l_roll_joint",
+            "name": "l_hip_pitch_link_l_roll_joint",
             "lower": -0.436332,
             "upper": 0.436332
         },
         {
-            "name": "robot_r_hip_pitch_link_r_roll_joint",
+            "name": "r_hip_pitch_link_r_roll_joint",
             "lower": -0.436332,
             "upper": 0.436332
         },
         {
-            "name": "robot_l_thigh_link_l_knee_joint",
+            "name": "l_thigh_link_l_knee_joint",
             "lower": 0.0,
             "upper": 2.094395
         },
         {
-            "name": "robot_r_thigh_link_r_knee_joint",
+            "name": "r_thigh_link_r_knee_joint",
             "lower": 0.0,
             "upper": 2.094395
         },
         {
-            "name": "robot_l_shank_link_l_ankle_joint",
+            "name": "l_shank_link_l_ankle_joint",
             "lower": -0.610865,
             "upper": 0.610865
         },
         {
-            "name": "robot_r_shank_link_r_ankle_joint",
+            "name": "r_shank_link_r_ankle_joint",
             "lower": -0.610865,
             "upper": 0.610865
         },
         {
-            "name": "robot_l_ankle_link_l_foot_joint",
-            "lower": -0.261799,
-            "upper": 0.261799
+            "name": "l_ankle_link_l_foot_joint",
+            "lower": -0.349066,
+            "upper": 0.349066
         },
         {
-            "name": "robot_r_ankle_link_r_foot_joint",
-            "lower": -0.261799,
-            "upper": 0.261799
+            "name": "r_ankle_link_r_foot_joint",
+            "lower": -0.349066,
+            "upper": 0.349066
         }
     ],
     "skipped_joints_without_limits": []
