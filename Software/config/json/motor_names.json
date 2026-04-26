@@ -1,16 +1,16 @@
 {
   "motors": [
-    "robot_pelvis_link_l_yaw_joint",
-    "robot_pelvis_link_r_yaw_joint",
-    "robot_l_hip_yaw_link_l_pitch_joint",
-    "robot_r_hip_yaw_link_r_pitch_joint",
-    "robot_l_hip_pitch_link_l_roll_joint",
-    "robot_r_hip_pitch_link_r_roll_joint",
-    "robot_l_thigh_link_l_knee_joint",
-    "robot_r_thigh_link_r_knee_joint",
-    "robot_l_shank_link_l_ankle_joint",
-    "robot_r_shank_link_r_ankle_joint",
-    "robot_l_ankle_link_l_foot_joint",
-    "robot_r_ankle_link_r_foot_joint"
+    "pelvis_link_l_yaw_joint",
+    "pelvis_link_r_yaw_joint",
+    "l_hip_yaw_link_l_pitch_joint",
+    "r_hip_yaw_link_r_pitch_joint",
+    "l_hip_pitch_link_l_roll_joint",
+    "r_hip_pitch_link_r_roll_joint",
+    "l_thigh_link_l_knee_joint",
+    "r_thigh_link_r_knee_joint",
+    "l_shank_link_l_ankle_joint",
+    "r_shank_link_r_ankle_joint",
+    "l_ankle_link_l_foot_joint",
+    "r_ankle_link_r_foot_joint"
   ]
 }

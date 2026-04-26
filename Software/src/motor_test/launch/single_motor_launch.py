@@ -23,7 +23,7 @@ _USE_WINDOWS_SERIAL = False  # False -> /dev/ttyACM0, True -> COM6
 _SERIAL_PORT = 'COM6' if _USE_WINDOWS_SERIAL else '/dev/ttyACM0'
 _BAUD_RATE   = 921600
 
-# RS04 motor CAN ID (default factory ID = 1).
+# RS04 motor CAN ID.
 _CAN_ID = 1
 
 # Joint name — used only for logging
