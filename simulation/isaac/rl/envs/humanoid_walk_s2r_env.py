@@ -99,7 +99,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # now contact-time based, not hand-built touchdown logic.  This mirrors the
     # Berkeley reward scripts more closely for a biped.
     reward_scales = {
-        "vel_track": 1.5,
+        "vel_track": 2.0,
         "upright": 1.0,
         "survival": 0.5,
         "pose": 0.05,
