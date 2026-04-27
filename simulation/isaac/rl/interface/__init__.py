@@ -9,6 +9,8 @@ __all__ = [
     "RobotHardwareInterface",
     "RobotInterfaceConfig",
     "RobotStateSample",
+    "Ros2RobotBridge",
+    "make_ros2_hardware_interface",
 ]
 
 
@@ -28,6 +30,10 @@ def __getattr__(name: str):
         "RobotStateSample",
     }:
         module = import_module(".robot_hardware_interface", __name__)
+        return getattr(module, name)
+
+    if name in {"Ros2RobotBridge", "make_ros2_hardware_interface"}:
+        module = import_module(".ros2_robot_bridge", __name__)
         return getattr(module, name)
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

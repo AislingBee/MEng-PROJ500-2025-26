@@ -1,0 +1,30 @@
+{
+  "title": "MotorParams",
+  "description": "Motor params for CAN info.",
+  "type": "object",
+  "properties": {
+    "q_des": {
+      "type": "number",
+      "description": "radian of actuator."
+    },
+    "Kp": {
+      "type": "number",
+      "description": "potential difference value (PID control)."
+    },
+    "Kd": {
+      "type": "number",
+      "description": "Derivative PID value."
+    },
+    "tau_ff": {
+      "type": "number",
+      "description": "torque of actuator."
+    }
+  },
+  "required": [
+    "q_des",
+    "Kp",
+    "Kd",
+    "tau_ff"
+  ],
+  "additionalProperties": false
+}
