@@ -85,6 +85,8 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     single_stance_threshold_min: float = 0.04
     single_stance_threshold_max: float = 0.35
 
+
+
     # Additional swing shaping.  This is kept light because the contact-time
     # reward should drive stepping; clearance only discourages toe dragging.
     swing_height_min: float = 0.035
@@ -99,7 +101,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # now contact-time based, not hand-built touchdown logic.  This mirrors the
     # Berkeley reward scripts more closely for a biped.
     reward_scales = {
-        "vel_track": 2.0,
+        "vel_track": 1.5,
         "upright": 1.0,
         "survival": 0.5,
         "pose": 0.05,
@@ -122,6 +124,8 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "foot_side": 2.0,
         "foot_centerline": 20.0,
         "pelvis_lateral": 4.0,
+        "air_time_imbalance": 2.0,
+        "contact_time_imbalance": 1.0,
     }
 
     # Curriculum equivalent of modify_reward_weight(...).  The gait terms are
@@ -708,6 +712,18 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         r_feet_air_time = self._compute_feet_air_time_reward(left_contact, right_contact, command_active)
         r_single_stance = self._compute_feet_air_time_positive_biped_reward(left_contact, right_contact, command_active)
 
+        left_air_time = self._left_air_steps.float() * self._step_dt
+        right_air_time = self._right_air_steps.float() * self._step_dt
+
+        left_contact_time = self._left_contact_steps.float() * self._step_dt
+        right_contact_time = self._right_contact_steps.float() * self._step_dt
+
+        contact_time_balance_error = torch.abs(left_contact_time - right_contact_time)
+        p_contact_time_imbalance = command_active * contact_time_balance_error
+
+        air_time_balance_error = torch.abs(left_air_time - right_air_time)
+        p_air_time_imbalance = command_active * air_time_balance_error
+
         step_gate = torch.clamp(r_single_stance / 0.10, min=0.0, max=1.0)
         r_vel_track = r_vel_track * (0.25 + 0.75 * step_gate)
 
@@ -785,6 +801,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "bootstrap_lift": r_bootstrap_lift,
             "step_width": r_step_width,
             "foot_side": r_foot_side,
+
         }
         penalty_terms = {
             "ang_vel": p_ang_vel,
@@ -800,6 +817,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "narrow_step": p_narrow_step,
             "foot_centerline": p_foot_centerline,
             "pelvis_lateral": p_pelvis_lateral,
+            "air_time_imbalance": p_air_time_imbalance,
+            "contact_time_imbalance": p_contact_time_imbalance,
         }
 
         reward = torch.zeros(self.num_envs, device=self.device)
@@ -843,6 +862,10 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"left_y: {left_pos_b[:, 1].mean().item():.4f} | "
                 f"right_y: {right_pos_b[:, 1].mean().item():.4f} | "
                 f"width_raw: {step_width.mean().item():.4f} | "
+                f"l_air: {left_air_time.mean().item():.3f} | "
+                f"r_air: {right_air_time.mean().item():.3f} | "
+                f"l_contact: {left_contact_time.mean().item():.3f} | "
+                f"r_contact: {right_contact_time.mean().item():.3f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
