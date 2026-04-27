@@ -32,7 +32,7 @@ _KP            = 20.0   # position gain  [Nm/rad]
 _KD            = 1.0    # damping gain   [Nm·s/rad]
 _TAU_FF        = 0.0    # feedforward torque [Nm]
 _STEP_DURATION = 4.0    # seconds per half-step
-_RATE_HZ       = 50.0   # command publish rate [Hz]
+_RATE_HZ       = 60.0   # command publish rate [Hz]
 
 # ── Node definitions ───────────────────────────────────────────────────────────
 
