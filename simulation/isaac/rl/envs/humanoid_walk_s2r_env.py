@@ -840,6 +840,9 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"pelvis_lat_pen: {(self._reward_scale('pelvis_lateral') * p_pelvis_lateral).mean().item():.4f} | "
                 f"vx: {root_lin_vel_b[:, 0].mean().item():.4f} | "
                 f"vy: {root_lin_vel_b[:, 1].mean().item():.4f} | "
+                f"left_y: {left_pos_b[:, 1].mean().item():.4f} | "
+                f"right_y: {right_pos_b[:, 1].mean().item():.4f} | "
+                f"width_raw: {step_width.mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
