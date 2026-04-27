@@ -73,10 +73,10 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     reset_mirror_prob: float = 0.0  # Keep disabled until the joint sign convention is verified.
 
     # Step width shaping.
-    target_step_width: float = 0.16
-    min_step_width: float = 0.10
-    target_foot_y_abs: float = 0.08
-    min_foot_y_abs: float = 0.05
+    target_step_width: float = 0.24
+    min_step_width: float = 0.18
+    target_foot_y_abs: float = 0.12
+    min_foot_y_abs: float = 0.09
     pelvis_lateral_center_weight: float = 1.0
 
     # Berkeley-style feet air-time reward settings.
@@ -118,9 +118,9 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "double_swing": 0.5,
         "bootstrap_lift": 0.3,
         "step_width": 2.0,
-        "narrow_step": 8.0,
+        "narrow_step": 20.0,
         "foot_side": 2.0,
-        "foot_centerline": 10.0,
+        "foot_centerline": 20.0,
         "pelvis_lateral": 4.0,
     }
 
