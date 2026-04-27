@@ -75,6 +75,9 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # Step width shaping.
     target_step_width: float = 0.16
     min_step_width: float = 0.10
+    target_foot_y_abs: float = 0.08
+    min_foot_y_abs: float = 0.05
+    pelvis_lateral_center_weight: float = 1.0
 
     # Berkeley-style feet air-time reward settings.
     feet_air_time_threshold_min: float = 0.12
@@ -106,7 +109,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "ang_vel": 0.10,
         "joint_vel": 0.02,
         "action_rate": 0.05,
-        "lin_vel_y": 1.5,
+        "lin_vel_y": 4.0,
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
         "pitch_lean": 0.5,
@@ -116,6 +119,9 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "bootstrap_lift": 0.3,
         "step_width": 2.0,
         "narrow_step": 8.0,
+        "foot_side": 2.0,
+        "foot_centerline": 10.0,
+        "pelvis_lateral": 4.0,
     }
 
     # Curriculum equivalent of modify_reward_weight(...).  The gait terms are
@@ -727,6 +733,22 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             min=0.0,
         )
 
+        left_y_abs = torch.abs(left_pos_b[:, 1])
+        right_y_abs = torch.abs(right_pos_b[:, 1])
+
+        r_foot_side = 0.5 * (
+                torch.exp(-40.0 * (left_y_abs - self.cfg.target_foot_y_abs) ** 2)
+                + torch.exp(-40.0 * (right_y_abs - self.cfg.target_foot_y_abs) ** 2)
+        )
+
+        p_foot_centerline = (
+                torch.clamp(self.cfg.min_foot_y_abs - left_y_abs, min=0.0)
+                + torch.clamp(self.cfg.min_foot_y_abs - right_y_abs, min=0.0)
+        )
+
+        foot_mid_y = 0.5 * (left_pos_b[:, 1] + right_pos_b[:, 1])
+        p_pelvis_lateral = foot_mid_y ** 2
+
         left_swing = (~left_contact) & right_contact
         right_swing = (~right_contact) & left_contact
         r_swing_clearance = command_active * (
@@ -762,6 +784,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "swing_clearance": r_swing_clearance,
             "bootstrap_lift": r_bootstrap_lift,
             "step_width": r_step_width,
+            "foot_side": r_foot_side,
         }
         penalty_terms = {
             "ang_vel": p_ang_vel,
@@ -775,6 +798,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "feet_slide": p_feet_slide,
             "double_swing": p_double_swing,
             "narrow_step": p_narrow_step,
+            "foot_centerline": p_foot_centerline,
+            "pelvis_lateral": p_pelvis_lateral,
         }
 
         reward = torch.zeros(self.num_envs, device=self.device)
@@ -810,6 +835,11 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"push_max: {self._current_push_velocity_xy:.2f} | "
                 f"step_width: {(self._reward_scale('step_width') * r_step_width).mean().item():.4f} | "
                 f"narrow_pen: {(self._reward_scale('narrow_step') * p_narrow_step).mean().item():.4f} | "
+                f"foot_side: {(self._reward_scale('foot_side') * r_foot_side).mean().item():.4f} | "
+                f"centerline_pen: {(self._reward_scale('foot_centerline') * p_foot_centerline).mean().item():.4f} | "
+                f"pelvis_lat_pen: {(self._reward_scale('pelvis_lateral') * p_pelvis_lateral).mean().item():.4f} | "
+                f"vx: {root_lin_vel_b[:, 0].mean().item():.4f} | "
+                f"vy: {root_lin_vel_b[:, 1].mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
