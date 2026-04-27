@@ -124,8 +124,8 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "foot_side": 2.0,
         "foot_centerline": 20.0,
         "pelvis_lateral": 4.0,
-        "air_time_imbalance": 2.0,
-        "contact_time_imbalance": 1.0,
+        # "air_time_imbalance": 2.0,
+        # "contact_time_imbalance": 1.0,
     }
 
     # Curriculum equivalent of modify_reward_weight(...).  The gait terms are
