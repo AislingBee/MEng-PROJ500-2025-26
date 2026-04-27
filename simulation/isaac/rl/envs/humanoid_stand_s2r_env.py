@@ -24,13 +24,14 @@ from ..interface.hardware_interface import ControlPacket
 from ..interface.isaac_hardware_interface import IsaacHardwareInterface
 
 
-USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "skeleton" / "skeleton.usd"
+USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "robot" / "robot.usd"
 
 
 @configclass
 class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     decimation: int = CONTRACT.decimation
     episode_length_s: float = 10.0
+    action_delay_steps: int = 1
 
     sim: SimulationCfg = SimulationCfg(
         dt=CONTRACT.sim_dt_s,
@@ -51,7 +52,7 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     default_command_value: float = CONTRACT.default_command_value
 
     usd_path: str = str(USD_PATH)
-    base_height: float = 0.0
+    base_height: float = 0.00
 
     upright_k: float = 8.0
     pose_k: float = 4.0
@@ -66,18 +67,18 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     tilt_limit: float = 0.25
 
     forbidden_body_names: tuple[str, ...] = (
-        "robot_l_hip_yaw_link",
-        "robot_r_hip_yaw_link",
-        "robot_l_hip_pitch_link",
-        "robot_r_hip_pitch_link",
-        "robot_l_thigh_link",
-        "robot_r_thigh_link",
-        "robot_l_shank_link",
-        "robot_r_shank_link",
-        "robot_l_ankle_link",
-        "robot_r_ankle_link",
+        "l_hip_yaw_link",
+        "r_hip_yaw_link",
+        "l_hip_pitch_link",
+        "r_hip_pitch_link",
+        "l_thigh_link",
+        "r_thigh_link",
+        "l_shank_link",
+        "r_shank_link",
+        "l_ankle_link",
+        "r_ankle_link",
     )
-    forbidden_body_height_limit: float = 0.075
+    forbidden_body_height_limit: float = -1.0
 
 
 class HumanoidStandEnvS2r(DirectRLEnv):
@@ -103,6 +104,11 @@ class HumanoidStandEnvS2r(DirectRLEnv):
 
         self._actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+        self._action_delay_steps = self.cfg.action_delay_steps
+        self._action_buffer = torch.zeros(
+            (self.num_envs, self._action_delay_steps + 1, self.num_dofs),
+            device=self.device,
+        )
         self._commands = torch.full(
             (self.num_envs, 1),
             fill_value=self.cfg.default_command_value,
@@ -150,11 +156,21 @@ class HumanoidStandEnvS2r(DirectRLEnv):
             dtype=torch.long,
         )
 
+        # From URDF fixed joint rpy="0 -1.5707963267948963 0"
+        # Quaternion order is [w, x, y, z]
+        self._root_to_imu_quat = torch.tensor(
+            # [0.7071068, 0.0, -0.7071068, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
+            dtype=torch.float32,
+            device=self.device,
+        )
+
         # Once the hardware data has been sorted, change this to = RobotHardwareInterface(...)
         self._hardware = IsaacHardwareInterface(
             robot=self.robot,
             joint_ids=self.joint_ids,
             device=self.device,
+            root_to_imu_quat=self._root_to_imu_quat,
         )
 
     def _setup_scene(self):
@@ -213,7 +229,13 @@ class HumanoidStandEnvS2r(DirectRLEnv):
             raise RuntimeError("NaN detected in actions")
 
         self._last_actions[:] = self._actions
-        self._actions = torch.clamp(actions, -1.0, 1.0)
+        actions = torch.clamp(actions, -1.0, 1.0)
+
+        self._action_buffer = torch.roll(self._action_buffer, shifts=1, dims=1)
+        self._action_buffer[:, 0, :] = actions
+
+        delayed_actions = self._action_buffer[:, self._action_delay_steps, :]
+        self._actions[:] = delayed_actions
 
     def _build_control_packet(self, env_ids: Sequence[int] | None = None) -> ControlPacket:
         if env_ids is None:
@@ -287,9 +309,10 @@ class HumanoidStandEnvS2r(DirectRLEnv):
     def _get_rewards(self) -> torch.Tensor:
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
-        root_quat_w = self.robot.data.root_quat_w
-        root_ang_vel_b = self.robot.data.root_ang_vel_b
-        projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
+
+        packet = self._hardware.read_observation_packet()
+        projected_gravity_b = packet.projected_gravity_b
+        imu_gyro_b = packet.imu_gyro_b
 
         q_err = q - self._standing_q.unsqueeze(0)
         action_rate = self._actions - self._last_actions
@@ -299,7 +322,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         r_upright = torch.exp(-self.cfg.upright_k * tilt_metric)
         r_pose = torch.exp(-self.cfg.pose_k * torch.mean(q_err ** 2, dim=1))
 
-        p_ang_vel = torch.mean(root_ang_vel_b ** 2, dim=1)
+        p_ang_vel = torch.mean(imu_gyro_b ** 2, dim=1)
         p_joint_vel = torch.mean(qd ** 2, dim=1)
         p_action_rate = torch.mean(action_rate ** 2, dim=1)
         survival_reward = 0.2
@@ -321,8 +344,9 @@ class HumanoidStandEnvS2r(DirectRLEnv):
     def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
         q = self.robot.data.joint_pos
         qd = self.robot.data.joint_vel
-        root_quat_w = self.robot.data.root_quat_w
-        projected_gravity_b = quat_rotate_inverse(root_quat_w, self._gravity_vec_w)
+
+        packet = self._hardware.read_observation_packet()
+        projected_gravity_b = packet.projected_gravity_b
         tilt_metric = torch.sum(projected_gravity_b[:, :2] ** 2, dim=1)
         over_tilted = tilt_metric > self.cfg.tilt_limit
 
@@ -339,7 +363,29 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         )
 
         terminated = over_tilted | bad_state | body_hit_ground
+        # terminated = bad_state | body_hit_ground
         time_out = self.episode_length_buf >= self.max_episode_length - 1
+
+        # if torch.any(over_tilted | bad_state | body_hit_ground):
+        #     idx = torch.where(over_tilted | bad_state | body_hit_ground)[0][0]
+        #
+        #     print("\n=== RESET DEBUG ===")
+        #     print(f"env_id: {idx.item()}")
+        #     print(f"over_tilted      : {over_tilted[idx].item()}")
+        #     print(f"bad_state        : {bad_state[idx].item()}")
+        #     print(f"body_hit_ground  : {body_hit_ground[idx].item()}")
+        #     print(f"tilt_metric      : {tilt_metric[idx].item()}")
+        #
+        #     print(f"root_z           : {self.robot.data.root_pos_w[idx, 2].item()}")
+        #
+        #     body_heights = self.robot.data.body_pos_w[idx, self._forbidden_body_ids, 2]
+        #     print(f"min_body_z       : {body_heights.min().item()}")
+        #
+        #     print(f"projected_gravity_b: {projected_gravity_b[idx].detach().cpu().numpy()}")
+        #     print(f"root_quat_w        : {self.robot.data.root_quat_w[idx].detach().cpu().numpy()}")
+        #
+        #     print("===================\n")
+
         return terminated, time_out
 
     def _reset_idx(self, env_ids: Sequence[int] | None):
@@ -374,6 +420,9 @@ class HumanoidStandEnvS2r(DirectRLEnv):
 
         self._actions[env_ids] = 0.0
         self._last_actions[env_ids] = 0.0
+        self._action_buffer[env_ids] = 0.0
         self._joint_pos_targets[env_ids] = joint_pos
         self._q_des[env_ids] = joint_pos
         self._tau_ff[env_ids] = 0.0
+
+        # print("Reset!-----------------------------------------")

@@ -11,8 +11,8 @@ from __future__ import annotations
 WALKING_ACTUATOR_SETTINGS = {
     "pelvis_yaw": {
         "joint_names": [
-            "robot_pelvis_link_l_yaw_joint",
-            "robot_pelvis_link_r_yaw_joint",
+            "pelvis_link_l_yaw_joint",
+            "pelvis_link_r_yaw_joint",
         ],
         "saturation_effort": 120.0,
         "effort_limit": 50.0,
@@ -28,8 +28,8 @@ WALKING_ACTUATOR_SETTINGS = {
     },
     "hip_yaw": {
         "joint_names": [
-            "robot_l_hip_yaw_link_l_pitch_joint",
-            "robot_r_hip_yaw_link_r_pitch_joint",
+            "l_hip_yaw_link_l_pitch_joint",
+            "r_hip_yaw_link_r_pitch_joint",
         ],
         "saturation_effort": 120.0,
         "effort_limit": 80.0,
@@ -45,8 +45,8 @@ WALKING_ACTUATOR_SETTINGS = {
     },
     "hip_roll": {
         "joint_names": [
-            "robot_l_hip_pitch_link_l_roll_joint",
-            "robot_r_hip_pitch_link_r_roll_joint",
+            "l_hip_pitch_link_l_roll_joint",
+            "r_hip_pitch_link_r_roll_joint",
         ],
         "saturation_effort": 120.0,
         "effort_limit": 75.0,
@@ -62,8 +62,8 @@ WALKING_ACTUATOR_SETTINGS = {
     },
     "knees": {
         "joint_names": [
-            "robot_l_thigh_link_l_knee_joint",
-            "robot_r_thigh_link_r_knee_joint",
+            "l_thigh_link_l_knee_joint",
+            "r_thigh_link_r_knee_joint",
         ],
         "saturation_effort": 120.0,
         "effort_limit": 90.0,
@@ -79,16 +79,16 @@ WALKING_ACTUATOR_SETTINGS = {
     },
     "ankle_pitch": {
         "joint_names": [
-            "robot_l_shank_link_l_ankle_joint",
-            "robot_r_shank_link_r_ankle_joint",
+            "l_shank_link_l_ankle_joint",
+            "r_shank_link_r_ankle_joint",
         ],
         "saturation_effort": 120.0,
-        "effort_limit": 60.0,
-        "effort_limit_sim": 60.0,
+        "effort_limit": 100.0,
+        "effort_limit_sim": 100.0,
         "velocity_limit": 10.0,
         "velocity_limit_sim": 10.0,
-        "stiffness": 160.0,
-        "damping": 6.0,
+        "stiffness": 300.0,
+        "damping": 12.0,
         "armature": 0.04,
         "friction": 0.2,
         "dynamic_friction": 0.0,
@@ -96,8 +96,8 @@ WALKING_ACTUATOR_SETTINGS = {
     },
     "ankle_roll": {
         "joint_names": [
-            "robot_l_ankle_link_l_foot_joint",
-            "robot_r_ankle_link_r_foot_joint",
+            "l_ankle_link_l_foot_joint",
+            "r_ankle_link_r_foot_joint",
         ],
         "saturation_effort": 120.0,
         "effort_limit": 40.0,

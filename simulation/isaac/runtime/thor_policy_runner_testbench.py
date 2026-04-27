@@ -58,12 +58,13 @@ def fake_state_reader() -> RobotStateSample:
 
 
 def fake_command_writer(msg: RobotCommandMessage) -> None:
-    print("\n--- Command written ---")
-    print("joint_names:", msg.joint_names)
-    print("q_des min/max:", min(msg.q_des), max(msg.q_des))
-    print("first 4 q_des:", msg.q_des[:4])
-    print("first 4 kp:", msg.kp[:4])
-    print("first 4 kd:", msg.kd[:4])
+    # print("\n--- Command written ---")
+    # print("joint_names:", msg.joint_names)
+    # print("q_des min/max:", min(msg.q_des), max(msg.q_des))
+    # print("first 4 q_des:", msg.q_des[:4])
+    # print("first 4 kp:", msg.kp[:4])
+    # print("first 4 kd:", msg.kd[:4])
+    pass
 
 
 TEST_CASES = [
@@ -121,6 +122,8 @@ def main() -> None:
         device="cpu",
         loop_hz=contract_defaults["loop_hz"],
         command_value=contract_defaults["command_value"],
+        debug_print=True,
+        debug_print_every_n_steps=1,
     )
 
     hardware_cfg = RobotInterfaceConfig(
@@ -171,35 +174,42 @@ def main() -> None:
     #
     #     time.sleep(1.0 / runner_cfg.loop_hz)
 
-    print("\n--- STAGE B: CONTROLLED VALIDATION ---")
-    print("joint order from runner:")
-    for i, name in enumerate(joint_names):
-        print(f"{i:02d}: {name}")
+    # print("\n--- STAGE B: CONTROLLED VALIDATION ---")
+    # print("joint order from runner:")
+    # for i, name in enumerate(joint_names):
+    #     print(f"{i:02d}: {name}")
+    #
+    # for case in TEST_CASES:
+    #     global TEST_CASE
+    #     TEST_CASE = case
+    #
+    #     print(f"\n===== CASE: {case['name']} =====")
+    #     obs = runner.build_observation()
+    #     actions = runner.policy.act(obs)
+    #     packet = runner.generate_control_packet(actions)
+    #
+    #     print("obs shape:", tuple(obs.shape))
+    #     print("actions:", actions)
+    #     print("actions min/max:", actions.min().item(), actions.max().item())
+    #     print("q_des min/max:", packet.q_des.min().item(), packet.q_des.max().item())
+    #
+    #     q_rel = obs[:, :12]
+    #     print("q_rel full:", q_rel)
+    #     print("q_rel knee joints:", q_rel[0, 6], q_rel[0, 7])
+    #
+    #     gravity_slice = obs[:, 36:39]
+    #     gyro_slice = obs[:, 39:42]
+    #     print("gravity in obs:", gravity_slice)
+    #     print("gyro in obs:", gyro_slice)
 
-    for case in TEST_CASES:
-        global TEST_CASE
-        TEST_CASE = case
+    # runner.step() # 1 Step
 
-        print(f"\n===== CASE: {case['name']} =====")
-        obs = runner.build_observation()
-        actions = runner.policy.act(obs)
-        packet = runner.generate_control_packet(actions)
+    # Multiple steps
+    print("\n--- DEBUG LOOP TEST ---")
 
-        print("obs shape:", tuple(obs.shape))
-        print("actions:", actions)
-        print("actions min/max:", actions.min().item(), actions.max().item())
-        print("q_des min/max:", packet.q_des.min().item(), packet.q_des.max().item())
-
-        q_rel = obs[:, :12]
-        print("q_rel full:", q_rel)
-        print("q_rel knee joints:", q_rel[0, 6], q_rel[0, 7])
-
-        gravity_slice = obs[:, 36:39]
-        gyro_slice = obs[:, 39:42]
-        print("gravity in obs:", gravity_slice)
-        print("gyro in obs:", gyro_slice)
-
+    for i in range(10):
         runner.step()
+        time.sleep(1.0 / runner_cfg.loop_hz)
 
 
 
