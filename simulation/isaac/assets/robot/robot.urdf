@@ -1,20 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
-<robot name="robot">
-    <link name="root" />
+<robot name="robot_final">
     <link name="imu_link">
         <inertial>
-            <origin xyz="-1.5026528643602432e-09 9.498352104841956e-10 1.0161999197677574e-09" rpy="0 0 0" />
+            <origin xyz="-1.5026528643602432e-09 9.498352104841956e-10 1.01619994641311e-09" rpy="0 0 0" />
             <mass value="4.0212385965949355e-08" />
-            <inertia ixx="6.433981754576942e-14" iyy="6.433981754628641e-14" izz="6.43398175467e-14" ixy="-5.169878828456423e-26" iyz="6.462348535569894e-27" ixz="-2.0313346132562858e-29" />
+            <inertia ixx="6.433981754593745e-14" iyy="6.43398175467e-14" izz="6.43398175467e-14" ixy="-5.169878828456415e-26" iyz="-6.462348535570512e-27" ixz="-5.171910163069684e-26" />
         </inertial>
         <visual name="imu_link_visual">
-            <origin xyz="-0.03699100341761863 0.24384999549936293 -0.007599998813926423" rpy="1.5707963267948952 1.5707963267948948 0" />
+            <origin xyz="-0.03699100341761863 0.24384999549936293 -0.007599998813926394" rpy="1.5707963267948952 1.5707963267948948 0" />
             <geometry>
                 <mesh filename="meshes/imu_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="imu_link_collision">
-            <origin xyz="-0.03699100341761863 0.24384999549936293 -0.007599998813926423" rpy="1.5707963267948952 1.5707963267948948 0" />
+            <origin xyz="-0.03699100341761863 0.24384999549936293 -0.007599998813926394" rpy="1.5707963267948952 1.5707963267948948 0" />
             <geometry>
                 <mesh filename="meshes/imu_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
@@ -22,18 +21,18 @@
     </link>
     <link name="torso_link">
         <inertial>
-            <origin xyz="0.01593222156183444 -3.145450797484451e-05 0.20663353936107798" rpy="0 0 0" />
-            <mass value="11.977159824591427" />
-            <inertia ixx="0.24915534005794093" iyy="0.21206568686277028" izz="0.1485094454191971" ixy="0.0016001862485177179" iyz="0.007735516153497295" ixz="0.00012734147855406172" />
+            <origin xyz="-0.2500314566642763 0.20573512006230418 0.07712885689691731" rpy="0 0 0" />
+            <mass value="11.97706793583374" />
+            <inertia ixx="0.21206202309026484" iyy="0.14850945139614452" izz="0.24915120840316296" ixy="0.0077355155579544145" iyz="0.00011903851407157235" ixz="0.0016001875161830153" />
         </inertial>
         <visual name="torso_link_visual">
-            <origin xyz="-0.06119999999684114 0.25000000191496574 0.000900000000000174" rpy="1.5707963267948968 0 1.5707963267948972" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
                 <mesh filename="meshes/torso_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="torso_link_collision">
-            <origin xyz="-0.06119999999684114 0.25000000191496574 0.000900000000000174" rpy="1.5707963267948968 0 1.5707963267948972" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
                 <mesh filename="meshes/torso_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
@@ -41,18 +40,18 @@
     </link>
     <link name="pelvis_link">
         <inertial>
-            <origin xyz="1.1402650899611848e-10 2.026382982335143e-06 0.0012389964670407039" rpy="0 0 0" />
+            <origin xyz="-0.0005020263799161304 -0.013761003532959296 -1.2168622624740957e-10" rpy="0 0 0" />
             <mass value="0.6794274689016202" />
-            <inertia ixx="0.0005817195626032596" iyy="0.005653686551697903" izz="0.006193908913931396" ixy="3.946391888010182e-13" iyz="-8.620055385539157e-09" ixz="-4.724706015143538e-13" />
+            <inertia ixx="0.005653686551697865" iyy="0.006193908913931396" izz="0.0005817195626032557" ixy="8.620055385539129e-09" iyz="4.724706015103147e-13" ixz="3.9463681321676013e-13" />
         </inertial>
         <visual name="pelvis_link_visual">
-            <origin xyz="0 0 0" rpy="0 0 0" />
+            <origin xyz="-0.0004999999969337953 -0.015 -7.659717252240557e-12" rpy="-1.5707963267948966 1.5707963267948961 0" />
             <geometry>
                 <mesh filename="meshes/pelvis_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="pelvis_link_collision">
-            <origin xyz="0 0 0" rpy="0 0 0" />
+            <origin xyz="-0.0004999999969337953 -0.015 -7.659717252240557e-12" rpy="-1.5707963267948966 1.5707963267948961 0" />
             <geometry>
                 <mesh filename="meshes/pelvis_link.stl" scale="0.001 0.001 0.001" />
             </geometry>
@@ -286,26 +285,15 @@
             </geometry>
         </collision>
     </link>
-    
-    <joint name="root" type="fixed">
-        <parent link="root" />
-        <child link="pelvis_link" />
-        <origin xyz="0 0 0.84" rpy="0 0 1.57079632679" />
-    </joint>
-    <joint name="pelvis_link_torso_joint" type="fixed">
-        <origin xyz="-7.659717486428201e-12 -0.0004999999969337935 0.015" rpy="0 0 -1.570796326794897" />
-        <parent link="pelvis_link" />
-        <child link="torso_link" />
-    </joint>
     <joint name="pelvis_link_l_yaw_joint" type="revolute">
-        <origin xyz="0.11999999999233989 3.066148575681922e-12 -0.012" rpy="-3.1415926535897754 0 -1.570796326794897" />
+        <origin xyz="-0.0005 -0.027000000000000003 -0.12" rpy="1.5707963267949145 0 0" />
         <parent link="pelvis_link" />
         <child link="l_hip_yaw_link" />
         <axis xyz="0 0 1.0" />
         <limit lower="-0.523599" upper="0.523599" effort="1000000" velocity="1000000" />
     </joint>
     <joint name="pelvis_link_r_yaw_joint" type="revolute">
-        <origin xyz="-0.12000000000765933 3.0662609857631655e-12 -0.012" rpy="-3.1415926535897754 0 -1.570796326794897" />
+        <origin xyz="-0.0005 -0.027000000000000003 0.12" rpy="1.5707963267949145 0 0" />
         <parent link="pelvis_link" />
         <child link="r_hip_yaw_link" />
         <axis xyz="0 0 -1.0" />
@@ -382,8 +370,13 @@
         <limit lower="-0.349066" upper="0.349066" effort="1000000" velocity="1000000" />
     </joint>
     <joint name="torso_link_imu_joint" type="fixed">
-        <origin xyz="-0.008200000000000002 0.03699099999999994 0.22879999" rpy="0 -1.5707963267948963 0" />
+        <origin xyz="-0.21300900191496547 0.22789999000000002 0.05299999999684098" rpy="3.1415926535897913 0 1.5707963267948963" />
         <parent link="torso_link" />
         <child link="imu_link" />
+    </joint>
+    <joint name="torso_link_torso_joint" type="fixed">
+        <origin xyz="-0.2500000019149655 -0.0009000000000000097 0.08679999999684095" rpy="0 -1.5707963267948963 0" />
+        <parent link="torso_link" />
+        <child link="pelvis_link" />
     </joint>
 </robot>
