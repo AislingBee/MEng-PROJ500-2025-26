@@ -116,8 +116,10 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "lin_vel_y": 4.0,
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
-        "pitch_lean": 0.5,
+        "pitch_lean": 2.0,
         "backward_vel": 0.5,
+        "torso_forward": 3.0,
+        "backward_torso": 4.0,
         "feet_slide": 2.5,
         "double_swing": 0.5,
         "bootstrap_lift": 0.3,
@@ -716,6 +718,21 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         # Forward-only walking: do not reward overspeeding, but punish being below command.
         lin_vel_error = self._commands[:, 0] - root_lin_vel_b[:, 0]
         r_vel_track = torch.exp(-self.cfg.vel_tracking_k * lin_vel_error ** 2)
+
+        # Reward actual torso/root forward motion.
+        r_torso_forward = command_active * torch.clamp(
+            root_lin_vel_b[:, 0],
+            min=0.0,
+            max=0.25,
+        )
+
+        # Penalise torso/root moving backwards.
+        p_backward_torso = command_active * torch.clamp(
+            -root_lin_vel_b[:, 0],
+            min=0.0,
+            max=0.5,
+        )
+
         r_pose = torch.exp(-self.cfg.pose_k * torch.mean(q_err**2, dim=1))
 
         r_feet_air_time = self._compute_feet_air_time_reward(left_contact, right_contact, command_active)
@@ -853,6 +870,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "single_stance": r_single_stance,
             "swing_clearance": r_swing_clearance,
             "com_align": r_com_align,
+            "torso_forward": r_torso_forward,
             "forward_step": r_forward_step,
             "bootstrap_lift": r_bootstrap_lift,
             "step_width": r_step_width,
@@ -868,6 +886,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "roll_lean": p_roll_lean,
             "pitch_lean": p_pitch_lean,
             "backward_vel": p_backward_vel,
+            "backward_torso": p_backward_torso,
             "feet_slide": p_feet_slide,
             "double_swing": p_double_swing,
             "narrow_step": p_narrow_step,
@@ -918,11 +937,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"pelvis_lat_pen: {(self._reward_scale('pelvis_lateral') * p_pelvis_lateral).mean().item():.4f} | "
                 f"com_align: {(self._reward_scale('com_align') * r_com_align).mean().item():.4f} | "
                 f"bad_shift: {(self._reward_scale('bad_weight_shift') * p_bad_weight_shift).mean().item():.4f} | "
+                f"torso_fwd: {(self._reward_scale('torso_forward') * r_torso_forward).mean().item():.4f} | "
+                f"back_torso: {(self._reward_scale('backward_torso') * p_backward_torso).mean().item():.4f} | "
                 f"foot_tilt: {(self._reward_scale('foot_tilt') * p_foot_tilt).mean().item():.4f} | "
                 f"forward_step: {(self._reward_scale('forward_step') * r_forward_step).mean().item():.4f} | "
                 f"lateral_step: {(self._reward_scale('lateral_step') * p_lateral_step).mean().item():.4f} | "
                 f"vx: {root_lin_vel_b[:, 0].mean().item():.4f} | "
                 f"vy: {root_lin_vel_b[:, 1].mean().item():.4f} | "
+                f"pitch_g: {projected_gravity_b[:, 0].mean().item():.4f} | "
                 f"left_y: {left_pos_b[:, 1].mean().item():.4f} | "
                 f"right_y: {right_pos_b[:, 1].mean().item():.4f} | "
                 f"com_l: {com_to_left_foot_y.mean().item():.4f} | "
