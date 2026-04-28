@@ -31,12 +31,20 @@ class IsaacHardwareInterface(BaseHardwareInterface):
             dtype=torch.float32,
         ).view(1, 4)
 
+        # self._noise_cfg = {
+        #     "joint_pos": AdditiveGaussianNoiseCfg(std=0.0035),
+        #     "joint_vel": AdditiveGaussianNoiseCfg(std=0.045),
+        #     "joint_effort": AdditiveGaussianNoiseCfg(std=0.8),
+        #     "gravity": AdditiveGaussianNoiseCfg(std=0.022),
+        #     "gyro": AdditiveGaussianNoiseCfg(std=0.035),
+        # }
+
         self._noise_cfg = {
-            "joint_pos": AdditiveGaussianNoiseCfg(std=0.0035),
-            "joint_vel": AdditiveGaussianNoiseCfg(std=0.045),
-            "joint_effort": AdditiveGaussianNoiseCfg(std=0.8),
-            "gravity": AdditiveGaussianNoiseCfg(std=0.022),
-            "gyro": AdditiveGaussianNoiseCfg(std=0.035),
+            "joint_pos": AdditiveGaussianNoiseCfg(std=0.0),
+            "joint_vel": AdditiveGaussianNoiseCfg(std=0.0),
+            "joint_effort": AdditiveGaussianNoiseCfg(std=0.0),
+            "gravity": AdditiveGaussianNoiseCfg(std=0.0),
+            "gyro": AdditiveGaussianNoiseCfg(std=0.0),
         }
 
     def _resolve_env_ids(self, env_ids: Sequence[int] | None) -> torch.Tensor:
