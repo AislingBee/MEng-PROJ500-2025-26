@@ -1,0 +1,4 @@
+../Core/Src/fpga_mon.c:61:13:fpga_read_regs	1
+../Core/Src/fpga_mon.c:73:6:fpga_mon_init	1
+../Core/Src/fpga_mon.c:79:6:fpga_mon_tick	4
+../Core/Src/fpga_mon.c:124:24:fpga_mon_get	1

@@ -1,0 +1,129 @@
+!SESSION 2026-04-14 05:27:31.904 -----------------------------------------------
+eclipse.buildId=Version 2.1.1
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_GB
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data C:\Users\charl\Documents\STM32Cube\Workspace1
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-04-14 05:27:35.214
+!MESSAGE Log4j2 initialized with config file C:\Users\charl\Documents\STM32Cube\Workspace1\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-04-14 05:27:37.297
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 05:27:51.376
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+COM6
+COM5
+COM8
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 05:27:51.376
+!MESSAGE port: COM6
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 05:27:51.377
+!MESSAGE port: COM5
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 05:27:51.377
+!MESSAGE port: COM8
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-04-14 05:28:39.237
+!MESSAGE Indexed 'PDU_MCU_V1' (32 sources, 93 headers) in 2.21 sec: 9,943 declarations; 84,519 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0021%)
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.swv 1 1 2026-04-14 05:30:32.907
+!MESSAGE SWV configuration; base: 36000000; minDiv: 18; maxDiv: 65535; maxSWO: 2000000; limit: 2000000 => SWO: 2000000; CPU: 16000000; div: 8
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.swv 1 1 2026-04-14 05:32:21.349
+!MESSAGE SWV configuration; base: 36000000; minDiv: 18; maxDiv: 65535; maxSWO: 2000000; limit: 2000000 => SWO: 2000000; CPU: 16000000; div: 8
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.swv 1 1 2026-04-14 05:33:28.437
+!MESSAGE SWV configuration; base: 36000000; minDiv: 18; maxDiv: 65535; maxSWO: 2000000; limit: 2000000 => SWO: 2000000; CPU: 16000000; div: 8
+!SESSION 2026-04-14 19:52:36.529 -----------------------------------------------
+eclipse.buildId=Version 2.1.1
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_GB
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-04-14 19:52:43.036
+!MESSAGE Log4j2 initialized with config file C:\Users\charl\Documents\STM32Cube\Workspace1\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-04-14 19:52:48.756
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 19:53:03.124
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+COM6
+COM5
+COM8
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 19:53:03.124
+!MESSAGE port: COM6
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 19:53:03.125
+!MESSAGE port: COM5
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 19:53:03.125
+!MESSAGE port: COM8
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 20:02:16.771
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+COM6
+COM5
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 20:02:16.771
+!MESSAGE port: COM6
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 20:02:16.772
+!MESSAGE port: COM5
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 20:02:42.401
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+COM6
+COM5
+COM8
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 20:02:42.401
+!MESSAGE port: COM6
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 20:02:42.402
+!MESSAGE port: COM5
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-04-14 20:02:42.402
+!MESSAGE port: COM8
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:15.577
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:15.578
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:15.615
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:15.938
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:16.176
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:16.177
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-04-14 20:18:18.574
+!MESSAGE Indexed 'PDU_MCU_V1' (31 sources, 128 headers) in 2.37 sec: 11,939 declarations; 54,043 references; 3 unresolved inclusions; 490 syntax errors; 9,484 unresolved names (13%)
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:25.752
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:25.753
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:25.802
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329
+
+!ENTRY com.st.stm32cube.ide.mcu.toolchain.arm-none 4 4 2026-04-14 20:18:25.803
+!MESSAGE Failed to get MCU from name "" in toolchain com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.1541168329

@@ -1,0 +1,17 @@
+../Core/Src/mcan_pdu.c:63:16:unpack_be16	1
+../Core/Src/mcan_pdu.c:68:13:fdcan2_send	1
+../Core/Src/mcan_pdu.c:83:13:handle_rx	8
+../Core/Src/mcan_pdu.c:151:6:mcan_pdu_init	1
+../Core/Src/mcan_pdu.c:178:6:mcan_pdu_tick	4
+../Core/Src/mcan_pdu.c:197:20:mcan_pdu_get_telem	1
+../Core/Src/mcan_pdu.c:202:6:mcan_pdu_send_aux_cmd	1
+../Core/Src/mcan_pdu.c:209:6:mcan_pdu_send_fault_req	2
+../Core/Src/mcan_pdu.c:225:22:st_mcan_get_fdcan	1
+../Core/Src/mcan_pdu.c:226:6:st_mcan_transceiver_set	1
+../Core/Src/mcan_pdu.c:231:10:st_mcan_get_summary_code	1
+../Core/Src/mcan_pdu.c:232:10:st_mcan_get_status_word	1
+../Core/Src/mcan_pdu.c:233:10:st_mcan_local_mask_from_selector	1
+../Core/Src/mcan_pdu.c:234:6:st_mcan_on_start_remote_selftest	1
+../Core/Src/mcan_pdu.c:235:6:st_mcan_action_led_set	1
+../Core/Src/mcan_pdu.c:236:6:st_mcan_action_buzzer_set	1
+../Core/Src/mcan_pdu.c:237:6:st_dbg_printf	2

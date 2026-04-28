@@ -1,0 +1,16 @@
+../Core/Src/eth_stack.c:128:17:inet_checksum	4
+../Core/Src/eth_stack.c:140:17:udp_checksum	4
+../Core/Src/eth_stack.c:166:13:eth_tx	2
+../Core/Src/eth_stack.c:230:13:handle_arp	5
+../Core/Src/eth_stack.c:265:13:handle_icmp	8
+../Core/Src/eth_stack.c:315:13:handle_udp	9
+../Core/Src/eth_stack.c:374:13:eth_process_frame	10
+../Core/Src/eth_stack.c:412:13:phy_read	1
+../Core/Src/eth_stack.c:417:13:phy_detect	8
+../Core/Src/eth_stack.c:436:6:eth_stack_init	14
+../Core/Src/eth_stack.c:520:6:eth_stack_poll	4
+../Core/Src/eth_stack.c:534:6:eth_stack_stop	2
+../Core/Src/eth_stack.c:543:6:eth_stack_is_up	1
+../Core/Src/eth_stack.c:545:6:eth_stack_udp_echo_set	2
+../Core/Src/eth_stack.c:552:6:eth_stack_print_ip	2
+../Core/Src/eth_stack.c:558:6:eth_stack_print_stats	1

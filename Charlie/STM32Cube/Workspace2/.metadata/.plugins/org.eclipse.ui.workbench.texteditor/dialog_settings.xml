@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="hasShownOverlayPopupBefore" value="true"/>
+	<item key="replaceBarOpen" value="false"/>
+	<list key="searchhistory">
+		<item value=" {&quot;IDLE&quot;,&quot;PRECHARGE&quot;,&quot;ARMED&quot;,&quot;COMPUTE&quot;};"/>
+		<item value="char *const k_fpga_state_names[4] = {&quot;IDLE&quot;,&quot;PRECHARGE&quot;,&quot;ARMED&quot;,&quot;COMPUTE&quot;};"/>
+		<item value="static const char *const k_fpga_sta\"/>
+		<item value="static const char *const k_fpga_state_names[4]"/>
+		<item value="static const char *const k_fpga_state_names[4] = "/>
+		<item value="static const char *const k_fpga_state_names[4] = {&quot;IDLE&quot;,&quot;PRECH"/>
+		<item value="static const char *const k_fpga_state_names[4] = {&quot;IDLE&quot;,&quot;PRECHARGE&quot;,&quot;ARMED&quot;,&quot;COMPUTE&quot;}"/>
+		<item value="static const char *const k_fpga_state_names[4] = {&quot;IDLE&quot;,&quot;PRECHARGE&quot;,&quot;ARMED&quot;,&quot;COMPUTE&quot;};"/>
+		<item value="static const char * const k_fpga_state_names[] = {&quot;IDLE&quot;,&quot;PRECHARGE&quot;,&quot;ARMED&quot;,&quot;COMPUTE&quot;};"/>
+		<item value="void RCU_SelfTest_Task"/>
+		<item value="void st_mcan"/>
+		<item value="mcan"/>
+		<item value="clear"/>
+		<item value="test_buzzer_poll"/>
+		<item value="test_gpio_poll"/>
+	</list>
+</section>
