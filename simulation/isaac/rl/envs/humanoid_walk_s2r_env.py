@@ -109,7 +109,8 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "single_stance": 3.0,
         "swing_clearance": 1.0,
         "com_align": 0.5,
-        "forward_step": 3.0,
+        "forward_step": 1.5,
+        "torso_forward": 4.0,
         "forward_com_progress": 0.5,
         "ang_vel": 0.10,
         "joint_vel": 0.02,
@@ -125,8 +126,8 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "bad_weight_shift": 1.0,
         "foot_tilt": 4.0,
         "lateral_step": 6.0,
-        "overextended_step": 4.0,
-        "feet_ahead": 2.0,
+        "overextended_step": 6.0,
+        "feet_ahead": 4.0,
         "foot_clearance_extra": 1.0,
         "step_width": 2.0,
         "narrow_step": 20.0,
@@ -720,6 +721,12 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         # Forward-only walking: do not reward overspeeding, but punish being below command.
         lin_vel_error = self._commands[:, 0] - root_lin_vel_b[:, 0]
         r_vel_track = torch.exp(-self.cfg.vel_tracking_k * lin_vel_error ** 2)
+        # Reward actual torso/root forward motion, not just swing-foot reach.
+        r_torso_forward = command_active * torch.clamp(
+            root_lin_vel_b[:, 0],
+            min=0.0,
+            max=0.25,
+        )
         r_pose = torch.exp(-self.cfg.pose_k * torch.mean(q_err**2, dim=1))
 
         r_feet_air_time = self._compute_feet_air_time_reward(left_contact, right_contact, command_active)
@@ -887,6 +894,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         positive_terms = {
             "vel_track": r_vel_track,
+            "torso_forward": r_torso_forward,
             "upright": r_upright,
             "survival": survival_term,
             "pose": r_pose,
@@ -946,6 +954,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             print(
                 "reward contrib | "
                 f"vel: {(self._reward_scale('vel_track') * r_vel_track).mean().item():.4f} | "
+                f"torso_fwd: {(self._reward_scale('torso_forward') * r_torso_forward).mean().item():.4f} | "
                 f"upright: {(self._reward_scale('upright') * r_upright).mean().item():.4f} | "
                 f"air_time: {(self._reward_scale('feet_air_time') * r_feet_air_time).mean().item():.4f} | "
                 f"single_stance: {(self._reward_scale('single_stance') * r_single_stance).mean().item():.4f} | "
