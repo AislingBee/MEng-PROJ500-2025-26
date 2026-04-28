@@ -23,12 +23,12 @@ from simulation.isaac.configuration.walking_actuator_config import (
 
 
 ACTION_SCALE: Final[tuple[float, ...]] = (
-    0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
-    0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
+    0.15, 0.14, 0.20, 0.25, 0.18, 0.08,
+    0.15, 0.14, 0.20, 0.25, 0.18, 0.08,
 )
 
-SIM_DT_S: Final[float] = 1.0 / 120.0
-DECIMATION: Final[int] = 2
+SIM_DT_S: Final[float] = 1.0 / 200.0
+DECIMATION: Final[int] = 1
 POLICY_LOOP_HZ: Final[float] = 1.0 / (SIM_DT_S * DECIMATION)
 
 DEFAULT_COMMAND_VALUE: Final[float] = 0.0

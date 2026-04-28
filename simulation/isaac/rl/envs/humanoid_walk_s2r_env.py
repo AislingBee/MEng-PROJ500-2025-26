@@ -64,19 +64,28 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     command_curriculum_interval_steps: int = 2000
     command_curriculum_success_threshold: float = 0.70
     zero_command_prob: float = 0.0
-    enable_command_curriculum: bool = True
+    enable_command_curriculum: bool = False
 
     # Contact / gait logic.
     contact_force_threshold: float = 2.0
     foot_slide_contact_threshold: float = 1.0
-    command_active_threshold: float = 0.10
+    command_active_threshold: float = 0.02
     reset_mirror_prob: float = 0.0  # Keep disabled until the joint sign convention is verified.
+
+    # Step width shaping.
+    target_step_width: float = 0.24
+    min_step_width: float = 0.18
+    target_foot_y_abs: float = 0.12
+    min_foot_y_abs: float = 0.09
+    pelvis_lateral_center_weight: float = 1.0
 
     # Berkeley-style feet air-time reward settings.
     feet_air_time_threshold_min: float = 0.12
     feet_air_time_threshold_max: float = 0.45
     single_stance_threshold_min: float = 0.04
     single_stance_threshold_max: float = 0.35
+
+
 
     # Additional swing shaping.  This is kept light because the contact-time
     # reward should drive stepping; clearance only discourages toe dragging.
@@ -92,28 +101,41 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # now contact-time based, not hand-built touchdown logic.  This mirrors the
     # Berkeley reward scripts more closely for a biped.
     reward_scales = {
-        "vel_track": 3.0,
+        "vel_track": 1.5,
         "upright": 1.0,
         "survival": 0.5,
         "pose": 0.05,
-        "feet_air_time": 1.25,
-        "single_stance": 0.75,
-        "swing_clearance": 0.35,
+        "feet_air_time": 4.0,
+        "single_stance": 3.0,
+        "swing_clearance": 1.0,
+        "com_align": 1.0,
+        "forward_step": 3.0,
         "ang_vel": 0.10,
         "joint_vel": 0.02,
         "action_rate": 0.05,
-        "lin_vel_y": 1.5,
+        "lin_vel_y": 4.0,
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
         "pitch_lean": 0.5,
         "backward_vel": 0.5,
-        "feet_slide": 1.0,
+        "feet_slide": 2.5,
         "double_swing": 0.5,
+        "bootstrap_lift": 0.3,
+        "bad_weight_shift": 2.0,
+        "foot_tilt": 4.0,
+        "lateral_step": 6.0,
+        "step_width": 2.0,
+        "narrow_step": 20.0,
+        "foot_side": 2.0,
+        "foot_centerline": 20.0,
+        "pelvis_lateral": 4.0,
+        # "air_time_imbalance": 2.0,
+        # "contact_time_imbalance": 1.0,
     }
 
     # Curriculum equivalent of modify_reward_weight(...).  The gait terms are
     # ramped in after the policy can stand and track low forward speed.
-    enable_reward_curriculum: bool = True
+    enable_reward_curriculum: bool = False
     reward_curriculum_start_step: int = 1000
     reward_curriculum_ramp_steps: int = 4000
     reward_curriculum_terms = (
@@ -673,8 +695,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         foot_kin = self._get_foot_kinematics()
         left_pos_w = foot_kin["left_pos_w"]
         right_pos_w = foot_kin["right_pos_w"]
+        left_pos_b = foot_kin["left_pos_b"]
+        right_pos_b = foot_kin["right_pos_b"]
         left_vel_w = foot_kin["left_vel_w"]
         right_vel_w = foot_kin["right_vel_w"]
+        left_vel_b = foot_kin["left_vel_b"]
+        right_vel_b = foot_kin["right_vel_b"]
+        left_quat_w = foot_kin["left_quat_w"]
+        right_quat_w = foot_kin["right_quat_w"]
 
         left_contact, right_contact, _, _ = self._get_foot_contact_state()
         command_active = (torch.abs(self._commands[:, 0]) > self.cfg.command_active_threshold).float()
@@ -686,12 +714,27 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         r_upright = torch.exp(-self.cfg.upright_k * tilt_metric)
 
         # Forward-only walking: do not reward overspeeding, but punish being below command.
-        lin_vel_error = torch.clamp(self._commands[:, 0] - root_lin_vel_b[:, 0], min=0.0)
-        r_vel_track = torch.exp(-self.cfg.vel_tracking_k * lin_vel_error**2)
+        lin_vel_error = self._commands[:, 0] - root_lin_vel_b[:, 0]
+        r_vel_track = torch.exp(-self.cfg.vel_tracking_k * lin_vel_error ** 2)
         r_pose = torch.exp(-self.cfg.pose_k * torch.mean(q_err**2, dim=1))
 
         r_feet_air_time = self._compute_feet_air_time_reward(left_contact, right_contact, command_active)
         r_single_stance = self._compute_feet_air_time_positive_biped_reward(left_contact, right_contact, command_active)
+
+        left_air_time = self._left_air_steps.float() * self._step_dt
+        right_air_time = self._right_air_steps.float() * self._step_dt
+
+        left_contact_time = self._left_contact_steps.float() * self._step_dt
+        right_contact_time = self._right_contact_steps.float() * self._step_dt
+
+        contact_time_balance_error = torch.abs(left_contact_time - right_contact_time)
+        p_contact_time_imbalance = command_active * contact_time_balance_error
+
+        air_time_balance_error = torch.abs(left_air_time - right_air_time)
+        p_air_time_imbalance = command_active * air_time_balance_error
+
+        step_gate = torch.clamp(r_single_stance / 0.10, min=0.0, max=1.0)
+        r_vel_track = r_vel_track * (0.25 + 0.75 * step_gate)
 
         left_clearance = torch.clamp(
             (left_pos_w[:, 2] - self.cfg.swing_height_min)
@@ -705,12 +748,86 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             min=0.0,
             max=1.0,
         )
+
+        step_width = torch.abs(left_pos_b[:, 1] - right_pos_b[:, 1])
+        r_step_width = torch.exp(
+            -20.0 * (step_width - self.cfg.target_step_width) ** 2
+        )
+        p_narrow_step = torch.clamp(
+            self.cfg.min_step_width - step_width,
+            min=0.0,
+        )
+
+        left_y_abs = torch.abs(left_pos_b[:, 1])
+        right_y_abs = torch.abs(right_pos_b[:, 1])
+
+        r_foot_side = 0.5 * (
+                torch.exp(-40.0 * (left_y_abs - self.cfg.target_foot_y_abs) ** 2)
+                + torch.exp(-40.0 * (right_y_abs - self.cfg.target_foot_y_abs) ** 2)
+        )
+
+        p_foot_centerline = (
+                torch.clamp(self.cfg.min_foot_y_abs - left_y_abs, min=0.0)
+                + torch.clamp(self.cfg.min_foot_y_abs - right_y_abs, min=0.0)
+        )
+
+        foot_mid_y = 0.5 * (left_pos_b[:, 1] + right_pos_b[:, 1])
+        p_pelvis_lateral = foot_mid_y ** 2
+
         left_swing = (~left_contact) & right_contact
         right_swing = (~right_contact) & left_contact
+
+        # Physics-informed weight-transfer shaping.
+        # In the base frame the pelvis/root is at y=0. During single support,
+        # the stance foot should be closer to the pelvis lateral projection.
+        left_stance = left_contact & (~right_contact)
+        right_stance = right_contact & (~left_contact)
+
+        pelvis_y_b = torch.zeros_like(left_pos_b[:, 1])
+        left_foot_y_b = left_pos_b[:, 1]
+        right_foot_y_b = right_pos_b[:, 1]
+
+        com_to_left_foot_y = torch.abs(pelvis_y_b - left_foot_y_b)
+        com_to_right_foot_y = torch.abs(pelvis_y_b - right_foot_y_b)
+
+        r_com_align = command_active * (
+            left_stance.float() * torch.exp(-20.0 * com_to_left_foot_y**2)
+            + right_stance.float() * torch.exp(-20.0 * com_to_right_foot_y**2)
+        )
+
+        p_bad_weight_shift = command_active * (
+            left_stance.float() * torch.clamp(com_to_left_foot_y - 0.07, min=0.0)
+            + right_stance.float() * torch.clamp(com_to_right_foot_y - 0.07, min=0.0)
+        )
+
+        left_gravity_foot = quat_rotate_inverse(left_quat_w, self._gravity_vec_w)
+        right_gravity_foot = quat_rotate_inverse(right_quat_w, self._gravity_vec_w)
+        left_foot_tilt = torch.sum(left_gravity_foot[:, :2] ** 2, dim=1)
+        right_foot_tilt = torch.sum(right_gravity_foot[:, :2] ** 2, dim=1)
+        p_foot_tilt = command_active * (
+            left_contact.float() * left_foot_tilt
+            + right_contact.float() * right_foot_tilt
+        )
+
+        r_forward_step = command_active * (
+            left_swing.float() * torch.clamp(left_vel_b[:, 0], min=0.0, max=0.75)
+            + right_swing.float() * torch.clamp(right_vel_b[:, 0], min=0.0, max=0.75)
+        )
+
+        p_lateral_step = command_active * (
+            left_swing.float() * torch.abs(left_vel_b[:, 1])
+            + right_swing.float() * torch.abs(right_vel_b[:, 1])
+        )
+
         r_swing_clearance = command_active * (
             left_swing.float() * left_clearance
             + right_swing.float() * right_clearance
         )
+
+        left_lift = torch.clamp((left_pos_w[:, 2] - self.cfg.swing_height_min) / 0.04, min=0.0, max=1.0)
+        right_lift = torch.clamp((right_pos_w[:, 2] - self.cfg.swing_height_min) / 0.04, min=0.0, max=1.0)
+
+        r_bootstrap_lift = command_active * torch.clamp(left_lift + right_lift, max=1.0)
 
         p_ang_vel = torch.mean(root_ang_vel_b**2, dim=1)
         p_joint_vel = torch.mean(qd**2, dim=1)
@@ -723,6 +840,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         p_feet_slide = self._compute_feet_slide_penalty(left_vel_w, right_vel_w)
         p_double_swing = ((~left_contact) & (~right_contact)).float() * command_active
 
+
+
         survival_term = torch.ones(self.num_envs, device=self.device)
 
         positive_terms = {
@@ -733,6 +852,12 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "feet_air_time": r_feet_air_time,
             "single_stance": r_single_stance,
             "swing_clearance": r_swing_clearance,
+            "com_align": r_com_align,
+            "forward_step": r_forward_step,
+            "bootstrap_lift": r_bootstrap_lift,
+            "step_width": r_step_width,
+            "foot_side": r_foot_side,
+
         }
         penalty_terms = {
             "ang_vel": p_ang_vel,
@@ -745,6 +870,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "backward_vel": p_backward_vel,
             "feet_slide": p_feet_slide,
             "double_swing": p_double_swing,
+            "narrow_step": p_narrow_step,
+            "foot_centerline": p_foot_centerline,
+            "pelvis_lateral": p_pelvis_lateral,
+            "bad_weight_shift": p_bad_weight_shift,
+            "foot_tilt": p_foot_tilt,
+            "lateral_step": p_lateral_step,
+            "air_time_imbalance": p_air_time_imbalance,
+            "contact_time_imbalance": p_contact_time_imbalance,
         }
 
         reward = torch.zeros(self.num_envs, device=self.device)
@@ -778,6 +911,27 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"yaw_pen: {(self._reward_scale('yaw_rate') * p_yaw_rate).mean().item():.4f} | "
                 f"command_max: {self._current_command_lin_vel_x_max:.2f} | "
                 f"push_max: {self._current_push_velocity_xy:.2f} | "
+                f"step_width: {(self._reward_scale('step_width') * r_step_width).mean().item():.4f} | "
+                f"narrow_pen: {(self._reward_scale('narrow_step') * p_narrow_step).mean().item():.4f} | "
+                f"foot_side: {(self._reward_scale('foot_side') * r_foot_side).mean().item():.4f} | "
+                f"centerline_pen: {(self._reward_scale('foot_centerline') * p_foot_centerline).mean().item():.4f} | "
+                f"pelvis_lat_pen: {(self._reward_scale('pelvis_lateral') * p_pelvis_lateral).mean().item():.4f} | "
+                f"com_align: {(self._reward_scale('com_align') * r_com_align).mean().item():.4f} | "
+                f"bad_shift: {(self._reward_scale('bad_weight_shift') * p_bad_weight_shift).mean().item():.4f} | "
+                f"foot_tilt: {(self._reward_scale('foot_tilt') * p_foot_tilt).mean().item():.4f} | "
+                f"forward_step: {(self._reward_scale('forward_step') * r_forward_step).mean().item():.4f} | "
+                f"lateral_step: {(self._reward_scale('lateral_step') * p_lateral_step).mean().item():.4f} | "
+                f"vx: {root_lin_vel_b[:, 0].mean().item():.4f} | "
+                f"vy: {root_lin_vel_b[:, 1].mean().item():.4f} | "
+                f"left_y: {left_pos_b[:, 1].mean().item():.4f} | "
+                f"right_y: {right_pos_b[:, 1].mean().item():.4f} | "
+                f"com_l: {com_to_left_foot_y.mean().item():.4f} | "
+                f"com_r: {com_to_right_foot_y.mean().item():.4f} | "
+                f"width_raw: {step_width.mean().item():.4f} | "
+                f"l_air: {left_air_time.mean().item():.3f} | "
+                f"r_air: {right_air_time.mean().item():.3f} | "
+                f"l_contact: {left_contact_time.mean().item():.3f} | "
+                f"r_contact: {right_contact_time.mean().item():.3f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
