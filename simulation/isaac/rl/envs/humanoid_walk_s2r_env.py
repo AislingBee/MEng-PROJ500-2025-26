@@ -108,7 +108,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "feet_air_time": 4.0,
         "single_stance": 3.0,
         "swing_clearance": 1.0,
-        "com_align": 1.0,
+        "com_align": 0.5,
         "forward_step": 3.0,
         "forward_com_progress": 0.5,
         "ang_vel": 0.10,
@@ -122,11 +122,11 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "feet_slide": 2.5,
         "double_swing": 0.5,
         "bootstrap_lift": 0.3,
-        "bad_weight_shift": 2.0,
+        "bad_weight_shift": 1.0,
         "foot_tilt": 4.0,
         "lateral_step": 6.0,
-        "overextended_step": 10.0,
-        "feet_ahead": 8.0,
+        "overextended_step": 4.0,
+        "feet_ahead": 2.0,
         "foot_clearance_extra": 1.0,
         "step_width": 2.0,
         "narrow_step": 20.0,
@@ -840,8 +840,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         # Penalise feet being placed too far in front of the torso.
         p_overextended_step = command_active * (
-            left_swing.float() * torch.clamp(left_forward_reach - 0.08, min=0.0)
-            + right_swing.float() * torch.clamp(right_forward_reach - 0.08, min=0.0)
+            left_swing.float() * torch.clamp(left_forward_reach - 0.12, min=0.0)
+            + right_swing.float() * torch.clamp(right_forward_reach - 0.12, min=0.0)
         )
 
         # Penalise both feet being ahead of the pelvis/root.
