@@ -1,0 +1,6 @@
+../Core/Src/telem_pack.c:20:14:clampf	24	static
+../Core/Src/telem_pack.c:27:17:f_to_u16	32	static
+../Core/Src/telem_pack.c:33:14:u16_to_f	24	static
+../Core/Src/telem_pack.c:41:6:telem_pack_slow	32	static
+../Core/Src/telem_pack.c:102:6:telem_pack_motor_fb	32	static
+../Core/Src/telem_pack.c:127:6:telem_pack_apply_motor_cmd	48	static

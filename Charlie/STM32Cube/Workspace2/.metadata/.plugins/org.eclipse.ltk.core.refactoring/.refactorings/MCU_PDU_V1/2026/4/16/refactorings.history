@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;MCU_PDU_V1/Core/Inc/pdu_selftest&apos; to &apos;pdu_selftest.h&apos;" description="Rename resource &apos;pdu_selftest&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Core/Inc/pdu_selftest" name="pdu_selftest.h" stamp="1776195596988" updateReferences="true"/>
+</session>

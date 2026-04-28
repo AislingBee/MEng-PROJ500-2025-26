@@ -393,6 +393,9 @@ def example_command_writer(msg: RobotCommandMessage) -> None:
 
 
 def main() -> None:
+    import rclpy
+    from simulation.isaac.rl.interface.ros2_robot_bridge import Ros2RobotBridge
+
     contract_defaults = get_thor_runner_defaults()
     joint_names = contract_defaults["joint_names"]
 
@@ -414,13 +417,26 @@ def main() -> None:
         joint_signs=tuple(1.0 for _ in joint_names),
     )
 
-    runner = ThorStandingPolicyRunner(
-        runner_cfg=runner_cfg,
-        hardware_cfg=hardware_cfg,
-        state_reader=example_state_reader,
-        command_writer=example_command_writer,
+    rclpy.init()
+    bridge = Ros2RobotBridge(
+        joint_names=joint_names,
+        command_topic="robot_command",
+        observation_topic="robot_observation",
+        node_name="thor_policy_runner",
     )
-    runner.run()
+    bridge.start()
+
+    try:
+        runner = ThorStandingPolicyRunner(
+            runner_cfg=runner_cfg,
+            hardware_cfg=hardware_cfg,
+            state_reader=bridge.state_reader,
+            command_writer=bridge.command_writer,
+        )
+        runner.run()
+    finally:
+        bridge.stop()
+        rclpy.shutdown()
 
 
 if __name__ == "__main__":

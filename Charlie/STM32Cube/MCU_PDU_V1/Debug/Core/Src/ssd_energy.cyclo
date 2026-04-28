@@ -1,0 +1,11 @@
+../Core/Src/ssd_energy.c:43:20:de_set	1
+../Core/Src/ssd_energy.c:56:13:reapply_uart	1
+../Core/Src/ssd_energy.c:88:13:flush_rx	3
+../Core/Src/ssd_energy.c:108:13:post_tx_cleanup	2
+../Core/Src/ssd_energy.c:120:13:send_cmd	4
+../Core/Src/ssd_energy.c:146:15:read_capture	7
+../Core/Src/ssd_energy.c:175:13:extract_last_line	11
+../Core/Src/ssd_energy.c:208:13:query_i32	13
+../Core/Src/ssd_energy.c:245:6:ssd_energy_init	1
+../Core/Src/ssd_energy.c:283:6:ssd_energy_tick	9
+../Core/Src/ssd_energy.c:328:23:ssd_energy_get	1
