@@ -11,6 +11,7 @@ find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(rosidl_default_runtime REQUIRED)
 
@@ -32,11 +33,14 @@ execute_process(
   OUTPUT_VARIABLE MOTOR_TEST_PYTHON_INSTALL_DIR
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-install(FILES motor_test/common.py
+install(FILES
+  motor_test/common.py
+  motor_test/rcu_protocol.py
   DESTINATION ${MOTOR_TEST_PYTHON_INSTALL_DIR}/motor_test
 )
 
 install(PROGRAMS
+  motor_test/bridges/rcu_udp_bridge.py
   motor_test/bridges/ethernet_can_bridge.py
   motor_test/bridges/serial_can_bridge.py
   motor_test/bridges/robot_command_bridge.py
