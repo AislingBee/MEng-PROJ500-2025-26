@@ -12,9 +12,28 @@ Project timeline: December 2025 to May 2026.
 4. Read [README_QUICKSTART.md](README_QUICKSTART.md) for launch order and runtime checks.
 5. For simulation and Isaac workflow, read [simulation/README.md](simulation/README.md).
 6. For ROS2 motor stack, read [Software/src/motor_control/README.md](Software/src/motor_control/README.md).
-7. For STM32 Nucleo CAN bridge firmware/docs, read [Software/nucleo_can_bridge/docs/README.md](Software/nucleo_can_bridge/docs/README.md).
+7. For the RCU UDP protocol handover, read [Charlie/STM32Cube/Tools/ROS2/HANDOVER_INSTRUCTIONS.md](Charlie/STM32Cube/Tools/ROS2/HANDOVER_INSTRUCTIONS.md).
 
 ## Top-Level Repository Overview
+
+## New STM32 Addition (RCU UDP Bridge)
+
+The current hardware path now supports a direct STM32 RCU UDP binary bridge.
+
+- New bridge node: [Software/src/motor_control/motor_control/bridges/rcu_udp_bridge.py](Software/src/motor_control/motor_control/bridges/rcu_udp_bridge.py)
+- RCU launch entrypoint: [Software/src/motor_control/launch/rcu_launch.py](Software/src/motor_control/launch/rcu_launch.py)
+- Full RL launch (with RCU transport): [Software/src/motor_control/launch/rl_robot_launch.py](Software/src/motor_control/launch/rl_robot_launch.py)
+- Protocol reference and handover: [Charlie/STM32Cube/Tools/ROS2/HANDOVER_INSTRUCTIONS.md](Charlie/STM32Cube/Tools/ROS2/HANDOVER_INSTRUCTIONS.md)
+
+RCU network defaults:
+
+- RCU IP: `192.168.100.10`
+- Thor host IP: `192.168.100.20/24`
+- Telemetry in: UDP `7700`
+- Command out: UDP `7701`
+- Supervision out: UDP `7702`
+
+The Software Nucleo bridge path has been removed; RCU UDP is now the primary integration path.
 
 ### Core folders
 
@@ -28,12 +47,8 @@ Project timeline: December 2025 to May 2026.
 - [Software](Software): software stack for firmware, bridge tools, ROS2 motor test package, and configs.
   - ROS2 motor package:
   - [Software/src/motor_control/README.md](Software/src/motor_control/README.md)
-  - STM32/bridge documentation:
-  - [Software/nucleo_can_bridge/docs/README.md](Software/nucleo_can_bridge/docs/README.md)
   - Integration guide:
   - [Software/ROS_STM32_INTEGRATION.md](Software/ROS_STM32_INTEGRATION.md)
-
-- [nucleo_can_bridge](nucleo_can_bridge): legacy or alternate Nucleo bridge workspace at repository root.
 
 ### Top-level files
 
@@ -48,7 +63,6 @@ Within [Software](Software):
 
 - [Software/config](Software/config): shared config files (including JSON config used by launch files).
 - [Software/nucleo](Software/nucleo): motor protocol notes/manual assets and experimental scripts.
-- [Software/nucleo_can_bridge](Software/nucleo_can_bridge): STM32 firmware, bridge utilities, tests, and docs.
 - [Software/src/motor_control](Software/src/motor_control): ROS2 package for command generation, bridges, listeners, and launch files.
 
 ## Important Readme and Documentation Index
@@ -62,11 +76,8 @@ Within [Software](Software):
 
 ### Firmware and Bridge
 
-- [Software/nucleo_can_bridge/docs/README.md](Software/nucleo_can_bridge/docs/README.md)
-- [Software/nucleo_can_bridge/docs/explanations/QUICKSTART.md](Software/nucleo_can_bridge/docs/explanations/QUICKSTART.md)
-- [Software/nucleo_can_bridge/docs/explanations/MOTOR_CONTROLLER_README.md](Software/nucleo_can_bridge/docs/explanations/MOTOR_CONTROLLER_README.md)
-- [Software/nucleo_can_bridge/docs/explanations/ARCHITECTURE.md](Software/nucleo_can_bridge/docs/explanations/ARCHITECTURE.md)
 - [Software/ROS_STM32_INTEGRATION.md](Software/ROS_STM32_INTEGRATION.md)
+- [Charlie/STM32Cube/Tools/ROS2/HANDOVER_INSTRUCTIONS.md](Charlie/STM32Cube/Tools/ROS2/HANDOVER_INSTRUCTIONS.md)
 
 ### ROS2 Motor Test
 
@@ -94,7 +105,7 @@ Example test flow:
 cd Software/src/motor_control
 colcon build --packages-select motor_control
 source install/setup.bash
-ros2 launch motor_control multi_state_launch.py
+ros2 launch motor_control rl_robot_launch.py
 ```
 
 ## Team

@@ -30,8 +30,8 @@ Parameters:
   loop_rate_hz   (float) default 200.0  (motor command TX rate)
 
 Usage:
-  ros2 run <your_package> rcu_udp_bridge
-  or from the launch file: ros2 launch <package> rcu_launch.py
+  ros2 run motor_control rcu_udp_bridge
+  or from the launch file: ros2 launch motor_control rcu_launch.py
 """
 import os
 import csv

@@ -41,8 +41,6 @@ install(FILES
 
 install(PROGRAMS
   motor_test/bridges/rcu_udp_bridge.py
-  motor_test/bridges/ethernet_can_bridge.py
-  motor_test/bridges/serial_can_bridge.py
   motor_test/bridges/robot_command_bridge.py
   motor_test/bridges/robot_observation_bridge.py
   motor_test/sensors/imu_publisher.py
