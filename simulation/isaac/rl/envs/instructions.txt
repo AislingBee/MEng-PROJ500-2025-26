@@ -1,0 +1,21 @@
+
+This is moving the fridge to the directory I want it in
+
+cd C:\Users\TheFridge\Documents\GitHub\MEng-PROJ500-2025-26
+
+This Runs the RL policy heedlessly
+
+cmd /c "C:\Users\TheFridge\Documents\GitHub\IsaacLab\isaaclab.bat -p simulation/isaac/rl/train_walk_s2r.py --headless"
+
+FOR PLAYBACK
+separate terminal 
+
+Move Directory 
+cd C:\Users\TheFridge\Documents\GitHub\MEng-PROJ500-2025-26
+
+Play the walking back (change the log number the date looking one to whatever the most
+recent output is)
+
+ & "C:\Users\TheFridge\Documents\GitHub\IsaacLab\isaaclab.bat" -p simulation/isaac/rl/play_walk_s2r.py --num_envs 1 --checkpoint "C:\Users\TheFridge\Documents\GitHub\MEng-PROJ500-2025-26\logs\rsl_rl\humanoid_walk\2026-04-28_11-46-49\model_199.pt"
+	
+le
