@@ -7,9 +7,12 @@ Project timeline: December 2025 to May 2026.
 ## Start Here
 
 1. Read this file for the project map.
-2. For simulation and Isaac workflow, read [simulation/README.md](simulation/README.md).
-3. For ROS2 motor stack, read [Software/src/motor_test/README.md](Software/src/motor_test/README.md).
-4. For STM32 Nucleo CAN bridge firmware/docs, read [Software/nucleo_can_bridge/docs/README.md](Software/nucleo_can_bridge/docs/README.md).
+2. Read [README_PROJECT_MAP.md](README_PROJECT_MAP.md) for a top-level file/folder map.
+3. Read [README_IMPORTANT_PATHS.md](README_IMPORTANT_PATHS.md) for key entrypoints and files.
+4. Read [README_QUICKSTART.md](README_QUICKSTART.md) for launch order and runtime checks.
+5. For simulation and Isaac workflow, read [simulation/README.md](simulation/README.md).
+6. For ROS2 motor stack, read [Software/src/motor_control/README.md](Software/src/motor_control/README.md).
+7. For STM32 Nucleo CAN bridge firmware/docs, read [Software/nucleo_can_bridge/docs/README.md](Software/nucleo_can_bridge/docs/README.md).
 
 ## Top-Level Repository Overview
 
@@ -24,7 +27,7 @@ Project timeline: December 2025 to May 2026.
 
 - [Software](Software): software stack for firmware, bridge tools, ROS2 motor test package, and configs.
   - ROS2 motor package:
-  - [Software/src/motor_test/README.md](Software/src/motor_test/README.md)
+  - [Software/src/motor_control/README.md](Software/src/motor_control/README.md)
   - STM32/bridge documentation:
   - [Software/nucleo_can_bridge/docs/README.md](Software/nucleo_can_bridge/docs/README.md)
   - Integration guide:
@@ -36,7 +39,7 @@ Project timeline: December 2025 to May 2026.
 
 - [README.md](README.md): this overview.
 - [joint_limit_results.csv](joint_limit_results.csv): saved joint limit validation/test output.
-- [thor_policy_runner.py](thor_policy_runner.py): policy runtime script at repo root.
+- [hardware/thor/thor_policy_runner.py](hardware/thor/thor_policy_runner.py): policy runtime script.
 - [power_shell_commands](power_shell_commands): command notes and helper snippets.
 
 ## Software Folder Details
@@ -46,7 +49,7 @@ Within [Software](Software):
 - [Software/config](Software/config): shared config files (including JSON config used by launch files).
 - [Software/nucleo](Software/nucleo): motor protocol notes/manual assets and experimental scripts.
 - [Software/nucleo_can_bridge](Software/nucleo_can_bridge): STM32 firmware, bridge utilities, tests, and docs.
-- [Software/src/motor_test](Software/src/motor_test): ROS2 package for command generation, bridges, listeners, and launch files.
+- [Software/src/motor_control](Software/src/motor_control): ROS2 package for command generation, bridges, listeners, and launch files.
 
 ## Important Readme and Documentation Index
 
@@ -67,9 +70,9 @@ Within [Software](Software):
 
 ### ROS2 Motor Test
 
-- [Software/src/motor_test/README.md](Software/src/motor_test/README.md)
-- Launch files are in [Software/src/motor_test/launch](Software/src/motor_test/launch).
-- Test and bridge nodes are in [Software/src/motor_test/motor_test](Software/src/motor_test/motor_test).
+- [Software/src/motor_control/README.md](Software/src/motor_control/README.md)
+- Launch files are in [Software/src/motor_control/launch](Software/src/motor_control/launch).
+- Test and bridge nodes are in [Software/src/motor_control/motor_control](Software/src/motor_control/motor_control).
 
 ## Contribution Rules
 
@@ -88,10 +91,10 @@ Within [Software](Software):
 Example test flow:
 
 ```bash
-cd Software/src/motor_test
-colcon build --packages-select motor_test
+cd Software/src/motor_control
+colcon build --packages-select motor_control
 source install/setup.bash
-ros2 launch motor_test multi_state_launch.py
+ros2 launch motor_control multi_state_launch.py
 ```
 
 ## Team

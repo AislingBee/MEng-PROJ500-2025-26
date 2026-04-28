@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import atexit
+import os
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -319,13 +321,74 @@ class ThorStandingPolicyRunner:
 # Replace these with the actual Thor ROS/CAN hooks.
 # -----------------------------------------------------------------------------
 
+_THOR_ROS_BRIDGE = None
+_THOR_ROS_INIT_DONE_HERE = False
+
+
+def _get_thor_ros_bridge():
+    global _THOR_ROS_BRIDGE
+    global _THOR_ROS_INIT_DONE_HERE
+
+    if _THOR_ROS_BRIDGE is not None:
+        return _THOR_ROS_BRIDGE
+
+    try:
+        import rclpy
+        from simulation.isaac.rl.interface.ros2_robot_bridge import Ros2RobotBridge
+    except Exception as exc:
+        raise RuntimeError(
+            "ROS2 bridge dependencies are unavailable. "
+            "Source your ROS2 + workspace environment before running this script."
+        ) from exc
+
+    if not rclpy.ok():
+        rclpy.init()
+        _THOR_ROS_INIT_DONE_HERE = True
+
+    defaults = get_thor_runner_defaults()
+    _THOR_ROS_BRIDGE = Ros2RobotBridge(
+        joint_names=defaults["joint_names"],
+        command_topic=os.getenv("THOR_ROS_COMMAND_TOPIC", "robot_command"),
+        observation_topic=os.getenv("THOR_ROS_OBSERVATION_TOPIC", "robot_observation"),
+        node_name=os.getenv("THOR_ROS_NODE_NAME", "thor_policy_runner_bridge"),
+        encoder_cpr=int(os.getenv("THOR_ENCODER_CPR", "16384")),
+        observation_timeout_s=float(os.getenv("THOR_OBS_TIMEOUT_S", "2.0")),
+    )
+    _THOR_ROS_BRIDGE.start()
+    return _THOR_ROS_BRIDGE
+
+
+def _shutdown_thor_ros_bridge() -> None:
+    global _THOR_ROS_BRIDGE
+    global _THOR_ROS_INIT_DONE_HERE
+
+    bridge = _THOR_ROS_BRIDGE
+    _THOR_ROS_BRIDGE = None
+
+    if bridge is not None:
+        bridge.stop()
+
+    if _THOR_ROS_INIT_DONE_HERE:
+        try:
+            import rclpy
+
+            if rclpy.ok():
+                rclpy.shutdown()
+        except Exception:
+            pass
+
+    _THOR_ROS_INIT_DONE_HERE = False
+
+
+atexit.register(_shutdown_thor_ros_bridge)
+
 def example_state_reader() -> RobotStateSample:
-    raise NotImplementedError("Inject your real Thor state reader here")
+    return _get_thor_ros_bridge().state_reader()
 
 
 
 def example_command_writer(msg: RobotCommandMessage) -> None:
-    raise NotImplementedError("Inject your real Thor command writer here")
+    _get_thor_ros_bridge().command_writer(msg)
 
 
 

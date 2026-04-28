@@ -51,14 +51,14 @@ Run from a ROS 2 workspace root that contains the `Software/src` tree (or from w
 
 ```bash
 # Source ROS 2 base installation (do once per shell)
-source /opt/ros/humble/setup.bash          # Linux
-# (Windows: call C:\dev\ros2_humble\setup.bat)
+source /opt/ros/jazzy/setup.bash           # Linux
+# (Windows: call C:\dev\ros2_jazzy\setup.bat)
 
-# Build the motor_test package only
-colcon build --packages-select motor_test
+# Build the motor_control package only
+colcon build --packages-select motor_control
 
 # Build with symlinks (avoids re-building when only Python files change)
-colcon build --packages-select motor_test --symlink-install
+colcon build --packages-select motor_control --symlink-install
 
 # Source the local overlay after every build
 source install/setup.bash                  # Linux / WSL
@@ -69,7 +69,7 @@ source install/setup.bash                  # Linux / WSL
 colcon build
 
 # Run tests
-colcon test --packages-select motor_test
+colcon test --packages-select motor_control
 colcon test-result --verbose
 ```
 
@@ -77,13 +77,13 @@ colcon test-result --verbose
 
 ## 3. ROS 2 — Launch Files
 
-All launch files live in `Software/src/motor_test/launch/`.  
+All launch files live in `Software/src/motor_control/launch/`.  
 **Remember to build and source before launching.**
 
 ### Single-motor test
 
 ```bash
-ros2 launch motor_test single_motor_launch.py
+ros2 launch motor_control single_motor_launch.py
 ```
 
 Defaults: `serial_port=/dev/ttyACM0`, `motor_id=1`.
@@ -91,24 +91,24 @@ Defaults: `serial_port=/dev/ttyACM0`, `motor_id=1`.
 ### Multi-motor test
 
 ```bash
-ros2 launch motor_test multi_motor_launch.py
+ros2 launch motor_control multi_motor_launch.py
 ```
 
 ### Multi-state test (recommended for sequenced joint commands)
 
 ```bash
 # Default (reads multi_state_test_config.json bundled with the package)
-ros2 launch motor_test multi_state_launch.py
+ros2 launch motor_control multi_state_launch.py
 
 # Override serial port and motor count
-ros2 launch motor_test multi_state_launch.py serial_port:=COM6 motor_count:=2
+ros2 launch motor_control multi_state_launch.py serial_port:=COM6 motor_count:=2
 
 # Override with a custom config file
-ros2 launch motor_test multi_state_launch.py \
+ros2 launch motor_control multi_state_launch.py \
     config_file:=/absolute/path/to/my_config.json
 
 # Full parameter override example
-ros2 launch motor_test multi_state_launch.py \
+ros2 launch motor_control multi_state_launch.py \
     serial_port:=/dev/ttyACM0 \
     baud_rate:=921600 \
     motor_count:=2 \
@@ -122,7 +122,7 @@ ros2 launch motor_test multi_state_launch.py \
 ### RL-to-hardware pipeline
 
 ```bash
-ros2 launch motor_test rl_robot_launch.py
+ros2 launch motor_control rl_robot_launch.py
 ```
 
 Edit joint names and serial port at the top of the file before running.
@@ -151,9 +151,9 @@ ros2 topic info /robot_command
 ros2 node list
 
 # Show node parameters
-ros2 param list /multi_state_motor_test
-ros2 param get  /multi_state_motor_test kp
-ros2 param set  /multi_state_motor_test kp 60.0
+ros2 param list /multi_state_motor_control
+ros2 param get  /multi_state_motor_control kp
+ros2 param set  /multi_state_motor_control kp 60.0
 ```
 
 ---
