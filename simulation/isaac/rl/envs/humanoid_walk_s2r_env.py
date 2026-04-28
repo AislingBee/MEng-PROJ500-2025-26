@@ -101,13 +101,13 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # now contact-time based, not hand-built touchdown logic.  This mirrors the
     # Berkeley reward scripts more closely for a biped.
     reward_scales = {
-        "vel_track": 6.0,
+        "vel_track": 6.2,
         "upright": 1.35,
         "survival": 0.6,
         "pose": 0.03,
-        "feet_air_time": 0.8,
+        "feet_air_time": 0.5,
         "single_stance": 2.2,
-        "swing_clearance": 0.3,
+        "swing_clearance": 1.0,
         "com_align": 2.5,
         "forward_step": 0.8,
         "ang_vel": 0.16,
@@ -118,11 +118,11 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "roll_lean": 4.2,
         "pitch_lean": 0.6,
         "backward_vel": 5.0,
-        "feet_slide": 4.8,
-        "double_swing": 1.2,
+        "feet_slide": 5.2,
+        "double_swing": 1.4,
         "bootstrap_lift": 0.05,
         "bad_weight_shift": 3.0,
-        "foot_tilt": 6.5,
+        "foot_tilt": 12.0,
         "lateral_step": 0.0,
         "step_width": 1.5,
         "narrow_step": 50.0,
@@ -146,14 +146,14 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
 
     # Push-force curriculum scaffold.  Keep disabled for first walking rebuild.
     # Enable only after flat-ground walking is stable.
-    enable_push_curriculum: bool = False
-    push_start_step: int = 20000
+    enable_push_curriculum: bool = True
+    push_start_step: int = 30000
     push_interval_steps: int = 600
-    push_probability: float = 0.15
-    push_velocity_xy_initial: float = 0.0
+    push_probability: float = 0.25
+    push_velocity_xy_initial: float = 0.05
     push_velocity_xy_max: float = 0.6
-    push_velocity_xy_increment_factor: float = 1.5
-    push_velocity_xy_decrement: float = 0.2
+    push_velocity_xy_increment_factor: float = 1.25
+    push_velocity_xy_decrement: float = 0.05
 
     # Terrain curriculum is not active in this DirectRLEnv because the scene is
     # currently a flat GroundPlaneCfg, not an Isaac Lab TerrainImporter.
@@ -1025,7 +1025,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         env_ids = torch.nonzero(push_mask, as_tuple=False).flatten()
         root_vel = self.robot.data.root_vel_w[env_ids].clone()
-        push = (2.0 * torch.rand((len(env_ids), 2), device=self.device) - 1.0) * self._current_push_velocity_xy
+        push = torch.zeros((len(env_ids), 2), device=self.device)
+
+        # Smaller forward/backward disturbance
+        push[:, 0] = (2.0 * torch.rand(len(env_ids), device=self.device) - 1.0) * self._current_push_velocity_xy * 0.5
+
+        # Stronger left/right disturbance
+        push[:, 1] = (2.0 * torch.rand(len(env_ids), device=self.device) - 1.0) * self._current_push_velocity_xy
+        #push = (2.0 * torch.rand((len(env_ids), 2), device=self.device) - 1.0) * self._current_push_velocity_xy
         root_vel[:, 0:2] += push
         self.robot.write_root_velocity_to_sim(root_vel, env_ids)
 
@@ -1045,14 +1052,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         default_root_state[:, 2] += self.cfg.base_height
 
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
-        joint_pos += 0.02 * torch.randn_like(joint_pos)
+        joint_pos += 0.04 * torch.randn_like(joint_pos)
 
         # mirror_mask = torch.rand(len(env_ids), device=self.device) < self.cfg.reset_mirror_prob
         # if mirror_mask.any():
         #     mirrored_joint_pos = self._mirror_leg_joint_positions(joint_pos)
         #     joint_pos[mirror_mask] = mirrored_joint_pos[mirror_mask]
 
-        joint_vel = 0.05 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
+        joint_vel = 0.10 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
         joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
 
         self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
