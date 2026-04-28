@@ -101,17 +101,18 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # now contact-time based, not hand-built touchdown logic.  This mirrors the
     # Berkeley reward scripts more closely for a biped.
     reward_scales = {
-        "vel_track": 1.8,
+        "vel_track": 1.5,
         "upright": 1.0,
         "survival": 0.5,
         "pose": 0.05,
         "feet_air_time": 4.0,
         "single_stance": 3.0,
         "swing_clearance": 1.0,
+        "com_align": 2.0,
         "ang_vel": 0.10,
         "joint_vel": 0.02,
         "action_rate": 0.05,
-        "lin_vel_y": 6.0,
+        "lin_vel_y": 4.0,
         "yaw_rate": 1.5,
         "roll_lean": 2.0,
         "pitch_lean": 0.5,
@@ -119,6 +120,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "feet_slide": 2.5,
         "double_swing": 0.5,
         "bootstrap_lift": 0.3,
+        "bad_weight_shift": 4.0,
         "step_width": 2.0,
         "narrow_step": 20.0,
         "foot_side": 2.0,
@@ -767,6 +769,30 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         left_swing = (~left_contact) & right_contact
         right_swing = (~right_contact) & left_contact
+
+        # Physics-informed weight-transfer shaping.
+        # In the base frame the pelvis/root is at y=0. During single support,
+        # the stance foot should be closer to the pelvis lateral projection.
+        left_stance = left_contact & (~right_contact)
+        right_stance = right_contact & (~left_contact)
+
+        pelvis_y_b = torch.zeros_like(left_pos_b[:, 1])
+        left_foot_y_b = left_pos_b[:, 1]
+        right_foot_y_b = right_pos_b[:, 1]
+
+        com_to_left_foot_y = torch.abs(pelvis_y_b - left_foot_y_b)
+        com_to_right_foot_y = torch.abs(pelvis_y_b - right_foot_y_b)
+
+        r_com_align = command_active * (
+            left_stance.float() * torch.exp(-20.0 * com_to_left_foot_y**2)
+            + right_stance.float() * torch.exp(-20.0 * com_to_right_foot_y**2)
+        )
+
+        p_bad_weight_shift = command_active * (
+            left_stance.float() * torch.clamp(com_to_left_foot_y - 0.07, min=0.0)
+            + right_stance.float() * torch.clamp(com_to_right_foot_y - 0.07, min=0.0)
+        )
+
         r_swing_clearance = command_active * (
             left_swing.float() * left_clearance
             + right_swing.float() * right_clearance
@@ -788,6 +814,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         p_feet_slide = self._compute_feet_slide_penalty(left_vel_w, right_vel_w)
         p_double_swing = ((~left_contact) & (~right_contact)).float() * command_active
 
+
+
         survival_term = torch.ones(self.num_envs, device=self.device)
 
         positive_terms = {
@@ -798,6 +826,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "feet_air_time": r_feet_air_time,
             "single_stance": r_single_stance,
             "swing_clearance": r_swing_clearance,
+            "com_align": r_com_align,
             "bootstrap_lift": r_bootstrap_lift,
             "step_width": r_step_width,
             "foot_side": r_foot_side,
@@ -817,6 +846,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "narrow_step": p_narrow_step,
             "foot_centerline": p_foot_centerline,
             "pelvis_lateral": p_pelvis_lateral,
+            "bad_weight_shift": p_bad_weight_shift,
             "air_time_imbalance": p_air_time_imbalance,
             "contact_time_imbalance": p_contact_time_imbalance,
         }
@@ -857,10 +887,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"foot_side: {(self._reward_scale('foot_side') * r_foot_side).mean().item():.4f} | "
                 f"centerline_pen: {(self._reward_scale('foot_centerline') * p_foot_centerline).mean().item():.4f} | "
                 f"pelvis_lat_pen: {(self._reward_scale('pelvis_lateral') * p_pelvis_lateral).mean().item():.4f} | "
+                f"com_align: {(self._reward_scale('com_align') * r_com_align).mean().item():.4f} | "
+                f"bad_shift: {(self._reward_scale('bad_weight_shift') * p_bad_weight_shift).mean().item():.4f} | "
                 f"vx: {root_lin_vel_b[:, 0].mean().item():.4f} | "
                 f"vy: {root_lin_vel_b[:, 1].mean().item():.4f} | "
                 f"left_y: {left_pos_b[:, 1].mean().item():.4f} | "
                 f"right_y: {right_pos_b[:, 1].mean().item():.4f} | "
+                f"com_l: {com_to_left_foot_y.mean().item():.4f} | "
+                f"com_r: {com_to_right_foot_y.mean().item():.4f} | "
                 f"width_raw: {step_width.mean().item():.4f} | "
                 f"l_air: {left_air_time.mean().item():.3f} | "
                 f"r_air: {right_air_time.mean().item():.3f} | "
