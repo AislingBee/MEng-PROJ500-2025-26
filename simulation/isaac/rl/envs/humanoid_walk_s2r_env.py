@@ -109,6 +109,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "single_stance": 3.0,
         "swing_clearance": 1.0,
         "com_align": 2.0,
+        "forward_step": 1.5,
         "ang_vel": 0.10,
         "joint_vel": 0.02,
         "action_rate": 0.05,
@@ -121,6 +122,8 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "double_swing": 0.5,
         "bootstrap_lift": 0.3,
         "bad_weight_shift": 4.0,
+        "foot_tilt": 4.0,
+        "lateral_step": 3.0,
         "step_width": 2.0,
         "narrow_step": 20.0,
         "foot_side": 2.0,
@@ -696,6 +699,10 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         right_pos_b = foot_kin["right_pos_b"]
         left_vel_w = foot_kin["left_vel_w"]
         right_vel_w = foot_kin["right_vel_w"]
+        left_vel_b = foot_kin["left_vel_b"]
+        right_vel_b = foot_kin["right_vel_b"]
+        left_quat_w = foot_kin["left_quat_w"]
+        right_quat_w = foot_kin["right_quat_w"]
 
         left_contact, right_contact, _, _ = self._get_foot_contact_state()
         command_active = (torch.abs(self._commands[:, 0]) > self.cfg.command_active_threshold).float()
@@ -793,6 +800,25 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             + right_stance.float() * torch.clamp(com_to_right_foot_y - 0.07, min=0.0)
         )
 
+        left_gravity_foot = quat_rotate_inverse(left_quat_w, self._gravity_vec_w)
+        right_gravity_foot = quat_rotate_inverse(right_quat_w, self._gravity_vec_w)
+        left_foot_tilt = torch.sum(left_gravity_foot[:, :2] ** 2, dim=1)
+        right_foot_tilt = torch.sum(right_gravity_foot[:, :2] ** 2, dim=1)
+        p_foot_tilt = command_active * (
+            left_contact.float() * left_foot_tilt
+            + right_contact.float() * right_foot_tilt
+        )
+
+        r_forward_step = command_active * (
+            left_swing.float() * torch.clamp(left_vel_b[:, 0], min=0.0, max=0.75)
+            + right_swing.float() * torch.clamp(right_vel_b[:, 0], min=0.0, max=0.75)
+        )
+
+        p_lateral_step = command_active * (
+            left_swing.float() * torch.abs(left_vel_b[:, 1])
+            + right_swing.float() * torch.abs(right_vel_b[:, 1])
+        )
+
         r_swing_clearance = command_active * (
             left_swing.float() * left_clearance
             + right_swing.float() * right_clearance
@@ -827,6 +853,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "single_stance": r_single_stance,
             "swing_clearance": r_swing_clearance,
             "com_align": r_com_align,
+            "forward_step": r_forward_step,
             "bootstrap_lift": r_bootstrap_lift,
             "step_width": r_step_width,
             "foot_side": r_foot_side,
@@ -847,6 +874,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "foot_centerline": p_foot_centerline,
             "pelvis_lateral": p_pelvis_lateral,
             "bad_weight_shift": p_bad_weight_shift,
+            "foot_tilt": p_foot_tilt,
+            "lateral_step": p_lateral_step,
             "air_time_imbalance": p_air_time_imbalance,
             "contact_time_imbalance": p_contact_time_imbalance,
         }
@@ -889,6 +918,9 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"pelvis_lat_pen: {(self._reward_scale('pelvis_lateral') * p_pelvis_lateral).mean().item():.4f} | "
                 f"com_align: {(self._reward_scale('com_align') * r_com_align).mean().item():.4f} | "
                 f"bad_shift: {(self._reward_scale('bad_weight_shift') * p_bad_weight_shift).mean().item():.4f} | "
+                f"foot_tilt: {(self._reward_scale('foot_tilt') * p_foot_tilt).mean().item():.4f} | "
+                f"forward_step: {(self._reward_scale('forward_step') * r_forward_step).mean().item():.4f} | "
+                f"lateral_step: {(self._reward_scale('lateral_step') * p_lateral_step).mean().item():.4f} | "
                 f"vx: {root_lin_vel_b[:, 0].mean().item():.4f} | "
                 f"vy: {root_lin_vel_b[:, 1].mean().item():.4f} | "
                 f"left_y: {left_pos_b[:, 1].mean().item():.4f} | "
