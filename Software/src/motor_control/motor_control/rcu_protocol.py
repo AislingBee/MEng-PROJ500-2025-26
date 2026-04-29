@@ -127,7 +127,7 @@ def encode_motor_cmd_entry(motor_id: int, bus: int, pos_rad: float,
     return struct.pack("<BBHHHBB", bus, motor_id, pos, vel, trq, kp8, kd8)
 
 def encode_motor_supervisory(enable_mask: int = 0, clear_fault_mask: int = 0,
-                             ctrl_mode: int = 1) -> bytes:
+                             ctrl_mode: int = 0) -> bytes:
     """Build a Type 0x11 motor supervisory packet (header + 8-byte payload)."""
     payload = struct.pack("<HHBxxx", enable_mask & 0xFFFF,
                          clear_fault_mask & 0xFFFF, ctrl_mode & 0xFF)

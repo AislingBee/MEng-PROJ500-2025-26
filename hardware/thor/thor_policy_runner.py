@@ -174,6 +174,10 @@ class ThorStandingPolicyRunner:
         kp_fixed, kd_fixed = build_fixed_gains(device=self.device)
         self._kp_fixed = kp_fixed.unsqueeze(0)
         self._kd_fixed = kd_fixed.unsqueeze(0)
+        
+        # Per-joint PD gains for MIT control (conservative defaults: kp=30.0, kd=2.0)
+        self._kp_gains = torch.full((1, CONTRACT.action_dim), 30.0, dtype=torch.float32, device=self.device)
+        self._kd_gains = torch.full((1, CONTRACT.action_dim), 2.0, dtype=torch.float32, device=self.device)
 
         self._step_count = 0
         self._last_obs: Tensor | None = None
@@ -215,6 +219,8 @@ class ThorStandingPolicyRunner:
             kp=self._kp_fixed.clone(),
             kd=self._kd_fixed.clone(),
             tau_ff=self._tau_ff.clone(),
+            kp_gains=self._kp_gains.clone(),
+            kd_gains=self._kd_gains.clone(),
         )
 
     def step(self) -> ControlPacket:
@@ -240,6 +246,8 @@ class ThorStandingPolicyRunner:
             kp=self._kp_fixed.clone(),
             kd=self._kd_fixed.clone(),
             tau_ff=self._tau_ff.clone(),
+            kp_gains=self._kp_gains.clone(),
+            kd_gains=self._kd_gains.clone(),
         )
         self.hardware.write_control_packet(packet)
 

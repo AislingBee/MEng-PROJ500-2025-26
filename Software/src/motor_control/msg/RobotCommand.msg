@@ -10,3 +10,5 @@ float64[] qd_des       # desired joint velocities  [rad/s]
 float64[] kp           # position gains            [Nm/rad]
 float64[] kd           # velocity gains            [Nm·s/rad]
 float64[] tau_ff       # feedforward torques        [Nm]
+float64[] kp_gains
+float64[] kd_gains

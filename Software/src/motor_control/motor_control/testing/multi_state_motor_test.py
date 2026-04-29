@@ -161,6 +161,8 @@ class MultiStateMotorTest(Node):
         msg.kp          = [self.kp] * self.n
         msg.kd          = [self.kd] * self.n
         msg.tau_ff      = [self.tau_ff] * self.n
+        msg.kp_gains    = [30.0] * self.n  # Conservative default for MIT control
+        msg.kd_gains    = [2.0]  * self.n  # Conservative default for MIT control
         self.publisher.publish(msg)
 
         for i, name in enumerate(self.joint_names):

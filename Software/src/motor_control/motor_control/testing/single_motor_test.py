@@ -92,6 +92,8 @@ class SingleMotorTest(Node):
         msg.kp      = [self.kp]
         msg.kd      = [self.kd]
         msg.tau_ff  = [self.tau_ff]
+        msg.kp_gains = [30.0]  # Conservative default for MIT control
+        msg.kd_gains = [2.0]   # Conservative default for MIT control
         self.publisher.publish(msg)
 
         self._cmd_writer.writerow([f'{elapsed_s:.4f}', f'{q_des:.6f}',

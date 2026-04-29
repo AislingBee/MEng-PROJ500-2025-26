@@ -24,7 +24,7 @@ Parameters:
   rcu_ip         (str)  default "192.168.100.10"
   rcu_cmd_port   (int)  default 7701
   telem_port     (int)  default 7700
-  ctrl_mode      (int)  default 1  (1=CSP pos Phase 1, 0=MIT impedance Phase 2)
+  ctrl_mode      (int)  default 0  (0=MIT impedance Phase 2, 1=CSP pos Phase 1)
   auto_enable    (bool) default False
   log_dir        (str)  default "~/rcu_logs"
   loop_rate_hz   (float) default 200.0  (motor command TX rate)
@@ -78,7 +78,7 @@ class RcuUdpBridge(Node):
         self.declare_parameter("rcu_ip",       rp.RCU_IP)
         self.declare_parameter("rcu_cmd_port", rp.PORT_CMD)
         self.declare_parameter("telem_port",   rp.PORT_TELEM)
-        self.declare_parameter("ctrl_mode",    1)
+        self.declare_parameter("ctrl_mode",    0)
         self.declare_parameter("auto_enable",  False)
         self.declare_parameter("log_dir",      os.path.expanduser("~/rcu_logs"))
         self.declare_parameter("loop_rate_hz", 200.0)

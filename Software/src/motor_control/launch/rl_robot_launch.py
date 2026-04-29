@@ -26,7 +26,7 @@ def generate_launch_description():
             'rcu_ip':       '192.168.100.10',
             'rcu_cmd_port': 7701,
             'telem_port':   7700,
-            'ctrl_mode':    1,        # 1=CSP Phase 1 | 0=MIT Phase 2
+            'ctrl_mode':    0,        # 0=MIT Phase 2 | 1=CSP Phase 1
             'auto_enable':  False,
             'loop_rate_hz': 200.0,
         }],

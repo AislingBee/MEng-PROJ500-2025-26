@@ -8,11 +8,11 @@ Launches:
 
 Usage:
     ros2 launch motor_control rcu_launch.py
-    ros2 launch motor_control rcu_launch.py rcu_ip:=192.168.100.10 ctrl_mode:=1
+    ros2 launch motor_control rcu_launch.py rcu_ip:=192.168.100.10 ctrl_mode:=0
 
 Parameters (all optional):
   rcu_ip       default "192.168.100.10"
-  ctrl_mode    default 1   (1=CSP Phase 1, 0=MIT Phase 2)
+  ctrl_mode    default 0   (0=MIT Phase 2, 1=CSP Phase 1)
   log_dir      default "~/rcu_logs"
   auto_enable  default "False"
 """
@@ -24,7 +24,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     rcu_ip      = LaunchConfiguration("rcu_ip",      default="192.168.100.10")
-    ctrl_mode   = LaunchConfiguration("ctrl_mode",   default="1")
+    ctrl_mode   = LaunchConfiguration("ctrl_mode",   default="0")
     log_dir     = LaunchConfiguration("log_dir",     default="~/rcu_logs")
     auto_enable = LaunchConfiguration("auto_enable", default="False")
 
@@ -33,7 +33,7 @@ def generate_launch_description():
             default_value="192.168.100.10",
             description="RCU static IP address"),
         DeclareLaunchArgument("ctrl_mode",
-            default_value="1",
+            default_value="0",
             description="Motor control mode: 1=CSP (Phase 1), 0=MIT (Phase 2)"),
         DeclareLaunchArgument("log_dir",
             default_value="~/rcu_logs",
