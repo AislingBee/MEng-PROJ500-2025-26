@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(motor_test)
+project(motor_control)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -26,30 +26,30 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 ament_export_dependencies(rosidl_default_runtime)
 
 # Determine the Python site-packages install path so common.py is importable
-# as motor_test.common alongside the generated message stubs.
+# as motor_control.common alongside the generated message stubs.
 execute_process(
   COMMAND python3 -c
     "import sys; print('lib/python{}.{}/site-packages'.format(sys.version_info.major, sys.version_info.minor))"
-  OUTPUT_VARIABLE MOTOR_TEST_PYTHON_INSTALL_DIR
+  OUTPUT_VARIABLE MOTOR_CONTROL_PYTHON_INSTALL_DIR
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 install(FILES
-  motor_test/common.py
-  motor_test/rcu_protocol.py
-  DESTINATION ${MOTOR_TEST_PYTHON_INSTALL_DIR}/motor_test
+  motor_control/common.py
+  motor_control/rcu_protocol.py
+  DESTINATION ${MOTOR_CONTROL_PYTHON_INSTALL_DIR}/motor_control
 )
 
 install(PROGRAMS
-  motor_test/bridges/rcu_udp_bridge.py
-  motor_test/bridges/robot_command_bridge.py
-  motor_test/bridges/robot_observation_bridge.py
-  motor_test/sensors/imu_publisher.py
-  motor_test/sensors/motor_feedback_listener.py
-  motor_test/testing/motor_controller_test.py
-  motor_test/testing/motor_pub.py
-  motor_test/testing/single_motor_test.py
-  motor_test/testing/multi_motor_test.py
-  motor_test/testing/multi_state_motor_test.py
+  motor_control/bridges/rcu_udp_bridge.py
+  motor_control/bridges/robot_command_bridge.py
+  motor_control/bridges/robot_observation_bridge.py
+  motor_control/sensors/imu_publisher.py
+  motor_control/sensors/motor_feedback_listener.py
+  motor_control/testing/motor_controller_test.py
+  motor_control/testing/motor_pub.py
+  motor_control/testing/single_motor_test.py
+  motor_control/testing/multi_motor_test.py
+  motor_control/testing/multi_state_motor_test.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -7,8 +7,8 @@ Launches:
   3. robot_observation_bridge — /motor_can_feedback + /imu0 consumer
 
 Usage:
-  ros2 launch motor_test rcu_launch.py
-  ros2 launch motor_test rcu_launch.py rcu_ip:=192.168.100.10 ctrl_mode:=1
+    ros2 launch motor_control rcu_launch.py
+    ros2 launch motor_control rcu_launch.py rcu_ip:=192.168.100.10 ctrl_mode:=1
 
 Parameters (all optional):
   rcu_ip       default "192.168.100.10"
@@ -49,7 +49,7 @@ def generate_launch_description():
         # Services:   /rcu_motor_estop, /rcu_pdu_fault (SetBool)
         # ----------------------------------------------------------------
         Node(
-            package="motor_test",
+            package="motor_control",
             executable="rcu_udp_bridge.py",
             name="rcu_udp_bridge",
             output="screen",
@@ -66,7 +66,7 @@ def generate_launch_description():
         # Robot observation bridge — /motor_can_feedback + /imu0 → /robot_observation
         # ----------------------------------------------------------------
         Node(
-            package="motor_test",
+            package="motor_control",
             executable="robot_observation_bridge.py",
             name="robot_observation_bridge",
             output="screen",

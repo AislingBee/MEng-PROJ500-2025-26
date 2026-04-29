@@ -49,10 +49,10 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from std_msgs.msg import UInt8MultiArray, String
 from sensor_msgs.msg import Imu
 from std_srvs.srv import SetBool
-from motor_test.msg import RobotCommand
+from motor_control.msg import RobotCommand
 HAS_ROBOT_CMD = True
 
-from motor_test import rcu_protocol as rp
+from motor_control import rcu_protocol as rp
 
 # ---------------------------------------------------------------------------
 # IMU conversion constants (from rcu_protocol.py)

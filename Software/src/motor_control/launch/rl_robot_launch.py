@@ -1,4 +1,4 @@
-# Build: colcon build --packages-select motor_test && source install/setup.bash
+# Build: colcon build --packages-select motor_control && source install/setup.bash
 #
 # Full RL-to-hardware pipeline (RCU binary protocol):
 #   thor_policy_runner.py (Ros2RobotBridge) → /robot_command → rcu_udp_bridge ↔ RCU
@@ -18,7 +18,7 @@ def generate_launch_description():
     # 1. rcu_udp_bridge: /robot_command → RCU (192.168.100.10) → /motor_can_feedback, /imu0, /imu1
     #    Replaces ethernet_can_bridge + nucleo_can_bridge + imu_publisher
     rcu_udp_bridge_node = Node(
-        package='motor_test',
+        package='motor_control',
         executable='rcu_udp_bridge.py',
         name='rcu_udp_bridge',
         output='screen',
@@ -34,7 +34,7 @@ def generate_launch_description():
 
     # 2. motor_feedback_listener: /motor_can_feedback → /motor_feedback
     motor_feedback_node = Node(
-        package='motor_test',
+        package='motor_control',
         executable='motor_feedback_listener.py',
         name='motor_feedback_listener',
         output='screen',
@@ -49,7 +49,7 @@ def generate_launch_description():
     # 3. robot_observation_bridge: /motor_feedback + /imu0 → /robot_observation
     #    Uses /imu0 from rcu_udp_bridge (RCU fast IMU at 200 Hz)
     robot_observation_bridge_node = Node(
-        package='motor_test',
+        package='motor_control',
         executable='robot_observation_bridge.py',
         name='robot_observation_bridge',
         output='screen',
@@ -62,7 +62,6 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        rcu_udp_bridge_node,
         rcu_udp_bridge_node,
         motor_feedback_node,
         robot_observation_bridge_node,
