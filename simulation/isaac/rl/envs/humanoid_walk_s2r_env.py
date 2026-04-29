@@ -725,6 +725,12 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         # Forward-only walking: do not reward overspeeding, but punish being below command.
         lin_vel_error = self._commands[:, 0] - root_lin_vel_b[:, 0]
         r_vel_track = torch.exp(-self.cfg.vel_tracking_k * lin_vel_error ** 2)
+        # Reward actual torso/root forward motion, not just swing-foot reach.
+        r_torso_forward = command_active * torch.clamp(
+            root_lin_vel_b[:, 0],
+            min=0.0,
+            max=0.25,
+        )
         r_pose = torch.exp(-self.cfg.pose_k * torch.mean(q_err**2, dim=1))
 
         r_feet_air_time = self._compute_feet_air_time_reward(left_contact, right_contact, command_active)
@@ -861,8 +867,18 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         # Penalise feet being placed too far in front of the torso.
         p_overextended_step = command_active * (
-            left_swing.float() * torch.clamp(left_forward_reach - 0.14, min=0.0)
-            + right_swing.float() * torch.clamp(right_forward_reach - 0.14, min=0.0)
+            left_swing.float() * torch.clamp(left_forward_reach - 0.12, min=0.0)
+            + right_swing.float() * torch.clamp(right_forward_reach - 0.12, min=0.0)
+        )
+
+        # Penalise both feet being ahead of the pelvis/root.
+        # This targets the failure mode where the feet shuffle forward while the torso remains behind.
+        left_x_b = left_pos_b[:, 0]
+        right_x_b = right_pos_b[:, 0]
+
+        p_feet_ahead = command_active * (
+            torch.clamp(left_x_b - 0.03, min=0.0)
+            + torch.clamp(right_x_b - 0.03, min=0.0)
         )
 
         # Extra clearance reward for actual swing feet to stop toe catching.
@@ -898,6 +914,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         positive_terms = {
             "vel_track": r_vel_track,
+            "torso_forward": r_torso_forward,
             "upright": r_upright,
             "survival": survival_term,
             "pose": r_pose,
@@ -931,6 +948,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "foot_tilt": p_foot_tilt,
             "lateral_step": p_lateral_step,
             "overextended_step": p_overextended_step,
+            "feet_ahead": p_feet_ahead,
             "air_time_imbalance": p_air_time_imbalance,
             "contact_time_imbalance": p_contact_time_imbalance,
             "swing_foot_tilt": p_swing_foot_tilt,
@@ -957,6 +975,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             print(
                 "reward contrib | "
                 f"vel: {(self._reward_scale('vel_track') * r_vel_track).mean().item():.4f} | "
+                f"torso_fwd: {(self._reward_scale('torso_forward') * r_torso_forward).mean().item():.4f} | "
                 f"upright: {(self._reward_scale('upright') * r_upright).mean().item():.4f} | "
                 f"air_time: {(self._reward_scale('feet_air_time') * r_feet_air_time).mean().item():.4f} | "
                 f"single_stance: {(self._reward_scale('single_stance') * r_single_stance).mean().item():.4f} | "
@@ -978,10 +997,12 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"forward_step: {(self._reward_scale('forward_step') * r_forward_step).mean().item():.4f} | "
                 f"fwd_com: {(self._reward_scale('forward_com_progress') * r_forward_com_progress).mean().item():.4f} | "
                 f"overstep: {(self._reward_scale('overextended_step') * p_overextended_step).mean().item():.4f} | "
+                f"feet_ahead: {(self._reward_scale('feet_ahead') * p_feet_ahead).mean().item():.4f} | "
                 f"clear_extra: {(self._reward_scale('foot_clearance_extra') * r_foot_clearance_extra).mean().item():.4f} | "
                 f"lateral_step: {(self._reward_scale('lateral_step') * p_lateral_step).mean().item():.4f} | "
                 f"vx: {root_lin_vel_b[:, 0].mean().item():.4f} | "
                 f"vy: {root_lin_vel_b[:, 1].mean().item():.4f} | "
+                f"pitch_g: {projected_gravity_b[:, 0].mean().item():.4f} | "
                 f"left_x: {left_pos_b[:, 0].mean().item():.4f} | "
                 f"right_x: {right_pos_b[:, 0].mean().item():.4f} | "
                 f"left_y: {left_pos_b[:, 1].mean().item():.4f} | "
