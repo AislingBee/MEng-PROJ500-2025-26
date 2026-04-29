@@ -48,7 +48,6 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from std_msgs.msg import UInt8MultiArray, String
-from sensor_msgs.msg import Imu
 from std_srvs.srv import SetBool
 from motor_control.msg import RobotCommand
 HAS_ROBOT_CMD = True
@@ -118,8 +117,6 @@ class RcuUdpBridge(Node):
         # ----- Publishers -----
         self._pub_motor_fb = self.create_publisher(
             UInt8MultiArray, "/motor_can_feedback", 10)
-        self._pub_imu0 = self.create_publisher(Imu, "/imu0", best_effort)
-        self._pub_imu1 = self.create_publisher(Imu, "/imu1", best_effort)
         self._pub_pdu_telem = self.create_publisher(String, "/rcu_pdu_telem", 10)
 
         # ----- Subscribers -----
@@ -242,8 +239,9 @@ class RcuUdpBridge(Node):
 
             if pkt_type == rp.PKT_MOTOR_FB:
                 self._handle_motor_fb(payload)
-            elif pkt_type == rp.PKT_IMU_FAST:
-                self._handle_imu_fast(payload)
+            # IMU disabled — feedback-only observation
+            # elif pkt_type == rp.PKT_IMU_FAST:
+            #     self._handle_imu_fast(payload)
             elif pkt_type == rp.PKT_SLOW_TELEM:
                 self._handle_slow_telem(payload)
             elif pkt_type == rp.PKT_DEBUG_REPLY:
@@ -268,29 +266,30 @@ class RcuUdpBridge(Node):
         msg.data = list(buf)
         self._pub_motor_fb.publish(msg)
 
-    def _handle_imu_fast(self, payload: bytes):
-        """Decode fast IMU and publish /imu0 + /imu1."""
-        d = rp.decode_imu_fast(payload)
-        if not d:
-            return
-        now = self.get_clock().now().to_msg()
-
-        def make_imu(accel_g, gyro_dps):
-            msg = Imu()
-            msg.header.stamp    = now
-            msg.header.frame_id = "imu_link"
-            msg.linear_acceleration.x = accel_g[0] * 9.80665
-            msg.linear_acceleration.y = accel_g[1] * 9.80665
-            msg.linear_acceleration.z = accel_g[2] * 9.80665
-            msg.angular_velocity.x    = gyro_dps[0] * (math.pi / 180.0)
-            msg.angular_velocity.y    = gyro_dps[1] * (math.pi / 180.0)
-            msg.angular_velocity.z    = gyro_dps[2] * (math.pi / 180.0)
-            # Orientation unknown — set covariance to -1 flag
-            msg.orientation_covariance[0] = -1.0
-            return msg
-
-        self._pub_imu0.publish(make_imu(d["imu0_accel_g"], d["imu0_gyro_dps"]))
-        self._pub_imu1.publish(make_imu(d["imu1_accel_g"], d["imu1_gyro_dps"]))
+    # IMU publishing disabled — feedback-only observation
+    # def _handle_imu_fast(self, payload: bytes):
+    #     """Decode fast IMU and publish /imu0 + /imu1."""
+    #     d = rp.decode_imu_fast(payload)
+    #     if not d:
+    #         return
+    #     now = self.get_clock().now().to_msg()
+    #
+    #     def make_imu(accel_g, gyro_dps):
+    #         msg = Imu()
+    #         msg.header.stamp    = now
+    #         msg.header.frame_id = "imu_link"
+    #         msg.linear_acceleration.x = accel_g[0] * 9.80665
+    #         msg.linear_acceleration.y = accel_g[1] * 9.80665
+    #         msg.linear_acceleration.z = accel_g[2] * 9.80665
+    #         msg.angular_velocity.x    = gyro_dps[0] * (math.pi / 180.0)
+    #         msg.angular_velocity.y    = gyro_dps[1] * (math.pi / 180.0)
+    #         msg.angular_velocity.z    = gyro_dps[2] * (math.pi / 180.0)
+    #         # Orientation unknown — set covariance to -1 flag
+    #         msg.orientation_covariance[0] = -1.0
+    #         return msg
+    #
+    #     self._pub_imu0.publish(make_imu(d["imu0_accel_g"], d["imu0_gyro_dps"]))
+    #     self._pub_imu1.publish(make_imu(d["imu1_accel_g"], d["imu1_gyro_dps"]))
 
     def _handle_slow_telem(self, payload: bytes):
         """Decode slow telem, publish JSON to /rcu_pdu_telem, log to CSV."""

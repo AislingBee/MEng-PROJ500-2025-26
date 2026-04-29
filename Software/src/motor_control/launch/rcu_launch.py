@@ -63,7 +63,23 @@ def generate_launch_description():
         ),
 
         # ----------------------------------------------------------------
-        # Robot observation bridge — /motor_can_feedback + /imu0 → /robot_observation
+        # Motor feedback listener — converts /motor_can_feedback → /motor_feedback
+        # ----------------------------------------------------------------
+        Node(
+            package="motor_control",
+            executable="motor_feedback_listener.py",
+            name="motor_feedback_listener",
+            output="screen",
+            parameters=[{
+                "input":            "motor_can_feedback",
+                "motor_count":      12,
+                "names_file":       "joint_limits_config.json",
+                "all_logging_info": False,
+            }],
+        ),
+
+        # ----------------------------------------------------------------
+        # Robot observation bridge — /motor_feedback → /robot_observation
         # ----------------------------------------------------------------
         Node(
             package="motor_control",
@@ -71,7 +87,9 @@ def generate_launch_description():
             name="robot_observation_bridge",
             output="screen",
             parameters=[{
-                "imu_topic": "imu0",
+                "feedback_topic":    "motor_feedback",
+                "observation_topic": "robot_observation",
+                "all_logging_info":  False,
             }],
         ),
     ])
