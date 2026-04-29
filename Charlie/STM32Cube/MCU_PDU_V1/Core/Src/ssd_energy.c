@@ -15,13 +15,22 @@
 #include <ctype.h>
 
 /* -----------------------------------------------------------------------
+ * Polarity configuration
+ * Set to 1 when the energy meter is wired with reversed polarity (current
+ * clamp and/or voltage sense wires connected backwards).  The meter will
+ * return negative current and voltage; this flag takes their absolute values.
+ * Set to 0 to preserve signed values from the meter.
+ * ----------------------------------------------------------------------- */
+#define SSD_REVERSE_POLARITY  1
+
+/* -----------------------------------------------------------------------
  * Timing
  * ----------------------------------------------------------------------- */
 #define SSD_ENERGY_INTERVAL_MS   200U   /* 5 Hz */
 #define SSD_UART_BAUD            19200U
 #define SSD_UART_TIMEOUT_MS      800U
 #define SSD_RX_BUF_LEN           64U
-#define SSD_RAW_TIMEOUT_MS       1000U  /* match selftest ST_SSD_RAW_TIMEOUT_MS */
+#define SSD_RAW_TIMEOUT_MS       200U  /* was 1000ms — 200ms is ample for a RS485 reply */
 #define SSD_INTER_CMD_DELAY_MS   20U
 
 /* -----------------------------------------------------------------------
@@ -87,16 +96,19 @@ static void reapply_uart(void)
  * ----------------------------------------------------------------------- */
 static void flush_rx(void)
 {
-    uint32_t t0 = HAL_GetTick();
+    uint32_t t_abs = HAL_GetTick();  /* absolute deadline */
+    uint32_t t_idle = t_abs;
     __HAL_UART_CLEAR_OREFLAG(&huart3);
     __HAL_UART_CLEAR_NEFLAG(&huart3);
     __HAL_UART_CLEAR_FEFLAG(&huart3);
     __HAL_UART_CLEAR_PEFLAG(&huart3);
-    while ((HAL_GetTick() - t0) < 20U) {
+    while ((HAL_GetTick() - t_abs) < 100U) {  /* hard 100 ms cap */
         if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_RXNE) != RESET) {
             volatile uint8_t dump = (uint8_t)(huart3.Instance->RDR & 0xFFU);
             (void)dump;
-            t0 = HAL_GetTick();
+            t_idle = HAL_GetTick();
+        } else if ((HAL_GetTick() - t_idle) >= 20U) {
+            break;  /* 20 ms idle — bus quiet */
         }
     }
     __HAL_UART_CLEAR_OREFLAG(&huart3);
@@ -147,15 +159,19 @@ static size_t read_capture(uint8_t *buf, size_t len, uint32_t timeout_ms)
 {
     size_t idx = 0U;
     uint8_t ch = 0U;
-    uint32_t t0 = HAL_GetTick();
+    uint32_t t_abs = HAL_GetTick();  /* absolute deadline — never reset */
+    uint32_t t_idle = t_abs;         /* idle timer — reset on each byte */
     bool got_any = false;
 
-    while ((HAL_GetTick() - t0) < timeout_ms && idx < len) {
+    while (idx < len) {
+        uint32_t now = HAL_GetTick();
+        /* Hard absolute timeout — prevents infinite loop on continuous bus noise */
+        if ((now - t_abs) >= timeout_ms) break;
         HAL_StatusTypeDef rc = HAL_UART_Receive(&huart3, &ch, 1U, 20U);
         if (rc == HAL_OK) {
             buf[idx++] = ch;
             got_any = true;
-            t0 = HAL_GetTick();
+            t_idle = HAL_GetTick();
         } else {
             if (rc == HAL_ERROR) {
                 __HAL_UART_CLEAR_OREFLAG(&huart3);
@@ -163,7 +179,7 @@ static size_t read_capture(uint8_t *buf, size_t len, uint32_t timeout_ms)
                 __HAL_UART_CLEAR_FEFLAG(&huart3);
                 __HAL_UART_CLEAR_PEFLAG(&huart3);
             }
-            if (got_any && (HAL_GetTick() - t0) > 50U) {
+            if (got_any && (HAL_GetTick() - t_idle) > 50U) {
                 break;
             }
         }
@@ -305,10 +321,13 @@ void ssd_energy_tick(uint32_t now_ms)
     ok = ok && query_i32(":1GT\r", 'T', &temp_dc);
 
     if (ok) {
-        g_snap.current_a  = (float)current_ma / 1000.0f;
-        /* Meter may return negative voltage depending on connection polarity;
-         * we always want the magnitude. */
-        g_snap.voltage_v  = fabsf((float)vbus_mv / 1000.0f);
+#if SSD_REVERSE_POLARITY
+        g_snap.current_a = fabsf((float)current_ma / 1000.0f);
+        g_snap.voltage_v = fabsf((float)vbus_mv    / 1000.0f);
+#else
+        g_snap.current_a = (float)current_ma / 1000.0f;
+        g_snap.voltage_v = (float)vbus_mv    / 1000.0f;
+#endif
         g_snap.temp_c     = (float)temp_dc    / 10.0f;
         g_snap.last_ok_ms = HAL_GetTick();
         g_snap.valid      = true;

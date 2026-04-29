@@ -11,12 +11,15 @@
 #include "main.h"
 
 #include <string.h>
+#include <stdbool.h>
+
+extern void st_dbg_printf(const char *fmt, ...);
 
 /* -----------------------------------------------------------------------
  * Private constants
  * ----------------------------------------------------------------------- */
 #define FPGA_ADDR_8BIT        (0x55U << 1)
-#define FPGA_I2C_TIMEOUT_MS   10U
+#define FPGA_I2C_TIMEOUT_MS   50U   /* Increased for clock stretching */
 #define FPGA_MON_INTERVAL_MS  200U
 
 /* Number of contiguous registers starting at 0x00 */
@@ -48,8 +51,18 @@ static fpga_snapshot_t g_snap;
 static uint32_t        g_next_ms;
 
 /* -----------------------------------------------------------------------
- * Private helpers
+ * I2C low-level
  * ----------------------------------------------------------------------- */
+
+static void i2c4_recover(void)
+{
+    /* Reset only the peripheral registers — do NOT call HAL_I2C_DeInit which
+     * triggers MspDeInit and puts SCL/SDA GPIO into analog mode, corrupting
+     * the bus.  RCC reset clears all I2C registers while leaving GPIO intact. */
+    __HAL_RCC_I2C4_FORCE_RESET();
+    __HAL_RCC_I2C4_RELEASE_RESET();
+    HAL_I2C_Init(&hi2c4);
+}
 
 /**
  * Write register address then read len bytes using a combined I2C transaction
@@ -60,10 +73,15 @@ static uint32_t        g_next_ms;
  */
 static bool fpga_read_regs(uint8_t start_reg, uint8_t *buf, uint8_t len)
 {
-    return HAL_I2C_Mem_Read(&hi2c4, FPGA_ADDR_8BIT,
-                            start_reg, I2C_MEMADD_SIZE_8BIT,
-                            buf, len,
-                            FPGA_I2C_TIMEOUT_MS) == HAL_OK;
+    HAL_StatusTypeDef st = HAL_I2C_Mem_Read(&hi2c4, FPGA_ADDR_8BIT,
+                                            start_reg, I2C_MEMADD_SIZE_8BIT,
+                                            buf, len,
+                                            FPGA_I2C_TIMEOUT_MS);
+    if (st != HAL_OK) {
+        i2c4_recover();
+        return false;
+    }
+    return true;
 }
 
 /* -----------------------------------------------------------------------
@@ -86,12 +104,28 @@ void fpga_mon_tick(uint32_t now_ms)
     uint8_t block[FPGA_BLOCK_LEN];
     uint8_t ver = 0U;
 
+    static bool i2c_fail_logged = false;
     if (!fpga_read_regs(0x00U, block, FPGA_BLOCK_LEN)) {
+        if (!i2c_fail_logged) {
+            i2c_fail_logged = true;
+            st_dbg_printf("[FPGA] I2C read 0x00-0x06 FAILED\r\n");
+        }
+        /* Hold last good data for 1000ms before invalidating */
+        if (g_snap.valid && (now_ms - g_snap.last_read_ms) > 1000U) {
+            g_snap.valid = false;
+        }
         return;
     }
 
+    /* Delay between transactions — FPGA I2C slave needs recovery time */
+    HAL_Delay(2);
+
     /* Version is non-contiguous — separate Mem_Read to 0x7F */
     if (!fpga_read_regs(FPGA_REG_VERSION, &ver, 1U)) {
+        /* Hold last good data for 1000ms before invalidating */
+        if (g_snap.valid && (now_ms - g_snap.last_read_ms) > 1000U) {
+            g_snap.valid = false;
+        }
         return;
     }
 

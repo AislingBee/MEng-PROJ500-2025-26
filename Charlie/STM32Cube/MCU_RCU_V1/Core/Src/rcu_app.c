@@ -188,6 +188,23 @@ void RCU_App_Task(void)
         rcu_telem_payload_t tpkt;
         telem_pack_slow(&tpkt);
         eth_udp_send_telem(&tpkt);
+
+        /* DIAG: print key validity flags and PDU CAN HB age every 2 s */
+        static uint32_t s_diag_next = 0U;
+        if (now >= s_diag_next) {
+            s_diag_next = now + 2000U;
+            const pdu_telem_t *pdu = mcan_pdu_get_telem();
+            uint32_t hb_age = (pdu->hb_last_ms > 0U) ? (now - pdu->hb_last_ms) : 99999U;
+            uint32_t fpga_age = (pdu->fpga_last_ms > 0U) ? (now - pdu->fpga_last_ms) : 99999U;
+            uint32_t rails_age = (pdu->rails_last_ms > 0U) ? (now - pdu->rails_last_ms) : 99999U;
+            st_dbg_printf("[DIAG] telem TX: fpga_v=%d(age=%lums) rails_v=%d(age=%lums) "
+                          "ssd_v=%d local_v=%d  pdu_hb_age=%lums  dma_rst=%lu\r\n",
+                          (int)pdu->fpga_valid,  (unsigned long)fpga_age,
+                          (int)pdu->rails_valid, (unsigned long)rails_age,
+                          (int)pdu->ssd_valid,   (int)pdu->local_valid,
+                          (unsigned long)hb_age,
+                          (unsigned long)eth_udp_get_dma_resets());
+        }
     }
 
     /* 5. Fast loop (200 Hz): fast IMU packet + motor feedback */

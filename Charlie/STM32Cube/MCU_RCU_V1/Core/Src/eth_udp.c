@@ -73,6 +73,10 @@ static volatile bool g_force_telem = false;
 
 /* CAN loopback result: 0=untested, 1=right OK, 2=left OK, 3=both, 0xFF=fail */
 static uint8_t g_can_loopback_result = 0U;
+
+/* ETH DMA watchdog — counts how many times we have cleared a DMA stall. */
+static uint32_t g_tx_watchdog_resets = 0U;
+
 /* Forward declaration — defined below send_debug_reply */
 static void handle_debug_cmd(const uint8_t *payload, uint16_t len);
 /* -----------------------------------------------------------------------
@@ -134,7 +138,16 @@ static void send_packet(uint16_t dst_port, uint8_t type,
 
     uint16_t total = (uint16_t)RCU_PKT_HDR_SIZE + payload_len;
     struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, total, PBUF_RAM);
-    if (!p) return;
+    if (!p) {
+        static uint32_t s_alloc_fail_last = 0U;
+        uint32_t now_p = HAL_GetTick();
+        if (now_p - s_alloc_fail_last >= 1000U) {
+            s_alloc_fail_last = now_p;
+            st_dbg_printf("[ETH] pbuf_alloc FAILED type=0x%02X len=%u\r\n",
+                          (unsigned)type, (unsigned)total);
+        }
+        return;
+    }
 
     rcu_pkt_hdr_t hdr;
     hdr.magic = RCU_PKT_MAGIC;
@@ -278,6 +291,35 @@ static void handle_debug_cmd(const uint8_t *payload, uint16_t len)
         send_debug_reply();
         break;
 
+    case RCU_DBGCMD_MOTOR_ENABLE:
+        /* payload[1]=bus, payload[2]=motor_id, payload[3]=enable(1/0),
+         * payload[4]=clear_fault(1/0).
+         * Uses caller-supplied bus index so the bench user can target
+         * FDCAN1 (bus=0, right) or FDCAN3 (bus=1, left) directly,
+         * bypassing the MOTOR_BUS_MAP that assumes the 12-DOF rig layout.
+         * On enable: write run_mode=0 (MIT) first, then COMM_ENABLE. */
+        if (len >= 5U) {
+            uint8_t en_bus  = payload[1];
+            uint8_t en_mid  = payload[2];
+            bool    en_do   = (payload[3] != 0U);
+            bool    en_clr  = (payload[4] != 0U);
+            st_dbg_printf("[DBG] MOTOR_ENABLE bus=%u id=%u en=%u clr=%u\r\n",
+                          (unsigned)en_bus, (unsigned)en_mid,
+                          (unsigned)en_do,  (unsigned)en_clr);
+            if (en_do) {
+                if (en_clr) {
+                    motor_bus_send_enable(en_bus, en_mid, false, true);
+                }
+                /* Write run_mode=0 (MIT) before COMM_ENABLE */
+                motor_bus_send_param_write(en_bus, en_mid, RS04_PARAM_RUN_MODE, 0.0f);
+                motor_bus_send_enable(en_bus, en_mid, true, false);
+            } else {
+                motor_bus_send_enable(en_bus, en_mid, false, en_clr);
+            }
+        }
+        send_debug_reply();
+        break;
+
     default:
         st_dbg_printf("[DBG] unknown subcmd 0x%02X\r\n", payload[0]);
         send_debug_reply();
@@ -302,11 +344,51 @@ void eth_udp_init(void)
     }
 }
 
+/* ETH DMA recovery: clears sticky FBE/BUSY state caused by power-bus
+ * switching transients during arm/disarm cycles.  The STM32H7 ETH DMA can
+ * set the Fatal Bus Error bit (DMACSR.FBE) which leaves TX descriptors
+ * permanently OWN'd by DMA; HAL_ETH_Transmit then returns HAL_ERROR on
+ * every call, silently stopping all outbound UDP telemetry.
+ *
+ * Recovery: Stop the MAC+DMA (flushing descriptors), force a link-down
+ * event so ethernet_link_check_state will call HAL_ETH_Start with a
+ * fresh DMA descriptor ring on the next 100 ms link poll. */
+extern void ethernet_link_check_state(struct netif *netif);
+extern struct netif gnetif;
+extern ETH_HandleTypeDef heth;
+
+static void eth_dma_recover(void)
+{
+    g_tx_watchdog_resets++;
+    st_dbg_printf("[ETH] DMA error (ErrorCode=0x%08lX DMACSR=0x%08lX) — "
+                  "restarting ETH MAC, reset #%lu\r\n",
+                  (unsigned long)heth.ErrorCode,
+                  (unsigned long)heth.Instance->DMACSR,
+                  (unsigned long)g_tx_watchdog_resets);
+    /* Clear the error flags so they don't re-trigger immediately */
+    heth.ErrorCode = HAL_ETH_ERROR_NONE;
+    /* Stop MAC+DMA — flushes TX descriptor ring */
+    HAL_ETH_Stop(&heth);
+    /* Mark link as down; next ethernet_link_check_state (100 ms) will
+     * detect the PHY is still up and call HAL_ETH_Start. */
+    netif_set_link_down(&gnetif);
+    /* Force immediate re-check instead of waiting 100 ms */
+    ethernet_link_check_state(&gnetif);
+}
+
 void eth_udp_tick(uint32_t now_ms)
 {
     (void)now_ms;
     MX_LWIP_Process();
     process_rx();
+
+    /* Check for ETH DMA errors that permanently block transmission.
+     * HAL_ETH_ERROR_DMA is set when DMACSR.FBE fires (Fatal Bus Error).
+     * HAL_ETH_ERROR_BUSY is set when ETH_Prepare_Tx_Descriptors finds all
+     * TX slots still DMA-owned (happens on the call AFTER an FBE return). */
+    if (heth.ErrorCode & (HAL_ETH_ERROR_DMA | HAL_ETH_ERROR_BUSY)) {
+        eth_dma_recover();
+    }
 }
 
 void eth_udp_send_telem(const rcu_telem_payload_t *payload)
@@ -337,4 +419,9 @@ bool eth_udp_consume_force_telem(void)
     if (!g_force_telem) return false;
     g_force_telem = false;
     return true;
+}
+
+uint32_t eth_udp_get_dma_resets(void)
+{
+    return g_tx_watchdog_resets;
 }

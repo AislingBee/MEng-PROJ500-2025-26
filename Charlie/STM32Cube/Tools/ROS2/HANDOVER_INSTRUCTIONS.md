@@ -113,7 +113,10 @@ Payload: **4 + n×10 bytes** (n ≤ 16 slots).
 
 Header (4 bytes): `count(u8), pad[3]`
 
-Per slot (10 bytes): `bus(u8), motor_id(u8), pos_u16, vel_u16, cur_u16, error(u8), pad(u8)`
+Per slot (10 bytes): `bus(u8), motor_id(u8), pos_u16, vel_u16, cur_u16, error(u8), mode_status(u8)`
+
+`mode_status` is bits [23:22] of the RS04 Type-2 CAN ID: **0=idle/reset, 1=calibrating, 2=MIT running**.
+A motor that has been enabled and is accepting MIT commands will show `mode_status=2`.
 
 Decoding pos/vel/torque from uint16:
 ```python
@@ -186,9 +189,15 @@ Payload: `subcmd(u8) [+ extra bytes]`
 |---|---|---|---|
 | PING | 0x01 | — | Request immediate debug reply |
 | BUZZ | 0x02 | — | 200ms buzzer pulse + PDU buzzer |
+| LED_BLINK | 0x03 | — | Blink orange LED 3× |
+| CAN_LOOPBACK | 0x04 | — | Run FDCAN1+FDCAN3 loopback, result in reply |
+| FORCE_TELEM | 0x05 | — | Force immediate slow-telem TX |
 | ASSERT_PDU_FAULT | 0x07 | `1=assert, 0=clear` | Assert/clear PDU power fault |
 | SOFT_RESET | 0x08 | `0=RCU only` | NVIC_SystemReset() |
 | SET_TELEM_RATE | 0x09 | Hz (5/10/20) | Change slow telem rate |
+| MOTOR_BUS_CTRL | 0x0A | bitmask: bit0=L_STB, bit1=R_STB | CAN transceiver standby control |
+| REQUEST_SUPV_DUMP | 0x0B | — | Force supervisory state dump to UART |
+| MOTOR_ENABLE | 0x0C | `bus(u8), motor_id(u8), enable(u8), clr_fault(u8)` | Enable/disable one motor directly, bypasses MOTOR_BUS_MAP — use for bench testing |
 
 **Full e-stop procedure uses TWO commands:**
 1. Type 0x11 with `enable_mask=0` (stops motors via CAN Type 4)
@@ -268,18 +277,25 @@ sock.sendto(rp.encode_motor_supervisory(enable_mask=0x0FFF,
 
 ---
 
-## 6. Motor Enable Sequence (CSP Mode)
+## 6. Motor Enable Sequence
 
-The RCU firmware handles this automatically when Type 0x11 is received with
-`enable_mask != 0` and `ctrl_mode=1`. For reference, the CAN frames sent are:
+The RCU firmware handles the enable sequence automatically when Type 0x11 is received
+with `enable_mask != 0`. For reference, the CAN frames sent per motor are:
 
-1. **RS04 Type 18** param write: `run_mode = 5` (CSP position mode)  
-   *Must be sent before enable — motor ignores mode change while running*
-2. **RS04 Type 3** enable
-3. **RS04 Type 18** param write: `limit_spd = 15.0` rad/s (max speed cap)
+**CSP mode (`ctrl_mode=1`):**
+1. **RS04 Type 18** param write: `run_mode = 5` (CSP position mode)
+2. **RS04 Type 3** COMM_ENABLE
+3. **RS04 Type 18** param write: `limit_spd = 15.0` rad/s
 
-The firmware then accepts per-cycle position commands via RS04 Type 18 `loc_ref` writes
-at 200Hz, which arrive as Type 0x10 motor command packets.
+**MIT mode (`ctrl_mode=0`, default):**
+1. **RS04 Type 18** param write: `run_mode = 0` (MIT / operation control mode)
+2. **RS04 Type 3** COMM_ENABLE
+
+The `run_mode` write must precede COMM_ENABLE in both cases — the motor ignores mode
+changes while already enabled. The firmware enforces this order.
+
+**Firmware default is MIT (`ctrl_mode=0`).** If you want CSP, you must send Type 0x11
+with `ctrl_mode=1` explicitly.
 
 ---
 
@@ -417,21 +433,23 @@ ros2 service call /rcu_motor_estop std_srvs/srv/SetBool "{data: false}"
 Phase 1 uses CSP position control (parameter write, proven simple and robust).
 Phase 2 uses MIT impedance control (Type 1 CAN frame with full pos/vel/kp/kd/torque)
 for the RL policy output. **No firmware changes are needed** — only the supervisory
-packet changes.
+packet `ctrl_mode` field changes.
+
+> **Note:** The firmware now defaults to MIT (`g_ctrl_mode=0`). Phase 1 CSP requires
+> explicitly sending `ctrl_mode=1` in every Type 0x11 packet.
 
 ### Activating Phase 2
 
 ```python
-# Send Type 0x11 with ctrl_mode=0 (MIT)
+# Send Type 0x11 with ctrl_mode=0 (MIT) — this is already the firmware default
 sock.sendto(rp.encode_motor_supervisory(
     enable_mask=0x0FFF,
     clear_fault_mask=0x0FFF,
-    ctrl_mode=0     # ← was 1 for CSP, now 0 for MIT
+    ctrl_mode=0     # MIT impedance control
 ), (rp.RCU_IP, rp.PORT_CMD))
 ```
 
-The motor firmware defaults to MIT/operation mode on power-on, so no `run_mode`
-parameter write is needed when switching to ctrl_mode=0.
+The firmware writes `run_mode=0` before COMM_ENABLE, then accepts Type 1 CAN frames.
 
 ### Type 0x10 command entries in MIT mode
 

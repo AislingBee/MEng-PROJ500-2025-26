@@ -1,44 +1,21 @@
-04:47:00 **** Incremental Build of configuration Debug for project MCU_RCU_V1 ****
+04:22:05 **** Incremental Build of configuration Debug for project MCU_RCU_V1 ****
 make -j16 all 
-arm-none-eabi-gcc "../Core/Src/eth_udp.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DRCU_BUILD_MODE_RUNTIME -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H723xx -c -I../Core/Inc -I../../Shared/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../Drivers/CMSIS/Include -I../LWIP/App -I../LWIP/Target -I../Middlewares/Third_Party/LwIP/src/include -I../Middlewares/Third_Party/LwIP/system -I../Drivers/BSP/Components/lan8742 -I../Middlewares/Third_Party/LwIP/src/include/netif/ppp -I../Middlewares/Third_Party/LwIP/src/include/lwip -I../Middlewares/Third_Party/LwIP/src/include/lwip/apps -I../Middlewares/Third_Party/LwIP/src/include/lwip/priv -I../Middlewares/Third_Party/LwIP/src/include/lwip/prot -I../Middlewares/Third_Party/LwIP/src/include/netif -I../Middlewares/Third_Party/LwIP/src/include/compat/posix -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/arpa -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/net -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/sys -I../Middlewares/Third_Party/LwIP/src/include/compat/stdc -I../Middlewares/Third_Party/LwIP/system/arch -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/eth_udp.d" -MT"Core/Src/eth_udp.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/eth_udp.o"
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DRCU_BUILD_MODE_RUNTIME -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H723xx -c -I../Core/Inc -I../../Shared/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../Drivers/CMSIS/Include -I../LWIP/App -I../LWIP/Target -I../Middlewares/Third_Party/LwIP/src/include -I../Middlewares/Third_Party/LwIP/system -I../Drivers/BSP/Components/lan8742 -I../Middlewares/Third_Party/LwIP/src/include/netif/ppp -I../Middlewares/Third_Party/LwIP/src/include/lwip -I../Middlewares/Third_Party/LwIP/src/include/lwip/apps -I../Middlewares/Third_Party/LwIP/src/include/lwip/priv -I../Middlewares/Third_Party/LwIP/src/include/lwip/prot -I../Middlewares/Third_Party/LwIP/src/include/netif -I../Middlewares/Third_Party/LwIP/src/include/compat/posix -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/arpa -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/net -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/sys -I../Middlewares/Third_Party/LwIP/src/include/compat/stdc -I../Middlewares/Third_Party/LwIP/system/arch -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc "../Core/Src/rcu_app.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DRCU_BUILD_MODE_RUNTIME -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H723xx -c -I../Core/Inc -I../../Shared/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../Drivers/CMSIS/Include -I../LWIP/App -I../LWIP/Target -I../Middlewares/Third_Party/LwIP/src/include -I../Middlewares/Third_Party/LwIP/system -I../Drivers/BSP/Components/lan8742 -I../Middlewares/Third_Party/LwIP/src/include/netif/ppp -I../Middlewares/Third_Party/LwIP/src/include/lwip -I../Middlewares/Third_Party/LwIP/src/include/lwip/apps -I../Middlewares/Third_Party/LwIP/src/include/lwip/priv -I../Middlewares/Third_Party/LwIP/src/include/lwip/prot -I../Middlewares/Third_Party/LwIP/src/include/netif -I../Middlewares/Third_Party/LwIP/src/include/compat/posix -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/arpa -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/net -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/sys -I../Middlewares/Third_Party/LwIP/src/include/compat/stdc -I../Middlewares/Third_Party/LwIP/system/arch -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/rcu_app.d" -MT"Core/Src/rcu_app.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/rcu_app.o"
+arm-none-eabi-gcc "../Core/Src/telem_pack.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DRCU_BUILD_MODE_RUNTIME -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H723xx -c -I../Core/Inc -I../../Shared/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../Drivers/CMSIS/Include -I../LWIP/App -I../LWIP/Target -I../Middlewares/Third_Party/LwIP/src/include -I../Middlewares/Third_Party/LwIP/system -I../Drivers/BSP/Components/lan8742 -I../Middlewares/Third_Party/LwIP/src/include/netif/ppp -I../Middlewares/Third_Party/LwIP/src/include/lwip -I../Middlewares/Third_Party/LwIP/src/include/lwip/apps -I../Middlewares/Third_Party/LwIP/src/include/lwip/priv -I../Middlewares/Third_Party/LwIP/src/include/lwip/prot -I../Middlewares/Third_Party/LwIP/src/include/netif -I../Middlewares/Third_Party/LwIP/src/include/compat/posix -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/arpa -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/net -I../Middlewares/Third_Party/LwIP/src/include/compat/posix/sys -I../Middlewares/Third_Party/LwIP/src/include/compat/stdc -I../Middlewares/Third_Party/LwIP/system/arch -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/telem_pack.d" -MT"Core/Src/telem_pack.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/telem_pack.o"
 arm-none-eabi-gcc -o "MCU_RCU_V1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\charl\Documents\STM32Cube\MCU_RCU_V1\STM32H723VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MCU_RCU_V1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: MCU_RCU_V1.elf
  
 arm-none-eabi-size  MCU_RCU_V1.elf 
 arm-none-eabi-objdump -h -S MCU_RCU_V1.elf  > "MCU_RCU_V1.list"
    text	   data	    bss	    dec	    hex	filename
- 130600	   1364	  42188	 174152	  2a848	MCU_RCU_V1.elf
+ 133320	   1692	  42212	 177224	  2b448	MCU_RCU_V1.elf
 Finished building: default.size.stdout
  
 Finished building: MCU_RCU_V1.list
  
-04:47:07 **** Incremental Build of configuration Debug for project MCU_RCU_V1 ****
+04:22:13 **** Incremental Build of configuration Debug for project MCU_RCU_V1 ****
 make -j16 all 
 arm-none-eabi-size  MCU_RCU_V1.elf 
    text	   data	    bss	    dec	    hex	filename
- 130600	   1364	  42188	 174152	  2a848	MCU_RCU_V1.elf
-Finished building: default.size.stdout
- 
-16:52:45 **** Incremental Build of configuration Debug for project MCU_PDU_V1 ****
-make -j16 all 
-arm-none-eabi-gcc "../Core/Src/pdu_adc.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DPDU_BUILD_MODE_RUNTIME -DUSE_HAL_DRIVER -DSTM32G474xx -c -I../Core/Inc -I../../Shared/Inc -I../Drivers/STM32G4xx_HAL_Driver/Inc -I../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32G4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/pdu_adc.d" -MT"Core/Src/pdu_adc.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/pdu_adc.o"
-arm-none-eabi-gcc -o "MCU_PDU_V1.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\charl\Documents\STM32Cube\MCU_PDU_V1\STM32G474RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MCU_PDU_V1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: MCU_PDU_V1.elf
- 
-arm-none-eabi-size  MCU_PDU_V1.elf 
-arm-none-eabi-objdump -h -S MCU_PDU_V1.elf  > "MCU_PDU_V1.list"
-   text	   data	    bss	    dec	    hex	filename
-  59140	    468	   2964	  62572	   f46c	MCU_PDU_V1.elf
-Finished building: default.size.stdout
- 
-Finished building: MCU_PDU_V1.list
- 
-16:53:03 **** Incremental Build of configuration Debug for project MCU_PDU_V1 ****
-make -j16 all 
-arm-none-eabi-size  MCU_PDU_V1.elf 
-   text	   data	    bss	    dec	    hex	filename
-  59140	    468	   2964	  62572	   f46c	MCU_PDU_V1.elf
+ 133320	   1692	  42212	 177224	  2b448	MCU_RCU_V1.elf
 Finished building: default.size.stdout
  

@@ -6,3 +6,5 @@
 ../Core/Src/rs04.c:76:6:rs04_decode_feedback	4
 ../Core/Src/rs04.c:106:6:rs04_encode_enable	1
 ../Core/Src/rs04.c:114:6:rs04_encode_stop	2
+../Core/Src/rs04.c:125:6:rs04_encode_param_write	1
+../Core/Src/rs04.c:139:6:rs04_encode_set_zero	1

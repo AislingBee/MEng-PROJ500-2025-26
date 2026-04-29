@@ -22,6 +22,7 @@
 #include "main.h"
 
 #include <stdarg.h>
+extern void st_dbg_printf(const char *fmt, ...);
 #include <stdio.h>
 #include <string.h>
 
@@ -175,14 +176,56 @@ void mcan_pdu_init(void)
     (void)HAL_FDCAN_Start(&hfdcan2);
 }
 
+/* -----------------------------------------------------------------------
+ * FDCAN2 bus-off recovery — mirrors the same pattern used on the PDU side.
+ * Protects against CAN bus transients (e.g. from motor bus Stop/Start during
+ * loopback tests or contactor switching) that increment RCU TEC to 256.
+ * ----------------------------------------------------------------------- */
+static uint32_t g_fdcan2_busoff_last_ms;
+
+static void check_fdcan2_bus_off(uint32_t now_ms)
+{
+    if ((now_ms - g_fdcan2_busoff_last_ms) < 1000U) return;
+
+    FDCAN_ProtocolStatusTypeDef psr;
+    if (HAL_FDCAN_GetProtocolStatus(&hfdcan2, &psr) != HAL_OK) return;
+
+    if (psr.BusOff) {
+        g_fdcan2_busoff_last_ms = now_ms;
+        st_dbg_printf("[CAN2] FDCAN2 bus-off detected — recovering\r\n");
+        HAL_FDCAN_Stop(&hfdcan2);
+        HAL_FDCAN_Start(&hfdcan2);
+        st_dbg_printf("[CAN2] FDCAN2 restarted\r\n");
+    }
+}
+
 void mcan_pdu_tick(uint32_t now_ms)
 {
+    /* Recover from bus-off before any TX or RX */
+    check_fdcan2_bus_off(now_ms);
+
     /* Drain RX FIFO */
     FDCAN_RxHeaderTypeDef rxh;
     uint8_t rxd[8];
     while (HAL_FDCAN_GetRxFifoFillLevel(&hfdcan2, FDCAN_RX_FIFO0) > 0U) {
         if (HAL_FDCAN_GetRxMessage(&hfdcan2, FDCAN_RX_FIFO0, &rxh, rxd) == HAL_OK) {
             handle_rx(rxh.Identifier, rxd);
+        }
+    }
+
+    /* DIAG: warn if PDU heartbeat (0x511) stops arriving */
+    {
+        static uint32_t s_hb_warn_next = 0U;
+        if (g_telem.hb_last_ms > 0U &&
+            (now_ms - g_telem.hb_last_ms) > 2000U &&
+            now_ms >= s_hb_warn_next)
+        {
+            s_hb_warn_next = now_ms + 3000U;
+            uint32_t psr = hfdcan2.Instance->PSR;
+            st_dbg_printf("[CAN2] PDU HB missing %lums  PSR=0x%08lX  ECR=0x%08lX\r\n",
+                          (unsigned long)(now_ms - g_telem.hb_last_ms),
+                          (unsigned long)psr,
+                          (unsigned long)hfdcan2.Instance->ECR);
         }
     }
 

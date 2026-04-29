@@ -1,10 +1,10 @@
-04:47:07 **** Incremental Build of configuration Debug for project MCU_RCU_V1 ****
+04:22:13 **** Incremental Build of configuration Debug for project MCU_RCU_V1 ****
 make -j16 all 
 arm-none-eabi-size  MCU_RCU_V1.elf 
    text	   data	    bss	    dec	    hex	filename
- 130600	   1364	  42188	 174152	  2a848	MCU_RCU_V1.elf
+ 133320	   1692	  42212	 177224	  2b448	MCU_RCU_V1.elf
 Finished building: default.size.stdout
  
 
-04:47:08 Build Finished. 0 errors, 0 warnings. (took 440ms)
+04:22:14 Build Finished. 0 errors, 0 warnings. (took 440ms)
 

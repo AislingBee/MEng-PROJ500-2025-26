@@ -38,7 +38,7 @@ extern void st_dbg_printf(const char *fmt, ...);
  * TLA2528 constants
  * ----------------------------------------------------------------------- */
 #define TLA_ADDR_8BIT         (0x17U << 1)
-#define TLA_I2C_TIMEOUT_MS    10U
+#define TLA_I2C_TIMEOUT_MS    50U   /* Increased for clock stretching */
 
 #define TLA_OP_SINGLE_READ    0x10U
 #define TLA_OP_SINGLE_WRITE   0x08U
@@ -93,21 +93,42 @@ static float conv_therm(float vadc)
 }
 
 /* -----------------------------------------------------------------------
+ * I2C error recovery
+ * ----------------------------------------------------------------------- */
+static void i2c4_recover(void)
+{
+    /* Reset only the peripheral registers — do NOT call HAL_I2C_DeInit which
+     * triggers MspDeInit and puts SCL/SDA GPIO into analog mode, corrupting
+     * the bus.  RCC reset clears all I2C registers while leaving GPIO intact. */
+    __HAL_RCC_I2C4_FORCE_RESET();
+    __HAL_RCC_I2C4_RELEASE_RESET();
+    HAL_I2C_Init(&hi2c4);
+}
+
+/* -----------------------------------------------------------------------
  * TLA2528 low-level helpers
  * ----------------------------------------------------------------------- */
 static bool tla_write_reg(uint8_t reg, uint8_t value)
 {
     uint8_t tx[3] = { TLA_OP_SINGLE_WRITE, reg, value };
-    return HAL_I2C_Master_Transmit(&hi2c4, TLA_ADDR_8BIT,
-                                   tx, sizeof(tx),
-                                   TLA_I2C_TIMEOUT_MS) == HAL_OK;
+    HAL_StatusTypeDef st = HAL_I2C_Master_Transmit(&hi2c4, TLA_ADDR_8BIT,
+                                                    tx, sizeof(tx),
+                                                    TLA_I2C_TIMEOUT_MS);
+    if (st != HAL_OK) {
+        i2c4_recover();
+        return false;
+    }
+    return true;
 }
 
 static bool tla_init(void)
 {
     if (!tla_write_reg(TLA_REG_PIN_CFG,    0x00U)) return false;
+    HAL_Delay(1);
     if (!tla_write_reg(TLA_REG_DATA_CFG,   0x00U)) return false;
+    HAL_Delay(1);
     if (!tla_write_reg(TLA_REG_OSR_CFG,    0x00U)) return false;
+    HAL_Delay(1);
     if (!tla_write_reg(TLA_REG_OPMODE_CFG, 0x00U)) return false;
     return true;
 }
@@ -117,9 +138,11 @@ static bool tla_read_channel(uint8_t ch, uint16_t *raw12)
     uint8_t rx[2] = { 0U, 0U };
     if (ch > 7U) return false;
     if (!tla_write_reg(TLA_REG_CHANNEL_SEL, ch & 0x0FU)) return false;
-    if (HAL_I2C_Master_Receive(&hi2c4, TLA_ADDR_8BIT,
-                               rx, sizeof(rx),
-                               TLA_I2C_TIMEOUT_MS) != HAL_OK) {
+    HAL_StatusTypeDef st = HAL_I2C_Master_Receive(&hi2c4, TLA_ADDR_8BIT,
+                                                   rx, sizeof(rx),
+                                                   TLA_I2C_TIMEOUT_MS);
+    if (st != HAL_OK) {
+        i2c4_recover();
         return false;
     }
     *raw12 = (uint16_t)(((uint16_t)rx[0] << 4) | ((uint16_t)rx[1] >> 4));
@@ -201,7 +224,14 @@ static bool ladc_read_avg(ADC_HandleTypeDef *hadc, uint32_t channel,
  * ----------------------------------------------------------------------- */
 static bool read_ext_adc(void)
 {
-    if (!tla_init()) return false;
+    static bool init_fail_logged = false;
+    if (!tla_init()) {
+        if (!init_fail_logged) {
+            init_fail_logged = true;
+            st_dbg_printf("[ExtADC] tla_init() FAILED\r\n");
+        }
+        return false;
+    }
 
     uint16_t raw[PDU_EADC_NCH];
 
@@ -304,6 +334,11 @@ void pdu_adc_tick(uint32_t now_ms)
     if (read_ext_adc()) {
         g_ext.valid        = true;
         g_ext.last_read_ms = ts;
+    } else {
+        /* Hold last good data for 1000ms before invalidating */
+        if (g_ext.valid && (now_ms - g_ext.last_read_ms) > 1000U) {
+            g_ext.valid = false;
+        }
     }
 
     if (read_local_adc()) {
@@ -315,13 +350,19 @@ void pdu_adc_tick(uint32_t now_ms)
                           (double)g_local.therm0_c, (double)g_local.therm1_c,
                           (double)g_local.therm2_c, (double)g_local.v_source_v);
         }
-    } else if (!g_ladc_logged) {
-        g_ladc_logged = true;
-        /* Probe each channel individually to identify which HAL call fails */
-        uint16_t raw = 0U;
-        int r3  = (ladc_read_one(&hadc2, ADC_CHANNEL_3,  &raw) ? (int)raw : -1);
-        int r15 = (ladc_read_one(&hadc1, ADC_CHANNEL_15, &raw) ? (int)raw : -1);
-        st_dbg_printf("[LADC] read_local_adc failed: CH3=%d CH15=%d\r\n", r3, r15);
+    } else {
+        /* Hold last good data for 1000ms before invalidating */
+        if (g_local.valid && (now_ms - g_local.last_read_ms) > 1000U) {
+            g_local.valid = false;
+        }
+        if (!g_ladc_logged) {
+            g_ladc_logged = true;
+            /* Probe each channel individually to identify which HAL call fails */
+            uint16_t raw = 0U;
+            int r3  = (ladc_read_one(&hadc2, ADC_CHANNEL_3,  &raw) ? (int)raw : -1);
+            int r15 = (ladc_read_one(&hadc1, ADC_CHANNEL_15, &raw) ? (int)raw : -1);
+            st_dbg_printf("[LADC] read_local_adc failed: CH3=%d CH15=%d\r\n", r3, r15);
+        }
     }
 }
 

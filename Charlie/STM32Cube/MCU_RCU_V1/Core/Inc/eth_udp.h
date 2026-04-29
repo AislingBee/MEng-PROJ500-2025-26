@@ -70,6 +70,12 @@ void eth_udp_send_supervision(const uint8_t *event_data, uint16_t len);
  */
 bool eth_udp_consume_force_telem(void);
 
+/**
+ * @brief  Returns the number of ETH DMA stalls recovered since boot.
+ *         Non-zero means arm/disarm transients triggered the watchdog.
+ */
+uint32_t eth_udp_get_dma_resets(void);
+
 #ifdef __cplusplus
 }
 #endif
