@@ -7,4 +7,7 @@
 ../Core/Src/motor_bus.c:152:6:motor_bus_send_cmd	24	static
 ../Core/Src/motor_bus.c:160:6:motor_bus_send_enable	40	static
 ../Core/Src/motor_bus.c:176:24:motor_bus_get_feedback	16	static
-../Core/Src/motor_bus.c:190:9:motor_bus_loopback_test	256	static
+../Core/Src/motor_bus.c:183:6:motor_bus_send_param_write	32	static
+../Core/Src/motor_bus.c:194:6:motor_bus_send_set_zero	32	static
+../Core/Src/motor_bus.c:214:13:fdcan_loopback_one	128	static
+../Core/Src/motor_bus.c:291:9:motor_bus_loopback_test	16	static

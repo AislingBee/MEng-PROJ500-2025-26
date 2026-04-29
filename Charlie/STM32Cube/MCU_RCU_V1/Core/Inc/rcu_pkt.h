@@ -54,7 +54,7 @@ extern "C" {
 #define RCU_DBGCMD_SET_TELEM_RATE    0x09U /* payload[1]: Hz (5, 10, or 20) */
 #define RCU_DBGCMD_MOTOR_BUS_CTRL    0x0AU /* payload[1]: bit0=L_STB, bit1=R_STB */
 #define RCU_DBGCMD_REQUEST_SUPV_DUMP 0x0BU /* no extra payload */
-
+#define RCU_DBGCMD_MOTOR_ENABLE      0x0CU /* payload: bus(u8), motor_id(u8), enable(u8), clr_fault(u8) */
 /* -----------------------------------------------------------------------
  * Header struct (packed)
  * ----------------------------------------------------------------------- */
@@ -134,8 +134,8 @@ typedef struct {
     int16_t  ladc_therm0_dc;      /* board thermistor 0 [0.1 °C] */
     int16_t  ladc_therm1_dc;
     int16_t  ladc_therm2_dc;
-    int16_t  ladc_vsource_mv;     /* V_SOURCE [mV] */
-    int16_t  ladc_vbus_mv;        /* V_BUS [mV] */
+    int16_t  ladc_vsource_mv;     /* V_SOURCE [10mV units] ÷100 for V */
+    int16_t  ladc_vbus_mv;        /* V_BUS (motor bus) [10mV units] ÷100 for V */
     int16_t  ladc_icoil_ma;       /* I_COIL [mA] */
     /* IMU0 */
     int16_t  imu0_accel[3];
@@ -167,7 +167,7 @@ typedef struct {
     uint16_t vel_u16;
     uint16_t cur_u16;
     uint8_t  error_code;
-    uint8_t  _pad;
+    uint8_t  mode_status;  /* bits 23-22 of Type-2 CAN ID: 0=idle, 1=MIT, 2+=other */
 } rcu_motor_fb_slot_t;
 
 #define RCU_MOTOR_FB_SLOTS  16U

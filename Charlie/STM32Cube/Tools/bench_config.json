@@ -29,13 +29,13 @@
     }
   },
   "alerts": {
-    "v_src_warn_min_v": 45.0,
+    "v_src_warn_min_v": 35.0,
     "v_src_warn_max_v": 58.0,
     "v_12v_warn_min_v": 11.0,
     "v_12v_warn_max_v": 13.0,
     "v_24v_warn_min_v": 22.0,
     "v_24v_warn_max_v": 26.0,
-    "temp_warn_max_c": 55.0,
+    "temp_warn_max_c": 40.0,
     "temp_err_max_c": 70.0
   },
   "recording": {
@@ -79,6 +79,6 @@
   },
   "ui": {
     "last_tab_index": 4,
-    "window_geometry": "AdnQywADAAAAAAABAAAAAAAABrYAAAVuAAAAAQAAAB8AAAa2AAAFbgAAAAAAAAAADXAAAAABAAAAHwAABrYAAAVu"
+    "window_geometry": "AdnQywADAAAAAAIqAAAA+AAABykAAAQ2AAACKgAAARcAAAcpAAAENgAAAAAAAAAADXAAAAIqAAABFwAABykAAAQ2"
   }
 }

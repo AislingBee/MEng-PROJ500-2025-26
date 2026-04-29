@@ -203,86 +203,98 @@ void motor_bus_send_set_zero(uint8_t bus, uint8_t motor_id)
 
 /* -----------------------------------------------------------------------
  * CAN loopback test (desk validation, no motors required)
- * Puts each FDCAN peripheral into internal loopback mode, sends a known
- * 8-byte frame, receives it back, verifies the data, then restores normal
- * mode and restarts the peripheral.
- * Returns bitmask: bit0=right OK, bit1=left OK.  0xFF on fatal error.
+ * Puts each FDCAN peripheral into internal loopback mode via direct CCCR/TEST
+ * register access — intentionally avoids HAL_FDCAN_Init() so that message RAM
+ * layout and register state of other running FDCAN peripherals (e.g. FDCAN2
+ * on the PDU management bus) are not disturbed by a re-init side-effect.
+ * Returns bitmask: bit0=right OK, bit1=left OK.
  * ----------------------------------------------------------------------- */
+
+/* Enter loopback, test, restore — returns true if loopback echo verified. */
+static bool fdcan_loopback_one(FDCAN_HandleTypeDef *hfdcan)
+{
+    /* Stop peripheral — sets CCCR.INIT, preserves message RAM completely */
+    if (HAL_FDCAN_Stop(hfdcan) != HAL_OK) return false;
+
+    /* Enable CCE (writable only when INIT=1) and test loopback mode.
+     * CCCR.TEST=1 unlocks the TEST register; TEST.LBCK=1 routes TX→RX
+     * internally while holding the TXD pin recessive (bus not disturbed). */
+    SET_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_CCE);
+    SET_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_TEST);
+    SET_BIT(hfdcan->Instance->TEST, FDCAN_TEST_LBCK);
+
+    /* Start — clears CCCR.INIT, sets HAL state to BUSY */
+    if (HAL_FDCAN_Start(hfdcan) != HAL_OK) {
+        /* Restore before returning */
+        SET_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_CCE);
+        CLEAR_BIT(hfdcan->Instance->TEST, FDCAN_TEST_LBCK);
+        CLEAR_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_TEST);
+        (void)HAL_FDCAN_Start(hfdcan);
+        return false;
+    }
+
+    /* Send a known test frame — existing accept-all extended filter will
+     * route the looped-back copy into RX FIFO 0. */
+    const uint8_t tx_data[8] = { 0xDE, 0xAD, 0xBE, 0xEF,
+                                  0x01, 0x02, 0x03, 0x04 };
+    FDCAN_TxHeaderTypeDef txh = { 0 };
+    txh.Identifier          = 0x12345678UL;
+    txh.IdType              = FDCAN_EXTENDED_ID;
+    txh.TxFrameType         = FDCAN_DATA_FRAME;
+    txh.DataLength          = FDCAN_DLC_BYTES_8;
+    txh.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+    txh.BitRateSwitch       = FDCAN_BRS_OFF;
+    txh.FDFormat            = FDCAN_CLASSIC_CAN;
+    txh.TxEventFifoControl  = FDCAN_NO_TX_EVENTS;
+    txh.MessageMarker       = 0U;
+
+    bool ok = false;
+    if (HAL_FDCAN_AddMessageToTxFifoQ(hfdcan, &txh, tx_data) == HAL_OK) {
+        uint32_t deadline = HAL_GetTick() + 10U;
+        while (HAL_GetTick() < deadline) {
+            if (HAL_FDCAN_GetRxFifoFillLevel(hfdcan, FDCAN_RX_FIFO0) > 0U) {
+                FDCAN_RxHeaderTypeDef rxh;
+                uint8_t rx_data[8];
+                if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0,
+                                           &rxh, rx_data) == HAL_OK) {
+                    if (rxh.Identifier == 0x12345678UL &&
+                        memcmp(rx_data, tx_data, 8U) == 0) {
+                        ok = true;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    /* Stop again (CCCR.INIT=1, CCE auto-set by hardware on H7) */
+    (void)HAL_FDCAN_Stop(hfdcan);
+
+    /* Disable test mode, restore normal operation */
+    SET_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_CCE);   /* ensure CCE writable */
+    CLEAR_BIT(hfdcan->Instance->TEST, FDCAN_TEST_LBCK);
+    CLEAR_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_TEST);
+    (void)HAL_FDCAN_Start(hfdcan);
+
+    /* Flush any stale frames from the RX FIFO */
+    {
+        FDCAN_RxHeaderTypeDef rxh;
+        uint8_t rxd[8];
+        while (HAL_FDCAN_GetRxFifoFillLevel(hfdcan, FDCAN_RX_FIFO0) > 0U) {
+            (void)HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &rxh, rxd);
+        }
+    }
+
+    return ok;
+}
+
 uint8_t motor_bus_loopback_test(void)
 {
     uint8_t result = 0U;
-
     for (uint8_t i = 0U; i < MOTOR_BUS_COUNT; ++i) {
-        FDCAN_HandleTypeDef *hfdcan = g_bus[i].hfdcan;
-
-        /* Stop the peripheral so we can reconfigure it */
-        HAL_FDCAN_Stop(hfdcan);
-
-        /* Switch to internal loopback mode */
-        FDCAN_InitTypeDef saved_init = hfdcan->Init;
-        hfdcan->Init.Mode = FDCAN_MODE_INTERNAL_LOOPBACK;
-        if (HAL_FDCAN_Init(hfdcan) != HAL_OK) continue;
-
-        /* Re-apply the same accept-all extended filter */
-        FDCAN_FilterTypeDef f = { 0 };
-        f.IdType       = FDCAN_EXTENDED_ID;
-        f.FilterIndex  = 0U;
-        f.FilterType   = FDCAN_FILTER_MASK;
-        f.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
-        f.FilterID1    = 0U;
-        f.FilterID2    = 0U;
-        (void)HAL_FDCAN_ConfigFilter(hfdcan, &f);
-        (void)HAL_FDCAN_ConfigGlobalFilter(hfdcan,
-                                           FDCAN_REJECT, FDCAN_ACCEPT_IN_RX_FIFO0,
-                                           FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE);
-        HAL_FDCAN_Start(hfdcan);
-
-        /* Send a known test frame with extended ID 0x12345678 */
-        const uint8_t tx_data[8] = { 0xDE, 0xAD, 0xBE, 0xEF,
-                                     0x01, 0x02, 0x03, 0x04 };
-        FDCAN_TxHeaderTypeDef txh = { 0 };
-        txh.Identifier          = 0x12345678UL;
-        txh.IdType              = FDCAN_EXTENDED_ID;
-        txh.TxFrameType         = FDCAN_DATA_FRAME;
-        txh.DataLength          = FDCAN_DLC_BYTES_8;
-        txh.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-        txh.BitRateSwitch       = FDCAN_BRS_OFF;
-        txh.FDFormat            = FDCAN_CLASSIC_CAN;
-        txh.TxEventFifoControl  = FDCAN_NO_TX_EVENTS;
-        txh.MessageMarker       = 0U;
-
-        bool ok = false;
-        if (HAL_FDCAN_AddMessageToTxFifoQ(hfdcan, &txh, tx_data) == HAL_OK) {
-            /* Poll for up to 10 ms */
-            uint32_t deadline = HAL_GetTick() + 10U;
-            while (HAL_GetTick() < deadline) {
-                if (HAL_FDCAN_GetRxFifoFillLevel(hfdcan, FDCAN_RX_FIFO0) > 0U) {
-                    FDCAN_RxHeaderTypeDef rxh;
-                    uint8_t rx_data[8];
-                    if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &rxh, rx_data) == HAL_OK) {
-                        if (rxh.Identifier == 0x12345678UL &&
-                            memcmp(rx_data, tx_data, 8U) == 0) {
-                            ok = true;
-                        }
-                    }
-                    break;
-                }
-            }
+        if (fdcan_loopback_one(g_bus[i].hfdcan)) {
+            result |= (1U << i);
         }
-
-        if (ok) result |= (1U << i);
-
-        /* Restore normal mode */
-        HAL_FDCAN_Stop(hfdcan);
-        hfdcan->Init = saved_init;
-        if (HAL_FDCAN_Init(hfdcan) != HAL_OK) { result |= 0x80U; continue; }
-        f.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
-        (void)HAL_FDCAN_ConfigFilter(hfdcan, &f);
-        (void)HAL_FDCAN_ConfigGlobalFilter(hfdcan,
-                                           FDCAN_REJECT, FDCAN_REJECT,
-                                           FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE);
-        HAL_FDCAN_Start(hfdcan);
     }
-
     return result;
 }

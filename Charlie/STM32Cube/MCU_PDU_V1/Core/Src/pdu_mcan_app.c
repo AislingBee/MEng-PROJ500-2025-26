@@ -255,12 +255,41 @@ void pdu_mcan_app_init(void)
     (void)HAL_FDCAN_Start(&hfdcan1);
 }
 
+/* -----------------------------------------------------------------------
+ * Bus-off recovery
+ * FDCAN1 enters bus-off when TEC reaches 256 (e.g. from a power-switching
+ * transient on the CAN bus during arm/disarm).  The STM32G4 FDCAN does not
+ * auto-recover; we must Stop + Start explicitly.
+ * ----------------------------------------------------------------------- */
+static uint32_t g_busoff_last_ms;
+
+static void check_bus_off(uint32_t now_ms)
+{
+    /* Rate-limit recovery attempts and log to 1 s */
+    if ((now_ms - g_busoff_last_ms) < 1000U) return;
+
+    FDCAN_ProtocolStatusTypeDef psr;
+    if (HAL_FDCAN_GetProtocolStatus(&hfdcan1, &psr) != HAL_OK) return;
+
+    if (psr.BusOff) {
+        g_busoff_last_ms = now_ms;
+        extern void st_dbg_printf(const char *fmt, ...);
+        st_dbg_printf("[CAN] FDCAN1 bus-off detected (TEC overflow) — recovering\r\n");
+        HAL_FDCAN_Stop(&hfdcan1);
+        HAL_FDCAN_Start(&hfdcan1);
+        st_dbg_printf("[CAN] FDCAN1 restarted\r\n");
+    }
+}
+
 void pdu_mcan_app_tick(uint32_t now_ms,
                        const fpga_snapshot_t *fpga,
                        const pdu_ext_adc_t   *ext_adc,
                        const ssd_snapshot_t  *ssd,
                        const pdu_ladc_t      *local_adc)
 {
+    /* Recover from CAN bus-off before attempting any TX */
+    check_bus_off(now_ms);
+
     /* Drain RX FIFO */
     FDCAN_RxHeaderTypeDef rxh;
     uint8_t rxd[8];

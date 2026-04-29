@@ -37,7 +37,7 @@ extern ADC_HandleTypeDef hadc2;
  * ADC state bits: 0x01=READY 0x10=ERR_INTERNAL 0x20=ERR_CONFIG
  *                 0x100=REG_BUSY 0x200=REG_EOC 0x400=REG_OVR
  * ----------------------------------------------------------------------- */
-#define PDU_PERIODIC_DEBUG  0
+#define PDU_PERIODIC_DEBUG  1
 
 #if PDU_PERIODIC_DEBUG
 static uint32_t g_dbg_next_ms;
@@ -47,8 +47,38 @@ static void pdu_debug_tick(uint32_t now_ms)
     if (now_ms < g_dbg_next_ms) return;
     g_dbg_next_ms = now_ms + 2000U;
 
-    const ssd_snapshot_t *ssd  = ssd_energy_get();
-    const pdu_ladc_t     *ladc = pdu_adc_get_local();
+    const fpga_snapshot_t *fpga = fpga_mon_get();
+    const pdu_ext_adc_t   *ext  = pdu_adc_get_ext();
+    const ssd_snapshot_t  *ssd  = ssd_energy_get();
+    const pdu_ladc_t      *ladc = pdu_adc_get_local();
+
+    st_dbg_printf("[DBG] FPGA valid=%d  sts0=0x%02X  fc=0x%02X  sc=%d  ver=0x%02X\r\n",
+                  (int)fpga->valid,
+                  (unsigned)fpga->status0,
+                  (unsigned)fpga->fault_code,
+                  (int)fpga->state_code,
+                  (unsigned)fpga->version);
+
+    /* FDCAN1 protocol status — catches bus-off, error-passive, LEC errors */
+    {
+        extern FDCAN_HandleTypeDef hfdcan1;
+        uint32_t psr = hfdcan1.Instance->PSR;
+        uint32_t ecr = hfdcan1.Instance->ECR;
+        st_dbg_printf("[DBG] FDCAN1 PSR=0x%08lX ECR=0x%08lX  BO=%d EP=%d EW=%d TEC=%lu REC=%lu\r\n",
+                      (unsigned long)psr, (unsigned long)ecr,
+                      (int)((psr >> 7) & 1U),   /* Bus Off */
+                      (int)((psr >> 5) & 1U),   /* Error Passive */
+                      (int)((psr >> 6) & 1U),   /* Error Warning */
+                      (unsigned long)((ecr >> 16) & 0xFFU),  /* TEC */
+                      (unsigned long)(ecr & 0xFFU));         /* REC */
+    }
+
+    st_dbg_printf("[DBG] ExtADC valid=%d  VRAW=%.2fV  12V=%.3fV  24V=%.3fV  I_VRAW=%.3fA\r\n",
+                  (int)ext->valid,
+                  (double)ext->v_vraw_v,
+                  (double)ext->v_12v_v,
+                  (double)ext->v_24v_v,
+                  (double)ext->i_vraw_sw_a);
 
     st_dbg_printf("[DBG] SSD  valid=%d  I=%.3fA  V=%.3fV  T=%.1fC\r\n",
                   (int)ssd->valid,
@@ -263,20 +293,26 @@ void PDU_App_Init(void)
 void PDU_App_Task(void)
 {
     uint32_t now = HAL_GetTick();
+    uint32_t t0, t1;
 
-    fpga_mon_tick(now);
-    pdu_adc_tick(now);
-    ssd_energy_tick(now);
+#define TASK_TIME(name, call) \
+    t0 = HAL_GetTick(); call; t1 = HAL_GetTick(); \
+    if ((t1 - t0) > 20U) \
+        st_dbg_printf("[PDU_SLOW] " name " took %lums\r\n", (unsigned long)(t1 - t0));
 
-    pdu_mcan_app_tick(now,
-                      fpga_mon_get(),
-                      pdu_adc_get_ext(),
-                      ssd_energy_get(),
-                      pdu_adc_get_local());
+    TASK_TIME("fpga_mon_tick",    fpga_mon_tick(now))
+    TASK_TIME("pdu_adc_tick",     pdu_adc_tick(now))
+    TASK_TIME("ssd_energy_tick",  ssd_energy_tick(now))
+    /* Refresh timestamp: ssd_energy_tick blocks ~320 ms (RS485 turnaround).
+     * Without this, pdu_mcan_app_tick receives a stale 'now' and the CAN
+     * heartbeat and telemetry timers fire late (HB at ~1.4 Hz, telem ~2.8 Hz
+     * instead of their nominal 2 Hz / 10 Hz rates). */
+    now = HAL_GetTick();
+    TASK_TIME("mcan_app_tick",    pdu_mcan_app_tick(now, fpga_mon_get(), pdu_adc_get_ext(), ssd_energy_get(), pdu_adc_get_local()))
+    TASK_TIME("process_commands", process_commands(pdu_mcan_app_cmds()))
 
-    process_commands(pdu_mcan_app_cmds());
+#undef TASK_TIME
 
-    /* MCU_HB watchdog toggle is handled by TIM6_DAC_IRQHandler at 5 Hz. */
     led_heartbeat_tick(now);
 
 #if PDU_PERIODIC_DEBUG

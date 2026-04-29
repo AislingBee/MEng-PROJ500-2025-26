@@ -39,7 +39,8 @@ import time
 # ---------------------------------------------------------------------------
 import numpy as np
 import pyqtgraph as pg
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt, QTimer, QPoint
+from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget,
     QVBoxLayout, QHBoxLayout, QGridLayout, QFormLayout,
@@ -50,7 +51,7 @@ from PyQt6.QtWidgets import (
     QSplitter, QMessageBox, QFileDialog,
     QListWidget, QListWidgetItem,
     QTableWidget, QTableWidgetItem,
-    QSizePolicy, QAbstractItemView,
+    QSizePolicy, QAbstractItemView, QAbstractScrollArea,
 )
 
 
@@ -83,7 +84,7 @@ TELEM_SIZE = struct.calcsize(TELEM_FMT)   # 72
 # NOTE: the old rcu_bench_gui.py used FB_HEADER_SIZE=1 which is wrong.
 FB_HEADER_FMT  = "<B3x"
 FB_HEADER_SIZE = struct.calcsize(FB_HEADER_FMT)   # 4
-FB_SLOT_FMT    = "<BBHHHBx"                        # bus, id, pos, vel, torque, err, pad
+FB_SLOT_FMT    = "<BBHHHBB"                        # bus, id, pos, vel, torque, err, mode_status
 FB_SLOT_SIZE   = struct.calcsize(FB_SLOT_FMT)      # 10
 FB_SLOTS       = 16
 
@@ -97,19 +98,12 @@ DBGCMD_BUZZ              = 0x02   # 200 ms buzzer (RCU + PDU AUX bit3)
 DBGCMD_LED_BLINK         = 0x03   # Blink orange LED (RCU + PDU AUX bit4)
 DBGCMD_CAN_LOOPBACK      = 0x04   # Run FDCAN1+FDCAN3 loopback test
 DBGCMD_FORCE_TELEM       = 0x05   # Force immediate slow-telem TX
-# --- The following require new cases in eth_udp.c handle_debug_cmd() ---
-DBGCMD_CLEAR_PDU_FAULT   = 0x06   # Trigger mcan_pdu_send_fault_req(false)
 DBGCMD_ASSERT_PDU_FAULT  = 0x07   # Trigger mcan_pdu_send_fault_req(true) — test
 DBGCMD_SOFT_RESET        = 0x08   # payload: 0=RCU only, 1=RCU+PDU via CAN
 DBGCMD_SET_TELEM_RATE    = 0x09   # payload byte = rate Hz (5 / 10 / 20)
 DBGCMD_MOTOR_BUS_CTRL    = 0x0A   # payload: bit0=L_STB, bit1=R_STB (1=standby)
 DBGCMD_REQUEST_SUPV_DUMP = 0x0B   # Force supervision state dump
-
-# Commands that require unreleased firmware (used to label buttons in the UI)
-_FW_REQUIRED_CMDS = {
-    DBGCMD_CLEAR_PDU_FAULT, DBGCMD_ASSERT_PDU_FAULT, DBGCMD_SOFT_RESET,
-    DBGCMD_SET_TELEM_RATE, DBGCMD_MOTOR_BUS_CTRL, DBGCMD_REQUEST_SUPV_DUMP,
-}
+DBGCMD_MOTOR_ENABLE      = 0x0C   # payload: bus(u8), motor_id(u8), enable(u8), clr_fault(u8)
 
 PORT_TELEM     = 7700    # RCU → PC telemetry
 PORT_CMD       = 7701    # PC  → RCU commands
@@ -150,6 +144,19 @@ IN_BITS = [
     (1, "PCHG_OK"),   (0, "VBUS_OV"),
 ]
 
+# Bits where high=1 indicates a fault condition (colour ERROR when set)
+# STATUS0 bit7=FAULT_LATCH, INPUTS bit0=VBUS_OV
+_SPARK_HIGH_IS_FAULT: frozenset = frozenset(["fpga_sts0:7", "fpga_inputs:0"])
+
+# FPGA fault code lookup (pdu_glue_mxo2.sv fault_code_enc)
+FPGA_FAULT_CODES: dict[int, str] = {
+    0x0: "None",              0x1: "E-STOP",
+    0x2: "Overvoltage",       0x3: "Undervoltage",
+    0x4: "Contactor weld",    0x5: "Precharge timeout",
+    0x6: "MCU fault",         0x7: "No contactor close",
+    0xF: "Unknown",
+}
+
 # CAN AUX command bitmasks (0x530 frame, PDU)
 AUX_BUZZ_MASK = 0x08
 AUX_LED_MASK  = 0x10
@@ -168,15 +175,15 @@ AUX_LED_MASK  = 0x10
 #   ladc_therm2_c   STM32 local   — PDU onboard NTC (trusted, always present)
 TELEM_SIGNALS: list[tuple[str, str, bool, bool]] = [
     # --- External ADC power rails ---
-    ("V_SRC",          "v_vraw_v",        True,  False),  # Switched source ~53 V
+    ("V_SRC",          "v_vraw_v",        True,  False),  # Battery source rail ~50V
     ("12V_SW",         "v_12v_v",         True,  False),  # Switched 12V output
     ("24V_SW",         "v_24v_v",         True,  False),  # Switched 24V output
-    ("I_SRC",          "i_vraw_sw_ma",    False, False),  # Source current
+    ("I_SRC_SW",       "i_vraw_sw_ma",    False, False),  # Source switched current
     ("I_12V_SW",       "i_12v_ma",        False, False),  # 12V switched current
     ("I_24V_SW",       "i_24v_ma",        False, False),  # 24V switched current
     # PDU PCB thermistors (both soldered directly on PSU PCB, critical spots)
-    ("PDU Therm 1",    "therm1_c",        False, False),  # PDU PCB thermal spot 1
-    ("PDU Therm 2",    "therm2_c",        False, False),  # PDU PCB thermal spot 2
+    ("PSU Board NTC 1", "therm1_c",       False, False),  # PSU PCB onboard thermistor 1
+    ("PSU Board NTC 2", "therm2_c",       False, False),  # PSU PCB onboard thermistor 2
     # --- Energy meter (RS485/SSD, 5 Hz) ---
     ("EM Volt",        "em_v_v",          False, False),
     ("EM Curr",        "em_i_ma",         False, False),
@@ -187,7 +194,7 @@ TELEM_SIGNALS: list[tuple[str, str, bool, bool]] = [
     ("PDU Ext Therm",  "ladc_therm1_c",   False, False),  # PDU ext connector (unpopulated)
     ("PDU Board NTC",  "ladc_therm2_c",   False, False),  # PDU onboard NTC (trusted)
     ("V_SRC (loc)",    "ladc_vsource_v",  False, False),  # STM32 ADC on source rail
-    ("12V (loc)",      "ladc_vbus_v",     False, False),  # STM32 ADC on 12V bus
+    ("V_BUS (motor)",  "ladc_vbus_v",     False, False),  # STM32 ADC on motor bus ~50V
     ("I_COIL",         "ladc_icoil_ma",   False, False),  # Coil current
     # --- IMU 0 (SPI4, CS=PC13) ---
     ("IMU0 Ax",        "imu0_ax_g",       False, True),
@@ -310,7 +317,7 @@ QWidget {{
     background-color: {BG};
     color: {TEXT};
     font-family: "Consolas", "Courier New", monospace;
-    font-size: 11px;
+    font-size: 13px;
 }}
 QTabWidget::pane {{
     border: 1px solid {DIM};
@@ -344,14 +351,14 @@ QGroupBox {{
     background-color: {PANEL};
     border: 1px solid {DIM};
     border-radius: 6px;
-    margin-top: 12px;
-    padding-top: 6px;
+    margin-top: 20px;
+    padding-top: 8px;
 }}
 QGroupBox::title {{
     subcontrol-origin: margin;
     subcontrol-position: top left;
     left: 8px;
-    padding: 0 4px;
+    padding: 2px 6px;
     color: {ACCENT};
     font-weight: bold;
 }}
@@ -362,7 +369,7 @@ QPushButton {{
     border-radius: 4px;
     padding: 5px 14px;
     font-weight: bold;
-    font-size: 11px;
+    font-size: 13px;
 }}
 QPushButton:hover {{
     background-color: #4d9bd4;
@@ -509,7 +516,7 @@ QTextEdit, QPlainTextEdit {{
     border: 1px solid {DIM};
     border-radius: 4px;
     font-family: "Consolas", "Courier New", monospace;
-    font-size: 10px;
+    font-size: 12px;
 }}
 QTreeWidget, QTreeView, QListWidget, QListView,
 QTableWidget, QTableView {{
@@ -550,6 +557,18 @@ QSpinBox::up-button, QSpinBox::down-button {{
     width: 16px;
     border: none;
     background: {DIM};
+}}
+QDoubleSpinBox::up-arrow, QDoubleSpinBox::down-arrow,
+QSpinBox::up-arrow, QSpinBox::down-arrow {{
+    width: 0; height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+}}
+QDoubleSpinBox::up-arrow, QSpinBox::up-arrow {{
+    border-bottom: 5px solid {TEXT};
+}}
+QDoubleSpinBox::down-arrow, QSpinBox::down-arrow {{
+    border-top: 5px solid {TEXT};
 }}
 QToolTip {{
     background-color: {PANEL};
@@ -1187,16 +1206,17 @@ def _decode_motor_fb(payload: bytes) -> list:
     for _ in range(min(count, FB_SLOTS)):
         if off + FB_SLOT_SIZE > len(payload):
             break
-        bus, mid, pos_u16, vel_u16, trq_u16, err = struct.unpack_from(
+        bus, mid, pos_u16, vel_u16, trq_u16, err, mode_st = struct.unpack_from(
             FB_SLOT_FMT, payload, off)
         off += FB_SLOT_SIZE
         slots.append({
-            "bus":       bus,
-            "motor_id":  mid,
-            "pos_rad":   u16_to_f(pos_u16, -RS04_POS_MAX, RS04_POS_MAX),
-            "vel_rads":  u16_to_f(vel_u16, -RS04_VEL_MAX, RS04_VEL_MAX),
-            "torque_nm": u16_to_f(trq_u16, -RS04_TRQ_MAX, RS04_TRQ_MAX),
-            "error":     err,
+            "bus":         bus,
+            "motor_id":    mid,
+            "pos_rad":     u16_to_f(pos_u16, -RS04_POS_MAX, RS04_POS_MAX),
+            "vel_rads":    u16_to_f(vel_u16, -RS04_VEL_MAX, RS04_VEL_MAX),
+            "torque_nm":   u16_to_f(trq_u16, -RS04_TRQ_MAX, RS04_TRQ_MAX),
+            "error":       err,
+            "mode_status": mode_st,
         })
     return slots
 
@@ -1287,16 +1307,34 @@ def send_motor_cmd(rcu_ip: str, bus: int, motor_id: int,
 def send_motor_estop(rcu_ip: str,
                      active_ids: list[tuple[int, int]] | None = None) -> None:
     """
-    Send zero-velocity / zero-torque commands to stop all motors.
+    Send COMM_STOP (Type-4) to immediately disable all known motors.
+    Uses the same DBGCMD_MOTOR_ENABLE path that the Disable button uses,
+    so it bypasses MOTOR_BUS_MAP and is guaranteed to reach the hardware.
 
     *active_ids*: list of (bus, motor_id) from recent motor_fb data.
-    If None, sends to bus 0 and bus 1, IDs 1–8 (16 slots total).
-    Uses existing PKT_MOTOR_CMD — no new firmware required.
+    If None, stops bus 0 and bus 1, IDs 1–8 (16 targets total).
     """
     if active_ids is None:
         active_ids = [(bus, mid) for bus in (0, 1) for mid in range(1, 9)]
     for bus, mid in active_ids:
-        send_motor_cmd(rcu_ip, bus, mid, 0.0, 0.0, 0.0, 0.0, 0.0)
+        send_motor_enable(rcu_ip, bus, mid, enable=False, clear_fault=False)
+
+
+def send_motor_enable(rcu_ip: str, bus: int, motor_id: int,
+                      enable: bool = True, clear_fault: bool = False) -> None:
+    """
+    Enable or disable a single motor via DBGCMD_MOTOR_ENABLE (0x0C).
+
+    The firmware handler writes run_mode=0 (MIT) before sending Type-3
+    COMM_ENABLE, ensuring the motor accepts subsequent MIT commands.
+
+    Payload layout (after the 0x0C subcmd byte):
+      bus(u8), motor_id(u8), enable(u8: 1=enable 0=disable), clear_fault(u8)
+    """
+    send_debug_cmd(rcu_ip, DBGCMD_MOTOR_ENABLE,
+                   bytes([bus & 0xFF, motor_id & 0xFF,
+                          1 if enable else 0,
+                          1 if clear_fault else 0]))
 
 
 # ===========================================================================
@@ -1348,6 +1386,122 @@ def _colored_square_label(color: str, size: int = 10) -> QLabel:
         f"background-color: {color}; border: none; border-radius: 2px;"
     )
     return lbl
+
+
+# ---------------------------------------------------------------------------
+# Hover Quick-Graph Popup
+# ---------------------------------------------------------------------------
+
+class QuickGraphPopup(QWidget):
+    """Frameless singleton popup showing last 30 s of a signal on hover."""
+    _instance: "QuickGraphPopup | None" = None
+
+    @classmethod
+    def instance(cls) -> "QuickGraphPopup":
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
+    @classmethod
+    def set_state(cls, state: "RcuState") -> None:
+        cls.instance()._state = state
+
+    def __init__(self, parent=None) -> None:
+        super().__init__(
+            parent,
+            Qt.WindowType.ToolTip | Qt.WindowType.FramelessWindowHint,
+        )
+        self._state: "RcuState | None" = None
+        self._key: str = ""
+        self.setFixedSize(320, 160)
+        self.setStyleSheet(f"background:{PANEL}; border:1px solid {DIM};")
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(4, 2, 4, 4)
+        layout.setSpacing(2)
+
+        self._title_lbl = QLabel("")
+        self._title_lbl.setStyleSheet(
+            f"color:{TEXT}; font-size:12px; background:transparent;"
+        )
+        layout.addWidget(self._title_lbl)
+
+        self._plot = pg.PlotWidget()
+        self._plot.setBackground(PANEL)
+        self._plot.hideAxis("left")
+        self._plot.hideAxis("bottom")
+        self._plot.setMenuEnabled(False)
+        self._plot.setMouseEnabled(x=False, y=False)
+        self._curve = self._plot.plot(
+            x=np.array([], dtype=np.float64),
+            y=np.array([], dtype=np.float64),
+            pen=pg.mkPen(ACCENT, width=1.5),
+            connect="finite",
+        )
+        layout.addWidget(self._plot)
+
+        self._hide_timer = QTimer(self)
+        self._hide_timer.setSingleShot(True)
+        self._hide_timer.setInterval(400)
+        self._hide_timer.timeout.connect(self.hide)
+
+    def show_for(self, key: str, global_pos: "QPoint", window_s: int = 30) -> None:
+        if self._state is None:
+            return
+        self._key = key
+        sig_name = _SIG_BY_KEY.get(key, (key,))[0]
+        self._title_lbl.setText(sig_name)
+
+        n = max(1, int(window_s / 0.1))
+        raw = self._state.get_hist_window(key, n)
+        y = np.asarray(raw, dtype=np.float64)
+        x = np.linspace(-window_s, 0.0, len(y))
+        self._curve.setData(x=x, y=y)
+        self._plot.enableAutoRange()
+
+        # Position popup to the right of the trigger label; clamp to screen
+        from PyQt6.QtWidgets import QApplication as _QApp
+        screen = _QApp.primaryScreen()
+        px, py = global_pos.x(), global_pos.y()
+        if screen:
+            sg = screen.availableGeometry()
+            if px + self.width() > sg.right():
+                px = global_pos.x() - self.width() - 4
+            if py + self.height() > sg.bottom():
+                py = sg.bottom() - self.height()
+        self.move(px, py)
+        self.show()
+        self.raise_()
+
+    def start_hide_timer(self) -> None:
+        self._hide_timer.start()
+
+    def cancel_hide_timer(self) -> None:
+        self._hide_timer.stop()
+
+
+class SignalValueLabel(QLabel):
+    """Value display label that shows a hover Quick-Graph popup on mouse-over."""
+
+    def __init__(self, key: str, state: "RcuState", parent=None) -> None:
+        super().__init__("---", parent)
+        self._key   = key
+        self._state = state
+        self.setStyleSheet(
+            f"color: {WHITE}; font-family: 'Consolas','Courier New',monospace;"
+            " font-size: 13px; background: transparent;"
+        )
+
+    def enterEvent(self, event) -> None:
+        popup = QuickGraphPopup.instance()
+        popup._state = self._state
+        popup.cancel_hide_timer()
+        popup.show_for(self._key, self.mapToGlobal(QPoint(self.width(), 0)))
+        super().enterEvent(event)
+
+    def leaveEvent(self, event) -> None:
+        QuickGraphPopup.instance().start_hide_timer()
+        super().leaveEvent(event)
 
 
 class TelemetryPlotPanel(QWidget):
@@ -1405,6 +1559,9 @@ class TelemetryPlotPanel(QWidget):
         self._plot_items:  list[pg.PlotItem]   = []
         self._data_items:  dict[str, pg.PlotDataItem] = {}
         self._crosshairs:  list[pg.InfiniteLine] = []
+
+        # set of plot group indices where the user has manually zoomed Y
+        self._y_manually_zoomed: set[int] = set()
 
         # floating tooltip label (overlaid on the GraphicsLayoutWidget)
         self._tooltip_lbl: QLabel | None = None
@@ -1487,14 +1644,19 @@ class TelemetryPlotPanel(QWidget):
         sb_layout.addLayout(tw_row)
 
         # Pause / Resume
-        self._pause_btn = QPushButton("⏸  Pause")
+        self._pause_btn = QPushButton("Pause")
         self._pause_btn.clicked.connect(self._on_pause_toggle)
         sb_layout.addWidget(self._pause_btn)
 
         # Export CSV
-        export_btn = QPushButton("⬇  Export CSV")
+        export_btn = QPushButton("Export CSV")
         export_btn.clicked.connect(self._on_export_csv)
         sb_layout.addWidget(export_btn)
+
+        # Reset Y Zoom
+        reset_y_btn = QPushButton("Reset Y Zoom")
+        reset_y_btn.clicked.connect(self._on_reset_y_zoom)
+        sb_layout.addWidget(reset_y_btn)
 
         root.addWidget(sidebar)
 
@@ -1506,7 +1668,7 @@ class TelemetryPlotPanel(QWidget):
         self._tooltip_lbl = QLabel("", self._glw)
         self._tooltip_lbl.setStyleSheet(
             f"background: {PANEL}; color: {TEXT}; border: 1px solid {DIM};"
-            " padding: 3px 6px; font-size: 10px; border-radius: 3px;"
+            " padding: 3px 6px; font-size: 15px; border-radius: 3px;"
         )
         self._tooltip_lbl.setVisible(False)
         self._tooltip_lbl.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
@@ -1526,15 +1688,17 @@ class TelemetryPlotPanel(QWidget):
             plot.setMenuEnabled(False)
             plot.hideButtons()
 
+            # Track manual Y-axis zoom
+            plot.getViewBox().sigRangeChangedManually.connect(
+                lambda axes, gi=gi: self._on_manual_range(gi, axes)
+            )
+
             # X-link all plots to the first one
             if gi > 0:
                 plot.setXLink(self._plot_items[0])
 
-            # Title inside the plot (top-left legend area)
-            title_lbl = pg.LabelItem(
-                grp.title, color=ACCENT, size="10pt"
-            )
-            title_lbl.setParentItem(plot)
+            # Title inside the plot
+            plot.setTitle(grp.title, color=ACCENT, size="9pt")
 
             self._plot_items.append(plot)
 
@@ -1597,10 +1761,21 @@ class TelemetryPlotPanel(QWidget):
 
     def _on_pause_toggle(self) -> None:
         self._paused = not self._paused
-        self._pause_btn.setText("▶  Resume" if self._paused else "⏸  Pause")
+        self._pause_btn.setText("Resume" if self._paused else "Pause")
 
     def is_paused(self) -> bool:
         return self._paused
+
+    def _on_manual_range(self, gi: int, axes) -> None:
+        """Called when the user manually zooms/pans a plot's Y axis."""
+        if axes[1]:  # Y axis changed
+            self._y_manually_zoomed.add(gi)
+
+    def _on_reset_y_zoom(self) -> None:
+        """Clear all manual Y-zoom locks and re-enable autorange."""
+        self._y_manually_zoomed.clear()
+        for plot in self._plot_items:
+            plot.enableAutoRange(axis=pg.ViewBox.YAxis, enable=True)
 
     # ------------------------------------------------------------------
     # Main update — called by the 100 ms QTimer
@@ -1626,9 +1801,10 @@ class TelemetryPlotPanel(QWidget):
             self._last_y[key] = y
             curve.setData(x=x, y=y)
 
-        # Refit Y axes per plot to only visible curves
+        # Refit Y axes per plot to only visible curves (skip manually-zoomed plots)
         for gi, plot in enumerate(self._plot_items):
-            plot.enableAutoRange(axis=pg.ViewBox.YAxis, enable=True)
+            if gi not in self._y_manually_zoomed:
+                plot.enableAutoRange(axis=pg.ViewBox.YAxis, enable=True)
 
     # ------------------------------------------------------------------
     # Crosshair mouse tracking
@@ -1669,7 +1845,7 @@ class TelemetryPlotPanel(QWidget):
                 color = SIGNAL_COLORS.get(key, WHITE)
                 lines.append(
                     f'<span style="color:{color}">{lbl}: '
-                    f'{_fmt_val(val, ".3f")}</span>'
+                    f'{_fmt_val(val, ".4g")}</span>'
                 )
 
             if self._tooltip_lbl is not None:
@@ -1773,7 +1949,7 @@ def _hdg(text: str, color: str = ACCENT) -> QLabel:
     """Small heading label."""
     lbl = QLabel(text)
     lbl.setStyleSheet(
-        f"color: {color}; font-weight: bold; font-size: 12px;"
+        f"color: {color}; font-weight: bold; font-size: 14px;"
         " background: transparent;"
     )
     return lbl
@@ -1784,7 +1960,7 @@ def _val_label(text: str = "---") -> QLabel:
     lbl = QLabel(text)
     lbl.setStyleSheet(
         f"color: {WHITE}; font-family: 'Consolas','Courier New',monospace;"
-        " font-size: 11px; background: transparent;"
+        " font-size: 13px; background: transparent;"
     )
     return lbl
 
@@ -1798,7 +1974,7 @@ def _health_dot(ok: bool | None = None) -> QLabel:
     else:
         color = ERROR
     lbl = QLabel("●")
-    lbl.setStyleSheet(f"color: {color}; font-size: 14px; background: transparent;")
+    lbl.setStyleSheet(f"color: {color}; font-size: 16px; background: transparent;")
     return lbl
 
 
@@ -1862,7 +2038,7 @@ class OverviewTab(QWidget):
         for col, name in enumerate(labels_):
             dot = _health_dot(None)
             txt = QLabel(name)
-            txt.setStyleSheet(f"color: {TEXT}; font-size: 10px; background: transparent;")
+            txt.setStyleSheet(f"color: {TEXT}; font-size: 12px; background: transparent;")
             txt.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             health_grid.addWidget(dot, 0, col, Qt.AlignmentFlag.AlignHCenter)
             health_grid.addWidget(txt, 1, col, Qt.AlignmentFlag.AlignHCenter)
@@ -1897,9 +2073,9 @@ class OverviewTab(QWidget):
         self._lbl_fpga_sc       = _val_label()
         self._lbl_pchg_ms       = _val_label()
         self._lbl_fpga_ver      = _val_label()
-        _make_form_row(fs_form, "State:",      self._lbl_fpga_state)
-        _make_form_row(fs_form, "Fault cnt:",  self._lbl_fpga_fc)
-        _make_form_row(fs_form, "Supv cnt:",   self._lbl_fpga_sc)
+        _make_form_row(fs_form, "State:",       self._lbl_fpga_state)
+        _make_form_row(fs_form, "Fault code:", self._lbl_fpga_fc)
+        _make_form_row(fs_form, "State code:", self._lbl_fpga_sc)
         _make_form_row(fs_form, "Pchg ms:",    self._lbl_pchg_ms)
         _make_form_row(fs_form, "FPGA ver:",   self._lbl_fpga_ver)
         fpga_row.addWidget(fpga_state_gb)
@@ -2002,14 +2178,14 @@ class OverviewTab(QWidget):
                 dot.setText("●")
                 dot.setStyleSheet(
                     f"color: {OK if ok else ERROR};"
-                    " font-size: 14px; background: transparent;"
+                    " font-size: 16px; background: transparent;"
                 )
             can_ok = ping.get("can_lb", 0) == 3
             dot = self._health_dots["CAN Loopback"]
             dot.setText("●")
             dot.setStyleSheet(
                 f"color: {OK if can_ok else (WARN if ping.get('can_lb',0)==0 else ERROR)};"
-                " font-size: 14px; background: transparent;"
+                " font-size: 16px; background: transparent;"
             )
             uptime_s = ping.get("uptime_ms", 0) / 1000.0
             h  = int(uptime_s // 3600)
@@ -2021,11 +2197,11 @@ class OverviewTab(QWidget):
 
         # FPGA
         if t:
-            state_num = t.get("fpga_act", 0)
+            state_num = t.get("fpga_sc", 0)
             self._lbl_fpga_state.setText(
                 FPGA_STATES.get(state_num, f"UNKNOWN ({state_num})")
             )
-            self._lbl_fpga_fc.setText(str(t.get("fpga_fc", "---")))
+            self._lbl_fpga_fc.setText(f"0x{t.get('fpga_fc', 0):02X}")
             self._lbl_fpga_sc.setText(str(t.get("fpga_sc", "---")))
             self._lbl_pchg_ms.setText(str(t.get("fpga_pchg_ms", "---")))
             self._lbl_fpga_ver.setText(str(t.get("fpga_version", "---")))
@@ -2036,168 +2212,6 @@ class OverviewTab(QWidget):
             self._lbl_s0_bits.setText(decode_bits(s0, S0_BITS))
             self._lbl_in_raw.setText(f"0x{inp:02X}  ({inp:08b}b)")
             self._lbl_in_bits.setText(decode_bits(inp, IN_BITS))
-
-
-# ---------------------------------------------------------------------------
-# Tab 2 — Power / Cross-Reference
-# ---------------------------------------------------------------------------
-
-_CROSS_REF_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
-    # (group name, [(source label, telem key), ...])
-    ("V_SOURCE (~53V)",   [("Ext ADC",    "v_vraw_v"),
-                            ("Energy Meter","em_v_v"),
-                            ("Local ADC",  "ladc_vsource_v")]),
-    ("12V_SW",            [("Ext ADC",    "v_12v_v"),
-                            ("Local ADC",  "ladc_vbus_v")]),
-    ("24V_SW",            [("Ext ADC",    "v_24v_v")]),
-    ("Source Current",    [("Ext ADC",    "i_vraw_sw_ma"),
-                            ("Energy Meter","em_i_ma")]),
-    ("12V_SW Current",    [("Ext ADC",    "i_12v_ma")]),
-    ("24V_SW Current",    [("Ext ADC",    "i_24v_ma")]),
-    ("Total Power",       [("Energy Meter","em_p_w")]),
-    ("Board Temps (°C)",  [("PDU Therm 1","therm1_c"),
-                            ("PDU Therm 2","therm2_c"),
-                            ("PDU Board NTC","ladc_therm2_c"),
-                            ("EM Temp",    "em_t_c"),
-                            ("IMU0 Temp",  "imu0_temp_c"),
-                            ("IMU1 Temp",  "imu1_temp_c"),
-                            ("RCU NTC",    "ladc_therm0_c"),
-                            ("PDU Ext Therm","ladc_therm1_c")]),
-]
-
-
-def _agreement_text(vals: list[float], is_temp: bool) -> tuple[str, str]:
-    """
-    Returns (text, colour) agreement indicator.
-
-    Voltage agreement: (max-min)/max > 2% → WARN
-    Temperature agreement: max-min > 5 °C → WARN
-    """
-    valid = [v for v in vals if not math.isnan(v)]
-    if len(valid) < 2:
-        return ("(insufficient data)", DIM)
-    lo, hi = min(valid), max(valid)
-    if is_temp:
-        spread = hi - lo
-        if spread > 5.0:
-            return (f"⚠  Δ{spread:.1f}°C", WARN)
-    else:
-        if hi > 0:
-            pct = (hi - lo) / hi * 100.0
-            if pct > 2.0:
-                return (f"⚠  {pct:.1f}%", WARN)
-    return ("✓ agree", OK)
-
-
-class PowerCrossRefTab(QWidget):
-    def __init__(self, state: RcuState, cfg: Config, parent=None) -> None:
-        super().__init__(parent)
-        self._state = state
-        self._cfg   = cfg
-        self._val_labels:  list[list[QLabel]] = []
-        self._agree_labels: list[QLabel] = []
-        self._build()
-
-    def _build(self) -> None:
-        root = QVBoxLayout(self)
-        root.setContentsMargins(12, 10, 12, 10)
-        root.setSpacing(6)
-        root.addWidget(_hdg("Power / Cross-Reference"))
-        root.addWidget(QLabel(
-            "Compares the same electrical quantity from multiple measurement sources. "
-            "⚠ indicates significant disagreement.",
-            styleSheet=f"color:{DIM}; background:transparent; font-size:10px;"
-        ))
-        root.addWidget(_sep())
-
-        table = QTableWidget()
-        table.setColumnCount(4)
-        table.setHorizontalHeaderLabels(["Group", "Source", "Value", "Agreement"])
-        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        table.verticalHeader().setVisible(False)
-        table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-        table.setAlternatingRowColors(True)
-
-        self._table = table
-        row_idx = 0
-        self._row_map: list[tuple[str, str, bool]] = []  # (group, key, is_first_in_group)
-
-        for group_name, sources in _CROSS_REF_GROUPS:
-            is_temp = "Temp" in group_name or "°C" in group_name
-            for si, (src_lbl, key) in enumerate(sources):
-                self._row_map.append((group_name, key, is_temp))
-                row_idx += 1
-
-        table.setRowCount(row_idx)
-
-        row_idx = 0
-        for group_name, sources in _CROSS_REF_GROUPS:
-            is_temp = "Temp" in group_name or "°C" in group_name
-            grp_val_labels: list[QLabel] = []
-            agree_lbl = _val_label("---")
-            span_start = row_idx
-
-            for si, (src_lbl, key) in enumerate(sources):
-                # Group cell (merged via span logic using first row of group)
-                grp_item = QTableWidgetItem(group_name if si == 0 else "")
-                grp_item.setForeground(pg.mkColor(ACCENT))
-                table.setItem(row_idx, 0, grp_item)
-
-                table.setItem(row_idx, 1, QTableWidgetItem(src_lbl))
-
-                val_lbl = _val_label("---")
-                table.setCellWidget(row_idx, 2, val_lbl)
-                grp_val_labels.append(val_lbl)
-
-                if si == 0:
-                    table.setCellWidget(row_idx, 3, agree_lbl)
-                    self._agree_labels.append(agree_lbl)
-                    self._val_labels.append(grp_val_labels)
-
-                row_idx += 1
-
-        root.addWidget(table)
-        root.addStretch()
-
-        # Store for refresh
-        self._cross_groups = _CROSS_REF_GROUPS
-
-    def refresh(self) -> None:
-        t = self._state.get_telem()
-        if not t:
-            return
-
-        row_idx = 0
-        ai = 0
-        for group_name, sources in self._cross_groups:
-            is_temp = "Temp" in group_name or "°C" in group_name
-            vals: list[float] = []
-            for si, (src_lbl, key) in enumerate(sources):
-                raw = t.get(key, float('nan'))
-                if math.isnan(raw) and key == "ladc_therm1_c":
-                    # suppress no-sensor channel
-                    raw = float('nan')
-                vals.append(raw)
-
-            # Update value cells
-            vl_grp = self._val_labels[ai] if ai < len(self._val_labels) else []
-            for vi, v in enumerate(vals):
-                if vi < len(vl_grp):
-                    vl_grp[vi].setText(_fmt_val(v, ".3f"))
-
-            # Agreement indicator
-            if ai < len(self._agree_labels):
-                agree_text, agree_color = _agreement_text(vals, is_temp)
-                lbl = self._agree_labels[ai]
-                lbl.setText(agree_text)
-                lbl.setStyleSheet(
-                    f"color: {agree_color}; background: transparent;"
-                    " font-family: 'Consolas','Courier New',monospace;"
-                    " font-size: 11px;"
-                )
-            ai += 1
-            row_idx += len(sources)
 
 
 # ---------------------------------------------------------------------------
@@ -2218,11 +2232,54 @@ class PduTab(QWidget):
         outer.addWidget(splitter)
 
         # ---- Left: PDU detail panel -----------------------------------------
+        left_scroll = QScrollArea()
+        left_scroll.setWidgetResizable(True)
+        left_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        left_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        left_scroll.setFixedWidth(290)
         left = QWidget()
         lv = QVBoxLayout(left)
         lv.setContentsMargins(10, 8, 6, 8)
         lv.setSpacing(8)
+        left_scroll.setWidget(left)
         lv.addWidget(_hdg("PDU Detail"))
+
+        # Power Summary — grouped by function
+        sum_gb = QGroupBox("Power Summary")
+        sum_grid = QGridLayout(sum_gb)
+        sum_grid.setContentsMargins(8, 4, 8, 6)
+        sum_grid.setHorizontalSpacing(8)
+        sum_grid.setVerticalSpacing(2)
+        self._sum_lbls: dict[str, SignalValueLabel] = {}
+
+        def _sadd(row, name, key):
+            nl = QLabel(name)
+            nl.setStyleSheet(f"color:{DIM}; font-size:12px; background:transparent;")
+            vl = SignalValueLabel(key, self._state)
+            vl.setText("---")
+            sum_grid.addWidget(nl, row, 0, Qt.AlignmentFlag.AlignRight)
+            sum_grid.addWidget(vl, row, 1, Qt.AlignmentFlag.AlignLeft)
+            self._sum_lbls[key] = vl
+
+        def _shdr(row, text):
+            hl = QLabel(text)
+            hl.setStyleSheet(f"color:{ACCENT}; font-size:12px; font-weight:bold;"
+                             " background:transparent; padding-left:8px;")
+            sum_grid.addWidget(hl, row, 0, 1, 2)
+
+        _shdr(0,  "Voltages")
+        _sadd(1,  "V_SRC (ext):",    "v_vraw_v")
+        _sadd(2,  "V_SRC (loc):",    "ladc_vsource_v")
+        _sadd(3,  "V_SRC (EM):",     "em_v_v")
+        _sadd(4,  "V_BUS (mtr):",    "ladc_vbus_v")
+        _sadd(5,  "12V_SW:",         "v_12v_v")
+        _sadd(6,  "24V_SW:",         "v_24v_v")
+        _shdr(7,  "Currents")
+        _sadd(8,  "I_SRC_SW (ext):", "i_vraw_sw_ma")
+        _sadd(9,  "I_SRC (EM):",     "em_i_ma")
+        _sadd(10, "I_12V_SW:",       "i_12v_ma")
+        _sadd(11, "I_24V_SW:",       "i_24v_ma")
+        lv.addWidget(sum_gb)
 
         # Ext ADC
         ext_gb = QGroupBox("External ADC")
@@ -2231,14 +2288,14 @@ class PduTab(QWidget):
         self._lbls: dict[str, QLabel] = {}
 
         def _add(form, key, name):
-            lbl = _val_label()
+            lbl = SignalValueLabel(key, self._state)
             self._lbls[key] = lbl
             _make_form_row(form, name, lbl)
 
         _add(ext_form, "v_vraw_v",     "V_SRC:")
         _add(ext_form, "v_12v_v",      "12V_SW:")
         _add(ext_form, "v_24v_v",      "24V_SW:")
-        _add(ext_form, "i_vraw_sw_ma", "I_SRC (mA):")
+        _add(ext_form, "i_vraw_sw_ma", "I_SRC_SW (mA):")
         _add(ext_form, "i_12v_ma",     "I_12V_SW (mA):")
         _add(ext_form, "i_24v_ma",     "I_24V_SW (mA):")
         lv.addWidget(ext_gb)
@@ -2247,11 +2304,11 @@ class PduTab(QWidget):
         therm_gb = QGroupBox("Temperatures")
         therm_form = QFormLayout(therm_gb)
         therm_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
-        _add(therm_form, "therm1_c",       "PDU Therm 1:")
-        _add(therm_form, "therm2_c",       "PDU Therm 2:")
-        _add(therm_form, "ladc_therm2_c",  "PDU Board NTC:")
-        _add(therm_form, "ladc_therm0_c",  "RCU Board NTC:")
-        _add(therm_form, "ladc_therm1_c",  "PDU Ext Therm:")
+        _add(therm_form, "therm1_c",       "PSU Board NTC 1:")   # ext ADC, soldered on PSU
+        _add(therm_form, "therm2_c",       "PSU Board NTC 2:")   # ext ADC, soldered on PSU
+        _add(therm_form, "ladc_therm2_c",  "PDU Board NTC:")     # PDU local onboard NTC
+        _add(therm_form, "ladc_therm1_c",  "PDU Aux Conn:")      # PDU aux thermistor connector
+        _add(therm_form, "ladc_therm0_c",  "RCU Board NTC:")     # RCU PCB, next to IMU0
         lv.addWidget(therm_gb)
 
         # Energy Meter
@@ -2269,12 +2326,12 @@ class PduTab(QWidget):
         ladc_form = QFormLayout(ladc_gb)
         ladc_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
         _add(ladc_form, "ladc_vsource_v", "V_SRC (loc):")
-        _add(ladc_form, "ladc_vbus_v",    "12V (loc):")
+        _add(ladc_form, "ladc_vbus_v",    "V_BUS (motor):")
         _add(ladc_form, "ladc_icoil_ma",  "I_COIL (mA):")
         lv.addWidget(ladc_gb)
         lv.addStretch()
 
-        splitter.addWidget(left)
+        splitter.addWidget(left_scroll)
 
         # ---- Right: plot panel -----------------------------------------------
         self._plot_panel = TelemetryPlotPanel(
@@ -2282,7 +2339,7 @@ class PduTab(QWidget):
             cfg_key="pdu_signals_checked",
         )
         splitter.addWidget(self._plot_panel)
-        splitter.setSizes([240, 700])
+        splitter.setSizes([290, 650])
 
     def refresh(self) -> None:
         t = self._state.get_telem()
@@ -2300,13 +2357,13 @@ class PduTab(QWidget):
                     self._lbls[key].setText("--- (no sensor)")
                     self._lbls[key].setStyleSheet(
                         f"color:{DIM}; background:transparent;"
-                        " font-family:'Consolas','Courier New',monospace; font-size:11px;"
+                        " font-family:'Consolas','Courier New',monospace; font-size:13px;"
                     )
                     return
                 self._lbls[key].setText("---")
                 self._lbls[key].setStyleSheet(
                     f"color:{TEXT}; background:transparent;"
-                    " font-family:'Consolas','Courier New',monospace; font-size:11px;"
+                    " font-family:'Consolas','Courier New',monospace; font-size:13px;"
                 )
                 return
             text = _fmt_val(v, fmt, suffix)
@@ -2317,7 +2374,7 @@ class PduTab(QWidget):
             self._lbls[key].setText(text)
             self._lbls[key].setStyleSheet(
                 f"color:{color}; background:transparent;"
-                " font-family:'Consolas','Courier New',monospace; font-size:11px;"
+                " font-family:'Consolas','Courier New',monospace; font-size:13px;"
             )
 
         a = self._cfg.get("alerts")
@@ -2337,8 +2394,33 @@ class PduTab(QWidget):
         _set("em_p_w",   ".1f", " W")
         _set("em_t_c",   ".1f", " °C", -40.0, tw)
         _set("ladc_vsource_v", ".2f", " V", a.get("v_src_warn_min_v", 45.0), a.get("v_src_warn_max_v", 58.0))
-        _set("ladc_vbus_v",    ".3f", " V", a.get("v_12v_warn_min_v", 11.0), a.get("v_12v_warn_max_v", 13.0))
+        _set("ladc_vbus_v",    ".2f", " V", a.get("v_src_warn_min_v", 45.0), a.get("v_src_warn_max_v", 58.0))
         _set("ladc_icoil_ma",  ".1f", " mA")
+
+        # Power Summary update
+        a2 = self._cfg.get("alerts")
+        for key, lbl in self._sum_lbls.items():
+            v = t.get(key, float('nan'))
+            if math.isnan(v):
+                lbl.setText("---")
+                continue
+            if key in ("v_vraw_v", "ladc_vsource_v", "em_v_v", "ladc_vbus_v"):
+                fmt, sfx = ".2f", " V"
+                lo_w, hi_w = a2.get("v_src_warn_min_v", 45.0), a2.get("v_src_warn_max_v", 58.0)
+            elif key == "v_12v_v":
+                fmt, sfx = ".3f", " V"
+                lo_w, hi_w = a2.get("v_12v_warn_min_v", 11.0), a2.get("v_12v_warn_max_v", 13.0)
+            elif key == "v_24v_v":
+                fmt, sfx = ".3f", " V"
+                lo_w, hi_w = a2.get("v_24v_warn_min_v", 22.0), a2.get("v_24v_warn_max_v", 26.0)
+            else:
+                fmt, sfx, lo_w, hi_w = ".0f", " mA", None, None
+            lbl.setText(_fmt_val(v, fmt, sfx))
+            col = _color_label(v, lo_w, hi_w) if lo_w is not None else TEXT
+            lbl.setStyleSheet(
+                f"color:{col}; background:transparent;"
+                " font-family:'Consolas','Courier New',monospace; font-size:13px;"
+            )
 
     def update_plots(self) -> None:
         self._plot_panel.update_plots()
@@ -2353,6 +2435,11 @@ class FpgaHealthTab(QWidget):
         super().__init__(parent)
         self._state = state
         self._cfg   = cfg
+        self._spark_name_items:  dict[str, QTableWidgetItem] = {}
+        self._spark_state_items: dict[str, QTableWidgetItem] = {}
+        self._fault_history:     list[dict] = []
+        self._last_fault_latch:  int = -1
+        self._last_fault_code:   int = -1
         self._build()
 
     def _build(self) -> None:
@@ -2361,7 +2448,10 @@ class FpgaHealthTab(QWidget):
         root.setSpacing(10)
 
         # ---- Left: register decode + fault log ----
-        left = QVBoxLayout()
+        left_w = QWidget()
+        left_w.setFixedWidth(310)
+        left = QVBoxLayout(left_w)
+        left.setContentsMargins(0, 0, 6, 0)
         left.setSpacing(8)
         left.addWidget(_hdg("FPGA / Health"))
 
@@ -2378,14 +2468,14 @@ class FpgaHealthTab(QWidget):
         self._lbl_pchg    = _val_label()
         self._lbl_ver     = _val_label()
         for nm, lbl in (
-            ("State:",    self._lbl_state),
-            ("STATUS0:",  self._lbl_s0),
-            ("INPUTS:",   self._lbl_in),
-            ("Fault cnt:",self._lbl_fc),
-            ("Supv cnt:", self._lbl_sc),
-            ("Act byte:", self._lbl_act),
-            ("Pchg ms:",  self._lbl_pchg),
-            ("FW ver:",   self._lbl_ver),
+            ("State:",       self._lbl_state),
+            ("STATUS0:",     self._lbl_s0),
+            ("INPUTS:",      self._lbl_in),
+            ("Fault code:",  self._lbl_fc),
+            ("State code:",  self._lbl_sc),
+            ("Actions:",     self._lbl_act),
+            ("Pchg ms:",     self._lbl_pchg),
+            ("FW ver:",      self._lbl_ver),
         ):
             _make_form_row(reg_form, nm, lbl)
         left.addWidget(reg_gb)
@@ -2398,75 +2488,147 @@ class FpgaHealthTab(QWidget):
         self._supv_list.setMaximumHeight(200)
         supv_vl.addWidget(self._supv_list)
         left.addWidget(supv_gb)
+
+        # Fault history log
+        fhist_gb = QGroupBox("Fault History")
+        fhist_vl = QVBoxLayout(fhist_gb)
+        fhist_vl.setContentsMargins(4, 4, 4, 4)
+        self._fault_hist_edit = QTextEdit()
+        self._fault_hist_edit.setReadOnly(True)
+        self._fault_hist_edit.setFont(QFont("Consolas", 9))
+        self._fault_hist_edit.setPlainText("(no faults logged)")
+        fhist_vl.addWidget(self._fault_hist_edit)
+        clr_btn = QPushButton("Clear")
+        clr_btn.setFixedHeight(22)
+        clr_btn.clicked.connect(
+            lambda: (self._fault_history.clear(), self._refresh_fault_history())
+        )
+        fhist_vl.addWidget(clr_btn)
+        left.addWidget(fhist_gb)
+
         left.addStretch()
 
-        lw = QWidget()
-        lw.setLayout(left)
-        lw.setFixedWidth(340)
-        root.addWidget(lw)
+        root.addWidget(left_w)
 
-        # ---- Right: STATUS0 / INPUTS bit sparklines ----
-        right = QVBoxLayout()
-        right.setSpacing(6)
-        right.addWidget(_hdg("STATUS0 / INPUTS Bit History (sparklines)"))
+        # ---- Right: FPGA bit status tables -----------------------------------
+        _COL_NAME = 170
+        _COL_VAL  = 38
+        _ROW_H    = 22
 
-        self._spark_glw = pg.GraphicsLayoutWidget()
-        self._spark_glw.setBackground(BG)
-        self._spark_plots: dict[str, pg.PlotDataItem] = {}
-        self._spark_items: list[pg.PlotItem] = []
+        _tbl_ss = f"""
+            QTableWidget {{
+                background: {PANEL};
+                color: {TEXT};
+                font-size: 13px;
+                gridline-color: #333333;
+                border: 1px solid #333333;
+            }}
+            QTableWidget::item {{
+                padding: 0px 6px;
+                border: none;
+            }}
+            QHeaderView::section {{
+                background: {PANEL};
+                color: {ACCENT};
+                font-size: 12px;
+                font-weight: bold;
+                padding: 4px 6px;
+                border: none;
+                border-bottom: 1px solid #444444;
+            }}
+        """
 
-        all_bits = [
-            (f"S0:{name}", "s0", bit) for bit, name in S0_BITS
-        ] + [
-            (f"IN:{name}", "in", bit) for bit, name in IN_BITS
-        ]
+        right_w = QWidget()
+        right_w.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        right_vl = QVBoxLayout(right_w)
+        right_vl.setContentsMargins(8, 8, 8, 8)
+        right_vl.setSpacing(10)
+        right_vl.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        for ri, (label, reg, bit) in enumerate(all_bits):
-            p = self._spark_glw.addPlot(row=ri, col=0)
-            p.hideAxis("bottom")
-            p.setLabel("left", label, **{"color": TEXT, "font-size": "8pt"})
-            p.setMaximumHeight(28)
-            p.setYRange(-0.1, 1.1)
-            p.getAxis("left").setStyle(showValues=False)
-            p.showGrid(x=False, y=False)
-            p.hideButtons()
-            p.setMenuEnabled(False)
-            if ri > 0:
-                p.setXLink(self._spark_items[0])
-            curve = p.plot(
-                x=np.array([], dtype=np.float64),
-                y=np.array([], dtype=np.float64),
-                pen=pg.mkPen(ACCENT, width=1),
-                connect="finite",
-                stepMode="right",
+        for section_lbl, bit_defs, section_key in (
+            ("STATUS0",  S0_BITS,  "fpga_sts0"),
+            ("INPUTS",   IN_BITS,  "fpga_inputs"),
+        ):
+            n_rows = len(bit_defs)
+            tbl = QTableWidget(n_rows, 2)
+            tbl.setHorizontalHeaderLabels([section_lbl, "Val"])
+            tbl.verticalHeader().setVisible(False)
+            tbl.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+            tbl.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+            tbl.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+            tbl.setStyleSheet(_tbl_ss)
+            tbl.setShowGrid(True)
+            tbl.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)
+            tbl.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)
+            tbl.setColumnWidth(0, _COL_NAME)
+            tbl.setColumnWidth(1, _COL_VAL)
+            tbl.verticalHeader().setDefaultSectionSize(_ROW_H)
+            tbl.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Fixed)
+            tbl.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            tbl.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            tbl.setFixedWidth(_COL_NAME + _COL_VAL + 4)
+            tbl.setSizeAdjustPolicy(
+                QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
             )
-            self._spark_plots[f"{reg}_{bit}"] = curve
-            self._spark_items.append(p)
+            tbl.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
-        # Store bit list for refresh
-        self._all_bits = all_bits
+            for row_i, (bit_pos, bit_name) in enumerate(reversed(bit_defs)):
+                spark_key = f"{section_key}:{bit_pos}"
 
-        right.addWidget(self._spark_glw)
-        rw = QWidget()
-        rw.setLayout(right)
-        root.addWidget(rw, stretch=1)
+                name_item = QTableWidgetItem(f"b{bit_pos}  {bit_name}")
+                name_item.setForeground(QColor(DIM))
+                tbl.setItem(row_i, 0, name_item)
+                self._spark_name_items[spark_key] = name_item
+
+                state_item = QTableWidgetItem("?")
+                state_item.setTextAlignment(
+                    Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
+                )
+                state_item.setFont(QFont("Consolas", 9))
+                state_item.setForeground(QColor(DIM))
+                tbl.setItem(row_i, 1, state_item)
+                self._spark_state_items[spark_key] = state_item
+
+            right_vl.addWidget(tbl)
+
+        root.addWidget(right_w, stretch=0)
 
     def refresh(self) -> None:
         t = self._state.get_telem()
         if not t:
             return
 
-        state_num = t.get("fpga_act", 0)
+        state_num = t.get("fpga_sc", 0)
         self._lbl_state.setText(FPGA_STATES.get(state_num, f"? ({state_num})"))
         s0  = t.get("fpga_sts0",   0)
         inp = t.get("fpga_inputs", 0)
         self._lbl_s0.setText(f"0x{s0:02X} — {decode_bits(s0, S0_BITS)}")
         self._lbl_in.setText(f"0x{inp:02X} — {decode_bits(inp, IN_BITS)}")
-        self._lbl_fc.setText(str(t.get("fpga_fc", "---")))
+        self._lbl_fc.setText(f"0x{t.get('fpga_fc', 0):02X}")
         self._lbl_sc.setText(str(t.get("fpga_sc", "---")))
         self._lbl_act.setText(f"0x{t.get('fpga_act',0):02X}")
         self._lbl_pchg.setText(str(t.get("fpga_pchg_ms", "---")))
         self._lbl_ver.setText(str(t.get("fpga_version", "---")))
+
+        # Fault history tracking
+        fault_latch = (s0 >> 7) & 1
+        fc          = int(t.get("fpga_fc", 0))
+        state_name  = FPGA_STATES.get(int(t.get("fpga_sc", 0)), "?")
+        new_fault = (
+            (fault_latch == 1 and self._last_fault_latch == 0)
+            or (fault_latch == 1 and fc != self._last_fault_code
+                and self._last_fault_code != -1)
+        )
+        if new_fault:
+            self._fault_history.append({
+                "wall_ts": time.strftime("%H:%M:%S"),
+                "fc": fc, "sts0": s0, "inputs": inp, "state": state_name,
+            })
+            if len(self._fault_history) > 30:
+                self._fault_history.pop(0)
+            self._refresh_fault_history()
+        self._last_fault_latch = fault_latch
+        self._last_fault_code  = fc
 
         # Supervision events
         events = self._state.get_supervision_events()
@@ -2474,19 +2636,45 @@ class FpgaHealthTab(QWidget):
             lines = []
             for ts, raw in reversed(list(events)[-30:]):
                 age = time.monotonic() - ts
-                lines.append(f"+{age:6.1f}s ago  {raw.hex()}")
+                hex_str = " ".join(f"{b:02X}" for b in raw)
+                lines.append(f"+{age:6.1f}s ago  len={len(raw)}  hex: {hex_str}")
             self._supv_list.setPlainText("\n".join(lines))
 
-        # Update sparklines using history
-        n = 300  # last 30 s at 10 Hz
-        x = np.linspace(-30.0, 0.0, n)
-        for label, reg, bit in self._all_bits:
-            hist_key = "fpga_sts0" if reg == "s0" else "fpga_inputs"
-            raw_hist = self._state.get_hist_window(hist_key, n)
-            y = np.array([(1.0 if (int(v) >> bit & 1) else 0.0)
-                          if not math.isnan(v) else float('nan')
-                          for v in raw_hist], dtype=np.float64)
-            self._spark_plots[f"{reg}_{bit}"].setData(x=x, y=y)
+        # Bit status updates
+        for section_key, bit_defs in (
+            ("fpga_sts0",   S0_BITS),
+            ("fpga_inputs", IN_BITS),
+        ):
+            cur_reg = int(t.get(section_key, 0))
+            for bit_pos, _bit_name in bit_defs:
+                spark_key = f"{section_key}:{bit_pos}"
+                cur_val = (cur_reg >> bit_pos) & 1
+                state_item = self._spark_state_items.get(spark_key)
+                if state_item is not None:
+                    state_item.setText(str(cur_val))
+                    state_item.setForeground(QColor("#44FF44" if cur_val else DIM))
+                name_item = self._spark_name_items.get(spark_key)
+                if name_item is not None:
+                    if spark_key in _SPARK_HIGH_IS_FAULT:
+                        ncol = ERROR if cur_val else DIM
+                    else:
+                        ncol = TEXT if cur_val else DIM
+                    name_item.setForeground(QColor(ncol))
+
+    def _refresh_fault_history(self) -> None:
+        if not self._fault_history:
+            self._fault_hist_edit.setPlainText("(no faults logged)")
+            return
+        lines = []
+        for e in reversed(self._fault_history):
+            fc_name = FPGA_FAULT_CODES.get(e["fc"], f"0x{e['fc']:X}")
+            lines.append(
+                f"[{e['wall_ts']}] {fc_name:<22}"
+                f"  state={e['state']}"
+                f"  STS0=0x{e['sts0']:02X}"
+                f"  INP=0x{e['inputs']:02X}"
+            )
+        self._fault_hist_edit.setPlainText("\n".join(lines))
 
 
 # ---------------------------------------------------------------------------
@@ -2516,7 +2704,7 @@ class ImuTab(QWidget):
         self._lbls: dict[str, QLabel] = {}
 
         def _add(form, key, name):
-            lbl = _val_label()
+            lbl = SignalValueLabel(key, self._state)
             self._lbls[key] = lbl
             _make_form_row(form, name, lbl)
 
@@ -2569,6 +2757,9 @@ class MotorsTab(QWidget):
         super().__init__(parent)
         self._state = state
         self._cfg   = cfg
+        self._stream_timer = QTimer(self)
+        self._stream_timer.setInterval(100)   # 10 Hz
+        self._stream_timer.timeout.connect(self._send_cmd)
         self._build()
 
     def _build(self) -> None:
@@ -2586,7 +2777,7 @@ class MotorsTab(QWidget):
         self._tree = QTreeWidget()
         self._tree.setColumnCount(6)
         self._tree.setHeaderLabels(["Bus/ID", "Pos (rad)", "Vel (rad/s)",
-                                    "Torque (Nm)", "Error", ""])
+                                    "Torque (Nm)", "Error", "Mode"])
         self._tree.header().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._tree.setAlternatingRowColors(True)
         fb_vl.addWidget(self._tree)
@@ -2601,37 +2792,49 @@ class MotorsTab(QWidget):
 
         cmd_grid.addWidget(_lbl("Bus:"),         0, 0)
         self._bus_combo = QComboBox()
-        self._bus_combo.addItems(["L (0)", "R (1)"])
+        self._bus_combo.addItems(["R/0 (right, FDCAN1)", "L/1 (left, FDCAN3)"])
         cmd_grid.addWidget(self._bus_combo,      0, 1)
 
         cmd_grid.addWidget(_lbl("Motor ID:"),    0, 2)
         self._mid_spin = QSpinBox()
-        self._mid_spin.setRange(1, 8)
+        self._mid_spin.setRange(1, 12)
         cmd_grid.addWidget(self._mid_spin,       0, 3)
 
-        for ri, (label, attr, lo, hi, dec) in enumerate([
-            ("Pos (rad)",    "_pos_spin",  -12.57, 12.57, 4),
-            ("Vel (rad/s)",  "_vel_spin",  -15.0,  15.0,  3),
-            ("Torque (Nm)",  "_trq_spin",  -120.0, 120.0, 2),
-            ("Kp",           "_kp_spin",   0.0,    5000.0, 1),
-            ("Kd",           "_kd_spin",   0.0,    100.0,  2),
-        ]):
+        _PARAMS = [
+            ("Pos (rad)",    "_pos_spin",  -12.57, 12.57,  4, 0.0),
+            ("Vel (rad/s)",  "_vel_spin",  -15.0,  15.0,   3, 0.0),
+            ("Torque (Nm)",  "_trq_spin",  -120.0, 120.0,  2, 0.0),
+            ("Kp",           "_kp_spin",   0.0,    5000.0, 1, 10.0),
+            ("Kd",           "_kd_spin",   0.0,    100.0,  2, 1.0),
+        ]
+        for ri, (label, attr, lo, hi, dec, default) in enumerate(_PARAMS):
             cmd_grid.addWidget(_lbl(f"{label}:"), ri + 1, 0)
             sb = QDoubleSpinBox()
             sb.setRange(lo, hi)
             sb.setDecimals(dec)
             sb.setSingleStep(0.1)
+            sb.setValue(default)
             setattr(self, attr, sb)
             cmd_grid.addWidget(sb, ri + 1, 1, 1, 3)
 
         btn_row = QHBoxLayout()
-        send_btn  = QPushButton("Send Command")
-        estop_btn = QPushButton("E-STOP ALL")
+        send_btn   = QPushButton("Send MIT Command")
+        en_btn     = QPushButton("Enable Motor")
+        dis_btn    = QPushButton("Disable Motor")
+        estop_btn  = QPushButton("E-STOP ALL")
+        self._stream_chk = QCheckBox("Hold / Stream (10 Hz)")
+        en_btn.setProperty("role", "ok")
         estop_btn.setProperty("role", "danger")
         send_btn.clicked.connect(self._send_cmd)
+        en_btn.clicked.connect(self._enable_motor)
+        dis_btn.clicked.connect(self._disable_motor)
         estop_btn.clicked.connect(self._estop_all)
+        self._stream_chk.toggled.connect(self._on_stream_toggle)
         btn_row.addWidget(send_btn)
+        btn_row.addWidget(en_btn)
+        btn_row.addWidget(dis_btn)
         btn_row.addWidget(estop_btn)
+        btn_row.addWidget(self._stream_chk)
         btn_row.addStretch()
         cmd_grid.addLayout(btn_row, 6, 0, 1, 4)
         splitter.addWidget(cmd_gb)
@@ -2649,10 +2852,28 @@ class MotorsTab(QWidget):
             self._kd_spin.value(),
         )
 
+    def _on_stream_toggle(self, checked: bool) -> None:
+        if checked:
+            self._stream_timer.start()
+        else:
+            self._stream_timer.stop()
+
+    def _enable_motor(self) -> None:
+        bus = self._bus_combo.currentIndex()
+        send_motor_enable(self._rcu_ip(), bus, self._mid_spin.value(),
+                          enable=True, clear_fault=False)
+
     def _estop_all(self) -> None:
+        self._stream_chk.setChecked(False)
         slots = self._state.get_motor_slots()
         active_ids = [(s["bus"], s["motor_id"]) for s in slots] or None
         send_motor_estop(self._rcu_ip(), active_ids)
+
+    def _disable_motor(self) -> None:
+        self._stream_chk.setChecked(False)
+        bus = self._bus_combo.currentIndex()
+        send_motor_enable(self._rcu_ip(), bus, self._mid_spin.value(),
+                          enable=False, clear_fault=False)
 
     def refresh(self) -> None:
         slots = self._state.get_motor_slots()
@@ -2661,22 +2882,28 @@ class MotorsTab(QWidget):
         for s in slots:
             bus = s["bus"]
             if bus not in buses:
-                bitem = QTreeWidgetItem([f"Bus {'L' if bus == 0 else 'R'} ({bus})"])
+                bitem = QTreeWidgetItem([f"Bus {'R' if bus == 0 else 'L'} ({bus})"])
                 bitem.setForeground(0, pg.mkColor(ACCENT))
                 self._tree.addTopLevelItem(bitem)
                 buses[bus] = bitem
                 bitem.setExpanded(True)
-            err = s["error"]
+            err  = s["error"]
+            mode = s.get("mode_status", 0)
+            _MODE_LABEL = {0: "idle", 1: "MIT", 2: "M:2", 3: "M:3"}
             row = QTreeWidgetItem([
                 f"ID {s['motor_id']}",
                 f"{s['pos_rad']:.4f}",
                 f"{s['vel_rads']:.3f}",
                 f"{s['torque_nm']:.2f}",
                 f"0x{err:02X}" if err else "OK",
-                "",
+                _MODE_LABEL.get(mode, f"M:{mode}"),
             ])
             if err:
                 row.setForeground(4, pg.mkColor(ERROR))
+            if mode == 0:
+                row.setForeground(5, pg.mkColor(DIM))
+            elif mode == 1:
+                row.setForeground(5, pg.mkColor("#98c379"))  # green = MIT active
             buses[bus].addChild(row)
 
 
@@ -2703,14 +2930,6 @@ class CommandsTab(QWidget):
         root.setContentsMargins(10, 8, 10, 8)
         root.setSpacing(8)
         root.addWidget(_hdg("Commands"))
-
-        note = QLabel(
-            "Buttons marked  ⚠ (FW req)  require unreleased RCU firmware (eth_udp.c). "
-            "Commands without this note use the currently released firmware."
-        )
-        note.setWordWrap(True)
-        note.setStyleSheet(f"color:{WARN}; background:transparent; font-size:10px;")
-        root.addWidget(note)
         root.addWidget(_sep())
 
         scroll = QScrollArea()
@@ -2723,13 +2942,9 @@ class CommandsTab(QWidget):
         scroll.setWidget(inner)
         root.addWidget(scroll, stretch=1)
 
-        def _btn(label: str, callback, fw_req: bool = False,
-                 role: str = "") -> QPushButton:
-            text = f"⚠ {label} (FW req)" if fw_req else label
-            b = QPushButton(text)
-            if fw_req:
-                b.setProperty("role", "warn")
-            elif role:
+        def _btn(label: str, callback, role: str = "") -> QPushButton:
+            b = QPushButton(label)
+            if role:
                 b.setProperty("role", role)
             b.clicked.connect(callback)
             b.style().unpolish(b)
@@ -2744,8 +2959,7 @@ class CommandsTab(QWidget):
         diag_h.addWidget(_btn("Force Telem",   self._cmd_force_telem))
         diag_h.addWidget(_btn("CAN Loopback",  self._cmd_can_lb))
         diag_h.addWidget(_btn("Reset Gap Counter (GUI)", self._cmd_reset_gaps))
-        diag_h.addWidget(_btn("Request Status Dump", self._cmd_status_dump,
-                              fw_req=True))
+        diag_h.addWidget(_btn("Request Status Dump", self._cmd_status_dump))
         diag_h.addStretch()
         iv.addWidget(diag_gb)
 
@@ -2762,10 +2976,7 @@ class CommandsTab(QWidget):
         fpga_gb = QGroupBox("FPGA / Power")
         fpga_h  = QHBoxLayout(fpga_gb)
         fpga_h.setSpacing(8)
-        fpga_h.addWidget(_btn("Clear PDU Fault Latch", self._cmd_clear_fault,
-                              fw_req=True))
-        fpga_h.addWidget(_btn("Assert PDU Fault (test)", self._cmd_assert_fault,
-                              fw_req=True))
+        fpga_h.addWidget(_btn("Assert PDU Fault (test)", self._cmd_assert_fault))
         fpga_h.addStretch()
         iv.addWidget(fpga_gb)
 
@@ -2773,10 +2984,10 @@ class CommandsTab(QWidget):
         bus_gb = QGroupBox("Motor Bus Control")
         bus_h  = QHBoxLayout(bus_gb)
         bus_h.setSpacing(8)
-        bus_h.addWidget(_btn("Bus L → Enable",   self._cmd_busL_en,    fw_req=True))
-        bus_h.addWidget(_btn("Bus L → Standby",  self._cmd_busL_stby,  fw_req=True))
-        bus_h.addWidget(_btn("Bus R → Enable",   self._cmd_busR_en,    fw_req=True))
-        bus_h.addWidget(_btn("Bus R → Standby",  self._cmd_busR_stby,  fw_req=True))
+        bus_h.addWidget(_btn("Bus L → Enable",   self._cmd_busL_en))
+        bus_h.addWidget(_btn("Bus L → Standby",  self._cmd_busL_stby))
+        bus_h.addWidget(_btn("Bus R → Enable",   self._cmd_busR_en))
+        bus_h.addWidget(_btn("Bus R → Standby",  self._cmd_busR_stby))
         estop_b = _btn("E-STOP ALL Motors", self._cmd_estop, role="danger")
         bus_h.addWidget(estop_b)
         bus_h.addStretch()
@@ -2788,8 +2999,7 @@ class CommandsTab(QWidget):
         rate_h.setSpacing(8)
         for hz in (5, 10, 20):
             btn = _btn(f"{hz} Hz",
-                       lambda _chk=False, h=hz: self._cmd_set_rate(h),
-                       fw_req=True)
+                       lambda _chk=False, h=hz: self._cmd_set_rate(h))
             rate_h.addWidget(btn)
         rate_h.addStretch()
         iv.addWidget(rate_gb)
@@ -2799,9 +3009,9 @@ class CommandsTab(QWidget):
         sys_h  = QHBoxLayout(sys_gb)
         sys_h.setSpacing(8)
         sys_h.addWidget(_btn("Soft Reset RCU",
-                             self._cmd_reset_rcu, fw_req=True))
+                             self._cmd_reset_rcu))
         sys_h.addWidget(_btn("Soft Reset RCU + PDU",
-                             self._cmd_reset_rcu_pdu, fw_req=True))
+                             self._cmd_reset_rcu_pdu))
         sys_h.addStretch()
         iv.addWidget(sys_gb)
 
@@ -2846,10 +3056,6 @@ class CommandsTab(QWidget):
     def _cmd_led(self)         -> None:
         send_debug_cmd(self._rcu_ip(), DBGCMD_LED_BLINK)
         self._log("LED blink sent")
-
-    def _cmd_clear_fault(self) -> None:
-        send_debug_cmd(self._rcu_ip(), DBGCMD_CLEAR_PDU_FAULT)
-        self._log("Clear PDU fault latch sent")
 
     def _cmd_assert_fault(self)-> None:
         send_debug_cmd(self._rcu_ip(), DBGCMD_ASSERT_PDU_FAULT)
@@ -3028,7 +3234,7 @@ class RecordingTab(QWidget):
         self._lbl_status.setText("Recording…")
         self._lbl_status.setStyleSheet(
             f"color:{OK}; background:transparent;"
-            " font-family:'Consolas','Courier New',monospace; font-size:11px;"
+            " font-family:'Consolas','Courier New',monospace; font-size:13px;"
         )
 
     def _stop(self) -> None:
@@ -3039,7 +3245,7 @@ class RecordingTab(QWidget):
         self._lbl_status.setText("Stopped")
         self._lbl_status.setStyleSheet(
             f"color:{TEXT}; background:transparent;"
-            " font-family:'Consolas','Courier New',monospace; font-size:11px;"
+            " font-family:'Consolas','Courier New',monospace; font-size:13px;"
         )
 
     def refresh(self) -> None:
@@ -3249,7 +3455,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self._tabs)
 
         self._overview_tab   = OverviewTab(state, cfg)
-        self._xref_tab       = PowerCrossRefTab(state, cfg)
         self._pdu_tab        = PduTab(state, cfg)
         self._fpga_tab       = FpgaHealthTab(state, cfg)
         self._imu_tab        = ImuTab(state, cfg)
@@ -3261,7 +3466,6 @@ class MainWindow(QMainWindow):
 
         for label, widget in (
             ("Overview",        self._overview_tab),
-            ("Power / X-Ref",   self._xref_tab),
             ("PDU",             self._pdu_tab),
             ("FPGA / Health",   self._fpga_tab),
             ("IMU",             self._imu_tab),
@@ -3284,10 +3488,23 @@ class MainWindow(QMainWindow):
         )
         self._timer.timeout.connect(self._update_loop)
         self._timer.start()
+        QTimer.singleShot(1500, self._auto_ping)
+        QuickGraphPopup.set_state(state)
 
     # ------------------------------------------------------------------
     # Update loop — fires every 100 ms
     # ------------------------------------------------------------------
+
+    def _auto_ping(self) -> None:
+        """Send a ping command shortly after startup to get initial telemetry."""
+        try:
+            send_debug_cmd(
+                self._cfg.get("connection", "rcu_ip", default=RCU_IP_DEFAULT),
+                DBGCMD_PING,
+            )
+            self._log_tab.append("[auto] Startup ping sent")
+        except Exception as exc:
+            self._log_tab.append(f"[auto] Startup ping failed: {exc}")
 
     def _update_loop(self) -> None:
         idx = self._tabs.currentIndex()

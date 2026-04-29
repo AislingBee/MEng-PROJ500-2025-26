@@ -40,8 +40,8 @@ static float u16_to_f(uint16_t raw, float min, float max)
  * Module state — motor supervisory
  * ----------------------------------------------------------------------- */
 
-/* Current control mode: 0=MIT Type1, 1=CSP param-write (default) */
-static uint8_t  g_ctrl_mode    = 1U;
+/* Current control mode: 0=MIT Type1, 1=CSP param-write */
+static uint8_t  g_ctrl_mode    = 0U;
 /* Bitmask of currently enabled motors (bit N = motor_id N+1) */
 static uint16_t g_enabled_mask = 0U;
 
@@ -124,8 +124,9 @@ void telem_pack_motor_fb(rcu_motor_fb_payload_t *out)
             s->motor_id  = fb->motor_id;
             s->pos_u16   = f_to_u16(fb->pos_rad,   -RS04_POS_MAX_RAD,  RS04_POS_MAX_RAD);
             s->vel_u16   = f_to_u16(fb->vel_rads,  -RS04_VEL_MAX_RADS, RS04_VEL_MAX_RADS);
-            s->cur_u16   = f_to_u16(fb->torque_nm, -RS04_TRQ_MAX_NM,   RS04_TRQ_MAX_NM);
+            s->cur_u16    = f_to_u16(fb->torque_nm, -RS04_TRQ_MAX_NM, RS04_TRQ_MAX_NM);
             s->error_code = fb->fault_bits;
+            s->mode_status = fb->mode_status;
         }
     }
     out->count = slot;
@@ -161,8 +162,13 @@ void telem_pack_apply_motor_cmd(const rcu_motor_cmd_entry_t *entries, uint16_t c
 /* -----------------------------------------------------------------------
  * Motor supervisory handler
  * ----------------------------------------------------------------------- */
+extern void st_dbg_printf(const char *fmt, ...);
+
 void telem_pack_apply_motor_supervisory(const rcu_motor_supervisory_t *sup)
 {
+    st_dbg_printf("[SUPV] enable_mask=0x%04X clr_fault=0x%04X ctrl=%u  (was 0x%04X)\r\n",
+                  (unsigned)sup->enable_mask, (unsigned)sup->clear_fault_mask,
+                  (unsigned)sup->ctrl_mode,   (unsigned)g_enabled_mask);
     g_ctrl_mode = sup->ctrl_mode;
 
     for (uint8_t n = 0U; n < 12U; ++n) {
@@ -179,15 +185,19 @@ void telem_pack_apply_motor_supervisory(const rcu_motor_supervisory_t *sup)
             if (clr_fault) {
                 motor_bus_send_enable(bus, motor_id, false, true);
             }
-            if (sup->ctrl_mode == 1U) {
-                /* CSP mode: write run_mode BEFORE enable (manual s.4.3.4) */
+            if (sup->ctrl_mode == 0U) {
+                /* MIT mode: write run_mode=0 BEFORE enable               */
+                motor_bus_send_param_write(bus, motor_id,
+                                           RS04_PARAM_RUN_MODE, 0.0f);
+            } else if (sup->ctrl_mode == 1U) {
+                /* CSP mode: write run_mode=5 BEFORE enable (s.4.3.4)    */
                 motor_bus_send_param_write(bus, motor_id,
                                            RS04_PARAM_RUN_MODE, 5.0f);
             }
             /* Step 2: enable the motor */
             motor_bus_send_enable(bus, motor_id, true, false);
             if (sup->ctrl_mode == 1U) {
-                /* Step 3: set speed limit after enable */
+                /* Step 3: set speed limit after enable (CSP only)        */
                 motor_bus_send_param_write(bus, motor_id,
                                            RS04_PARAM_LIMIT_SPD, 15.0f);
             }
