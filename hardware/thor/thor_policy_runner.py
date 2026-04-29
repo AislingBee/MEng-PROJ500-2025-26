@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import time
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -46,6 +47,7 @@ class ThorPolicyRunnerConfig:
     joint_upper_rad: tuple[float, ...] = CONTRACT.joint_upper_limits_rad
     action_scale: tuple[float, ...] = CONTRACT.action_scale
     command_value: float = CONTRACT.default_command_value
+    max_command_value: float = 0.50
     device: str = "cpu"
     loop_hz: float = CONTRACT.policy_loop_hz
     send_standing_pose_on_exit: bool = True
@@ -72,6 +74,8 @@ class ThorPolicyRunnerConfig:
             raise ValueError("joint_upper_rad must match the selected S2R policy contract")
         if self.loop_hz <= 0.0:
             raise ValueError("loop_hz must be positive")
+        if self.max_command_value < 0.0:
+            raise ValueError("max_command_value must be non-negative")
 
         if self.debug_print_every_n_steps <= 0:
             raise ValueError("debug_print_every_n_steps must be positive")
@@ -174,19 +178,30 @@ class ThorStandingPolicyRunner:
         self._joint_upper = torch.tensor(
             runner_cfg.joint_upper_rad, dtype=torch.float32, device=self.device
         ).unsqueeze(0)
-        self._commands = torch.tensor(
-            [[runner_cfg.command_value]], dtype=torch.float32, device=self.device
-        )
+        self._commands = torch.zeros((1, 1), dtype=torch.float32, device=self.device)
         self._last_actions = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
         self._joint_pos_targets = self._standing_q.unsqueeze(0).to(self.device).clone()
         self._tau_ff = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
         kp_fixed, kd_fixed = build_fixed_gains(device=self.device)
         self._kp_fixed = kp_fixed.unsqueeze(0)
         self._kd_fixed = kd_fixed.unsqueeze(0)
+        self.set_command_value(runner_cfg.command_value)
 
         self._step_count = 0
         self._last_obs: Tensor | None = None
         self._last_actions_debug: Tensor | None = None
+
+    def set_command_value(self, command_value: float) -> None:
+        # command_value = 0.0 means stand
+        # command_value > 0.0 means walking
+        clamped_value = min(max(float(command_value), 0.0), self.cfg.max_command_value)
+        self._commands[0, 0] = clamped_value
+
+    def set_stand_mode(self) -> None:
+        self.set_command_value(0.0)
+
+    def set_walk_mode(self) -> None:
+        self.set_command_value(0.05)
 
     def _build_observation_fields(self) -> tuple[tuple[str, Tensor], ...]:
         packet = self.hardware.read_observation_packet()
@@ -271,12 +286,12 @@ class ThorStandingPolicyRunner:
         )
         self.hardware.write_control_packet(packet)
 
-    def run(self) -> None:
+    def run(self, stop_event: threading.Event | None = None) -> None:
         period_s = 1.0 / self.cfg.loop_hz
         next_t = time.monotonic()
 
         try:
-            while True:
+            while stop_event is None or not stop_event.is_set():
                 self.step()
                 next_t += period_s
                 sleep_s = next_t - time.monotonic()
@@ -285,6 +300,8 @@ class ThorStandingPolicyRunner:
                 else:
                     next_t = time.monotonic()
         except KeyboardInterrupt:
+            pass
+        finally:
             if self.cfg.send_standing_pose_on_exit:
                 self.send_standing_pose()
 
@@ -308,11 +325,12 @@ class ThorStandingPolicyRunner:
 
         q_rel = obs[:, 0:12]
         joint_vel = obs[:, 12:24]
-        joint_effort = obs[:, 24:36]
-        gravity_b = obs[:, 36:39]
-        gyro_b = obs[:, 39:42]
-        command = obs[:, 42:43]
-        last_actions = obs[:, 43:55]
+        q_target_err = obs[:, 24:36]
+        joint_effort = obs[:, 36:48]
+        gravity_b = obs[:, 48:51]
+        gyro_b = obs[:, 51:54]
+        command = obs[:, 54:55]
+        last_actions = obs[:, 55:67]
 
         print("\n" + "=" * 90)
         print(f"[THOR DEBUG] step={self._step_count}")
@@ -321,6 +339,7 @@ class ThorStandingPolicyRunner:
         print("[RECEIVED / OBSERVATION INPUT]")
         print("q_rel:", q_rel)
         print("joint_vel:", joint_vel)
+        print("q_target_err:", q_target_err)
         print("joint_effort:", joint_effort)
         print("projected_gravity_b:", gravity_b)
         print("imu_gyro_b:", gyro_b)
@@ -386,7 +405,27 @@ def main() -> None:
         state_reader=example_state_reader,
         command_writer=example_command_writer,
     )
-    runner.run()
+    stop_event = threading.Event()
+
+    def keyboard_loop() -> None:
+        while not stop_event.is_set():
+            try:
+                key = input().strip().lower()
+            except EOFError:
+                break
+
+            if key == "s":
+                runner.set_stand_mode()
+            elif key == "w":
+                runner.set_walk_mode()
+            elif key == "x":
+                runner.set_stand_mode()
+                stop_event.set()
+                break
+
+    keyboard_thread = threading.Thread(target=keyboard_loop, daemon=True)
+    keyboard_thread.start()
+    runner.run(stop_event=stop_event)
 
 
 if __name__ == "__main__":
