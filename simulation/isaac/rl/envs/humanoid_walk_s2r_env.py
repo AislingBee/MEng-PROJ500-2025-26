@@ -15,7 +15,7 @@ from isaaclab.utils import configclass
 from isaaclab.utils.math import quat_rotate_inverse
 
 from ...configuration.walking_actuator_config import WALKING_ACTUATOR_SETTINGS
-from simulation.isaac.configuration.standing_s2r_policy_contract import (
+from simulation.isaac.configuration.walking_s2r_policy_contract import (
     CONTRACT,
     build_fixed_gains,
     build_standing_q,
@@ -44,10 +44,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     )
 
     action_space: int = CONTRACT.action_dim
-    # q_rel(12) + qd(12) + target_err(12) + joint_effort(12) + projected_gravity(3)
-    # + root_lin_vel_b(3) + root_ang_vel_b(3) + foot_pos_b(6) + foot_vel_b(6)
-    # + command(1) + last_actions(12)
-    observation_space: int = 82
+    observation_space: int = CONTRACT.obs_dim
     state_space: int = 0
 
     action_scale: tuple[float, ...] = CONTRACT.action_scale
@@ -500,14 +497,12 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         q_rel = q - self._standing_q.unsqueeze(0)
         q_target_err = self._joint_pos_targets - q
 
-        root_lin_vel_b = self.robot.data.root_lin_vel_b
         root_ang_vel_b = packet.imu_gyro_b
         projected_gravity_b = packet.projected_gravity_b
         joint_effort = packet.joint_effort
-        foot_kin = self._get_foot_kinematics()
-        foot_pos_b = torch.cat((foot_kin["left_pos_b"], foot_kin["right_pos_b"]), dim=-1)
-        foot_vel_b = torch.cat((foot_kin["left_vel_b"], foot_kin["right_vel_b"]), dim=-1)
 
+        # Deployment-clean walking policy observation: intentionally excludes
+        # simulator-only privileged state such as root linear velocity and foot kinematics.
         obs = torch.cat(
             (
                 q_rel,
@@ -515,15 +510,27 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 q_target_err,
                 joint_effort,
                 projected_gravity_b,
-                root_lin_vel_b,
                 root_ang_vel_b,
-                foot_pos_b,
-                foot_vel_b,
                 self._commands,
                 self._last_actions,
             ),
             dim=-1,
         )
+
+        expected_obs_dim = (
+            q_rel.shape[1]
+            + qd.shape[1]
+            + q_target_err.shape[1]
+            + joint_effort.shape[1]
+            + projected_gravity_b.shape[1]
+            + root_ang_vel_b.shape[1]
+            + self._commands.shape[1]
+            + self._last_actions.shape[1]
+        )
+        if expected_obs_dim != CONTRACT.obs_dim:
+            raise RuntimeError(
+                f"Walking policy observation contract mismatch. Expected {CONTRACT.obs_dim}, got {expected_obs_dim}"
+            )
 
         if obs.shape[1] != self.cfg.observation_space:
             raise RuntimeError(

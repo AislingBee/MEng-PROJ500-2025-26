@@ -10,12 +10,22 @@ from pathlib import Path
 
 import torch
 
+# Select policy contract.
+# Use exactly one active import.
+# Standing and walking use the same hardware interface.
+# The selected contract defines the policy observation layout.
 from simulation.isaac.configuration.standing_s2r_policy_contract import (
     CONTRACT,
     build_fixed_gains,
     build_standing_q,
-    get_thor_runner_defaults,
 )
+
+# from simulation.isaac.configuration.walking_s2r_policy_contract import (
+#     CONTRACT,
+#     build_fixed_gains,
+#     build_standing_q,
+# )
+
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
     RobotCommandMessage,
@@ -47,7 +57,7 @@ class ThorPolicyRunnerConfig:
     def __post_init__(self) -> None:
         n = len(self.joint_names)
         if self.joint_names != CONTRACT.joint_names:
-            raise ValueError("joint_names must match the standing S2R policy contract")
+            raise ValueError("joint_names must match the selected S2R policy contract")
         if n != CONTRACT.action_dim:
             raise ValueError(f"Expected {CONTRACT.action_dim} joints, got {n}")
         if len(self.joint_lower_rad) != n:
@@ -57,9 +67,9 @@ class ThorPolicyRunnerConfig:
         if len(self.action_scale) != n:
             raise ValueError("action_scale length must match joint_names")
         if tuple(self.joint_lower_rad) != CONTRACT.joint_lower_limits_rad:
-            raise ValueError("joint_lower_rad must match the standing S2R policy contract")
+            raise ValueError("joint_lower_rad must match the selected S2R policy contract")
         if tuple(self.joint_upper_rad) != CONTRACT.joint_upper_limits_rad:
-            raise ValueError("joint_upper_rad must match the standing S2R policy contract")
+            raise ValueError("joint_upper_rad must match the selected S2R policy contract")
         if self.loop_hz <= 0.0:
             raise ValueError("loop_hz must be positive")
 
@@ -168,6 +178,7 @@ class ThorStandingPolicyRunner:
             [[runner_cfg.command_value]], dtype=torch.float32, device=self.device
         )
         self._last_actions = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
+        self._joint_pos_targets = self._standing_q.unsqueeze(0).to(self.device).clone()
         self._tau_ff = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
         kp_fixed, kd_fixed = build_fixed_gains(device=self.device)
         self._kp_fixed = kp_fixed.unsqueeze(0)
@@ -177,22 +188,40 @@ class ThorStandingPolicyRunner:
         self._last_obs: Tensor | None = None
         self._last_actions_debug: Tensor | None = None
 
-    def build_observation(self) -> Tensor:
+    def _build_observation_fields(self) -> tuple[tuple[str, Tensor], ...]:
         packet = self.hardware.read_observation_packet()
 
         q_rel = packet.joint_pos - self._standing_q.unsqueeze(0).to(self.device)
-        obs = torch.cat(
-            (
-                q_rel,
-                packet.joint_vel,
-                packet.joint_effort,
-                packet.projected_gravity_b,
-                packet.imu_gyro_b,
-                self._commands,
-                self._last_actions,
-            ),
-            dim=-1,
+        standing_base_fields = (
+            ("q_rel", q_rel),
+            ("joint_vel", packet.joint_vel),
         )
+        tail_fields = (
+            ("joint_effort", packet.joint_effort),
+            ("projected_gravity_b", packet.projected_gravity_b),
+            ("imu_gyro_b", packet.imu_gyro_b),
+            ("command", self._commands),
+            ("last_actions", self._last_actions),
+        )
+        standing_fields = standing_base_fields + tail_fields
+
+        q_target_err = self._joint_pos_targets - packet.joint_pos
+        walking_fields = (
+            ("q_rel", q_rel),
+            ("qd", packet.joint_vel),
+            ("q_target_err", q_target_err),
+        ) + tail_fields
+
+        if sum(field.shape[1] for _, field in standing_fields) == CONTRACT.obs_dim:
+            return standing_fields
+        if sum(field.shape[1] for _, field in walking_fields) == CONTRACT.obs_dim:
+            return walking_fields
+
+        raise RuntimeError(f"Selected policy contract has unsupported observation dim {CONTRACT.obs_dim}")
+
+    def build_observation(self) -> Tensor:
+        fields = self._build_observation_fields()
+        obs = torch.cat(tuple(field for _, field in fields), dim=-1)
 
         obs = obs.to(self.device, dtype=torch.float32)
         expected_shape = (1, CONTRACT.obs_dim)
@@ -206,6 +235,7 @@ class ThorStandingPolicyRunner:
         actions = torch.clamp(actions, -1.0, 1.0)
         q_des = self._standing_q.unsqueeze(0).to(self.device) + self._action_scale * actions
         q_des = torch.max(torch.min(q_des, self._joint_upper), self._joint_lower)
+        self._joint_pos_targets = q_des.detach().clone()
 
         return ControlPacket(
             joint_names=self._joint_names,
@@ -330,17 +360,16 @@ def example_command_writer(msg: RobotCommandMessage) -> None:
 
 
 def main() -> None:
-    contract_defaults = get_thor_runner_defaults()
-    joint_names = contract_defaults["joint_names"]
+    joint_names = CONTRACT.joint_names
 
     runner_cfg = ThorPolicyRunnerConfig(
         policy_path="exports/standing_policy.pt",
         joint_names=joint_names,
-        joint_lower_rad=contract_defaults["joint_lower_limits_rad"],
-        joint_upper_rad=contract_defaults["joint_upper_limits_rad"],
+        joint_lower_rad=CONTRACT.joint_lower_limits_rad,
+        joint_upper_rad=CONTRACT.joint_upper_limits_rad,
         device="cpu",
-        loop_hz=contract_defaults["loop_hz"],
-        command_value=contract_defaults["command_value"],
+        loop_hz=CONTRACT.policy_loop_hz,
+        command_value=CONTRACT.default_command_value,
         debug_print=True,
         debug_print_every_n_steps=50,
     )
