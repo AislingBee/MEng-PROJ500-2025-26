@@ -84,8 +84,12 @@ class RcuUdpBridge(Node):
         self.declare_parameter("auto_enable",  False)
         self.declare_parameter("log_dir",      os.path.expanduser("~/rcu_logs"))
         self.declare_parameter("loop_rate_hz", 200.0)
-        self.declare_parameter("left_bus_motor_ids", [])
-        self.declare_parameter("active_motor_ids", [i for i in range(1, 13)])
+        # NOTE: ROS 2 Jazzy infers an empty list as BYTE_ARRAY. Use a concrete
+        # integer-array default to keep the parameter type stable.
+        if not self.has_parameter("left_bus_motor_ids"):
+            self.declare_parameter("left_bus_motor_ids", [1, 2])
+        if not self.has_parameter("active_motor_ids"):
+            self.declare_parameter("active_motor_ids", [i for i in range(1, 13)])
 
         rcu_ip      = self.get_parameter("rcu_ip").value
         cmd_port    = self.get_parameter("rcu_cmd_port").value
