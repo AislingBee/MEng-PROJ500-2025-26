@@ -17,8 +17,8 @@ class MotorFeedbackListener(Node):
     def __init__(self):
         super().__init__('motor_feedback_listener')
 
-        self.declare_parameter('input', 'motor_can')
-        self.declare_parameter('motor_count', 13)
+        self.declare_parameter('input', 'motor_can_feedback')
+        self.declare_parameter('motor_count', 12)
         self.declare_parameter('names_file', 'joint_limits_config.json')
         self.declare_parameter('all_logging_info', False)
 
@@ -65,7 +65,15 @@ class MotorFeedbackListener(Node):
             )
 
         actual_count = min(packet_count, self.motor_count)
-        values = struct.unpack(self.record_format * actual_count, payload[:actual_count * self.record_size])
+        # Construct proper struct format: '<' + 'ff' * count for unpacking.
+        fmt = '<' + 'ff' * actual_count
+        try:
+            values = struct.unpack(fmt, payload[:actual_count * self.record_size])
+        except struct.error as exc:
+            self.get_logger().error(
+                f'Failed to unpack feedback payload ({len(payload)} bytes, fmt={fmt}): {exc}'
+            )
+            return
 
         q_values = values[0::2]
         q_dot_values = values[1::2]
