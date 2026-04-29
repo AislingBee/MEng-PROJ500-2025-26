@@ -46,6 +46,7 @@ class ThorPolicyRunnerConfig:
     joint_upper_rad: tuple[float, ...] = CONTRACT.joint_upper_limits_rad
     action_scale: tuple[float, ...] = CONTRACT.action_scale
     command_value: float = CONTRACT.default_command_value
+    max_command_value: float = 0.50
     device: str = "cpu"
     loop_hz: float = CONTRACT.policy_loop_hz
     send_standing_pose_on_exit: bool = True
@@ -72,6 +73,8 @@ class ThorPolicyRunnerConfig:
             raise ValueError("joint_upper_rad must match the selected S2R policy contract")
         if self.loop_hz <= 0.0:
             raise ValueError("loop_hz must be positive")
+        if self.max_command_value < 0.0:
+            raise ValueError("max_command_value must be non-negative")
 
         if self.debug_print_every_n_steps <= 0:
             raise ValueError("debug_print_every_n_steps must be positive")
@@ -174,19 +177,24 @@ class ThorStandingPolicyRunner:
         self._joint_upper = torch.tensor(
             runner_cfg.joint_upper_rad, dtype=torch.float32, device=self.device
         ).unsqueeze(0)
-        self._commands = torch.tensor(
-            [[runner_cfg.command_value]], dtype=torch.float32, device=self.device
-        )
+        self._commands = torch.zeros((1, 1), dtype=torch.float32, device=self.device)
         self._last_actions = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
         self._joint_pos_targets = self._standing_q.unsqueeze(0).to(self.device).clone()
         self._tau_ff = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
         kp_fixed, kd_fixed = build_fixed_gains(device=self.device)
         self._kp_fixed = kp_fixed.unsqueeze(0)
         self._kd_fixed = kd_fixed.unsqueeze(0)
+        self.set_command_value(runner_cfg.command_value)
 
         self._step_count = 0
         self._last_obs: Tensor | None = None
         self._last_actions_debug: Tensor | None = None
+
+    def set_command_value(self, command_value: float) -> None:
+        # command_value = 0.0 means stand
+        # command_value > 0.0 means walk forward
+        clamped_value = min(max(float(command_value), 0.0), self.cfg.max_command_value)
+        self._commands[0, 0] = clamped_value
 
     def _build_observation_fields(self) -> tuple[tuple[str, Tensor], ...]:
         packet = self.hardware.read_observation_packet()
@@ -308,11 +316,12 @@ class ThorStandingPolicyRunner:
 
         q_rel = obs[:, 0:12]
         joint_vel = obs[:, 12:24]
-        joint_effort = obs[:, 24:36]
-        gravity_b = obs[:, 36:39]
-        gyro_b = obs[:, 39:42]
-        command = obs[:, 42:43]
-        last_actions = obs[:, 43:55]
+        q_target_err = obs[:, 24:36]
+        joint_effort = obs[:, 36:48]
+        gravity_b = obs[:, 48:51]
+        gyro_b = obs[:, 51:54]
+        command = obs[:, 54:55]
+        last_actions = obs[:, 55:67]
 
         print("\n" + "=" * 90)
         print(f"[THOR DEBUG] step={self._step_count}")
@@ -321,6 +330,7 @@ class ThorStandingPolicyRunner:
         print("[RECEIVED / OBSERVATION INPUT]")
         print("q_rel:", q_rel)
         print("joint_vel:", joint_vel)
+        print("q_target_err:", q_target_err)
         print("joint_effort:", joint_effort)
         print("projected_gravity_b:", gravity_b)
         print("imu_gyro_b:", gyro_b)
