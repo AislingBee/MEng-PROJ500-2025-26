@@ -105,10 +105,10 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "upright": 1.60,
         "survival": 0.6,
         "pose": 0.03,
-        "feet_air_time": 0.25,
+        "feet_air_time": 0.3,
         "single_stance": 1.5,
-        "swing_clearance": 0.12,
-        "com_align": 3.0,
+        "swing_clearance": 0.15,
+        "com_align": 2.9,
         "forward_step": 0.45,
         "ang_vel": 0.16,
         "joint_vel": 0.015,
@@ -116,22 +116,23 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "lin_vel_y": 11.0,
         "yaw_rate": 3.0,
         "roll_lean": 4.2,
-        "pitch_lean": 1.15,
+        "pitch_lean": 1.05,
+        "desired_pitch": 1.0,
         "backward_vel": 5.0,
         "feet_slide": 5.2,
         "double_swing": 1.5,
         "bootstrap_lift": 0.03,
         "bad_weight_shift": 3.0,
-        "foot_tilt": 8.5,
-        "swing_foot_tilt": 4.0, #new
+        "foot_tilt": 8.0,
+        "swing_foot_tilt": 3.0, #new
         "lateral_step": 0.0,
         "step_width": 1.5,
         "narrow_step": 50.0,
         "foot_side": 1.8,
         "foot_centerline": 50.0,
         "pelvis_lateral": 3.0,
-         "air_time_imbalance": 0.45,
-         "contact_time_imbalance": 0.45,
+         "air_time_imbalance": 0.4,
+         "contact_time_imbalance": 0.4,
          
     }
 
@@ -854,6 +855,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         p_yaw_rate = root_ang_vel_b[:, 2] ** 2
         p_roll_lean = projected_gravity_b[:, 1] ** 2
         p_pitch_lean = projected_gravity_b[:, 0] ** 2
+        desired_pitch = 0.04
+        p_desired_pitch = command_active * (projected_gravity_b[:, 0] - desired_pitch) ** 2
         p_backward_vel = torch.clamp(-root_lin_vel_b[:, 0], min=0.0)
         p_feet_slide = self._compute_feet_slide_penalty(left_vel_w, right_vel_w)
         p_double_swing = ((~left_contact) & (~right_contact)).float() * command_active
@@ -885,6 +888,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "yaw_rate": p_yaw_rate,
             "roll_lean": p_roll_lean,
             "pitch_lean": p_pitch_lean,
+            "desired_pitch": p_desired_pitch,
             "backward_vel": p_backward_vel,
             "feet_slide": p_feet_slide,
             "double_swing": p_double_swing,
@@ -951,6 +955,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"r_air: {right_air_time.mean().item():.3f} | "
                 f"l_contact: {left_contact_time.mean().item():.3f} | "
                 f"r_contact: {right_contact_time.mean().item():.3f} | "
+                f"desired_pitch_pen: {(self._reward_scale('desired_pitch') * p_desired_pitch).mean().item():.4f} | "
                 f"total: {reward.mean().item():.4f}"
             )
 
