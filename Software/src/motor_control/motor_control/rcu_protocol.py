@@ -45,6 +45,7 @@ DBGCMD_SOFT_RESET       = 0x08
 DBGCMD_SET_TELEM_RATE   = 0x09
 DBGCMD_MOTOR_BUS_CTRL   = 0x0A
 DBGCMD_REQUEST_SUPV_DUMP= 0x0B
+DBGCMD_MOTOR_ENABLE     = 0x0C
 
 # ---------------------------------------------------------------------------
 # RS04 physical limits (mirror of rs04.h)

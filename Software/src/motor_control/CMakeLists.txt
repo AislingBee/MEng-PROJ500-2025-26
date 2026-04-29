@@ -50,6 +50,7 @@ install(PROGRAMS
   motor_control/testing/single_motor_test.py
   motor_control/testing/multi_motor_test.py
   motor_control/testing/multi_state_motor_test.py
+  motor_control/testing/rcu_bench_command_test.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -76,6 +76,55 @@ class RcuUdpBridge(Node):
         super().__init__("rcu_udp_bridge")
         self._shutting_down = False
 
+        def _parse_bool(value):
+            if isinstance(value, bool):
+                return value
+            if isinstance(value, (int, float)):
+                return bool(value)
+            if isinstance(value, str):
+                return value.strip().lower() in ("1", "true", "yes", "on")
+            return False
+
+        def _parse_int(value, default):
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return default
+
+        def _parse_float(value, default):
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return default
+
+        def _parse_motor_id_list(raw):
+            values = raw
+            if isinstance(raw, str):
+                txt = raw.strip()
+                if not txt:
+                    values = []
+                else:
+                    try:
+                        values = json.loads(txt)
+                    except Exception:
+                        # Accept simple CSV-like input: "1,2,3" or "[1,2,3]"
+                        txt = txt.strip("[]")
+                        values = [part.strip() for part in txt.split(",") if part.strip()]
+            if isinstance(values, (int, float, str)):
+                values = [values]
+            if not isinstance(values, (list, tuple)):
+                return []
+
+            parsed = []
+            for mid_raw in values:
+                try:
+                    mid = int(mid_raw)
+                except (TypeError, ValueError):
+                    continue
+                if 1 <= mid <= 12 and mid not in parsed:
+                    parsed.append(mid)
+            return parsed
+
         # ----- Parameters -----
         self.declare_parameter("rcu_ip",       rp.RCU_IP)
         self.declare_parameter("rcu_cmd_port", rp.PORT_CMD)
@@ -91,39 +140,37 @@ class RcuUdpBridge(Node):
         if not self.has_parameter("active_motor_ids"):
             self.declare_parameter("active_motor_ids", [i for i in range(1, 13)])
 
-        rcu_ip      = self.get_parameter("rcu_ip").value
-        cmd_port    = self.get_parameter("rcu_cmd_port").value
-        telem_port  = self.get_parameter("telem_port").value
-        self._ctrl_mode  = self.get_parameter("ctrl_mode").value
-        auto_enable = self.get_parameter("auto_enable").value
-        log_dir     = os.path.expanduser(self.get_parameter("log_dir").value)
-        rate_hz     = self.get_parameter("loop_rate_hz").value
-        left_bus_motor_ids = self.get_parameter("left_bus_motor_ids").value
-        active_motor_ids = self.get_parameter("active_motor_ids").value
+        rcu_ip_raw = self.get_parameter("rcu_ip").value
+        cmd_port_raw = self.get_parameter("rcu_cmd_port").value
+        telem_port_raw = self.get_parameter("telem_port").value
+        ctrl_mode_raw = self.get_parameter("ctrl_mode").value
+        auto_enable_raw = self.get_parameter("auto_enable").value
+        log_dir_raw = self.get_parameter("log_dir").value
+        rate_hz_raw = self.get_parameter("loop_rate_hz").value
+        left_bus_motor_ids_raw = self.get_parameter("left_bus_motor_ids").value
+        active_motor_ids_raw = self.get_parameter("active_motor_ids").value
+
+        rcu_ip = str(rcu_ip_raw)
+        cmd_port = _parse_int(cmd_port_raw, rp.PORT_CMD)
+        telem_port = _parse_int(telem_port_raw, rp.PORT_TELEM)
+        self._ctrl_mode = _parse_int(ctrl_mode_raw, 0)
+        auto_enable = _parse_bool(auto_enable_raw)
+        log_dir = os.path.expanduser(str(log_dir_raw))
+        rate_hz = _parse_float(rate_hz_raw, 200.0)
+        left_bus_motor_ids = _parse_motor_id_list(left_bus_motor_ids_raw)
+        active_motor_ids = _parse_motor_id_list(active_motor_ids_raw)
 
         self._active_motor_ids = []
-        if isinstance(active_motor_ids, (list, tuple)):
-            for mid_raw in active_motor_ids:
-                try:
-                    mid = int(mid_raw)
-                except (TypeError, ValueError):
-                    continue
-                if 1 <= mid <= 12 and mid not in self._active_motor_ids:
-                    self._active_motor_ids.append(mid)
+        if active_motor_ids:
+            self._active_motor_ids.extend(active_motor_ids)
         if not self._active_motor_ids:
             self._active_motor_ids = [i for i in range(1, 13)]
 
         # Per-motor bus map (index=motor_id): default from protocol, with optional
         # overrides for bench wiring (e.g. motor IDs 1 and 2 both on left bus).
         self._motor_bus_map = list(rp.MOTOR_BUS_MAP)
-        if isinstance(left_bus_motor_ids, (list, tuple)):
-            for mid_raw in left_bus_motor_ids:
-                try:
-                    mid = int(mid_raw)
-                except (TypeError, ValueError):
-                    continue
-                if 1 <= mid <= 12:
-                    self._motor_bus_map[mid] = 1
+        for mid in left_bus_motor_ids:
+            self._motor_bus_map[mid] = 1
 
         # ----- Sockets -----
         self._rcu_addr = (rcu_ip, cmd_port)
@@ -213,7 +260,7 @@ class RcuUdpBridge(Node):
             f"{rate_hz:.0f} Hz TX")
         self.get_logger().info(
             f"Active motor IDs for TX: {self._active_motor_ids}")
-        if isinstance(left_bus_motor_ids, (list, tuple)) and left_bus_motor_ids:
+        if left_bus_motor_ids:
             self.get_logger().info(
                 f"Left-bus overrides active for motor IDs: {left_bus_motor_ids}")
 
@@ -267,14 +314,32 @@ class RcuUdpBridge(Node):
     def _send(self, data: bytes):
         self._tx_sock.sendto(data, self._rcu_addr)
 
+    def _send_motor_enable(self, bus: int, motor_id: int,
+                           enable: bool = True, clear_fault: bool = False):
+        payload = bytes([
+            bus & 0xFF,
+            motor_id & 0xFF,
+            1 if enable else 0,
+            1 if clear_fault else 0,
+        ])
+        self._send(rp.encode_debug_cmd(rp.DBGCMD_MOTOR_ENABLE, payload))
+
     def _send_enable_all(self):
         self._send(rp.encode_motor_supervisory(
             enable_mask=0x0FFF, clear_fault_mask=0x0FFF,
             ctrl_mode=self._ctrl_mode))
+        for mid in self._active_motor_ids:
+            self._send_motor_enable(
+                bus=self._motor_bus_map[mid], motor_id=mid,
+                enable=True, clear_fault=True)
 
     def _send_full_estop(self):
         """FULL E-STOP: CAN stop all motors + assert PDU power fault."""
         self._send(rp.encode_motor_supervisory(enable_mask=0x0000))
+        for mid in self._active_motor_ids:
+            self._send_motor_enable(
+                bus=self._motor_bus_map[mid], motor_id=mid,
+                enable=False, clear_fault=False)
         self._send(rp.encode_debug_cmd(rp.DBGCMD_ASSERT_PDU_FAULT, bytes([1])))
         self.get_logger().warn("FULL E-STOP: motors disabled + PDU fault asserted")
 
