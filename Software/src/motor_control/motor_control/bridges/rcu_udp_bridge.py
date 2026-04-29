@@ -36,6 +36,7 @@ Usage:
 """
 import os
 import csv
+import queue
 import socket
 import struct
 import threading
@@ -73,6 +74,7 @@ FB_ENTRY_SIZE = struct.calcsize(FB_ENTRY_FMT)  # 8 bytes
 class RcuUdpBridge(Node):
     def __init__(self):
         super().__init__("rcu_udp_bridge")
+        self._shutting_down = False
 
         # ----- Parameters -----
         self.declare_parameter("rcu_ip",       rp.RCU_IP)
@@ -88,13 +90,14 @@ class RcuUdpBridge(Node):
         telem_port  = self.get_parameter("telem_port").value
         self._ctrl_mode  = self.get_parameter("ctrl_mode").value
         auto_enable = self.get_parameter("auto_enable").value
-        log_dir     = self.get_parameter("log_dir").value
+        log_dir     = os.path.expanduser(self.get_parameter("log_dir").value)
         rate_hz     = self.get_parameter("loop_rate_hz").value
 
         # ----- Sockets -----
         self._rcu_addr = (rcu_ip, cmd_port)
         self._tx_sock  = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._rx_sock  = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._rx_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._rx_sock.bind(("", telem_port))
         self._rx_sock.settimeout(0.05)
 
@@ -143,6 +146,9 @@ class RcuUdpBridge(Node):
         self._csv_writer = None  # created on first row (need field names)
         self.get_logger().info(f"Logging PDU telem to {log_path}")
 
+        # Queue for passing RX decoded data to the main ROS thread
+        self._rx_queue: queue.Queue = queue.Queue(maxsize=200)
+
         # ----- RX thread -----
         self._running = True
         self._rx_thread = threading.Thread(target=self._rx_loop, daemon=True)
@@ -151,6 +157,9 @@ class RcuUdpBridge(Node):
         # ----- TX timer (motor commands at rate_hz) -----
         period = 1.0 / rate_hz
         self._tx_timer = self.create_timer(period, self._tx_tick)
+
+        # ----- RX drain timer (publish on main thread at same rate) -----
+        self._rx_timer = self.create_timer(period, self._rx_drain)
 
         # ----- Auto-enable -----
         if auto_enable:
@@ -229,27 +238,58 @@ class RcuUdpBridge(Node):
             except socket.timeout:
                 continue
             except Exception as exc:
-                self.get_logger().error(f"RX error: {exc}")
+                if not self._shutting_down:
+                    self.get_logger().error(f"RX error: {exc}")
                 break
-            hdr = rp.parse_header(data)
-            if not hdr:
-                continue
-            pkt_type, _seq, _plen = hdr
-            payload = data[rp.HDR_SIZE:]
+            try:
+                hdr = rp.parse_header(data)
+                if not hdr:
+                    continue
+                pkt_type, _seq, plen = hdr
+                if plen < 0:
+                    continue
+                payload = data[rp.HDR_SIZE:rp.HDR_SIZE + plen]
 
-            if pkt_type == rp.PKT_MOTOR_FB:
-                self._handle_motor_fb(payload)
-            # IMU disabled — feedback-only observation
-            # elif pkt_type == rp.PKT_IMU_FAST:
-            #     self._handle_imu_fast(payload)
-            elif pkt_type == rp.PKT_SLOW_TELEM:
-                self._handle_slow_telem(payload)
-            elif pkt_type == rp.PKT_DEBUG_REPLY:
-                self.get_logger().debug("Debug reply received")
+                if pkt_type == rp.PKT_MOTOR_FB:
+                    slots = rp.decode_motor_fb(payload)
+                    if slots:
+                        try:
+                            self._rx_queue.put_nowait(('motor_fb', slots))
+                        except queue.Full:
+                            pass
+                elif pkt_type == rp.PKT_SLOW_TELEM:
+                    d = rp.decode_slow_telem(payload)
+                    if d:
+                        try:
+                            self._rx_queue.put_nowait(('slow_telem', d))
+                        except queue.Full:
+                            pass
+                elif pkt_type == rp.PKT_DEBUG_REPLY:
+                    pass  # nothing to publish
+            except Exception as exc:
+                if not self._shutting_down:
+                    self.get_logger().warn(f"Dropped malformed RX packet: {exc}")
+                continue
+
+    def _rx_drain(self):
+        """Called on the main ROS thread — drains the RX queue and publishes."""
+        while True:
+            try:
+                kind, data = self._rx_queue.get_nowait()
+            except queue.Empty:
+                break
+            if kind == 'motor_fb':
+                self._publish_motor_fb(data)
+            elif kind == 'slow_telem':
+                self._publish_slow_telem(data)
 
     def _handle_motor_fb(self, payload: bytes):
-        """Decode motor feedback and publish /motor_can_feedback."""
+        """Decode motor feedback payload and publish /motor_can_feedback."""
         slots = rp.decode_motor_fb(payload)
+        self._publish_motor_fb(slots)
+
+    def _publish_motor_fb(self, slots: list):
+        """Publish decoded motor feedback on the main ROS thread."""
         with self._motor_fb_lock:
             for s in slots:
                 mid = s["motor_id"]
@@ -292,10 +332,13 @@ class RcuUdpBridge(Node):
     #     self._pub_imu1.publish(make_imu(d["imu1_accel_g"], d["imu1_gyro_dps"]))
 
     def _handle_slow_telem(self, payload: bytes):
-        """Decode slow telem, publish JSON to /rcu_pdu_telem, log to CSV."""
+        """Decode slow telem payload and publish."""
         d = rp.decode_slow_telem(payload)
-        if not d:
-            return
+        if d:
+            self._publish_slow_telem(d)
+
+    def _publish_slow_telem(self, d: dict):
+        """Publish decoded telem on the main ROS thread."""
         raw = d.pop("_raw", {})
 
         # Publish JSON string
@@ -317,6 +360,7 @@ class RcuUdpBridge(Node):
     # Shutdown
     # -----------------------------------------------------------------------
     def destroy_node(self):
+        self._shutting_down = True
         self._running = False
         try:
             self._csv_file.close()
@@ -331,11 +375,17 @@ def main(args=None):
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info("Shutting down — sending motor disable...")
-        node._send(rp.encode_motor_supervisory(enable_mask=0x0000))
+        node._shutting_down = True
+        if rclpy.ok():
+            node.get_logger().info("Shutting down — sending motor disable...")
+        try:
+            node._send(rp.encode_motor_supervisory(enable_mask=0x0000))
+        except Exception:
+            pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == "__main__":
