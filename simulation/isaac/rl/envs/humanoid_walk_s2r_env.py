@@ -102,13 +102,13 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # Berkeley reward scripts more closely for a biped.
     reward_scales = {
         "vel_track": 6.0,
-        "upright": 1.45,
+        "upright": 1.60,
         "survival": 0.6,
         "pose": 0.03,
-        "feet_air_time": 0.3,
+        "feet_air_time": 0.25,
         "single_stance": 1.5,
-        "swing_clearance": 0.15,
-        "com_align": 2.7,
+        "swing_clearance": 0.12,
+        "com_align": 3.0,
         "forward_step": 0.45,
         "ang_vel": 0.16,
         "joint_vel": 0.015,
@@ -116,21 +116,23 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "lin_vel_y": 11.0,
         "yaw_rate": 3.0,
         "roll_lean": 4.2,
-        "pitch_lean": 0.85,
+        "pitch_lean": 1.15,
         "backward_vel": 5.0,
         "feet_slide": 5.2,
         "double_swing": 1.5,
         "bootstrap_lift": 0.03,
         "bad_weight_shift": 3.0,
-        "foot_tilt": 8.0,
+        "foot_tilt": 8.5,
+        "swing_foot_tilt": 4.0, #new
         "lateral_step": 0.0,
         "step_width": 1.5,
         "narrow_step": 50.0,
         "foot_side": 1.8,
         "foot_centerline": 50.0,
         "pelvis_lateral": 3.0,
-         "air_time_imbalance": 0.15,
-         "contact_time_imbalance": 0.15,
+         "air_time_imbalance": 0.45,
+         "contact_time_imbalance": 0.45,
+         
     }
 
     # Curriculum equivalent of modify_reward_weight(...).  The gait terms are
@@ -808,6 +810,22 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             left_contact.float() * left_foot_tilt
             + right_contact.float() * right_foot_tilt
         )
+        near_ground_left = torch.clamp(
+            (0.08 - left_pos_w[:, 2]) / 0.08,
+            min=0.0,
+            max=1.0,
+        )
+
+        near_ground_right = torch.clamp(
+            (0.08 - right_pos_w[:, 2]) / 0.08,
+            min=0.0,
+            max=1.0,
+        )
+
+        p_swing_foot_tilt = command_active * (
+            left_swing.float() * near_ground_left * left_foot_tilt
+    +       right_swing.float() * near_ground_right * right_foot_tilt
+        )
 
         r_forward_step = command_active * (
             left_swing.float() * torch.clamp(left_vel_b[:, 0], min=0.0, max=0.75)
@@ -878,6 +896,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "lateral_step": p_lateral_step,
             "air_time_imbalance": p_air_time_imbalance,
             "contact_time_imbalance": p_contact_time_imbalance,
+            "swing_foot_tilt": p_swing_foot_tilt,
         }
 
         reward = torch.zeros(self.num_envs, device=self.device)
