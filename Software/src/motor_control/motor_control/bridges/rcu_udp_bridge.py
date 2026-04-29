@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 rcu_udp_bridge.py — ROS2 node bridging RCU UDP binary protocol ↔ ROS2 topics
 

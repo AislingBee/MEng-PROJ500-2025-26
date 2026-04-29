@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#!/usr/bin/env python3
 """Converts RobotCommand to a packed CAN byte payload (UInt8MultiArray).
 
 Each joint is packed as 4 x float32 LE: [q_des, kp, kd, tau_ff] (16 bytes).
