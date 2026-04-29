@@ -4,19 +4,16 @@ import torch
 import math
 import time
 
-from simulation.isaac.configuration.standing_s2r_policy_contract import (
-    CONTRACT,
-    build_standing_q,
-    get_thor_runner_defaults,
-)
 from simulation.isaac.rl.interface.robot_hardware_interface import (
     RobotCommandMessage,
     RobotInterfaceConfig,
     RobotStateSample,
 )
 from hardware.thor.thor_policy_runner import (
+    CONTRACT,
     ThorPolicyRunnerConfig,
     ThorStandingPolicyRunner,
+    build_standing_q,
 )
 
 
@@ -111,17 +108,16 @@ TEST_CASES = [
 ]
 
 def main() -> None:
-    contract_defaults = get_thor_runner_defaults()
-    joint_names = contract_defaults["joint_names"]
+    joint_names = CONTRACT.joint_names
 
     runner_cfg = ThorPolicyRunnerConfig(
-        policy_path=r"hardware\policy\policy_jit.pt",
+        policy_path=r"hardware\policy\walking.pt",
         joint_names=joint_names,
-        joint_lower_rad=contract_defaults["joint_lower_limits_rad"],
-        joint_upper_rad=contract_defaults["joint_upper_limits_rad"],
+        joint_lower_rad=CONTRACT.joint_lower_limits_rad,
+        joint_upper_rad=CONTRACT.joint_upper_limits_rad,
         device="cpu",
-        loop_hz=contract_defaults["loop_hz"],
-        command_value=contract_defaults["command_value"],
+        loop_hz=CONTRACT.policy_loop_hz,
+        command_value=CONTRACT.default_command_value,
         debug_print=True,
         debug_print_every_n_steps=1,
     )

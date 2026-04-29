@@ -15,7 +15,7 @@ from isaaclab.utils import configclass
 from isaaclab.utils.math import quat_rotate_inverse
 
 from ...configuration.walking_actuator_config import WALKING_ACTUATOR_SETTINGS
-from simulation.isaac.configuration.standing_s2r_policy_contract import (
+from simulation.isaac.configuration.walking_s2r_policy_contract import (
     CONTRACT,
     build_fixed_gains,
     build_standing_q,
@@ -44,10 +44,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     )
 
     action_space: int = CONTRACT.action_dim
-    # q_rel(12) + qd(12) + target_err(12) + joint_effort(12) + projected_gravity(3)
-    # + root_lin_vel_b(3) + root_ang_vel_b(3) + foot_pos_b(6) + foot_vel_b(6)
-    # + command(1) + last_actions(12)
-    observation_space: int = 82
+    observation_space: int = CONTRACT.obs_dim
     state_space: int = 0
 
     action_scale: tuple[float, ...] = CONTRACT.action_scale
@@ -101,39 +98,38 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # now contact-time based, not hand-built touchdown logic.  This mirrors the
     # Berkeley reward scripts more closely for a biped.
     reward_scales = {
-        "vel_track": 1.5,
-        "upright": 1.0,
-        "survival": 0.5,
-        "pose": 0.05,
-        "feet_air_time": 4.0,
-        "single_stance": 3.0,
-        "swing_clearance": 1.0,
-        "com_align": 1.0,
-        "forward_step": 3.0,
-        "forward_com_progress": 2.0,
-        "ang_vel": 0.10,
-        "joint_vel": 0.02,
-        "action_rate": 0.05,
-        "lin_vel_y": 4.0,
-        "yaw_rate": 1.5,
-        "roll_lean": 2.0,
-        "pitch_lean": 0.5,
-        "backward_vel": 0.5,
-        "feet_slide": 2.5,
-        "double_swing": 0.5,
-        "bootstrap_lift": 0.3,
-        "bad_weight_shift": 2.0,
-        "foot_tilt": 4.0,
-        "lateral_step": 6.0,
-        "overextended_step": 5.0,
-        "foot_clearance_extra": 1.0,
-        "step_width": 2.0,
-        "narrow_step": 20.0,
-        "foot_side": 2.0,
-        "foot_centerline": 20.0,
-        "pelvis_lateral": 4.0,
-        # "air_time_imbalance": 2.0,
-        # "contact_time_imbalance": 1.0,
+        "vel_track": 6.0,
+        "upright": 1.60,
+        "survival": 0.6,
+        "pose": 0.03,
+        "feet_air_time": 0.25,
+        "single_stance": 1.5,
+        "swing_clearance": 0.12,
+        "com_align": 3.0,
+        "forward_step": 0.45,
+        "ang_vel": 0.16,
+        "joint_vel": 0.015,
+        "action_rate": 0.065,
+        "lin_vel_y": 11.0,
+        "yaw_rate": 3.0,
+        "roll_lean": 4.2,
+        "pitch_lean": 1.15,
+        "backward_vel": 5.0,
+        "feet_slide": 5.2,
+        "double_swing": 1.5,
+        "bootstrap_lift": 0.03,
+        "bad_weight_shift": 3.0,
+        "foot_tilt": 8.5,
+        "swing_foot_tilt": 4.0, #new
+        "lateral_step": 0.0,
+        "step_width": 1.5,
+        "narrow_step": 50.0,
+        "foot_side": 1.8,
+        "foot_centerline": 50.0,
+        "pelvis_lateral": 3.0,
+         "air_time_imbalance": 0.45,
+         "contact_time_imbalance": 0.45,
+         
     }
 
     # Curriculum equivalent of modify_reward_weight(...).  The gait terms are
@@ -149,14 +145,14 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
 
     # Push-force curriculum scaffold.  Keep disabled for first walking rebuild.
     # Enable only after flat-ground walking is stable.
-    enable_push_curriculum: bool = False
-    push_start_step: int = 20000
+    enable_push_curriculum: bool = True
+    push_start_step: int = 30000
     push_interval_steps: int = 600
-    push_probability: float = 0.15
-    push_velocity_xy_initial: float = 0.0
+    push_probability: float = 0.25
+    push_velocity_xy_initial: float = 0.05
     push_velocity_xy_max: float = 0.6
-    push_velocity_xy_increment_factor: float = 1.5
-    push_velocity_xy_decrement: float = 0.2
+    push_velocity_xy_increment_factor: float = 1.25
+    push_velocity_xy_decrement: float = 0.05
 
     # Terrain curriculum is not active in this DirectRLEnv because the scene is
     # currently a flat GroundPlaneCfg, not an Isaac Lab TerrainImporter.
@@ -501,14 +497,12 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         q_rel = q - self._standing_q.unsqueeze(0)
         q_target_err = self._joint_pos_targets - q
 
-        root_lin_vel_b = self.robot.data.root_lin_vel_b
         root_ang_vel_b = packet.imu_gyro_b
         projected_gravity_b = packet.projected_gravity_b
         joint_effort = packet.joint_effort
-        foot_kin = self._get_foot_kinematics()
-        foot_pos_b = torch.cat((foot_kin["left_pos_b"], foot_kin["right_pos_b"]), dim=-1)
-        foot_vel_b = torch.cat((foot_kin["left_vel_b"], foot_kin["right_vel_b"]), dim=-1)
 
+        # Deployment-clean walking policy observation: intentionally excludes
+        # simulator-only privileged state such as root linear velocity and foot kinematics.
         obs = torch.cat(
             (
                 q_rel,
@@ -516,15 +510,27 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 q_target_err,
                 joint_effort,
                 projected_gravity_b,
-                root_lin_vel_b,
                 root_ang_vel_b,
-                foot_pos_b,
-                foot_vel_b,
                 self._commands,
                 self._last_actions,
             ),
             dim=-1,
         )
+
+        expected_obs_dim = (
+            q_rel.shape[1]
+            + qd.shape[1]
+            + q_target_err.shape[1]
+            + joint_effort.shape[1]
+            + projected_gravity_b.shape[1]
+            + root_ang_vel_b.shape[1]
+            + self._commands.shape[1]
+            + self._last_actions.shape[1]
+        )
+        if expected_obs_dim != CONTRACT.obs_dim:
+            raise RuntimeError(
+                f"Walking policy observation contract mismatch. Expected {CONTRACT.obs_dim}, got {expected_obs_dim}"
+            )
 
         if obs.shape[1] != self.cfg.observation_space:
             raise RuntimeError(
@@ -811,6 +817,22 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             left_contact.float() * left_foot_tilt
             + right_contact.float() * right_foot_tilt
         )
+        near_ground_left = torch.clamp(
+            (0.08 - left_pos_w[:, 2]) / 0.08,
+            min=0.0,
+            max=1.0,
+        )
+
+        near_ground_right = torch.clamp(
+            (0.08 - right_pos_w[:, 2]) / 0.08,
+            min=0.0,
+            max=1.0,
+        )
+
+        p_swing_foot_tilt = command_active * (
+            left_swing.float() * near_ground_left * left_foot_tilt
+    +       right_swing.float() * near_ground_right * right_foot_tilt
+        )
 
         r_forward_step = command_active * (
             left_swing.float() * torch.clamp(left_vel_b[:, 0], min=0.0, max=0.75)
@@ -911,6 +933,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "overextended_step": p_overextended_step,
             "air_time_imbalance": p_air_time_imbalance,
             "contact_time_imbalance": p_contact_time_imbalance,
+            "swing_foot_tilt": p_swing_foot_tilt,
         }
 
         reward = torch.zeros(self.num_envs, device=self.device)
@@ -1063,7 +1086,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         env_ids = torch.nonzero(push_mask, as_tuple=False).flatten()
         root_vel = self.robot.data.root_vel_w[env_ids].clone()
-        push = (2.0 * torch.rand((len(env_ids), 2), device=self.device) - 1.0) * self._current_push_velocity_xy
+        push = torch.zeros((len(env_ids), 2), device=self.device)
+
+        # Smaller forward/backward disturbance
+        push[:, 0] = (2.0 * torch.rand(len(env_ids), device=self.device) - 1.0) * self._current_push_velocity_xy * 0.5
+
+        # Stronger left/right disturbance
+        push[:, 1] = (2.0 * torch.rand(len(env_ids), device=self.device) - 1.0) * self._current_push_velocity_xy
+        #push = (2.0 * torch.rand((len(env_ids), 2), device=self.device) - 1.0) * self._current_push_velocity_xy
         root_vel[:, 0:2] += push
         self.robot.write_root_velocity_to_sim(root_vel, env_ids)
 
@@ -1083,14 +1113,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         default_root_state[:, 2] += self.cfg.base_height
 
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
-        joint_pos += 0.02 * torch.randn_like(joint_pos)
+        joint_pos += 0.04 * torch.randn_like(joint_pos)
 
         # mirror_mask = torch.rand(len(env_ids), device=self.device) < self.cfg.reset_mirror_prob
         # if mirror_mask.any():
         #     mirrored_joint_pos = self._mirror_leg_joint_positions(joint_pos)
         #     joint_pos[mirror_mask] = mirrored_joint_pos[mirror_mask]
 
-        joint_vel = 0.05 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
+        joint_vel = 0.10 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
         joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
 
         self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
