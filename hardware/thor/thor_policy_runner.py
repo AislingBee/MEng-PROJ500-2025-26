@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import time
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -192,9 +193,15 @@ class ThorStandingPolicyRunner:
 
     def set_command_value(self, command_value: float) -> None:
         # command_value = 0.0 means stand
-        # command_value > 0.0 means walk forward
+        # command_value > 0.0 means walking
         clamped_value = min(max(float(command_value), 0.0), self.cfg.max_command_value)
         self._commands[0, 0] = clamped_value
+
+    def set_stand_mode(self) -> None:
+        self.set_command_value(0.0)
+
+    def set_walk_mode(self) -> None:
+        self.set_command_value(0.05)
 
     def _build_observation_fields(self) -> tuple[tuple[str, Tensor], ...]:
         packet = self.hardware.read_observation_packet()
@@ -279,12 +286,12 @@ class ThorStandingPolicyRunner:
         )
         self.hardware.write_control_packet(packet)
 
-    def run(self) -> None:
+    def run(self, stop_event: threading.Event | None = None) -> None:
         period_s = 1.0 / self.cfg.loop_hz
         next_t = time.monotonic()
 
         try:
-            while True:
+            while stop_event is None or not stop_event.is_set():
                 self.step()
                 next_t += period_s
                 sleep_s = next_t - time.monotonic()
@@ -293,6 +300,8 @@ class ThorStandingPolicyRunner:
                 else:
                     next_t = time.monotonic()
         except KeyboardInterrupt:
+            pass
+        finally:
             if self.cfg.send_standing_pose_on_exit:
                 self.send_standing_pose()
 
@@ -396,7 +405,27 @@ def main() -> None:
         state_reader=example_state_reader,
         command_writer=example_command_writer,
     )
-    runner.run()
+    stop_event = threading.Event()
+
+    def keyboard_loop() -> None:
+        while not stop_event.is_set():
+            try:
+                key = input().strip().lower()
+            except EOFError:
+                break
+
+            if key == "s":
+                runner.set_stand_mode()
+            elif key == "w":
+                runner.set_walk_mode()
+            elif key == "x":
+                runner.set_stand_mode()
+                stop_event.set()
+                break
+
+    keyboard_thread = threading.Thread(target=keyboard_loop, daemon=True)
+    keyboard_thread.start()
+    runner.run(stop_event=stop_event)
 
 
 if __name__ == "__main__":
