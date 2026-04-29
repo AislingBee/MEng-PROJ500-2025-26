@@ -844,6 +844,33 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             + right_swing.float() * torch.abs(right_vel_b[:, 1])
         )
 
+        # Forward body-over-foot shaping.
+        # In the base frame pelvis/root x is approximately 0.
+        pelvis_x_b = torch.zeros_like(left_pos_b[:, 0])
+        left_foot_x_b = left_pos_b[:, 0]
+        right_foot_x_b = right_pos_b[:, 0]
+
+        # Reward swing foot moving forward, but only within a sensible reach.
+        left_forward_reach = torch.clamp(left_foot_x_b - pelvis_x_b, min=0.0)
+        right_forward_reach = torch.clamp(right_foot_x_b - pelvis_x_b, min=0.0)
+
+        r_forward_com_progress = command_active * (
+            left_swing.float() * torch.exp(-25.0 * (left_forward_reach - 0.08) ** 2)
+            + right_swing.float() * torch.exp(-25.0 * (right_forward_reach - 0.08) ** 2)
+        )
+
+        # Penalise feet being placed too far in front of the torso.
+        p_overextended_step = command_active * (
+            left_swing.float() * torch.clamp(left_forward_reach - 0.14, min=0.0)
+            + right_swing.float() * torch.clamp(right_forward_reach - 0.14, min=0.0)
+        )
+
+        # Extra clearance reward for actual swing feet to stop toe catching.
+        r_foot_clearance_extra = command_active * (
+            left_swing.float() * torch.clamp((left_pos_w[:, 2] - 0.05) / 0.05, min=0.0, max=1.0)
+            + right_swing.float() * torch.clamp((right_pos_w[:, 2] - 0.05) / 0.05, min=0.0, max=1.0)
+        )
+
         r_swing_clearance = command_active * (
             left_swing.float() * left_clearance
             + right_swing.float() * right_clearance
@@ -879,6 +906,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "swing_clearance": r_swing_clearance,
             "com_align": r_com_align,
             "forward_step": r_forward_step,
+            "forward_com_progress": r_forward_com_progress,
+            "foot_clearance_extra": r_foot_clearance_extra,
             "bootstrap_lift": r_bootstrap_lift,
             "step_width": r_step_width,
             "foot_side": r_foot_side,
@@ -901,6 +930,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "bad_weight_shift": p_bad_weight_shift,
             "foot_tilt": p_foot_tilt,
             "lateral_step": p_lateral_step,
+            "overextended_step": p_overextended_step,
             "air_time_imbalance": p_air_time_imbalance,
             "contact_time_imbalance": p_contact_time_imbalance,
             "swing_foot_tilt": p_swing_foot_tilt,
@@ -946,9 +976,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 f"bad_shift: {(self._reward_scale('bad_weight_shift') * p_bad_weight_shift).mean().item():.4f} | "
                 f"foot_tilt: {(self._reward_scale('foot_tilt') * p_foot_tilt).mean().item():.4f} | "
                 f"forward_step: {(self._reward_scale('forward_step') * r_forward_step).mean().item():.4f} | "
+                f"fwd_com: {(self._reward_scale('forward_com_progress') * r_forward_com_progress).mean().item():.4f} | "
+                f"overstep: {(self._reward_scale('overextended_step') * p_overextended_step).mean().item():.4f} | "
+                f"clear_extra: {(self._reward_scale('foot_clearance_extra') * r_foot_clearance_extra).mean().item():.4f} | "
                 f"lateral_step: {(self._reward_scale('lateral_step') * p_lateral_step).mean().item():.4f} | "
                 f"vx: {root_lin_vel_b[:, 0].mean().item():.4f} | "
                 f"vy: {root_lin_vel_b[:, 1].mean().item():.4f} | "
+                f"left_x: {left_pos_b[:, 0].mean().item():.4f} | "
+                f"right_x: {right_pos_b[:, 0].mean().item():.4f} | "
                 f"left_y: {left_pos_b[:, 1].mean().item():.4f} | "
                 f"right_y: {right_pos_b[:, 1].mean().item():.4f} | "
                 f"com_l: {com_to_left_foot_y.mean().item():.4f} | "

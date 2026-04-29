@@ -31,6 +31,14 @@ class IsaacHardwareInterface(BaseHardwareInterface):
             dtype=torch.float32,
         ).view(1, 4)
 
+        # self._noise_cfg = {
+        #     "joint_pos": AdditiveGaussianNoiseCfg(std=0.0035),
+        #     "joint_vel": AdditiveGaussianNoiseCfg(std=0.045),
+        #     "joint_effort": AdditiveGaussianNoiseCfg(std=0.8),
+        #     "gravity": AdditiveGaussianNoiseCfg(std=0.022),
+        #     "gyro": AdditiveGaussianNoiseCfg(std=0.035),
+        # }
+
         self._noise_cfg = {
             "joint_pos": AdditiveGaussianNoiseCfg(std=0.00),#0.0035
             "joint_vel": AdditiveGaussianNoiseCfg(std=0.0),#0.045
