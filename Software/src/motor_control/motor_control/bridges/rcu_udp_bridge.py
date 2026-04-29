@@ -84,6 +84,8 @@ class RcuUdpBridge(Node):
         self.declare_parameter("auto_enable",  False)
         self.declare_parameter("log_dir",      os.path.expanduser("~/rcu_logs"))
         self.declare_parameter("loop_rate_hz", 200.0)
+        self.declare_parameter("left_bus_motor_ids", [])
+        self.declare_parameter("active_motor_ids", [i for i in range(1, 13)])
 
         rcu_ip      = self.get_parameter("rcu_ip").value
         cmd_port    = self.get_parameter("rcu_cmd_port").value
@@ -92,6 +94,32 @@ class RcuUdpBridge(Node):
         auto_enable = self.get_parameter("auto_enable").value
         log_dir     = os.path.expanduser(self.get_parameter("log_dir").value)
         rate_hz     = self.get_parameter("loop_rate_hz").value
+        left_bus_motor_ids = self.get_parameter("left_bus_motor_ids").value
+        active_motor_ids = self.get_parameter("active_motor_ids").value
+
+        self._active_motor_ids = []
+        if isinstance(active_motor_ids, (list, tuple)):
+            for mid_raw in active_motor_ids:
+                try:
+                    mid = int(mid_raw)
+                except (TypeError, ValueError):
+                    continue
+                if 1 <= mid <= 12 and mid not in self._active_motor_ids:
+                    self._active_motor_ids.append(mid)
+        if not self._active_motor_ids:
+            self._active_motor_ids = [i for i in range(1, 13)]
+
+        # Per-motor bus map (index=motor_id): default from protocol, with optional
+        # overrides for bench wiring (e.g. motor IDs 1 and 2 both on left bus).
+        self._motor_bus_map = list(rp.MOTOR_BUS_MAP)
+        if isinstance(left_bus_motor_ids, (list, tuple)):
+            for mid_raw in left_bus_motor_ids:
+                try:
+                    mid = int(mid_raw)
+                except (TypeError, ValueError):
+                    continue
+                if 1 <= mid <= 12:
+                    self._motor_bus_map[mid] = 1
 
         # ----- Sockets -----
         self._rcu_addr = (rcu_ip, cmd_port)
@@ -106,8 +134,18 @@ class RcuUdpBridge(Node):
         self._motor_fb = {mid: (0.0, 0.0) for mid in range(1, 13)}
         self._motor_fb_lock = threading.Lock()
 
-        # Latest robot command (joint positions) from /robot_command
-        self._cmd_positions = {mid: 0.0 for mid in range(1, 13)}
+        # Latest robot command cache from /robot_command
+        # Each entry carries full MIT fields so Type-1 control is effective.
+        self._cmd_state = {
+            mid: {
+                "pos_rad": 0.0,
+                "vel_rads": 0.0,
+                "torque_nm": 0.0,
+                "kp": 0.0,
+                "kd": 0.0,
+            }
+            for mid in range(1, 13)
+        }
         self._cmd_lock = threading.Lock()
 
         # ----- QoS -----
@@ -169,6 +207,11 @@ class RcuUdpBridge(Node):
         self.get_logger().info(
             f"rcu_udp_bridge ready: RCU={rcu_ip}, ctrl_mode={self._ctrl_mode}, "
             f"{rate_hz:.0f} Hz TX")
+        self.get_logger().info(
+            f"Active motor IDs for TX: {self._active_motor_ids}")
+        if isinstance(left_bus_motor_ids, (list, tuple)) and left_bus_motor_ids:
+            self.get_logger().info(
+                f"Left-bus overrides active for motor IDs: {left_bus_motor_ids}")
 
     # -----------------------------------------------------------------------
     # TX path
@@ -177,8 +220,8 @@ class RcuUdpBridge(Node):
         """Called at loop_rate_hz.  Build and send motor command packet."""
         with self._cmd_lock:
             entries = [
-                {"motor_id": mid, "pos_rad": self._cmd_positions[mid]}
-                for mid in range(1, 13)
+                {"motor_id": mid, "bus": self._motor_bus_map[mid], **self._cmd_state[mid]}
+                for mid in self._active_motor_ids
             ]
         pkt = rp.encode_motor_cmd_packet(entries)
         self._tx_sock.sendto(pkt, self._rcu_addr)
@@ -187,11 +230,35 @@ class RcuUdpBridge(Node):
         """Map /robot_command joint positions → internal commanded positions."""
         if not hasattr(msg, "joint_names") or not hasattr(msg, "q_des"):
             return
+
+        q_des = list(getattr(msg, "q_des", []))
+        qd_des = list(getattr(msg, "qd_des", []))
+        tau_ff = list(getattr(msg, "tau_ff", []))
+
+        # Prefer kp_gains/kd_gains if present, otherwise fall back to kp/kd.
+        kp_src = list(getattr(msg, "kp_gains", [])) or list(getattr(msg, "kp", []))
+        kd_src = list(getattr(msg, "kd_gains", [])) or list(getattr(msg, "kd", []))
+
+        def _pick(arr, idx, default=0.0):
+            if idx < len(arr):
+                return float(arr[idx])
+            return default
+
         with self._cmd_lock:
-            for name, pos in zip(msg.joint_names, msg.q_des):
+            for i, name in enumerate(msg.joint_names):
                 mid = rp.JOINT_TO_MOTOR_ID.get(name)
+                if mid is None and isinstance(name, str) and name.startswith("motor_"):
+                    suffix = name.split("motor_", 1)[1]
+                    if suffix.isdigit():
+                        mid_val = int(suffix)
+                        if 1 <= mid_val <= 12:
+                            mid = mid_val
                 if mid is not None:
-                    self._cmd_positions[mid] = float(pos)
+                    self._cmd_state[mid]["pos_rad"] = _pick(q_des, i, self._cmd_state[mid]["pos_rad"])
+                    self._cmd_state[mid]["vel_rads"] = _pick(qd_des, i, 0.0)
+                    self._cmd_state[mid]["torque_nm"] = _pick(tau_ff, i, 0.0)
+                    self._cmd_state[mid]["kp"] = _pick(kp_src, i, 0.0)
+                    self._cmd_state[mid]["kd"] = _pick(kd_src, i, 0.0)
 
     def _send(self, data: bytes):
         self._tx_sock.sendto(data, self._rcu_addr)

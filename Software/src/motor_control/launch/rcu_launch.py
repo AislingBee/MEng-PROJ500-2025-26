@@ -3,8 +3,8 @@ rcu_launch.py — ROS2 launch file for PROJ500 RCU motor control stack
 
 Launches:
   1. rcu_udp_bridge           — RCU UDP ↔ ROS2 bridge (replaces ethernet_can_bridge + nucleo)
-  2. robot_command_bridge     — joint-command → /robot_command publisher
-  3. robot_observation_bridge — /motor_can_feedback + /imu0 consumer
+    2. motor_feedback_listener  — /motor_can_feedback → /motor_feedback
+    3. robot_observation_bridge — /motor_feedback → /robot_observation
 
 Usage:
     ros2 launch motor_control rcu_launch.py
@@ -15,6 +15,8 @@ Parameters (all optional):
   ctrl_mode    default 0   (0=MIT Phase 2, 1=CSP Phase 1)
   log_dir      default "~/rcu_logs"
   auto_enable  default "False"
+    active_motor_ids default "[1,2]"  (bench mode)
+    left_bus_motor_ids default "[1,2]" (bench mode)
 """
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
@@ -27,8 +29,11 @@ def generate_launch_description():
     ctrl_mode   = LaunchConfiguration("ctrl_mode",   default="0")
     log_dir     = LaunchConfiguration("log_dir",     default="~/rcu_logs")
     auto_enable = LaunchConfiguration("auto_enable", default="False")
+    active_motor_ids = LaunchConfiguration("active_motor_ids", default="[1,2]")
+    left_bus_motor_ids = LaunchConfiguration("left_bus_motor_ids", default="[1,2]")
 
     return LaunchDescription([
+
         DeclareLaunchArgument("rcu_ip",
             default_value="192.168.100.10",
             description="RCU static IP address"),
@@ -41,10 +46,16 @@ def generate_launch_description():
         DeclareLaunchArgument("auto_enable",
             default_value="False",
             description="Automatically enable all motors at startup (unsafe)"),
+        DeclareLaunchArgument("active_motor_ids",
+            default_value="[1,2]",
+            description="Motor IDs included in outgoing Type 0x10 command packets"),
+        DeclareLaunchArgument("left_bus_motor_ids",
+            default_value="[1,2]",
+            description="Motor IDs forced onto left bus for bench wiring"),
 
         # ----------------------------------------------------------------
         # RCU UDP bridge — replaces ethernet_can_bridge + nucleo_can_bridge
-        # Publishes:  /motor_can_feedback (UInt8MultiArray), /imu0, /imu1 (Imu)
+        # Publishes:  /motor_can_feedback (UInt8MultiArray), /rcu_pdu_telem (String)
         # Subscribes: /robot_command (RobotCommand)
         # Services:   /rcu_motor_estop, /rcu_pdu_fault (SetBool)
         # ----------------------------------------------------------------
@@ -58,6 +69,8 @@ def generate_launch_description():
                 "ctrl_mode":    ctrl_mode,
                 "log_dir":      log_dir,
                 "auto_enable":  auto_enable,
+                "active_motor_ids": active_motor_ids,
+                "left_bus_motor_ids": left_bus_motor_ids,
                 "loop_rate_hz": 200.0,
             }],
         ),

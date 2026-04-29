@@ -80,6 +80,10 @@ MOTOR_BUS_MAP = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]  # index=motor_id
 # joint name → motor_id lookup
 JOINT_TO_MOTOR_ID = {name: idx for idx, name in enumerate(MOTOR_JOINT_NAMES) if idx > 0}
 
+# Bench/test aliases (single_motor_test default uses motor_1 ... motor_12)
+for _mid in range(1, 13):
+    JOINT_TO_MOTOR_ID[f"motor_{_mid}"] = _mid
+
 # ---------------------------------------------------------------------------
 # Header helpers
 # ---------------------------------------------------------------------------
@@ -141,12 +145,12 @@ def encode_motor_cmd_packet(entries: list) -> bytes:
     """
     Build a Type 0x10 motor command packet.
     entries: list of dicts with keys: motor_id, pos_rad, vel_rads, torque_nm, kp, kd.
-    Bus is derived from MOTOR_BUS_MAP.
+    Optional key 'bus' overrides MOTOR_BUS_MAP for bench wiring tests.
     """
     payload = b""
     for e in entries:
         mid = e["motor_id"]
-        bus = MOTOR_BUS_MAP[mid] if 1 <= mid <= 12 else 0
+        bus = int(e.get("bus", MOTOR_BUS_MAP[mid] if 1 <= mid <= 12 else 0))
         payload += encode_motor_cmd_entry(
             mid, bus,
             e.get("pos_rad", 0.0),
