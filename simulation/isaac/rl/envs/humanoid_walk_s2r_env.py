@@ -511,10 +511,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         root_ang_vel_b = packet.imu_gyro_b
         projected_gravity_b = packet.projected_gravity_b
         joint_effort = packet.joint_effort
+        foot_pos_b = packet.foot_pos_b
+        if foot_pos_b.shape[-1] != 6:
+            raise RuntimeError(f"FK foot_pos_b must have trailing dim 6, got {foot_pos_b.shape[-1]}")
         phase_sin, phase_cos = self._get_phase_clock()
 
         # Deployment-clean walking policy observation: intentionally excludes
-        # simulator-only privileged state such as root linear velocity and foot kinematics.
+        # simulator-only privileged state such as root linear velocity and body-state foot kinematics.
+        # FK foot_pos_b is deployment-valid because it is computed from joint angles through the hardware interface.
         obs = torch.cat(
             (
                 q_rel,
@@ -526,6 +530,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 self._commands,
                 phase_sin,
                 phase_cos,
+                foot_pos_b,
                 self._last_actions,
             ),
             dim=-1,
@@ -541,6 +546,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             + self._commands.shape[1]
             + phase_sin.shape[1]
             + phase_cos.shape[1]
+            + foot_pos_b.shape[1]
             + self._last_actions.shape[1]
         )
         if expected_obs_dim != CONTRACT.obs_dim:

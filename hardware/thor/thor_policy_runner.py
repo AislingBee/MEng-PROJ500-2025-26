@@ -236,6 +236,9 @@ class ThorStandingPolicyRunner:
 
         q_target_err = self._joint_pos_targets - packet.joint_pos
         phase_sin, phase_cos = self._get_phase_clock()
+        foot_pos_b = packet.foot_pos_b
+        if foot_pos_b.shape[-1] != 6:
+            raise RuntimeError(f"FK foot_pos_b must have trailing dim 6, got {foot_pos_b.shape[-1]}")
         walking_fields = (
             ("q_rel", q_rel),
             ("qd", packet.joint_vel),
@@ -246,6 +249,7 @@ class ThorStandingPolicyRunner:
             ("command", self._commands),
             ("phase_sin", phase_sin),
             ("phase_cos", phase_cos),
+            ("foot_pos_b", foot_pos_b),
             ("last_actions", self._last_actions),
         )
 
@@ -343,7 +347,7 @@ class ThorStandingPolicyRunner:
         kd = packet.kd.detach().cpu()
         tau_ff = packet.tau_ff.detach().cpu()
 
-        if CONTRACT.obs_dim == 69:
+        if CONTRACT.obs_dim == 75:
             q_rel = obs[:, 0:12]
             joint_vel = obs[:, 12:24]
             q_target_err = obs[:, 24:36]
@@ -353,7 +357,8 @@ class ThorStandingPolicyRunner:
             command = obs[:, 54:55]
             phase_sin = obs[:, 55:56]
             phase_cos = obs[:, 56:57]
-            last_actions = obs[:, 57:69]
+            foot_pos_b = obs[:, 57:63]
+            last_actions = obs[:, 63:75]
         else:
             q_rel = obs[:, 0:12]
             joint_vel = obs[:, 12:24]
@@ -364,6 +369,7 @@ class ThorStandingPolicyRunner:
             command = obs[:, 42:43]
             phase_sin = None
             phase_cos = None
+            foot_pos_b = None
             last_actions = obs[:, 43:55]
 
         print("\n" + "=" * 90)
@@ -382,6 +388,8 @@ class ThorStandingPolicyRunner:
         if phase_sin is not None and phase_cos is not None:
             print("phase_sin:", phase_sin)
             print("phase_cos:", phase_cos)
+        if foot_pos_b is not None:
+            print("foot_pos_b:", foot_pos_b)
         print("last_actions:", last_actions)
 
         print("\n[POLICY OUTPUT]")

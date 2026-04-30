@@ -8,6 +8,8 @@ from isaaclab.utils.math import quat_rotate_inverse, quat_mul
 from isaaclab.utils.noise import gaussian_noise
 from isaaclab.utils.noise import AdditiveGaussianNoiseCfg
 
+from simulation.isaac.kinematics.thor_leg_fk import compute_foot_pos_b
+
 from .hardware_interface import BaseHardwareInterface, ControlPacket, ObservationPacket
 
 
@@ -98,6 +100,11 @@ class IsaacHardwareInterface(BaseHardwareInterface):
         imu_gyro_b = gaussian_noise(imu_gyro_b, self._noise_cfg["gyro"])
 
         projected_gravity_b = projected_gravity_b / torch.norm(projected_gravity_b, dim=1, keepdim=True)
+        # Deployment-valid FK foot position: Isaac and Thor use the same helper,
+        # and this deliberately avoids simulator body-state kinematics.
+        foot_pos_b = compute_foot_pos_b(joint_pos)
+        if foot_pos_b.shape[-1] != 6:
+            raise RuntimeError(f"FK foot_pos_b must have trailing dim 6, got {foot_pos_b.shape[-1]}")
 
         return ObservationPacket(
             joint_pos = joint_pos,
@@ -105,6 +112,7 @@ class IsaacHardwareInterface(BaseHardwareInterface):
             joint_effort = joint_effort,
             projected_gravity_b = projected_gravity_b,
             imu_gyro_b = imu_gyro_b,
+            foot_pos_b = foot_pos_b,
         )
 
     def write_control_packet(self, packet: ControlPacket, env_ids: Sequence[int] | None = None) -> None:

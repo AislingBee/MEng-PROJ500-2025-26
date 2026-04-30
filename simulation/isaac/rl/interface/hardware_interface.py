@@ -16,6 +16,9 @@ class ObservationPacket:
     joint_effort: torch.Tensor
     projected_gravity_b: torch.Tensor
     imu_gyro_b: torch.Tensor
+    # Deployment-valid FK-derived foot positions from joint_pos, shape (N, 6).
+    # This must not be sourced from Isaac rigid-body ground-truth state.
+    foot_pos_b: torch.Tensor
 
 
 @dataclass

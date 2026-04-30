@@ -30,7 +30,7 @@ DEFAULT_COMMAND_VALUE: Final[float] = 0.0
 DEFAULT_GAIT_FREQUENCY_HZ: Final[float] = 0.1
 
 ACTION_DIM: Final[int] = 12
-WALKING_OBS_DIM: Final[int] = 69
+WALKING_OBS_DIM: Final[int] = 75
 OBS_DIM: Final[int] = WALKING_OBS_DIM
 
 # Walking policy observation layout:
@@ -43,8 +43,9 @@ OBS_DIM: Final[int] = WALKING_OBS_DIM
 # command              1
 # phase_sin            1
 # phase_cos            1
+# foot_pos_b           6
 # last_actions        12
-# total               69
+# total               75
 OBS_LAYOUT: Final[dict[str, int]] = {
     "q_rel": 12,
     "qd": 12,
@@ -55,6 +56,7 @@ OBS_LAYOUT: Final[dict[str, int]] = {
     "command": 1,
     "phase_sin": 1,
     "phase_cos": 1,
+    "foot_pos_b": 6,
     "last_actions": 12,
 }
 
