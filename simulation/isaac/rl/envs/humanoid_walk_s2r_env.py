@@ -1172,6 +1172,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             self.cfg.command_lin_vel_x_min
             + (self._current_command_lin_vel_x_max - self.cfg.command_lin_vel_x_min) * commands
         )
+        # command_x = 0.0 is the deployed stand command; command_x > 0.0 is the deployed walk command.
         zero_mask = torch.rand((num_resets, 1), device=self.device) < self.cfg.zero_command_prob
         commands[zero_mask] = 0.0
         self._commands[env_ids] = commands
