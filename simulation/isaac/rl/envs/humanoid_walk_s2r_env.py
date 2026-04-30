@@ -51,6 +51,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
 
     usd_path: str = str(USD_PATH)
     base_height: float = 0.0
+    gait_frequency_hz: float = CONTRACT.default_gait_frequency_hz
 
     # Velocity command curriculum.  The policy starts slow and is only asked for
     # faster walking once the velocity-tracking term is consistently high.
@@ -489,6 +490,16 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "right_quat_w": right_quat_w,
         }
 
+    def _get_phase_clock(self) -> tuple[torch.Tensor, torch.Tensor]:
+        phase = torch.remainder(
+            self.episode_length_buf.float() * self._step_dt * self.cfg.gait_frequency_hz,
+            1.0,
+        )
+        phase_angle = 2.0 * torch.pi * phase
+        phase_sin = torch.sin(phase_angle).unsqueeze(1)
+        phase_cos = torch.cos(phase_angle).unsqueeze(1)
+        return phase_sin, phase_cos
+
     def _get_observations(self) -> dict:
         packet = self._hardware.read_observation_packet()
 
@@ -500,6 +511,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         root_ang_vel_b = packet.imu_gyro_b
         projected_gravity_b = packet.projected_gravity_b
         joint_effort = packet.joint_effort
+        phase_sin, phase_cos = self._get_phase_clock()
 
         # Deployment-clean walking policy observation: intentionally excludes
         # simulator-only privileged state such as root linear velocity and foot kinematics.
@@ -512,6 +524,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 projected_gravity_b,
                 root_ang_vel_b,
                 self._commands,
+                phase_sin,
+                phase_cos,
                 self._last_actions,
             ),
             dim=-1,
@@ -525,6 +539,8 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             + projected_gravity_b.shape[1]
             + root_ang_vel_b.shape[1]
             + self._commands.shape[1]
+            + phase_sin.shape[1]
+            + phase_cos.shape[1]
             + self._last_actions.shape[1]
         )
         if expected_obs_dim != CONTRACT.obs_dim:

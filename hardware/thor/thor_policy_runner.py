@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import math
 import time
 import threading
 from collections.abc import Callable
@@ -191,6 +192,17 @@ class ThorStandingPolicyRunner:
         self._last_obs: Tensor | None = None
         self._last_actions_debug: Tensor | None = None
 
+    def _get_phase_clock(self) -> tuple[Tensor, Tensor]:
+        gait_frequency_hz = getattr(CONTRACT, "default_gait_frequency_hz", None)
+        if gait_frequency_hz is None:
+            raise RuntimeError("Selected policy contract does not define a walking gait phase clock")
+
+        phase = (self._step_count / self.cfg.loop_hz * gait_frequency_hz) % 1.0
+        phase_angle = 2.0 * math.pi * phase
+        phase_sin = torch.tensor([[math.sin(phase_angle)]], dtype=torch.float32, device=self.device)
+        phase_cos = torch.tensor([[math.cos(phase_angle)]], dtype=torch.float32, device=self.device)
+        return phase_sin, phase_cos
+
     def set_command_value(self, command_value: float) -> None:
         # command_value = 0.0 means stand
         # command_value > 0.0 means walking
@@ -219,16 +231,24 @@ class ThorStandingPolicyRunner:
             ("last_actions", self._last_actions),
         )
         standing_fields = standing_base_fields + tail_fields
+        if sum(field.shape[1] for _, field in standing_fields) == CONTRACT.obs_dim:
+            return standing_fields
 
         q_target_err = self._joint_pos_targets - packet.joint_pos
+        phase_sin, phase_cos = self._get_phase_clock()
         walking_fields = (
             ("q_rel", q_rel),
             ("qd", packet.joint_vel),
             ("q_target_err", q_target_err),
-        ) + tail_fields
+            ("joint_effort", packet.joint_effort),
+            ("projected_gravity_b", packet.projected_gravity_b),
+            ("imu_gyro_b", packet.imu_gyro_b),
+            ("command", self._commands),
+            ("phase_sin", phase_sin),
+            ("phase_cos", phase_cos),
+            ("last_actions", self._last_actions),
+        )
 
-        if sum(field.shape[1] for _, field in standing_fields) == CONTRACT.obs_dim:
-            return standing_fields
         if sum(field.shape[1] for _, field in walking_fields) == CONTRACT.obs_dim:
             return walking_fields
 
@@ -323,14 +343,28 @@ class ThorStandingPolicyRunner:
         kd = packet.kd.detach().cpu()
         tau_ff = packet.tau_ff.detach().cpu()
 
-        q_rel = obs[:, 0:12]
-        joint_vel = obs[:, 12:24]
-        q_target_err = obs[:, 24:36]
-        joint_effort = obs[:, 36:48]
-        gravity_b = obs[:, 48:51]
-        gyro_b = obs[:, 51:54]
-        command = obs[:, 54:55]
-        last_actions = obs[:, 55:67]
+        if CONTRACT.obs_dim == 69:
+            q_rel = obs[:, 0:12]
+            joint_vel = obs[:, 12:24]
+            q_target_err = obs[:, 24:36]
+            joint_effort = obs[:, 36:48]
+            gravity_b = obs[:, 48:51]
+            gyro_b = obs[:, 51:54]
+            command = obs[:, 54:55]
+            phase_sin = obs[:, 55:56]
+            phase_cos = obs[:, 56:57]
+            last_actions = obs[:, 57:69]
+        else:
+            q_rel = obs[:, 0:12]
+            joint_vel = obs[:, 12:24]
+            q_target_err = None
+            joint_effort = obs[:, 24:36]
+            gravity_b = obs[:, 36:39]
+            gyro_b = obs[:, 39:42]
+            command = obs[:, 42:43]
+            phase_sin = None
+            phase_cos = None
+            last_actions = obs[:, 43:55]
 
         print("\n" + "=" * 90)
         print(f"[THOR DEBUG] step={self._step_count}")
@@ -339,11 +373,15 @@ class ThorStandingPolicyRunner:
         print("[RECEIVED / OBSERVATION INPUT]")
         print("q_rel:", q_rel)
         print("joint_vel:", joint_vel)
-        print("q_target_err:", q_target_err)
+        if q_target_err is not None:
+            print("q_target_err:", q_target_err)
         print("joint_effort:", joint_effort)
         print("projected_gravity_b:", gravity_b)
         print("imu_gyro_b:", gyro_b)
         print("command:", command)
+        if phase_sin is not None and phase_cos is not None:
+            print("phase_sin:", phase_sin)
+            print("phase_cos:", phase_cos)
         print("last_actions:", last_actions)
 
         print("\n[POLICY OUTPUT]")
