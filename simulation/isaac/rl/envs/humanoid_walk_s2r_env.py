@@ -55,13 +55,13 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
 
     # Velocity command curriculum.  The policy starts slow and is only asked for
     # faster walking once the velocity-tracking term is consistently high.
-    command_lin_vel_x_min: float = 0.0
-    command_lin_vel_x_max: float = 0.0
+    command_lin_vel_x_min: float = 0.05
+    command_lin_vel_x_max: float = 0.12
     command_lin_vel_x_max_final: float = 0.0
     command_lin_vel_x_increment: float = 0.0
     command_curriculum_interval_steps: int = 2000
     command_curriculum_success_threshold: float = 0.70
-    zero_command_prob: float = 1.0
+    zero_command_prob: float = 0.0
     enable_command_curriculum: bool = False
 
     # Contact / gait logic.
@@ -146,7 +146,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
 
     # Push-force curriculum scaffold.  Keep disabled for first walking rebuild.
     # Enable only after flat-ground walking is stable.
-    enable_push_curriculum: bool = True
+    enable_push_curriculum: bool = False
     push_start_step: int = 30000
     push_interval_steps: int = 600
     push_probability: float = 0.25
