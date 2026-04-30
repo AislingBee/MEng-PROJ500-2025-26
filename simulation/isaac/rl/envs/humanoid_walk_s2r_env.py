@@ -103,7 +103,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "survival": 0.6,
         "pose": 0.03,
         "feet_air_time": 0.25,
-        "single_stance": 1.5,
+        "single_stance": 1.45, #was 1.5
         "swing_clearance": 0.12,
         "com_align": 3.0,
         "forward_step": 0.45,
@@ -115,12 +115,12 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "roll_lean": 4.2,
         "pitch_lean": 1.15,
         "backward_vel": 5.0,
-        "feet_slide": 5.2,
+        "feet_slide": 5.6, #was 5.2 , 5.4
         "double_swing": 1.5,
         "bootstrap_lift": 0.03,
         "bad_weight_shift": 3.0,
-        "foot_tilt": 8.5,
-        "swing_foot_tilt": 4.0, #new
+        "foot_tilt": 9.5, #was 8.5 , 9.0
+        "swing_foot_tilt": 4.2, #new was 4.0
         "lateral_step": 0.0,
         "step_width": 1.5,
         "narrow_step": 50.0,
