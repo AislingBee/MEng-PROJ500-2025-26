@@ -148,12 +148,15 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # Push-force curriculum scaffold.  Keep disabled for first walking rebuild.
     # Enable only after flat-ground walking is stable.
     enable_push_curriculum: bool = True
-    push_start_step: int = 30000
+
+    push_start_step: int = 300000
     push_interval_steps: int = 600
-    push_probability: float = 0.25
-    push_velocity_xy_initial: float = 0.05
-    push_velocity_xy_max: float = 0.6
-    push_velocity_xy_increment_factor: float = 1.25
+    push_probability: float = 0.20
+
+    push_velocity_xy_initial: float = 0.03
+    push_velocity_xy_max: float = 0.50
+
+    push_velocity_xy_increment_factor: float = 1.15
     push_velocity_xy_decrement: float = 0.05
 
     # Terrain curriculum is not active in this DirectRLEnv because the scene is
