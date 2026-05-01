@@ -146,7 +146,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
 
     # Push-force curriculum scaffold.  Keep disabled for first walking rebuild.
     # Enable only after flat-ground walking is stable.
-    enable_push_curriculum: bool = False
+    enable_push_curriculum: bool = True
     push_start_step: int = 30000
     push_interval_steps: int = 600
     push_probability: float = 0.25
