@@ -36,7 +36,8 @@ def generate_launch_description():
         parameters=[{
             "command_topic": "/robot_command",
             "joint_names": "motor_1,motor_2",
-            "rate_hz": 200.0,
+            "rate_hz": 10.0,
+            "match_plymouth_bench_mode": True,
             "target_q_rad": 0.0,
             "step_duration_s": 2.5,
             "out_of_phase": True,

@@ -24,7 +24,8 @@ class RcuBenchCommandTest(Node):
 
         self.declare_parameter("command_topic", "/robot_command")
         self.declare_parameter("joint_names", "motor_1,motor_2")
-        self.declare_parameter("rate_hz", 200.0)
+        self.declare_parameter("rate_hz", 10.0)
+        self.declare_parameter("match_plymouth_bench_mode", True)
         self.declare_parameter("target_q_rad", 0.20)
         self.declare_parameter("step_duration_s", 2.5)
         self.declare_parameter("out_of_phase", True)
@@ -44,6 +45,9 @@ class RcuBenchCommandTest(Node):
             self._joint_names = ["motor_1", "motor_2"]
 
         self._rate_hz = float(self.get_parameter("rate_hz").value)
+        self._match_plymouth_bench_mode = bool(
+            self.get_parameter("match_plymouth_bench_mode").value
+        )
         self._target_q = float(self.get_parameter("target_q_rad").value)
         self._step_duration_s = max(0.05, float(self.get_parameter("step_duration_s").value))
         self._out_of_phase = bool(self.get_parameter("out_of_phase").value)
@@ -69,6 +73,8 @@ class RcuBenchCommandTest(Node):
         self.get_logger().info(
             f"Publishing step RobotCommand on {topic} for joints {self._joint_names} at {self._rate_hz:.1f} Hz"
         )
+        if self._match_plymouth_bench_mode:
+            self.get_logger().info("Plymouth-compatible fixed command mode enabled")
         if self._send_velocity_commands:
             if self._use_fixed_velocity_command:
                 self.get_logger().info(
@@ -83,6 +89,38 @@ class RcuBenchCommandTest(Node):
 
     def _tick(self):
         t = (self.get_clock().now() - self._t0).nanoseconds * 1e-9
+
+        if self._match_plymouth_bench_mode:
+            n = len(self._joint_names)
+            q_des = [self._target_q] * n
+            qd_val = self._velocity_command_rad_s if self._send_velocity_commands else 0.0
+            qd_des = [qd_val] * n
+
+            msg = RobotCommand()
+            msg.joint_names = self._joint_names
+            msg.q_des = q_des
+            msg.qd_des = qd_des
+            msg.kp = [self._kp] * n
+            msg.kd = [self._kd] * n
+            msg.tau_ff = [self._tau] * n
+            msg.kp_gains = [self._kp] * n
+            msg.kd_gains = [self._kd] * n
+            self._pub.publish(msg)
+            self._tx_count += 1
+
+            if self._command_log_hz > 0.0:
+                log_period = 1.0 / self._command_log_hz
+                if self._last_log_t < 0.0 or (t - self._last_log_t) >= log_period:
+                    self._last_log_t = t
+                    cmd_parts = []
+                    for i, name in enumerate(self._joint_names):
+                        cmd_parts.append(
+                            f"{name}: q={q_des[i]:+.3f} qd={qd_des[i]:+.3f} tau={self._tau:+.3f} kp={self._kp:.1f} kd={self._kd:.1f}"
+                        )
+                    self.get_logger().info(
+                        f"TX #{self._tx_count}: " + " | ".join(cmd_parts)
+                    )
+            return
 
         phase = int(t / self._step_duration_s) % 2
         q_base = self._target_q if phase == 0 else -self._target_q
