@@ -67,7 +67,7 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
     tilt_limit: float = 0.25
 
     # Push-force curriculum for standing robustness.
-    enable_push_curriculum: bool = True
+    enable_push_curriculum: bool = false
     push_start_step: int = 200000
     push_interval_steps: int = 120
     push_probability: float = 0.10
