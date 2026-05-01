@@ -6,18 +6,29 @@ from __future__ import annotations
 import atexit
 import os
 import time
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
 import torch
 
-from simulation.isaac.configuration.standing_s2r_policy_contract import (
+# Select policy contract.
+# Use exactly one active import.
+# Standing and walking use the same hardware interface.
+# The selected contract defines the policy observation layout.
+# from simulation.isaac.configuration.standing_s2r_policy_contract import (
+#     CONTRACT,
+#     build_fixed_gains,
+#     build_standing_q,
+# )
+
+from simulation.isaac.configuration.walking_s2r_policy_contract import (
     CONTRACT,
     build_fixed_gains,
     build_standing_q,
-    get_thor_runner_defaults,
 )
+
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
     RobotCommandMessage,
@@ -38,6 +49,7 @@ class ThorPolicyRunnerConfig:
     joint_upper_rad: tuple[float, ...] = CONTRACT.joint_upper_limits_rad
     action_scale: tuple[float, ...] = CONTRACT.action_scale
     command_value: float = CONTRACT.default_command_value
+    max_command_value: float = 0.50
     device: str = "cpu"
     loop_hz: float = CONTRACT.policy_loop_hz
     send_standing_pose_on_exit: bool = True
@@ -49,7 +61,7 @@ class ThorPolicyRunnerConfig:
     def __post_init__(self) -> None:
         n = len(self.joint_names)
         if self.joint_names != CONTRACT.joint_names:
-            raise ValueError("joint_names must match the standing S2R policy contract")
+            raise ValueError("joint_names must match the selected S2R policy contract")
         if n != CONTRACT.action_dim:
             raise ValueError(f"Expected {CONTRACT.action_dim} joints, got {n}")
         if len(self.joint_lower_rad) != n:
@@ -59,11 +71,13 @@ class ThorPolicyRunnerConfig:
         if len(self.action_scale) != n:
             raise ValueError("action_scale length must match joint_names")
         if tuple(self.joint_lower_rad) != CONTRACT.joint_lower_limits_rad:
-            raise ValueError("joint_lower_rad must match the standing S2R policy contract")
+            raise ValueError("joint_lower_rad must match the selected S2R policy contract")
         if tuple(self.joint_upper_rad) != CONTRACT.joint_upper_limits_rad:
-            raise ValueError("joint_upper_rad must match the standing S2R policy contract")
+            raise ValueError("joint_upper_rad must match the selected S2R policy contract")
         if self.loop_hz <= 0.0:
             raise ValueError("loop_hz must be positive")
+        if self.max_command_value < 0.0:
+            raise ValueError("max_command_value must be non-negative")
 
         if self.debug_print_every_n_steps <= 0:
             raise ValueError("debug_print_every_n_steps must be positive")
@@ -166,39 +180,69 @@ class ThorStandingPolicyRunner:
         self._joint_upper = torch.tensor(
             runner_cfg.joint_upper_rad, dtype=torch.float32, device=self.device
         ).unsqueeze(0)
-        self._commands = torch.tensor(
-            [[runner_cfg.command_value]], dtype=torch.float32, device=self.device
-        )
+        self._commands = torch.zeros((1, 1), dtype=torch.float32, device=self.device)
         self._last_actions = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
+        self._joint_pos_targets = self._standing_q.unsqueeze(0).to(self.device).clone()
         self._tau_ff = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
         kp_fixed, kd_fixed = build_fixed_gains(device=self.device)
         self._kp_fixed = kp_fixed.unsqueeze(0)
         self._kd_fixed = kd_fixed.unsqueeze(0)
-        
+
         # Per-joint PD gains for MIT control (conservative defaults: kp=30.0, kd=2.0)
         self._kp_gains = torch.full((1, CONTRACT.action_dim), 30.0, dtype=torch.float32, device=self.device)
         self._kd_gains = torch.full((1, CONTRACT.action_dim), 2.0, dtype=torch.float32, device=self.device)
+        self.set_command_value(runner_cfg.command_value)
 
         self._step_count = 0
         self._last_obs: Tensor | None = None
         self._last_actions_debug: Tensor | None = None
 
-    def build_observation(self) -> Tensor:
+    def set_command_value(self, command_value: float) -> None:
+        # command_value = 0.0 means stand
+        # command_value > 0.0 means walking
+        clamped_value = min(max(float(command_value), 0.0), self.cfg.max_command_value)
+        self._commands[0, 0] = clamped_value
+
+    def set_stand_mode(self) -> None:
+        self.set_command_value(0.0)
+
+    def set_walk_mode(self) -> None:
+        self.set_command_value(0.05)
+
+    def _build_observation_fields(self) -> tuple[tuple[str, Tensor], ...]:
         packet = self.hardware.read_observation_packet()
 
         q_rel = packet.joint_pos - self._standing_q.unsqueeze(0).to(self.device)
-        obs = torch.cat(
-            (
-                q_rel,
-                packet.joint_vel,
-                packet.joint_effort,
-                packet.projected_gravity_b,
-                packet.imu_gyro_b,
-                self._commands,
-                self._last_actions,
-            ),
-            dim=-1,
+        standing_base_fields = (
+            ("q_rel", q_rel),
+            ("joint_vel", packet.joint_vel),
         )
+        tail_fields = (
+            ("joint_effort", packet.joint_effort),
+            ("projected_gravity_b", packet.projected_gravity_b),
+            ("imu_gyro_b", packet.imu_gyro_b),
+            ("command", self._commands),
+            ("last_actions", self._last_actions),
+        )
+        standing_fields = standing_base_fields + tail_fields
+
+        q_target_err = self._joint_pos_targets - packet.joint_pos
+        walking_fields = (
+            ("q_rel", q_rel),
+            ("qd", packet.joint_vel),
+            ("q_target_err", q_target_err),
+        ) + tail_fields
+
+        if sum(field.shape[1] for _, field in standing_fields) == CONTRACT.obs_dim:
+            return standing_fields
+        if sum(field.shape[1] for _, field in walking_fields) == CONTRACT.obs_dim:
+            return walking_fields
+
+        raise RuntimeError(f"Selected policy contract has unsupported observation dim {CONTRACT.obs_dim}")
+
+    def build_observation(self) -> Tensor:
+        fields = self._build_observation_fields()
+        obs = torch.cat(tuple(field for _, field in fields), dim=-1)
 
         obs = obs.to(self.device, dtype=torch.float32)
         expected_shape = (1, CONTRACT.obs_dim)
@@ -212,6 +256,7 @@ class ThorStandingPolicyRunner:
         actions = torch.clamp(actions, -1.0, 1.0)
         q_des = self._standing_q.unsqueeze(0).to(self.device) + self._action_scale * actions
         q_des = torch.max(torch.min(q_des, self._joint_upper), self._joint_lower)
+        self._joint_pos_targets = q_des.detach().clone()
 
         return ControlPacket(
             joint_names=self._joint_names,
@@ -251,12 +296,12 @@ class ThorStandingPolicyRunner:
         )
         self.hardware.write_control_packet(packet)
 
-    def run(self) -> None:
+    def run(self, stop_event: threading.Event | None = None) -> None:
         period_s = 1.0 / self.cfg.loop_hz
         next_t = time.monotonic()
 
         try:
-            while True:
+            while stop_event is None or not stop_event.is_set():
                 self.step()
                 next_t += period_s
                 sleep_s = next_t - time.monotonic()
@@ -265,6 +310,8 @@ class ThorStandingPolicyRunner:
                 else:
                     next_t = time.monotonic()
         except KeyboardInterrupt:
+            pass
+        finally:
             if self.cfg.send_standing_pose_on_exit:
                 self.send_standing_pose()
 
@@ -288,11 +335,12 @@ class ThorStandingPolicyRunner:
 
         q_rel = obs[:, 0:12]
         joint_vel = obs[:, 12:24]
-        joint_effort = obs[:, 24:36]
-        gravity_b = obs[:, 36:39]
-        gyro_b = obs[:, 39:42]
-        command = obs[:, 42:43]
-        last_actions = obs[:, 43:55]
+        q_target_err = obs[:, 24:36]
+        joint_effort = obs[:, 36:48]
+        gravity_b = obs[:, 48:51]
+        gyro_b = obs[:, 51:54]
+        command = obs[:, 54:55]
+        last_actions = obs[:, 55:67]
 
         print("\n" + "=" * 90)
         print(f"[THOR DEBUG] step={self._step_count}")
@@ -301,6 +349,7 @@ class ThorStandingPolicyRunner:
         print("[RECEIVED / OBSERVATION INPUT]")
         print("q_rel:", q_rel)
         print("joint_vel:", joint_vel)
+        print("q_target_err:", q_target_err)
         print("joint_effort:", joint_effort)
         print("projected_gravity_b:", gravity_b)
         print("imu_gyro_b:", gyro_b)
@@ -404,17 +453,16 @@ def main() -> None:
     import rclpy
     from simulation.isaac.rl.interface.ros2_robot_bridge import Ros2RobotBridge
 
-    contract_defaults = get_thor_runner_defaults()
-    joint_names = contract_defaults["joint_names"]
+    joint_names = CONTRACT.joint_names
 
     runner_cfg = ThorPolicyRunnerConfig(
         policy_path="exports/standing_policy.pt",
         joint_names=joint_names,
-        joint_lower_rad=contract_defaults["joint_lower_limits_rad"],
-        joint_upper_rad=contract_defaults["joint_upper_limits_rad"],
+        joint_lower_rad=CONTRACT.joint_lower_limits_rad,
+        joint_upper_rad=CONTRACT.joint_upper_limits_rad,
         device="cpu",
-        loop_hz=contract_defaults["loop_hz"],
-        command_value=contract_defaults["command_value"],
+        loop_hz=CONTRACT.policy_loop_hz,
+        command_value=CONTRACT.default_command_value,
         debug_print=True,
         debug_print_every_n_steps=50,
     )
@@ -434,14 +482,35 @@ def main() -> None:
     )
     bridge.start()
 
+    runner = ThorStandingPolicyRunner(
+        runner_cfg=runner_cfg,
+        hardware_cfg=hardware_cfg,
+        state_reader=bridge.state_reader,
+        command_writer=bridge.command_writer,
+    )
+    stop_event = threading.Event()
+
+    def keyboard_loop() -> None:
+        while not stop_event.is_set():
+            try:
+                key = input().strip().lower()
+            except EOFError:
+                break
+
+            if key == "s":
+                runner.set_stand_mode()
+            elif key == "w":
+                runner.set_walk_mode()
+            elif key == "x":
+                runner.set_stand_mode()
+                stop_event.set()
+                break
+
+    keyboard_thread = threading.Thread(target=keyboard_loop, daemon=True)
+    keyboard_thread.start()
+
     try:
-        runner = ThorStandingPolicyRunner(
-            runner_cfg=runner_cfg,
-            hardware_cfg=hardware_cfg,
-            state_reader=bridge.state_reader,
-            command_writer=bridge.command_writer,
-        )
-        runner.run()
+        runner.run(stop_event=stop_event)
     finally:
         bridge.stop()
         rclpy.shutdown()

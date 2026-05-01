@@ -15,8 +15,8 @@ from isaaclab.app import AppLauncher
 # -----------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Train PROJ500 humanoid WALK Sim to Real with PPO.")
 AppLauncher.add_app_launcher_args(parser)
-parser.add_argument("--num_envs", type=int, default=8000) #
-parser.add_argument("--max_iterations", type=int, default=200)
+parser.add_argument("--num_envs", type=int, default=25000) #
+parser.add_argument("--max_iterations", type=int, default=6000)
 parser.add_argument("--task", type=str, default="Humanoid-Walk-s2r-v0")
 args = parser.parse_args()
 
@@ -31,7 +31,7 @@ import gymnasium as gym
 import torch
 from rsl_rl.runners import OnPolicyRunner
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
-from simulation.isaac.configuration.standing_s2r_policy_contract import CONTRACT
+from simulation.isaac.configuration.walking_s2r_policy_contract import CONTRACT
 
 THIS_DIR = Path(__file__).resolve().parent
 ISAAC_DIR = THIS_DIR.parent  # simulation/isaac
