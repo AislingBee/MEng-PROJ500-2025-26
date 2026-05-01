@@ -1168,14 +1168,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         default_root_state[:, 2] += self.cfg.base_height
 
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
-        joint_pos += 0.04 * torch.randn_like(joint_pos)
+        joint_pos += 0.01 * torch.randn_like(joint_pos)
 
         # mirror_mask = torch.rand(len(env_ids), device=self.device) < self.cfg.reset_mirror_prob
         # if mirror_mask.any():
         #     mirrored_joint_pos = self._mirror_leg_joint_positions(joint_pos)
         #     joint_pos[mirror_mask] = mirrored_joint_pos[mirror_mask]
 
-        joint_vel = 0.10 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
+        joint_vel = 0.03 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
         joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
 
         self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
