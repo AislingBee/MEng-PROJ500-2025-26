@@ -66,6 +66,16 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
 
     tilt_limit: float = 0.25
 
+    # Push-force curriculum for standing robustness.
+    enable_push_curriculum: bool = True
+    push_start_step: int = 30000
+    push_interval_steps: int = 600
+    push_probability: float = 0.25
+    push_velocity_xy_initial: float = 0.05
+    push_velocity_xy_max: float = 0.6
+    push_velocity_xy_increment_factor: float = 1.25
+    push_velocity_xy_decrement: float = 0.05
+
     forbidden_body_names: tuple[str, ...] = (
         "l_hip_yaw_link",
         "r_hip_yaw_link",
@@ -102,6 +112,8 @@ class HumanoidStandEnvS2r(DirectRLEnv):
                 "Training and deployment joint order must stay identical."
             )
 
+        self._step_dt = float(self.cfg.sim.dt * self.cfg.decimation)
+        self._common_step_counter = 0
         self._actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._action_delay_steps = self.cfg.action_delay_steps
@@ -155,6 +167,10 @@ class HumanoidStandEnvS2r(DirectRLEnv):
             device=self.device,
             dtype=torch.long,
         )
+        self._last_terminated = torch.zeros(self.num_envs, device=self.device, dtype=torch.bool)
+        self._last_time_out = torch.zeros(self.num_envs, device=self.device, dtype=torch.bool)
+        self._last_push_curriculum_step = 0
+        self._current_push_velocity_xy = float(self.cfg.push_velocity_xy_initial)
 
         # From URDF fixed joint rpy="0 -1.5707963267948963 0"
         # Quaternion order is [w, x, y, z]
@@ -228,6 +244,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         if torch.isnan(actions).any():
             raise RuntimeError("NaN detected in actions")
 
+        self._common_step_counter += 1
         self._last_actions[:] = self._actions
         actions = torch.clamp(actions, -1.0, 1.0)
 
@@ -236,6 +253,7 @@ class HumanoidStandEnvS2r(DirectRLEnv):
 
         delayed_actions = self._action_buffer[:, self._action_delay_steps, :]
         self._actions[:] = delayed_actions
+        self._apply_random_pushes()
 
     def _build_control_packet(self, env_ids: Sequence[int] | None = None) -> ControlPacket:
         if env_ids is None:
@@ -365,6 +383,8 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         terminated = over_tilted | bad_state | body_hit_ground
         # terminated = bad_state | body_hit_ground
         time_out = self.episode_length_buf >= self.max_episode_length - 1
+        self._last_terminated[:] = terminated
+        self._last_time_out[:] = time_out
 
         # if torch.any(over_tilted | bad_state | body_hit_ground):
         #     idx = torch.where(over_tilted | bad_state | body_hit_ground)[0][0]
@@ -388,12 +408,63 @@ class HumanoidStandEnvS2r(DirectRLEnv):
 
         return terminated, time_out
 
+    def _update_push_curriculum(self, env_ids: torch.Tensor) -> None:
+        if not self.cfg.enable_push_curriculum:
+            return
+        if self._common_step_counter < self.cfg.push_start_step:
+            return
+        if self._common_step_counter - self._last_push_curriculum_step < self.cfg.push_interval_steps:
+            return
+
+        terminated_count = torch.sum(self._last_terminated[env_ids]).item()
+        timeout_count = torch.sum(self._last_time_out[env_ids]).item()
+
+        if terminated_count < timeout_count * 2:
+            if self._current_push_velocity_xy <= 0.0:
+                self._current_push_velocity_xy = 0.05
+            else:
+                self._current_push_velocity_xy *= self.cfg.push_velocity_xy_increment_factor
+            self._current_push_velocity_xy = min(self._current_push_velocity_xy, self.cfg.push_velocity_xy_max)
+        elif terminated_count > timeout_count / 2:
+            self._current_push_velocity_xy = max(
+                self._current_push_velocity_xy - self.cfg.push_velocity_xy_decrement,
+                0.0,
+            )
+
+        self._last_push_curriculum_step = self._common_step_counter
+        print(f"[stand curriculum] push_velocity_xy -> {self._current_push_velocity_xy:.2f} m/s")
+
+    def _apply_random_pushes(self) -> None:
+        if not self.cfg.enable_push_curriculum:
+            return
+        if self._common_step_counter < self.cfg.push_start_step:
+            return
+        if self._current_push_velocity_xy <= 0.0:
+            return
+        if self._common_step_counter % self.cfg.push_interval_steps != 0:
+            return
+
+        push_mask = torch.rand(self.num_envs, device=self.device) < self.cfg.push_probability
+        if not push_mask.any():
+            return
+
+        env_ids = torch.nonzero(push_mask, as_tuple=False).flatten()
+        root_vel = self.robot.data.root_vel_w[env_ids].clone()
+        push = torch.zeros((len(env_ids), 2), device=self.device)
+
+        # Smaller forward/backward disturbance, stronger lateral disturbance.
+        push[:, 0] = (2.0 * torch.rand(len(env_ids), device=self.device) - 1.0) * self._current_push_velocity_xy * 0.5
+        push[:, 1] = (2.0 * torch.rand(len(env_ids), device=self.device) - 1.0) * self._current_push_velocity_xy
+        root_vel[:, 0:2] += push
+        self.robot.write_root_velocity_to_sim(root_vel, env_ids)
+
     def _reset_idx(self, env_ids: Sequence[int] | None):
         if env_ids is None:
             env_ids = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
         else:
             env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
 
+        self._update_push_curriculum(env_ids)
         super()._reset_idx(env_ids)
 
         default_root_state = self.robot.data.default_root_state[env_ids].clone()
