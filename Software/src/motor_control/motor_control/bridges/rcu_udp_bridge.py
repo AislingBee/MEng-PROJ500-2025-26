@@ -133,6 +133,7 @@ class RcuUdpBridge(Node):
         self.declare_parameter("telem_port",   rp.PORT_TELEM)
         self.declare_parameter("ctrl_mode",    0)
         self.declare_parameter("auto_enable",  False)
+        self.declare_parameter("disable_command_tx", False)
         self.declare_parameter("log_dir",      os.path.expanduser("~/rcu_logs"))
         self.declare_parameter("loop_rate_hz", 200.0)
         self.declare_parameter("scan_motor_can_ids", False)
@@ -153,6 +154,7 @@ class RcuUdpBridge(Node):
         telem_port_raw = self.get_parameter("telem_port").value
         ctrl_mode_raw = self.get_parameter("ctrl_mode").value
         auto_enable_raw = self.get_parameter("auto_enable").value
+        disable_command_tx_raw = self.get_parameter("disable_command_tx").value
         log_dir_raw = self.get_parameter("log_dir").value
         rate_hz_raw = self.get_parameter("loop_rate_hz").value
         scan_motor_can_ids_raw = self.get_parameter("scan_motor_can_ids").value
@@ -169,6 +171,7 @@ class RcuUdpBridge(Node):
         telem_port = _parse_int(telem_port_raw, rp.PORT_TELEM)
         self._ctrl_mode = _parse_int(ctrl_mode_raw, 0)
         auto_enable = _parse_bool(auto_enable_raw)
+        self._disable_command_tx = _parse_bool(disable_command_tx_raw)
         log_dir = os.path.expanduser(str(log_dir_raw))
         rate_hz = _parse_float(rate_hz_raw, 200.0)
         self._scan_motor_can_ids = _parse_bool(scan_motor_can_ids_raw)
@@ -285,6 +288,8 @@ class RcuUdpBridge(Node):
         self.get_logger().info(
             f"rcu_udp_bridge ready: RCU={rcu_ip}, ctrl_mode={self._ctrl_mode}, "
             f"{rate_hz:.0f} Hz TX")
+        if self._disable_command_tx:
+            self.get_logger().warn("disable_command_tx=True — Type 0x10 motor command TX is blocked")
         self.get_logger().info(
             f"Active motor IDs for TX: {self._active_motor_ids}")
         id_map = ", ".join(
@@ -316,6 +321,7 @@ class RcuUdpBridge(Node):
     # -----------------------------------------------------------------------
     def _tx_tick(self):
         """Called at loop_rate_hz.  Build and send motor command packet."""
+<<<<<<< Updated upstream
         if not self._startup_gate_ready:
             now = time.monotonic()
             if (now - self._last_gate_log_t) >= 1.0:
@@ -332,6 +338,9 @@ class RcuUdpBridge(Node):
                         "Startup gate timeout exceeded. "
                         "Not all expected CAN IDs are online."
                     )
+=======
+        if self._disable_command_tx:
+>>>>>>> Stashed changes
             return
         with self._cmd_lock:
             entries = [
@@ -551,6 +560,7 @@ class RcuUdpBridge(Node):
                 online.append(mid)
         return online
 
+<<<<<<< Updated upstream
     def _update_startup_gate(self, now: float, online_ids: list):
         if self._startup_gate_ready or not self._wait_for_expected_online_ids:
             return
@@ -562,6 +572,8 @@ class RcuUdpBridge(Node):
                 f"{self._expected_online_motor_ids}"
             )
 
+=======
+>>>>>>> Stashed changes
     def _publish_imu_fast(self, d: dict):
         """Publish decoded fast IMU data on /imu0 and /imu1."""
         if not d:
@@ -582,8 +594,17 @@ class RcuUdpBridge(Node):
             msg.orientation_covariance[0] = -1.0
             return msg
 
+<<<<<<< Updated upstream
         self._pub_imu0.publish(make_imu(d.get("imu0_accel_g", [0.0, 0.0, 0.0]), d.get("imu0_gyro_dps", [0.0, 0.0, 0.0])))
         self._pub_imu1.publish(make_imu(d.get("imu1_accel_g", [0.0, 0.0, 0.0]), d.get("imu1_gyro_dps", [0.0, 0.0, 0.0])))
+=======
+        self._pub_imu0.publish(
+            make_imu(d.get("imu0_accel_g", [0.0, 0.0, 0.0]), d.get("imu0_gyro_dps", [0.0, 0.0, 0.0]))
+        )
+        self._pub_imu1.publish(
+            make_imu(d.get("imu1_accel_g", [0.0, 0.0, 0.0]), d.get("imu1_gyro_dps", [0.0, 0.0, 0.0]))
+        )
+>>>>>>> Stashed changes
 
     def _handle_slow_telem(self, payload: bytes):
         """Decode slow telem payload and publish."""
