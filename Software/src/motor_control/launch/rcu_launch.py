@@ -32,6 +32,9 @@ def generate_launch_description():
     active_motor_ids = LaunchConfiguration("active_motor_ids", default="[1,2]")
     left_bus_motor_ids = LaunchConfiguration("left_bus_motor_ids", default="[1,2]")
     scan_motor_can_ids = LaunchConfiguration("scan_motor_can_ids", default="False")
+    names_file = LaunchConfiguration("names_file", default="joint_limits_config.json")
+    wait_for_expected_online_ids = LaunchConfiguration("wait_for_expected_online_ids", default="False")
+    expected_online_motor_ids = LaunchConfiguration("expected_online_motor_ids", default="[]")
 
     return LaunchDescription([
 
@@ -56,6 +59,15 @@ def generate_launch_description():
         DeclareLaunchArgument("scan_motor_can_ids",
             default_value="False",
             description="Log online CAN motor IDs seen in feedback"),
+        DeclareLaunchArgument("names_file",
+            default_value="joint_limits_config.json",
+            description="Joint name config file for motor_feedback_listener"),
+        DeclareLaunchArgument("wait_for_expected_online_ids",
+            default_value="False",
+            description="Hold command TX until expected_online_motor_ids are online"),
+        DeclareLaunchArgument("expected_online_motor_ids",
+            default_value="[]",
+            description="Motor IDs required online before TX when startup gate is enabled"),
 
         # ----------------------------------------------------------------
         # RCU UDP bridge — replaces ethernet_can_bridge + nucleo_can_bridge
@@ -76,6 +88,8 @@ def generate_launch_description():
                 "active_motor_ids": active_motor_ids,
                 "left_bus_motor_ids": left_bus_motor_ids,
                 "scan_motor_can_ids": scan_motor_can_ids,
+                "wait_for_expected_online_ids": wait_for_expected_online_ids,
+                "expected_online_motor_ids": expected_online_motor_ids,
                 "loop_rate_hz": 200.0,
             }],
         ),
@@ -91,7 +105,7 @@ def generate_launch_description():
             parameters=[{
                 "input":            "motor_can_feedback",
                 "motor_count":      12,
-                "names_file":       "joint_limits_config.json",
+                "names_file":       names_file,
                 "all_logging_info": False,
             }],
         ),
@@ -106,6 +120,7 @@ def generate_launch_description():
             output="screen",
             parameters=[{
                 "feedback_topic":    "motor_feedback",
+                "imu_topic":         "imu0",
                 "observation_topic": "robot_observation",
                 "all_logging_info":  False,
             }],

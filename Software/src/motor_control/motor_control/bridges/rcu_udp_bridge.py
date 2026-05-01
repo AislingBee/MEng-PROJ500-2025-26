@@ -49,6 +49,7 @@ from datetime import datetime
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
+from sensor_msgs.msg import Imu
 from std_msgs.msg import UInt8MultiArray, String
 from std_srvs.srv import SetBool
 from motor_control.msg import RobotCommand
@@ -137,6 +138,9 @@ class RcuUdpBridge(Node):
         self.declare_parameter("scan_motor_can_ids", False)
         self.declare_parameter("can_id_online_timeout_s", 1.0)
         self.declare_parameter("can_id_scan_log_period_s", 1.0)
+        self.declare_parameter("wait_for_expected_online_ids", False)
+        self.declare_parameter("expected_online_motor_ids", [])
+        self.declare_parameter("startup_gate_error_after_s", 5.0)
         # NOTE: ROS 2 Jazzy infers an empty list as BYTE_ARRAY. Use a concrete
         # integer-array default to keep the parameter type stable.
         if not self.has_parameter("left_bus_motor_ids"):
@@ -154,6 +158,9 @@ class RcuUdpBridge(Node):
         scan_motor_can_ids_raw = self.get_parameter("scan_motor_can_ids").value
         can_id_online_timeout_s_raw = self.get_parameter("can_id_online_timeout_s").value
         can_id_scan_log_period_s_raw = self.get_parameter("can_id_scan_log_period_s").value
+        wait_for_expected_online_ids_raw = self.get_parameter("wait_for_expected_online_ids").value
+        expected_online_motor_ids_raw = self.get_parameter("expected_online_motor_ids").value
+        startup_gate_error_after_s_raw = self.get_parameter("startup_gate_error_after_s").value
         left_bus_motor_ids_raw = self.get_parameter("left_bus_motor_ids").value
         active_motor_ids_raw = self.get_parameter("active_motor_ids").value
 
@@ -167,6 +174,9 @@ class RcuUdpBridge(Node):
         self._scan_motor_can_ids = _parse_bool(scan_motor_can_ids_raw)
         self._can_id_online_timeout_s = max(0.1, _parse_float(can_id_online_timeout_s_raw, 1.0))
         self._can_id_scan_log_period_s = max(0.2, _parse_float(can_id_scan_log_period_s_raw, 1.0))
+        self._wait_for_expected_online_ids = _parse_bool(wait_for_expected_online_ids_raw)
+        self._expected_online_motor_ids = _parse_motor_id_list(expected_online_motor_ids_raw)
+        self._startup_gate_error_after_s = max(0.0, _parse_float(startup_gate_error_after_s_raw, 5.0))
         left_bus_motor_ids = _parse_motor_id_list(left_bus_motor_ids_raw)
         active_motor_ids = _parse_motor_id_list(active_motor_ids_raw)
 
@@ -196,6 +206,9 @@ class RcuUdpBridge(Node):
         self._motor_fb_lock = threading.Lock()
         self._last_seen_motor_id = defaultdict(float)
         self._last_can_scan_log_t = 0.0
+        self._startup_gate_ready = not self._wait_for_expected_online_ids
+        self._last_gate_log_t = 0.0
+        self._startup_gate_started_t = time.monotonic()
 
         # Latest robot command cache from /robot_command
         # Each entry carries full MIT fields so Type-1 control is effective.
@@ -221,6 +234,8 @@ class RcuUdpBridge(Node):
         # ----- Publishers -----
         self._pub_motor_fb = self.create_publisher(
             UInt8MultiArray, "/motor_can_feedback", 10)
+        self._pub_imu0 = self.create_publisher(Imu, "/imu0", 10)
+        self._pub_imu1 = self.create_publisher(Imu, "/imu1", 10)
         self._pub_pdu_telem = self.create_publisher(String, "/rcu_pdu_telem", 10)
 
         # ----- Subscribers -----
@@ -272,6 +287,13 @@ class RcuUdpBridge(Node):
             f"{rate_hz:.0f} Hz TX")
         self.get_logger().info(
             f"Active motor IDs for TX: {self._active_motor_ids}")
+        id_map = ", ".join(
+            f"{mid}:{rp.MOTOR_JOINT_NAMES[mid]}"
+            for mid in self._active_motor_ids
+            if 1 <= mid <= 12
+        )
+        if id_map:
+            self.get_logger().info(f"CAN ID -> joint mapping: {id_map}")
         if left_bus_motor_ids:
             self.get_logger().info(
                 f"Left-bus overrides active for motor IDs: {left_bus_motor_ids}")
@@ -281,12 +303,36 @@ class RcuUdpBridge(Node):
                 f"(period={self._can_id_scan_log_period_s:.1f}s, "
                 f"online_timeout={self._can_id_online_timeout_s:.1f}s)"
             )
+        if self._wait_for_expected_online_ids:
+            if not self._expected_online_motor_ids:
+                self._expected_online_motor_ids = list(self._active_motor_ids)
+            self.get_logger().info(
+                "Startup gate enabled: waiting for online motor IDs "
+                f"{self._expected_online_motor_ids} before TX"
+            )
 
     # -----------------------------------------------------------------------
     # TX path
     # -----------------------------------------------------------------------
     def _tx_tick(self):
         """Called at loop_rate_hz.  Build and send motor command packet."""
+        if not self._startup_gate_ready:
+            now = time.monotonic()
+            if (now - self._last_gate_log_t) >= 1.0:
+                self._last_gate_log_t = now
+                online = self._online_motor_ids(now)
+                missing = [mid for mid in self._expected_online_motor_ids if mid not in online]
+                elapsed = now - self._startup_gate_started_t
+                self.get_logger().error(
+                    "Startup gate blocking TX: "
+                    f"online={online}, missing={missing}, elapsed={elapsed:.1f}s"
+                )
+                if self._startup_gate_error_after_s > 0.0 and elapsed >= self._startup_gate_error_after_s:
+                    self.get_logger().error(
+                        "Startup gate timeout exceeded. "
+                        "Not all expected CAN IDs are online."
+                    )
+            return
         with self._cmd_lock:
             entries = [
                 {"motor_id": mid, "bus": self._motor_bus_map[mid], **self._cmd_state[mid]}
@@ -411,6 +457,13 @@ class RcuUdpBridge(Node):
                             self._rx_queue.put_nowait(('motor_fb', slots))
                         except queue.Full:
                             pass
+                elif pkt_type == rp.PKT_IMU_FAST:
+                    d = rp.decode_imu_fast(payload)
+                    if d:
+                        try:
+                            self._rx_queue.put_nowait(('imu_fast', d))
+                        except queue.Full:
+                            pass
                 elif pkt_type == rp.PKT_SLOW_TELEM:
                     d = rp.decode_slow_telem(payload)
                     if d:
@@ -434,6 +487,8 @@ class RcuUdpBridge(Node):
                 break
             if kind == 'motor_fb':
                 self._publish_motor_fb(data)
+            elif kind == 'imu_fast':
+                self._publish_imu_fast(data)
             elif kind == 'slow_telem':
                 self._publish_slow_telem(data)
 
@@ -450,8 +505,7 @@ class RcuUdpBridge(Node):
                 mid = s["motor_id"]
                 if 1 <= mid <= 12:
                     self._motor_fb[mid] = (s["pos_rad"], s["vel_rads"])
-                    if self._scan_motor_can_ids:
-                        self._last_seen_motor_id[mid] = now
+                    self._last_seen_motor_id[mid] = now
 
         # Publish ordered 8-byte entries for motor_ids 1–12
         buf = b""
@@ -463,6 +517,9 @@ class RcuUdpBridge(Node):
         msg.data = list(buf)
         self._pub_motor_fb.publish(msg)
 
+        # Always evaluate startup gate from fresh feedback, even if scan logging is disabled.
+        self._update_startup_gate(now, self._online_motor_ids(now))
+
         if self._scan_motor_can_ids:
             self._log_online_can_ids(now)
 
@@ -470,40 +527,63 @@ class RcuUdpBridge(Node):
         if (now - self._last_can_scan_log_t) < self._can_id_scan_log_period_s:
             return
         self._last_can_scan_log_t = now
+        online = self._online_motor_ids(now)
+        if online:
+            online_named = [f"{mid}:{rp.MOTOR_JOINT_NAMES[mid]}" for mid in online]
+            self.get_logger().info(f"CAN scan online motor IDs: {online_named}")
+        else:
+            self.get_logger().error("CAN scan online motor IDs: []")
+
+        if self._expected_online_motor_ids:
+            missing = [mid for mid in self._expected_online_motor_ids if mid not in online]
+            if missing:
+                self.get_logger().error(
+                    f"Missing expected CAN IDs: {missing}"
+                )
+
+        self._update_startup_gate(now, online)
+
+    def _online_motor_ids(self, now: float):
         online = []
         for mid in range(1, 13):
             last = self._last_seen_motor_id.get(mid, 0.0)
             if last > 0.0 and (now - last) <= self._can_id_online_timeout_s:
                 online.append(mid)
-        if online:
-            self.get_logger().info(f"CAN scan online motor IDs: {online}")
-        else:
-            self.get_logger().warn("CAN scan online motor IDs: []")
+        return online
 
-    # IMU publishing disabled — feedback-only observation
-    # def _handle_imu_fast(self, payload: bytes):
-    #     """Decode fast IMU and publish /imu0 + /imu1."""
-    #     d = rp.decode_imu_fast(payload)
-    #     if not d:
-    #         return
-    #     now = self.get_clock().now().to_msg()
-    #
-    #     def make_imu(accel_g, gyro_dps):
-    #         msg = Imu()
-    #         msg.header.stamp    = now
-    #         msg.header.frame_id = "imu_link"
-    #         msg.linear_acceleration.x = accel_g[0] * 9.80665
-    #         msg.linear_acceleration.y = accel_g[1] * 9.80665
-    #         msg.linear_acceleration.z = accel_g[2] * 9.80665
-    #         msg.angular_velocity.x    = gyro_dps[0] * (math.pi / 180.0)
-    #         msg.angular_velocity.y    = gyro_dps[1] * (math.pi / 180.0)
-    #         msg.angular_velocity.z    = gyro_dps[2] * (math.pi / 180.0)
-    #         # Orientation unknown — set covariance to -1 flag
-    #         msg.orientation_covariance[0] = -1.0
-    #         return msg
-    #
-    #     self._pub_imu0.publish(make_imu(d["imu0_accel_g"], d["imu0_gyro_dps"]))
-    #     self._pub_imu1.publish(make_imu(d["imu1_accel_g"], d["imu1_gyro_dps"]))
+    def _update_startup_gate(self, now: float, online_ids: list):
+        if self._startup_gate_ready or not self._wait_for_expected_online_ids:
+            return
+        missing = [mid for mid in self._expected_online_motor_ids if mid not in online_ids]
+        if not missing:
+            self._startup_gate_ready = True
+            self.get_logger().info(
+                "Startup gate released: all expected motor IDs online "
+                f"{self._expected_online_motor_ids}"
+            )
+
+    def _publish_imu_fast(self, d: dict):
+        """Publish decoded fast IMU data on /imu0 and /imu1."""
+        if not d:
+            return
+        stamp = self.get_clock().now().to_msg()
+
+        def make_imu(accel_g, gyro_dps):
+            msg = Imu()
+            msg.header.stamp = stamp
+            msg.header.frame_id = "imu_link"
+            msg.linear_acceleration.x = float(accel_g[0]) * ACCEL_M_S2
+            msg.linear_acceleration.y = float(accel_g[1]) * ACCEL_M_S2
+            msg.linear_acceleration.z = float(accel_g[2]) * ACCEL_M_S2
+            msg.angular_velocity.x = float(gyro_dps[0]) * GYRO_RAD_S
+            msg.angular_velocity.y = float(gyro_dps[1]) * GYRO_RAD_S
+            msg.angular_velocity.z = float(gyro_dps[2]) * GYRO_RAD_S
+            # Orientation is not present in Type 0x04 packets.
+            msg.orientation_covariance[0] = -1.0
+            return msg
+
+        self._pub_imu0.publish(make_imu(d.get("imu0_accel_g", [0.0, 0.0, 0.0]), d.get("imu0_gyro_dps", [0.0, 0.0, 0.0])))
+        self._pub_imu1.publish(make_imu(d.get("imu1_accel_g", [0.0, 0.0, 0.0]), d.get("imu1_gyro_dps", [0.0, 0.0, 0.0])))
 
     def _handle_slow_telem(self, payload: bytes):
         """Decode slow telem payload and publish."""
