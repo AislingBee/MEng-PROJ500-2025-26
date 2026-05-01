@@ -25,14 +25,15 @@ class RcuBenchCommandTest(Node):
         self.declare_parameter("command_topic", "/robot_command")
         self.declare_parameter("joint_names", "motor_1,motor_2")
         self.declare_parameter("rate_hz", 200.0)
-        self.declare_parameter("target_q_rad", 0.14)
+        self.declare_parameter("target_q_rad", 0.20)
         self.declare_parameter("step_duration_s", 2.5)
         self.declare_parameter("out_of_phase", True)
-        self.declare_parameter("kp", 130.0)
-        self.declare_parameter("kd", 4.0)
+        self.declare_parameter("kp", 500.0)
+        self.declare_parameter("kd", 5.0)
         self.declare_parameter("tau_ff", 0.0)
-        self.declare_parameter("max_q_slew_rad_s", 0.8)
+        self.declare_parameter("max_q_slew_rad_s", 1.2)
         self.declare_parameter("send_velocity_commands", True)
+        self.declare_parameter("command_log_hz", 2.0)
 
         topic = str(self.get_parameter("command_topic").value)
         names_raw = str(self.get_parameter("joint_names").value)
@@ -49,6 +50,7 @@ class RcuBenchCommandTest(Node):
         self._tau = float(self.get_parameter("tau_ff").value)
         self._max_q_slew = max(0.0, float(self.get_parameter("max_q_slew_rad_s").value))
         self._send_velocity_commands = bool(self.get_parameter("send_velocity_commands").value)
+        self._command_log_hz = max(0.0, float(self.get_parameter("command_log_hz").value))
 
         self._pub = self.create_publisher(RobotCommand, topic, 10)
         self._t0 = self.get_clock().now()
@@ -57,12 +59,18 @@ class RcuBenchCommandTest(Node):
         self._dt = period
         self._timer = self.create_timer(period, self._tick)
         self._q_cmd = [0.0 for _ in self._joint_names]
+        self._tx_count = 0
+        self._last_log_t = -1.0
 
         self.get_logger().info(
             f"Publishing step RobotCommand on {topic} for joints {self._joint_names} at {self._rate_hz:.1f} Hz"
         )
         if self._send_velocity_commands:
             self.get_logger().info("Velocity commands enabled: qd_des follows slew-limited transitions")
+        if self._command_log_hz > 0.0:
+            self.get_logger().info(
+                f"Command TX logging enabled at {self._command_log_hz:.2f} Hz"
+            )
 
     def _tick(self):
         t = (self.get_clock().now() - self._t0).nanoseconds * 1e-9
@@ -106,6 +114,20 @@ class RcuBenchCommandTest(Node):
         msg.kp_gains = [self._kp] * n
         msg.kd_gains = [self._kd] * n
         self._pub.publish(msg)
+        self._tx_count += 1
+
+        if self._command_log_hz > 0.0:
+            log_period = 1.0 / self._command_log_hz
+            if self._last_log_t < 0.0 or (t - self._last_log_t) >= log_period:
+                self._last_log_t = t
+                cmd_parts = []
+                for i, name in enumerate(self._joint_names):
+                    cmd_parts.append(
+                        f"{name}: q={q_des[i]:+.3f} qd={qd_des[i]:+.3f}"
+                    )
+                self.get_logger().info(
+                    f"TX #{self._tx_count}: " + " | ".join(cmd_parts)
+                )
 
 
 def main(args=None):
@@ -117,7 +139,8 @@ def main(args=None):
         pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == "__main__":
