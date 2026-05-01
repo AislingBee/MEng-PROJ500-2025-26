@@ -321,7 +321,6 @@ class RcuUdpBridge(Node):
     # -----------------------------------------------------------------------
     def _tx_tick(self):
         """Called at loop_rate_hz.  Build and send motor command packet."""
-<<<<<<< Updated upstream
         if not self._startup_gate_ready:
             now = time.monotonic()
             if (now - self._last_gate_log_t) >= 1.0:
@@ -338,9 +337,8 @@ class RcuUdpBridge(Node):
                         "Startup gate timeout exceeded. "
                         "Not all expected CAN IDs are online."
                     )
-=======
+            return
         if self._disable_command_tx:
->>>>>>> Stashed changes
             return
         with self._cmd_lock:
             entries = [
@@ -560,7 +558,6 @@ class RcuUdpBridge(Node):
                 online.append(mid)
         return online
 
-<<<<<<< Updated upstream
     def _update_startup_gate(self, now: float, online_ids: list):
         if self._startup_gate_ready or not self._wait_for_expected_online_ids:
             return
@@ -572,8 +569,6 @@ class RcuUdpBridge(Node):
                 f"{self._expected_online_motor_ids}"
             )
 
-=======
->>>>>>> Stashed changes
     def _publish_imu_fast(self, d: dict):
         """Publish decoded fast IMU data on /imu0 and /imu1."""
         if not d:
@@ -594,17 +589,12 @@ class RcuUdpBridge(Node):
             msg.orientation_covariance[0] = -1.0
             return msg
 
-<<<<<<< Updated upstream
-        self._pub_imu0.publish(make_imu(d.get("imu0_accel_g", [0.0, 0.0, 0.0]), d.get("imu0_gyro_dps", [0.0, 0.0, 0.0])))
-        self._pub_imu1.publish(make_imu(d.get("imu1_accel_g", [0.0, 0.0, 0.0]), d.get("imu1_gyro_dps", [0.0, 0.0, 0.0])))
-=======
         self._pub_imu0.publish(
             make_imu(d.get("imu0_accel_g", [0.0, 0.0, 0.0]), d.get("imu0_gyro_dps", [0.0, 0.0, 0.0]))
         )
         self._pub_imu1.publish(
             make_imu(d.get("imu1_accel_g", [0.0, 0.0, 0.0]), d.get("imu1_gyro_dps", [0.0, 0.0, 0.0]))
         )
->>>>>>> Stashed changes
 
     def _handle_slow_telem(self, payload: bytes):
         """Decode slow telem payload and publish."""
