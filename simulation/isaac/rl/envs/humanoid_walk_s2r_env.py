@@ -31,6 +31,7 @@ USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "r
 class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     decimation: int = CONTRACT.decimation
     episode_length_s: float = 10.0
+    action_delay_steps: int = 1
 
     sim: SimulationCfg = SimulationCfg(
         dt=CONTRACT.sim_dt_s,
@@ -205,6 +206,11 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         self._actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+        self._action_delay_steps = self.cfg.action_delay_steps
+        self._action_buffer = torch.zeros(
+            (self.num_envs, self._action_delay_steps + 1, self.num_dofs),
+            device=self.device,
+        )
         self._commands = torch.zeros((self.num_envs, 1), device=self.device)
         self._joint_pos_targets = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
 
@@ -369,7 +375,13 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         self._common_step_counter += 1
         self._last_actions[:] = self._actions
-        self._actions = torch.clamp(actions, -1.0, 1.0)
+        actions = torch.clamp(actions, -1.0, 1.0)
+
+        self._action_buffer = torch.roll(self._action_buffer, shifts=1, dims=1)
+        self._action_buffer[:, 0, :] = actions
+
+        delayed_actions = self._action_buffer[:, self._action_delay_steps, :]
+        self._actions[:] = delayed_actions
         self._apply_random_pushes()
 
     def _build_control_packet(self, env_ids: Sequence[int] | None = None) -> ControlPacket:
@@ -1174,6 +1186,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         self._actions[env_ids] = 0.0
         self._last_actions[env_ids] = 0.0
+        self._action_buffer[env_ids] = 0.0
         self._joint_pos_targets[env_ids] = joint_pos
         self._q_des[env_ids] = joint_pos
         self._tau_ff[env_ids] = 0.0
