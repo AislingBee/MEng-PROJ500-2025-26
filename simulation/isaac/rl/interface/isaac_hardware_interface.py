@@ -33,21 +33,21 @@ class IsaacHardwareInterface(BaseHardwareInterface):
             dtype=torch.float32,
         ).view(1, 4)
 
-        self._noise_cfg = {
-            "joint_pos": AdditiveGaussianNoiseCfg(std=0.0),
-            "joint_vel": AdditiveGaussianNoiseCfg(std=0.0),
-            "joint_effort": AdditiveGaussianNoiseCfg(std=0.0),
-            "gravity": AdditiveGaussianNoiseCfg(std=0.0),
-            "gyro": AdditiveGaussianNoiseCfg(std=0.0),
-        }
-
-        # self._noise_cfg = { # Last used values for the walking training vs the original values.
-        #     "joint_pos": AdditiveGaussianNoiseCfg(std=0.002),#0.0035
-        #     "joint_vel": AdditiveGaussianNoiseCfg(std=0.025),#0.045
-        #     "joint_effort": AdditiveGaussianNoiseCfg(std=0.2),#0.8
-        #     "gravity": AdditiveGaussianNoiseCfg(std=0.010),#0.022
-        #     "gyro": AdditiveGaussianNoiseCfg(std=0.016),#0.035
+        # self._noise_cfg = {
+        #     "joint_pos": AdditiveGaussianNoiseCfg(std=0.0),
+        #     "joint_vel": AdditiveGaussianNoiseCfg(std=0.0),
+        #     "joint_effort": AdditiveGaussianNoiseCfg(std=0.0),
+        #     "gravity": AdditiveGaussianNoiseCfg(std=0.0),
+        #     "gyro": AdditiveGaussianNoiseCfg(std=0.0),
         # }
+
+        self._noise_cfg = { # Last used values for the walking training vs the original values.
+            "joint_pos": AdditiveGaussianNoiseCfg(std=0.0035),#0.0035
+            "joint_vel": AdditiveGaussianNoiseCfg(std=0.045),#0.045
+            "joint_effort": AdditiveGaussianNoiseCfg(std=0.8),#0.8
+            "gravity": AdditiveGaussianNoiseCfg(std=0.022),#0.022
+            "gyro": AdditiveGaussianNoiseCfg(std=0.035),#0.035
+        }
 
     def _resolve_env_ids(self, env_ids: Sequence[int] | None) -> torch.Tensor:
         if env_ids is None:
