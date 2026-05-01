@@ -43,6 +43,7 @@ import threading
 import time
 import json
 import math
+from collections import defaultdict
 from datetime import datetime
 
 import rclpy
@@ -133,6 +134,9 @@ class RcuUdpBridge(Node):
         self.declare_parameter("auto_enable",  False)
         self.declare_parameter("log_dir",      os.path.expanduser("~/rcu_logs"))
         self.declare_parameter("loop_rate_hz", 200.0)
+        self.declare_parameter("scan_motor_can_ids", False)
+        self.declare_parameter("can_id_online_timeout_s", 1.0)
+        self.declare_parameter("can_id_scan_log_period_s", 1.0)
         # NOTE: ROS 2 Jazzy infers an empty list as BYTE_ARRAY. Use a concrete
         # integer-array default to keep the parameter type stable.
         if not self.has_parameter("left_bus_motor_ids"):
@@ -147,6 +151,9 @@ class RcuUdpBridge(Node):
         auto_enable_raw = self.get_parameter("auto_enable").value
         log_dir_raw = self.get_parameter("log_dir").value
         rate_hz_raw = self.get_parameter("loop_rate_hz").value
+        scan_motor_can_ids_raw = self.get_parameter("scan_motor_can_ids").value
+        can_id_online_timeout_s_raw = self.get_parameter("can_id_online_timeout_s").value
+        can_id_scan_log_period_s_raw = self.get_parameter("can_id_scan_log_period_s").value
         left_bus_motor_ids_raw = self.get_parameter("left_bus_motor_ids").value
         active_motor_ids_raw = self.get_parameter("active_motor_ids").value
 
@@ -157,6 +164,9 @@ class RcuUdpBridge(Node):
         auto_enable = _parse_bool(auto_enable_raw)
         log_dir = os.path.expanduser(str(log_dir_raw))
         rate_hz = _parse_float(rate_hz_raw, 200.0)
+        self._scan_motor_can_ids = _parse_bool(scan_motor_can_ids_raw)
+        self._can_id_online_timeout_s = max(0.1, _parse_float(can_id_online_timeout_s_raw, 1.0))
+        self._can_id_scan_log_period_s = max(0.2, _parse_float(can_id_scan_log_period_s_raw, 1.0))
         left_bus_motor_ids = _parse_motor_id_list(left_bus_motor_ids_raw)
         active_motor_ids = _parse_motor_id_list(active_motor_ids_raw)
 
@@ -184,6 +194,8 @@ class RcuUdpBridge(Node):
         # motor_id → (pos_rad, vel_rads); initialised to zeros
         self._motor_fb = {mid: (0.0, 0.0) for mid in range(1, 13)}
         self._motor_fb_lock = threading.Lock()
+        self._last_seen_motor_id = defaultdict(float)
+        self._last_can_scan_log_t = 0.0
 
         # Latest robot command cache from /robot_command
         # Each entry carries full MIT fields so Type-1 control is effective.
@@ -263,6 +275,12 @@ class RcuUdpBridge(Node):
         if left_bus_motor_ids:
             self.get_logger().info(
                 f"Left-bus overrides active for motor IDs: {left_bus_motor_ids}")
+        if self._scan_motor_can_ids:
+            self.get_logger().info(
+                "CAN ID scan enabled "
+                f"(period={self._can_id_scan_log_period_s:.1f}s, "
+                f"online_timeout={self._can_id_online_timeout_s:.1f}s)"
+            )
 
     # -----------------------------------------------------------------------
     # TX path
@@ -426,11 +444,14 @@ class RcuUdpBridge(Node):
 
     def _publish_motor_fb(self, slots: list):
         """Publish decoded motor feedback on the main ROS thread."""
+        now = time.monotonic()
         with self._motor_fb_lock:
             for s in slots:
                 mid = s["motor_id"]
                 if 1 <= mid <= 12:
                     self._motor_fb[mid] = (s["pos_rad"], s["vel_rads"])
+                    if self._scan_motor_can_ids:
+                        self._last_seen_motor_id[mid] = now
 
         # Publish ordered 8-byte entries for motor_ids 1–12
         buf = b""
@@ -441,6 +462,23 @@ class RcuUdpBridge(Node):
         msg = UInt8MultiArray()
         msg.data = list(buf)
         self._pub_motor_fb.publish(msg)
+
+        if self._scan_motor_can_ids:
+            self._log_online_can_ids(now)
+
+    def _log_online_can_ids(self, now: float):
+        if (now - self._last_can_scan_log_t) < self._can_id_scan_log_period_s:
+            return
+        self._last_can_scan_log_t = now
+        online = []
+        for mid in range(1, 13):
+            last = self._last_seen_motor_id.get(mid, 0.0)
+            if last > 0.0 and (now - last) <= self._can_id_online_timeout_s:
+                online.append(mid)
+        if online:
+            self.get_logger().info(f"CAN scan online motor IDs: {online}")
+        else:
+            self.get_logger().warn("CAN scan online motor IDs: []")
 
     # IMU publishing disabled — feedback-only observation
     # def _handle_imu_fast(self, payload: bytes):

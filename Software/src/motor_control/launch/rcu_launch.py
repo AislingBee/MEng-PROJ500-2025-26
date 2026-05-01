@@ -31,6 +31,7 @@ def generate_launch_description():
     auto_enable = LaunchConfiguration("auto_enable", default="False")
     active_motor_ids = LaunchConfiguration("active_motor_ids", default="[1,2]")
     left_bus_motor_ids = LaunchConfiguration("left_bus_motor_ids", default="[1,2]")
+    scan_motor_can_ids = LaunchConfiguration("scan_motor_can_ids", default="False")
 
     return LaunchDescription([
 
@@ -52,6 +53,9 @@ def generate_launch_description():
         DeclareLaunchArgument("left_bus_motor_ids",
             default_value="[1,2]",
             description="Motor IDs forced onto left bus for bench wiring"),
+        DeclareLaunchArgument("scan_motor_can_ids",
+            default_value="False",
+            description="Log online CAN motor IDs seen in feedback"),
 
         # ----------------------------------------------------------------
         # RCU UDP bridge — replaces ethernet_can_bridge + nucleo_can_bridge
@@ -71,6 +75,7 @@ def generate_launch_description():
                 "auto_enable":  auto_enable,
                 "active_motor_ids": active_motor_ids,
                 "left_bus_motor_ids": left_bus_motor_ids,
+                "scan_motor_can_ids": scan_motor_can_ids,
                 "loop_rate_hz": 200.0,
             }],
         ),

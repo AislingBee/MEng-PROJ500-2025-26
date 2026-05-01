@@ -25,6 +25,7 @@ def generate_launch_description():
             "left_bus_motor_ids": "[1,2]",
             "auto_enable": "True",
             "ctrl_mode": "0",
+            "scan_motor_can_ids": "True",
         }.items(),
     )
 
