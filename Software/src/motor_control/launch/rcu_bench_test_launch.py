@@ -36,14 +36,16 @@ def generate_launch_description():
         parameters=[{
             "command_topic": "/robot_command",
             "joint_names": "motor_1,motor_2",
-            "rate_hz": 100.0,
-            "target_q_rad": 0.18,
+            "rate_hz": 200.0,
+            "target_q_rad": 0.14,
             "step_duration_s": 2.5,
             "out_of_phase": True,
-            "kp": 10.0,
-            "kd": 0.35,
+            "kp": 130.0,
+            "kd": 4.0,
             "tau_ff": 0.0,
             "max_q_slew_rad_s": 0.8,
+            "feedback_topic": "/motor_can_feedback",
+            "feedback_log_hz": 1.0,
         }],
     )
 
