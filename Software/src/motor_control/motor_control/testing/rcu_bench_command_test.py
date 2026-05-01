@@ -28,11 +28,13 @@ class RcuBenchCommandTest(Node):
         self.declare_parameter("target_q_rad", 0.20)
         self.declare_parameter("step_duration_s", 2.5)
         self.declare_parameter("out_of_phase", True)
-        self.declare_parameter("kp", 500.0)
-        self.declare_parameter("kd", 5.0)
-        self.declare_parameter("tau_ff", 0.0)
+        self.declare_parameter("kp", 10.0)
+        self.declare_parameter("kd", 1.0)
+        self.declare_parameter("tau_ff", 1.0)
         self.declare_parameter("max_q_slew_rad_s", 1.2)
         self.declare_parameter("send_velocity_commands", True)
+        self.declare_parameter("use_fixed_velocity_command", True)
+        self.declare_parameter("velocity_command_rad_s", 1.0)
         self.declare_parameter("command_log_hz", 2.0)
 
         topic = str(self.get_parameter("command_topic").value)
@@ -50,6 +52,8 @@ class RcuBenchCommandTest(Node):
         self._tau = float(self.get_parameter("tau_ff").value)
         self._max_q_slew = max(0.0, float(self.get_parameter("max_q_slew_rad_s").value))
         self._send_velocity_commands = bool(self.get_parameter("send_velocity_commands").value)
+        self._use_fixed_velocity_command = bool(self.get_parameter("use_fixed_velocity_command").value)
+        self._velocity_command_rad_s = float(self.get_parameter("velocity_command_rad_s").value)
         self._command_log_hz = max(0.0, float(self.get_parameter("command_log_hz").value))
 
         self._pub = self.create_publisher(RobotCommand, topic, 10)
@@ -66,7 +70,12 @@ class RcuBenchCommandTest(Node):
             f"Publishing step RobotCommand on {topic} for joints {self._joint_names} at {self._rate_hz:.1f} Hz"
         )
         if self._send_velocity_commands:
-            self.get_logger().info("Velocity commands enabled: qd_des follows slew-limited transitions")
+            if self._use_fixed_velocity_command:
+                self.get_logger().info(
+                    f"Velocity commands enabled: fixed qd_des={self._velocity_command_rad_s:+.3f} rad/s"
+                )
+            else:
+                self.get_logger().info("Velocity commands enabled: qd_des follows slew-limited transitions")
         if self._command_log_hz > 0.0:
             self.get_logger().info(
                 f"Command TX logging enabled at {self._command_log_hz:.2f} Hz"
@@ -101,7 +110,13 @@ class RcuBenchCommandTest(Node):
                 qd_cmd = delta / self._dt if self._dt > 0.0 else 0.0
             self._q_cmd[i] = q_new
             q_des.append(q_new)
-            qd_des.append(qd_cmd if self._send_velocity_commands else 0.0)
+            if not self._send_velocity_commands:
+                qd_out = 0.0
+            elif self._use_fixed_velocity_command:
+                qd_out = self._velocity_command_rad_s if i % 2 == 0 else -self._velocity_command_rad_s
+            else:
+                qd_out = qd_cmd
+            qd_des.append(qd_out)
 
         n = len(self._joint_names)
         msg = RobotCommand()
