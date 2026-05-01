@@ -14,8 +14,6 @@ Typical usage:
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import UInt8MultiArray
-import struct
 
 from motor_control.msg import RobotCommand
 
@@ -34,8 +32,7 @@ class RcuBenchCommandTest(Node):
         self.declare_parameter("kd", 4.0)
         self.declare_parameter("tau_ff", 0.0)
         self.declare_parameter("max_q_slew_rad_s", 0.8)
-        self.declare_parameter("feedback_topic", "/motor_can_feedback")
-        self.declare_parameter("feedback_log_hz", 1.0)
+        self.declare_parameter("send_velocity_commands", True)
 
         topic = str(self.get_parameter("command_topic").value)
         names_raw = str(self.get_parameter("joint_names").value)
@@ -51,76 +48,21 @@ class RcuBenchCommandTest(Node):
         self._kd = float(self.get_parameter("kd").value)
         self._tau = float(self.get_parameter("tau_ff").value)
         self._max_q_slew = max(0.0, float(self.get_parameter("max_q_slew_rad_s").value))
-        self._feedback_topic = str(self.get_parameter("feedback_topic").value)
-        self._feedback_log_hz = max(0.1, float(self.get_parameter("feedback_log_hz").value))
+        self._send_velocity_commands = bool(self.get_parameter("send_velocity_commands").value)
 
         self._pub = self.create_publisher(RobotCommand, topic, 10)
-        self._sub_fb = self.create_subscription(
-            UInt8MultiArray,
-            self._feedback_topic,
-            self._motor_feedback_cb,
-            10,
-        )
         self._t0 = self.get_clock().now()
 
         period = 1.0 / max(1e-3, self._rate_hz)
         self._dt = period
         self._timer = self.create_timer(period, self._tick)
-        self._fb_log_timer = self.create_timer(1.0 / self._feedback_log_hz, self._log_feedback)
         self._q_cmd = [0.0 for _ in self._joint_names]
-        self._last_fb = {}
-        self._got_fb_once = False
 
         self.get_logger().info(
             f"Publishing step RobotCommand on {topic} for joints {self._joint_names} at {self._rate_hz:.1f} Hz"
         )
-        self.get_logger().info(
-            f"Listening for STM feedback on {self._feedback_topic} (log {self._feedback_log_hz:.1f} Hz)"
-        )
-
-    def _motor_feedback_cb(self, msg: UInt8MultiArray):
-        # /motor_can_feedback is packed as 12 entries of (pos_f32, vel_f32), motor IDs 1..12.
-        raw = bytes(msg.data)
-        entry_size = 8
-        needed = 12 * entry_size
-        if len(raw) < needed:
-            return
-
-        fb = {}
-        off = 0
-        for mid in range(1, 13):
-            pos, vel = struct.unpack_from("<ff", raw, off)
-            fb[mid] = (float(pos), float(vel))
-            off += entry_size
-        self._last_fb = fb
-        self._got_fb_once = True
-
-    def _log_feedback(self):
-        if not self._got_fb_once:
-            self.get_logger().warn("No /motor_can_feedback received yet from STM bridge")
-            return
-
-        details = []
-        for name in self._joint_names:
-            mid = None
-            if name.startswith("motor_"):
-                suffix = name.split("motor_", 1)[1]
-                if suffix.isdigit():
-                    mid = int(suffix)
-            if mid is None:
-                continue
-            if mid not in self._last_fb:
-                continue
-
-            q_fb, qd_fb = self._last_fb[mid]
-            idx = self._joint_names.index(name)
-            q_cmd = self._q_cmd[idx] if idx < len(self._q_cmd) else 0.0
-            details.append(
-                f"m{mid}: q_cmd={q_cmd:+.3f} q_fb={q_fb:+.3f} qd_fb={qd_fb:+.3f}"
-            )
-
-        if details:
-            self.get_logger().info(" | ".join(details))
+        if self._send_velocity_commands:
+            self.get_logger().info("Velocity commands enabled: qd_des follows slew-limited transitions")
 
     def _tick(self):
         t = (self.get_clock().now() - self._t0).nanoseconds * 1e-9
@@ -130,27 +72,28 @@ class RcuBenchCommandTest(Node):
         q_other = -q_base if self._out_of_phase else q_base
 
         q_targets = []
-        qd_des = []
         for i, _ in enumerate(self._joint_names):
             if i % 2 == 0:
                 q_targets.append(q_base)
-                qd_des.append(0.0)
             else:
                 q_targets.append(q_other)
-                qd_des.append(0.0)
 
         # Slew-limit position setpoint transitions to avoid aggressive fault-triggering jumps.
         q_des = []
+        qd_des = []
         max_delta = self._max_q_slew * self._dt
         for i, q_tgt in enumerate(q_targets):
             q_prev = self._q_cmd[i]
             if max_delta <= 0.0:
                 q_new = q_tgt
+                qd_cmd = 0.0
             else:
                 delta = max(-max_delta, min(max_delta, q_tgt - q_prev))
                 q_new = q_prev + delta
+                qd_cmd = delta / self._dt if self._dt > 0.0 else 0.0
             self._q_cmd[i] = q_new
             q_des.append(q_new)
+            qd_des.append(qd_cmd if self._send_velocity_commands else 0.0)
 
         n = len(self._joint_names)
         msg = RobotCommand()

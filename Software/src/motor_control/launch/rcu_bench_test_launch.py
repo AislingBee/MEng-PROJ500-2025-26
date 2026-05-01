@@ -44,8 +44,7 @@ def generate_launch_description():
             "kd": 4.0,
             "tau_ff": 0.0,
             "max_q_slew_rad_s": 0.8,
-            "feedback_topic": "/motor_can_feedback",
-            "feedback_log_hz": 1.0,
+            "send_velocity_commands": True,
         }],
     )
 
