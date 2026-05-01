@@ -68,13 +68,15 @@ class HumanoidStandEnvS2rCfg(DirectRLEnvCfg):
 
     # Push-force curriculum for standing robustness.
     enable_push_curriculum: bool = True
-    push_start_step: int = 30000
-    push_interval_steps: int = 600
-    push_probability: float = 0.25
-    push_velocity_xy_initial: float = 0.05
-    push_velocity_xy_max: float = 0.6
-    push_velocity_xy_increment_factor: float = 1.25
-    push_velocity_xy_decrement: float = 0.05
+    push_start_step: int = 200000
+    push_interval_steps: int = 120
+    push_probability: float = 0.10
+
+    push_velocity_xy_initial: float = 0.02
+    push_velocity_xy_max: float = 0.20
+
+    push_velocity_xy_increment_factor: float = 1.15
+    push_velocity_xy_decrement: float = 0.02
 
     forbidden_body_names: tuple[str, ...] = (
         "l_hip_yaw_link",
