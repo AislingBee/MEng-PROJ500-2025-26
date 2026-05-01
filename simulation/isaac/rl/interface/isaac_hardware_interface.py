@@ -8,7 +8,7 @@ from isaaclab.utils.math import quat_rotate_inverse, quat_mul
 from isaaclab.utils.noise import gaussian_noise
 from isaaclab.utils.noise import AdditiveGaussianNoiseCfg
 
-# from simulation.isaac.kinematics.thor_leg_fk import compute_foot_pos_b
+from simulation.isaac.kinematics.thor_leg_fk import compute_foot_pos_b
 
 from .hardware_interface import BaseHardwareInterface, ControlPacket, ObservationPacket
 
@@ -102,16 +102,16 @@ class IsaacHardwareInterface(BaseHardwareInterface):
         projected_gravity_b = projected_gravity_b / torch.norm(projected_gravity_b, dim=1, keepdim=True)
         # Deployment-valid FK foot position: Isaac and Thor use the same helper,
         # and this deliberately avoids simulator body-state kinematics.
-        # foot_pos_b = compute_foot_pos_b(joint_pos)
-        # if foot_pos_b.shape[-1] != 6:
-        #     raise RuntimeError(f"FK foot_pos_b must have trailing dim 6, got {foot_pos_b.shape[-1]}")
+        foot_pos_b = compute_foot_pos_b(joint_pos)
+        if foot_pos_b.shape[-1] != 6:
+            raise RuntimeError(f"FK foot_pos_b must have trailing dim 6, got {foot_pos_b.shape[-1]}")
 
         # TEMP TEST: bypass FK to check whether FK is causing standing jitter.
-        foot_pos_b = torch.zeros(
-            (joint_pos.shape[0], 6),
-            dtype=joint_pos.dtype,
-            device=joint_pos.device,
-        )
+        # foot_pos_b = torch.zeros(
+        #     (joint_pos.shape[0], 6),
+        #     dtype=joint_pos.dtype,
+        #     device=joint_pos.device,
+        # )
 
         return ObservationPacket(
             joint_pos = joint_pos,
