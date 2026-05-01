@@ -401,12 +401,13 @@ class HumanoidStandEnvS2r(DirectRLEnv):
         default_root_state[:, 2] += self.cfg.base_height
 
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
-        joint_pos += 0.005 * torch.randn_like(joint_pos)
-
-        joint_vel = 0.01 * torch.randn(
-            (len(env_ids), self.num_dofs),
-            device=self.device,
-        )
+        # joint_pos += 0.005 * torch.randn_like(joint_pos)
+        #
+        # joint_vel = 0.01 * torch.randn(
+        #     (len(env_ids), self.num_dofs),
+        #     device=self.device,
+        # )
+        
 
         joint_pos = torch.max(
             torch.min(joint_pos, self._joint_upper[env_ids]),
