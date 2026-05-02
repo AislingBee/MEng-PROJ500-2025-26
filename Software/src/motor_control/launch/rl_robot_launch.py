@@ -10,6 +10,9 @@ Pipeline:
 Usage:
   ros2 launch motor_control rl_robot_launch.py
   ros2 launch motor_control rl_robot_launch.py rcu_ip:=192.168.100.10 ctrl_mode:=0
+
+Note:
+    Keep list-like values as strings (e.g. "[9,10]") for ROS2 Jazzy parameter compatibility.
 """
 
 from launch import LaunchDescription
@@ -41,11 +44,11 @@ def generate_launch_description():
         DeclareLaunchArgument("rcu_cmd_port", default_value="7701", description="RCU command UDP port"),
         DeclareLaunchArgument("telem_port", default_value="7700", description="RCU telemetry UDP port"),
         DeclareLaunchArgument("ctrl_mode", default_value="0", description="Motor control mode: 0=MIT, 1=CSP"),
-        DeclareLaunchArgument("auto_enable", default_value="False", description="Automatically enable motors at startup"),
+        DeclareLaunchArgument("auto_enable", default_value="False", description="Automatically enable active motors at startup"),
         DeclareLaunchArgument("log_dir", default_value="~/rcu_logs", description="Directory for telemetry CSV logs"),
         DeclareLaunchArgument("loop_rate_hz", default_value="200.0", description="Command TX loop rate in Hz"),
         DeclareLaunchArgument("names_file", default_value="joint_limits_config.json", description="Joint name config file for motor_feedback_listener"),
-        DeclareLaunchArgument("active_motor_ids", default_value="[1,2,3,4,5,6,7,8,9,10,11,12]", description="Motor IDs included in outgoing Type 0x10 packets"),
+        DeclareLaunchArgument("active_motor_ids", default_value="[1,2,3,4,5,6,7,8,9,10,11,12]", description="Motor IDs included in outgoing Type 0x10 command and enable scope"),
         DeclareLaunchArgument("left_bus_motor_ids", default_value="[1,3,5,7,9,11]", description="Motor IDs forced onto left bus"),
         DeclareLaunchArgument("right_bus_motor_ids", default_value="[2,4,6,8,10,12]", description="Motor IDs forced onto right bus"),
         DeclareLaunchArgument("scan_motor_can_ids", default_value="False", description="Log online CAN motor IDs seen in feedback"),

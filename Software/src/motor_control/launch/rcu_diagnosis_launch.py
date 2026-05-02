@@ -1,13 +1,16 @@
 """
-Diagnosis launch: scan online CAN IDs and stream feedback in safe discovery mode.
+Diagnosis launch: enable motors 9/10, check online CAN IDs, and stream feedback.
 
-This launch is configured for visibility-first bring-up:
-    - does not auto-enable motors,
+This launch is configured for the 9/10 bench pair:
+        - enables configured active motors at startup,
     - scans and logs online CAN IDs,
     - publishes motor feedback and IMU topics.
 
 Usage:
   ros2 launch motor_control rcu_diagnosis_launch.py
+
+Note:
+    Keep list-like values as strings (e.g. "[9,10]") for ROS2 Jazzy parameter compatibility.
 """
 
 from launch import LaunchDescription
@@ -54,15 +57,15 @@ def generate_launch_description():
                 "rcu_ip": rcu_ip,
                 "ctrl_mode": ctrl_mode,
                 "log_dir": log_dir,
-                "auto_enable": False,
-                "active_motor_ids": "[1,2,3,4,5,6,7,8,9,10,11,12]",
-                "left_bus_motor_ids": "[1,3,5,7,9,11]",
-                "right_bus_motor_ids": "[2,4,6,8,10,12]",
+                "auto_enable": True,
+                "active_motor_ids": "[9,10]",
+                "left_bus_motor_ids": "[9]",
+                "right_bus_motor_ids": "[10]",
                 "scan_motor_can_ids": True,
                 "can_id_online_timeout_s": 1.0,
                 "can_id_scan_log_period_s": 5.0,
-                "wait_for_expected_online_ids": False,
-                "expected_online_motor_ids": "[]",
+                "wait_for_expected_online_ids": True,
+                "expected_online_motor_ids": "[9,10]",
                 "loop_rate_hz": 200.0,
             }],
         ),
@@ -78,6 +81,20 @@ def generate_launch_description():
                 "motor_count": 12,
                 "names_file": names_file,
                 "all_logging_info": False,
+            }],
+        ),
+
+        # Build RobotObservation from /motor_feedback + /imu0 and print ROS logs.
+        Node(
+            package="motor_control",
+            executable="robot_observation_bridge.py",
+            name="robot_observation_bridge",
+            output="screen",
+            parameters=[{
+                "feedback_topic": "motor_feedback",
+                "imu_topic": "imu0",
+                "observation_topic": "robot_observation",
+                "all_logging_info": True,
             }],
         ),
     ])
