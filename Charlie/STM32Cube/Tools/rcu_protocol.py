@@ -46,6 +46,7 @@ DBGCMD_SET_TELEM_RATE   = 0x09
 DBGCMD_MOTOR_BUS_CTRL   = 0x0A
 DBGCMD_REQUEST_SUPV_DUMP= 0x0B
 DBGCMD_MOTOR_ENABLE     = 0x0C
+DBGCMD_MOTOR_SET_ZERO   = 0x0D
 
 # ---------------------------------------------------------------------------
 # RS04 physical limits (mirror of rs04.h)
@@ -119,13 +120,13 @@ def _u16_to_f(raw, vmin, vmax):
 def encode_motor_cmd_entry(motor_id: int, bus: int, pos_rad: float,
                            vel_rads: float = 0.0, torque_nm: float = 0.0,
                            kp: float = 0.0, kd: float = 0.0) -> bytes:
-    """Encode one rcu_motor_cmd_entry_t (10 bytes, little-endian)."""
-    pos = _f_to_u16(pos_rad,   -RS04_POS_MAX_RAD,  RS04_POS_MAX_RAD)
-    vel = _f_to_u16(vel_rads,  -RS04_VEL_MAX_RADS, RS04_VEL_MAX_RADS)
-    trq = _f_to_u16(torque_nm, -RS04_TRQ_MAX_NM,   RS04_TRQ_MAX_NM)
-    kp8 = int(kp / RS04_KP_MAX * 255) & 0xFF
-    kd8 = int(kd / RS04_KD_MAX * 255) & 0xFF
-    return struct.pack("<BBHHHBB", bus, motor_id, pos, vel, trq, kp8, kd8)
+    """Encode one rcu_motor_cmd_entry_t (12 bytes, little-endian). kp/kd are uint16."""
+    pos  = _f_to_u16(pos_rad,   -RS04_POS_MAX_RAD,  RS04_POS_MAX_RAD)
+    vel  = _f_to_u16(vel_rads,  -RS04_VEL_MAX_RADS, RS04_VEL_MAX_RADS)
+    trq  = _f_to_u16(torque_nm, -RS04_TRQ_MAX_NM,   RS04_TRQ_MAX_NM)
+    kp16 = int(max(0, min(65535, kp / RS04_KP_MAX * 65535)))
+    kd16 = int(max(0, min(65535, kd / RS04_KD_MAX * 65535)))
+    return struct.pack("<BBHHHHH", bus, motor_id, pos, vel, trq, kp16, kd16)
 
 def encode_motor_supervisory(enable_mask: int = 0, clear_fault_mask: int = 0,
                              ctrl_mode: int = 0) -> bytes:

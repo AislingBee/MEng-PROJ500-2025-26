@@ -49,8 +49,8 @@ PORT_TELEM_OUT  = 7700   # RCU replies on this port
 DBG_REPLY_FMT  = "<II6Bxx I"
 DBG_REPLY_SIZE = struct.calcsize(DBG_REPLY_FMT)
 
-# rcu_motor_cmd_entry_t: bus u8, motor_id u8, pos u16, vel u16, trq u16, kp u8, kd u8
-MOTOR_CMD_ENTRY_FMT  = "<BBHHHBBxx"   # 12 bytes with pad to align
+# rcu_motor_cmd_entry_t: bus u8, motor_id u8, pos u16, vel u16, trq u16, kp u16, kd u16
+MOTOR_CMD_ENTRY_FMT  = "<BBHHHHH"   # 12 bytes, kp/kd now uint16
 MOTOR_CMD_ENTRY_SIZE = struct.calcsize(MOTOR_CMD_ENTRY_FMT)
 
 # RS04 limits
@@ -152,11 +152,11 @@ def cmd_motor_cmd(rcu_ip, bus, motor_id, pos, vel, trq, kp, kd, timeout):
     pos_u16 = f_to_u16(pos, -RS04_POS_MAX, RS04_POS_MAX)
     vel_u16 = f_to_u16(vel, -RS04_VEL_MAX, RS04_VEL_MAX)
     trq_u16 = f_to_u16(trq, -RS04_TRQ_MAX, RS04_TRQ_MAX)
-    kp_u8   = int(max(0, min(255, (kp / RS04_KP_MAX) * 255)))
-    kd_u8   = int(max(0, min(255, (kd / RS04_KD_MAX) * 255)))
+    kp_u16  = int(max(0, min(65535, (kp / RS04_KP_MAX) * 65535)))
+    kd_u16  = int(max(0, min(65535, (kd / RS04_KD_MAX) * 65535)))
 
     entry = struct.pack(MOTOR_CMD_ENTRY_FMT,
-                        bus, motor_id, pos_u16, vel_u16, trq_u16, kp_u8, kd_u8)
+                        bus, motor_id, pos_u16, vel_u16, trq_u16, kp_u16, kd_u16)
     pkt = build_packet(PKT_MOTOR_CMD, entry)
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
