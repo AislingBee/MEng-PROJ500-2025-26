@@ -30,6 +30,8 @@ class ControlPacket:
     kp: torch.Tensor
     kd: torch.Tensor
     tau_ff: torch.Tensor
+    kp_gains: torch.Tensor  # Per-joint proportional gains
+    kd_gains: torch.Tensor  # Per-joint derivative gains
 
 
 class BaseHardwareInterface(ABC):

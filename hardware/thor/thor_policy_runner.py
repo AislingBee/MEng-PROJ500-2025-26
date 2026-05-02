@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import atexit
+import os
 import math
 import time
 import threading
@@ -186,6 +188,10 @@ class ThorStandingPolicyRunner:
         kp_fixed, kd_fixed = build_fixed_gains(device=self.device)
         self._kp_fixed = kp_fixed.unsqueeze(0)
         self._kd_fixed = kd_fixed.unsqueeze(0)
+
+        # Per-joint PD gains for MIT control (conservative defaults: kp=30.0, kd=2.0)
+        self._kp_gains = torch.full((1, CONTRACT.action_dim), 30.0, dtype=torch.float32, device=self.device)
+        self._kd_gains = torch.full((1, CONTRACT.action_dim), 2.0, dtype=torch.float32, device=self.device)
         self.set_command_value(runner_cfg.command_value)
 
         self._step_count = 0
@@ -282,6 +288,8 @@ class ThorStandingPolicyRunner:
             kp=self._kp_fixed.clone(),
             kd=self._kd_fixed.clone(),
             tau_ff=self._tau_ff.clone(),
+            kp_gains=self._kp_gains.clone(),
+            kd_gains=self._kd_gains.clone(),
         )
 
     def step(self) -> ControlPacket:
@@ -307,6 +315,8 @@ class ThorStandingPolicyRunner:
             kp=self._kp_fixed.clone(),
             kd=self._kd_fixed.clone(),
             tau_ff=self._tau_ff.clone(),
+            kp_gains=self._kp_gains.clone(),
+            kd_gains=self._kd_gains.clone(),
         )
         self.hardware.write_control_packet(packet)
 
@@ -414,17 +424,81 @@ class ThorStandingPolicyRunner:
 # Replace these with the actual Thor ROS/CAN hooks.
 # -----------------------------------------------------------------------------
 
+_THOR_ROS_BRIDGE = None
+_THOR_ROS_INIT_DONE_HERE = False
+
+
+def _get_thor_ros_bridge():
+    global _THOR_ROS_BRIDGE
+    global _THOR_ROS_INIT_DONE_HERE
+
+    if _THOR_ROS_BRIDGE is not None:
+        return _THOR_ROS_BRIDGE
+
+    try:
+        import rclpy
+        from simulation.isaac.rl.interface.ros2_robot_bridge import Ros2RobotBridge
+    except Exception as exc:
+        raise RuntimeError(
+            "ROS2 bridge dependencies are unavailable. "
+            "Source your ROS2 + workspace environment before running this script."
+        ) from exc
+
+    if not rclpy.ok():
+        rclpy.init()
+        _THOR_ROS_INIT_DONE_HERE = True
+
+    defaults = get_thor_runner_defaults()
+    _THOR_ROS_BRIDGE = Ros2RobotBridge(
+        joint_names=defaults["joint_names"],
+        command_topic=os.getenv("THOR_ROS_COMMAND_TOPIC", "robot_command"),
+        observation_topic=os.getenv("THOR_ROS_OBSERVATION_TOPIC", "robot_observation"),
+        node_name=os.getenv("THOR_ROS_NODE_NAME", "thor_policy_runner_bridge"),
+        encoder_cpr=int(os.getenv("THOR_ENCODER_CPR", "16384")),
+        observation_timeout_s=float(os.getenv("THOR_OBS_TIMEOUT_S", "2.0")),
+    )
+    _THOR_ROS_BRIDGE.start()
+    return _THOR_ROS_BRIDGE
+
+
+def _shutdown_thor_ros_bridge() -> None:
+    global _THOR_ROS_BRIDGE
+    global _THOR_ROS_INIT_DONE_HERE
+
+    bridge = _THOR_ROS_BRIDGE
+    _THOR_ROS_BRIDGE = None
+
+    if bridge is not None:
+        bridge.stop()
+
+    if _THOR_ROS_INIT_DONE_HERE:
+        try:
+            import rclpy
+
+            if rclpy.ok():
+                rclpy.shutdown()
+        except Exception:
+            pass
+
+    _THOR_ROS_INIT_DONE_HERE = False
+
+
+atexit.register(_shutdown_thor_ros_bridge)
+
 def example_state_reader() -> RobotStateSample:
-    raise NotImplementedError("Inject your real Thor state reader here")
+    return _get_thor_ros_bridge().state_reader()
 
 
 
 def example_command_writer(msg: RobotCommandMessage) -> None:
-    raise NotImplementedError("Inject your real Thor command writer here")
+    _get_thor_ros_bridge().command_writer(msg)
 
 
 
 def main() -> None:
+    import rclpy
+    from simulation.isaac.rl.interface.ros2_robot_bridge import Ros2RobotBridge
+
     joint_names = CONTRACT.joint_names
 
     runner_cfg = ThorPolicyRunnerConfig(
@@ -445,11 +519,20 @@ def main() -> None:
         joint_signs=tuple(1.0 for _ in joint_names),
     )
 
+    rclpy.init()
+    bridge = Ros2RobotBridge(
+        joint_names=joint_names,
+        command_topic="robot_command",
+        observation_topic="robot_observation",
+        node_name="thor_policy_runner",
+    )
+    bridge.start()
+
     runner = ThorStandingPolicyRunner(
         runner_cfg=runner_cfg,
         hardware_cfg=hardware_cfg,
-        state_reader=example_state_reader,
-        command_writer=example_command_writer,
+        state_reader=bridge.state_reader,
+        command_writer=bridge.command_writer,
     )
     stop_event = threading.Event()
 
@@ -471,7 +554,12 @@ def main() -> None:
 
     keyboard_thread = threading.Thread(target=keyboard_loop, daemon=True)
     keyboard_thread.start()
-    runner.run(stop_event=stop_event)
+
+    try:
+        runner.run(stop_event=stop_event)
+    finally:
+        bridge.stop()
+        rclpy.shutdown()
 
 
 if __name__ == "__main__":

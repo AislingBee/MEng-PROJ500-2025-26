@@ -1,0 +1,10 @@
+../Core/Inc/motor_bus.h:67:23:motor_id_to_bus	3
+../Core/Src/telem_pack.c:21:14:clampf	3
+../Core/Src/telem_pack.c:28:17:f_to_u16	1
+../Core/Src/telem_pack.c:34:14:u16_to_f	1
+../Core/Src/telem_pack.c:51:6:telem_pack_slow	5
+../Core/Src/telem_pack.c:112:6:telem_pack_motor_fb	7
+../Core/Src/telem_pack.c:138:6:telem_pack_apply_motor_cmd	6
+../Core/Src/telem_pack.c:167:6:telem_pack_apply_motor_supervisory	10
+../Core/Src/telem_pack.c:250:13:apply_mount	2
+../Core/Src/telem_pack.c:260:6:telem_pack_imu_fast	5

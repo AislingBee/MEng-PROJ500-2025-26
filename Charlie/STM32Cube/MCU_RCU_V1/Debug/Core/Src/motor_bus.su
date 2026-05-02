@@ -1,0 +1,13 @@
+../Core/Src/motor_bus.c:57:13:fdcan_send_ext	64	static
+../Core/Src/motor_bus.c:74:13:init_bus	56	static
+../Core/Src/motor_bus.c:97:13:drain_rx	96	static
+../Core/Src/motor_bus.c:117:13:flush_cmds	32	static
+../Core/Src/motor_bus.c:134:6:motor_bus_init	16	static
+../Core/Src/motor_bus.c:143:6:motor_bus_tick	24	static
+../Core/Src/motor_bus.c:152:6:motor_bus_send_cmd	24	static
+../Core/Src/motor_bus.c:160:6:motor_bus_send_enable	40	static
+../Core/Src/motor_bus.c:176:24:motor_bus_get_feedback	16	static
+../Core/Src/motor_bus.c:183:6:motor_bus_send_param_write	32	static
+../Core/Src/motor_bus.c:194:6:motor_bus_send_set_zero	32	static
+../Core/Src/motor_bus.c:214:13:fdcan_loopback_one	128	static
+../Core/Src/motor_bus.c:291:9:motor_bus_loopback_test	16	static

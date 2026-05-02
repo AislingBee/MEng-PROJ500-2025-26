@@ -1,0 +1,3064 @@
+#include "pdu_selftest_cli_v3.h"
+#include "main.h"
+
+#include <ctype.h>
+#include <math.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+
+extern UART_HandleTypeDef huart4;
+extern UART_HandleTypeDef huart3;
+extern FDCAN_HandleTypeDef hfdcan1;
+extern TIM_HandleTypeDef htim17;
+extern I2C_HandleTypeDef hi2c4;
+extern ADC_HandleTypeDef hadc1;
+extern ADC_HandleTypeDef hadc2;
+
+#include "st_common.h"
+#include "st_mcan.h"
+
+#define ST_DBG_UART       huart4
+#define ST_RS485_UART     huart3
+#define ST_FDCAN          hfdcan1
+#define ST_BUZZER_TIM     htim17
+#define ST_I2C            hi2c4
+
+#define ST_VERSION                   "2.2-cli-loop"
+#define ST_CLI_BUF_LEN               96U
+#define ST_ADC_ADDR_7BIT             0x17U
+#define ST_ADC_ADDR_8BIT             (ST_ADC_ADDR_7BIT << 1)
+#define ST_I2C_TIMEOUT_MS            50U
+#define ST_DEFAULT_LOOP_DELAY_MS     1000U
+#define ST_DEFAULT_MONITOR_MS        1000U
+#define ST_FAST_LOOP_DELAY_MS          50U
+#define ST_SSD_ADDR                  1U
+#define ST_SSD_UART_BAUD             19200U
+#define ST_SSD_UART_TIMEOUT_MS       800U
+#define ST_SSD_RX_BUF_LEN            64U
+#define ST_SSD_RAW_TIMEOUT_MS        1000U
+#define ST_SSD_SCAN_ADDR_MAX         8U
+#define ST_SSD_DISCOVER_BAUD_COUNT   6U
+#define ST_GPIO_DWELL_MS             200U
+#define ST_FPGA_DWELL_MS             100U
+
+#define ST_TLA_OP_SINGLE_READ        0x10U
+#define ST_TLA_OP_SINGLE_WRITE       0x08U
+#define ST_TLA_REG_SYSTEM_STATUS     0x00U
+#define ST_TLA_REG_DATA_CFG          0x02U
+#define ST_TLA_REG_OSR_CFG           0x03U
+#define ST_TLA_REG_OPMODE_CFG        0x04U
+#define ST_TLA_REG_PIN_CFG           0x05U
+#define ST_TLA_REG_CHANNEL_SEL       0x11U
+
+#define ST_TEST_GPIO                 (1UL << 0)
+#define ST_TEST_BUZZER               (1UL << 1)
+#define ST_TEST_CAN                  (1UL << 2)
+#define ST_TEST_SSD                  (1UL << 3)
+#define ST_TEST_FPGA                 (1UL << 4)
+#define ST_TEST_ADC                  (1UL << 5)
+#define ST_TEST_MCAN                 (1UL << 6)
+#define ST_TEST_ALL                  (ST_TEST_GPIO | ST_TEST_BUZZER | ST_TEST_CAN | ST_TEST_SSD | ST_TEST_FPGA | ST_TEST_ADC | ST_TEST_MCAN)
+
+#define ST_LED_ACTIVE_LOW            0
+
+typedef struct {
+	uint16_t raw12;
+	float vadc;
+	float eng;
+} st_adc_sample_t;
+
+typedef struct {
+	const char *name;
+	const char *unit;
+	float (*convert)(uint16_t raw, uint8_t bits);
+	float warn_min;
+	float warn_max;
+	float fail_min;
+	float fail_max;
+} st_adc_info_t;
+
+void st_dbg_printf(const char *fmt, ...);
+static void st_prompt(void);
+static void st_safe_outputs(void);
+static void st_handle_uart_rx(void);
+static void st_process_line(char *line);
+static void st_runner_poll(uint32_t now_ms);
+static void st_monitor_poll(uint32_t now_ms);
+static void st_stream_poll(uint32_t now_ms);
+static void st_print_help(void);
+static void st_print_tests(void);
+static void st_print_status(void);
+static void st_print_summary(void);
+static void st_print_campaign_totals(void);
+static float st_therm_apply_cal(float t_raw_c);
+static void st_therm_print_detail(void);
+static int st_test_index_from_name(const char *name);
+static void st_start_all(void);
+static void st_start_one(uint32_t mask);
+static void st_abort(bool announce);
+static bool st_fpga_poll(void);
+static bool st_fpga_read_regs(uint8_t start, uint8_t *buf, uint8_t len);
+static void st_aux_sw_set(uint8_t n, bool on);
+static bool st_aux_sw_get(uint8_t n);
+static bool st_ssd_cache_refresh(void);
+
+/* Forward declarations for board externs (Group B - need g_tests[]) */
+uint8_t st_mcan_get_summary_code(void);
+uint16_t st_mcan_get_status_word(void);
+uint32_t st_mcan_local_mask_from_selector(uint16_t selector);
+void st_mcan_on_start_remote_selftest(uint32_t mask, bool fast);
+
+static void st_led_set(uint8_t idx, bool on);
+static void st_led_all_off(void);
+static void st_cmd_arm_set(bool on);
+static void st_cmd_fault_set(bool on);
+static void st_can_standby_set(bool standby);
+static void st_rs485_de_set(bool tx_enable);
+static uint32_t st_tim17_kernel_clock_hz(void);
+static void st_buzzer_off(void);
+static void st_buzzer_start(uint32_t hz);
+
+static bool st_ssd_uart_apply_defaults(void);
+static bool st_ssd_uart_apply(uint32_t baud, uint32_t stop_bits);
+static void st_ssd_flush_rx(void);
+static void st_ssd_post_tx_cleanup(void);
+static bool st_ssd_send_cmd(const char *cmd);
+static size_t st_ssd_read_capture(uint8_t *buf, size_t len, uint32_t timeout_ms);
+static bool st_ssd_extract_last_line(const uint8_t *raw, size_t raw_len,
+		char *line, size_t line_len);
+static bool st_ssd_read_line(char *buf, size_t len, uint32_t timeout_ms);
+static bool st_ssd_query_i32(const char *cmd, char expected_prefix,
+		int32_t *value);
+static bool st_ssd_query_text(const char *cmd, char *buf, size_t len);
+static void st_ssd_print_readings(void);
+static void st_ssd_print_raw_cmd(const char *cmd_in);
+static void st_ssd_discover_ascii(void);
+static uint16_t st_modbus_crc16(const uint8_t *data, size_t len);
+static bool st_ssd_modbus_probe_once(uint8_t addr, uint32_t baud,
+		uint16_t *fw_reg, uint16_t *mode_reg, uint16_t *baud_reg);
+static void st_ssd_modbus_probe(void);
+static void st_ssd_listen(uint32_t timeout_ms);
+static void st_ssd_modraw(uint8_t addr);
+
+static bool st_adc_ping(uint8_t *sys_status);
+static bool st_adc_write_reg(uint8_t reg, uint8_t value);
+static bool st_adc_read_reg(uint8_t reg, uint8_t *value);
+static bool st_adc_init_analog_defaults(void);
+static bool st_adc_read_channel12(uint8_t ch, uint16_t *raw12);
+static bool st_adc_read_all(st_adc_sample_t samples[8]);
+static void st_adc_print_raw(const st_adc_sample_t samples[8]);
+static void st_adc_print_eng(const st_adc_sample_t samples[8]);
+static st_status_t st_adc_sanity(const st_adc_sample_t samples[8], char *detail,
+		size_t detail_len);
+
+static float st_raw_to_vadc(uint16_t raw, uint8_t bits) {
+	return (bits == 16U) ?
+			((float) raw * 3.3f / 65536.0f) : ((float) raw * 3.3f / 4096.0f);
+}
+static float st_adc_conv_x14(uint16_t raw, uint8_t bits) {
+	return st_raw_to_vadc(raw, bits) * 14.0f;
+}
+static float st_adc_conv_x4(uint16_t raw, uint8_t bits) {
+	return st_raw_to_vadc(raw, bits) * 4.0f;
+}
+static float st_adc_conv_x7p8(uint16_t raw, uint8_t bits) {
+	return st_raw_to_vadc(raw, bits) * 7.8f;
+}
+static float st_adc_conv_x31(uint16_t raw, uint8_t bits) {
+	return st_raw_to_vadc(raw, bits) * 31.0f;
+}
+static float st_adc_conv_x9p47(uint16_t raw, uint8_t bits) {
+	return st_raw_to_vadc(raw, bits) * 9.47f;
+}
+static float st_adc_conv_therm(uint16_t raw, uint8_t bits) {
+	float v = st_raw_to_vadc(raw, bits);
+	if (v <= 0.0f || v >= 3.299f) {
+		return NAN;
+	}
+	return (1.0f / ((1.0f / 298.15f) + (1.0f / 3435.0f) * logf(v / (3.3f - v))))
+			- 273.15f;
+}
+
+static const st_adc_info_t g_adc_info[8] =
+		{ { "V_VRAW", "V", st_adc_conv_x31, 30.0f, 60.0f, 20.0f, 65.0f },
+				{ "I_VRAW_SW", "A", st_adc_conv_x9p47, -0.5f, 5.0f, -1.0f, 10.0f },
+				{ "V_12V_SW", "V", st_adc_conv_x7p8, 10.0f, 14.0f, 0.0f, 15.0f },
+				{ "V_24V_SW", "V", st_adc_conv_x14, 20.0f, 30.0f, 0.0f, 32.0f },
+				{ "I_12V_SW", "A", st_adc_conv_x4, -0.5f, 5.0f, -1.0f, 10.0f },
+				{ "I_24V_SW", "A", st_adc_conv_x4, -0.5f, 5.0f, -1.0f, 10.0f },
+				{ "THERM1", "C", st_adc_conv_therm, 0.0f, 60.0f, -20.0f, 90.0f },
+				{ "THERM2", "C", st_adc_conv_therm, 0.0f, 60.0f, -20.0f, 90.0f }, };
+
+static struct {
+	st_runner_mode_t mode;
+	uint32_t enabled_mask;
+	bool loop_enabled;
+	bool loop_fast;
+	bool loop_stop_on_fail;
+	uint32_t loop_delay_ms;
+	uint32_t loop_target_count; /* 0 = infinite */
+	uint32_t loop_completed_count;
+	uint32_t current_mask;
+	int current_test;
+	uint32_t wait_until_ms;
+	bool monitor_adc;
+	bool monitor_inputs;
+	bool monitor_ssd;
+	bool monitor_adc_local;
+	bool monitor_fpga;
+	uint32_t monitor_interval_ms;
+	uint32_t last_monitor_ms;
+	bool campaign_active;
+	uint32_t run_fail_count;
+	uint32_t run_warn_count;
+	float therm_offset_c;
+} g_rt = { .mode = RUN_IDLE, .enabled_mask = ST_TEST_ALL, .loop_enabled = false,
+		.loop_fast = false, .loop_stop_on_fail = false,
+		.loop_delay_ms = ST_DEFAULT_LOOP_DELAY_MS, .loop_target_count = 0U,
+		.loop_completed_count = 0U, .current_mask = 0U, .current_test = -1,
+		.wait_until_ms = 0U, .monitor_adc = false, .monitor_inputs = false,
+		.monitor_ssd = false, .monitor_adc_local = false, .monitor_fpga = false, .monitor_interval_ms = ST_DEFAULT_MONITOR_MS,
+		.last_monitor_ms = 0U, .campaign_active = false, .run_fail_count = 0U,
+		.run_warn_count = 0U, .therm_offset_c = 0.0f, };
+
+
+
+static uint8_t g_cli_buf[ST_CLI_BUF_LEN];
+static uint32_t g_cli_len = 0U;
+
+static struct {
+	uint8_t phase;
+	uint8_t toggles;
+	uint32_t next_ms;
+} g_gpio_test;
+static struct {
+	uint8_t phase;
+	uint32_t next_ms;
+} g_buzzer_test;
+static struct {
+	uint8_t phase;
+	uint32_t next_ms;
+} g_fpga_test;
+
+static struct {
+    uint8_t phase;
+    uint32_t deadline_ms;
+    uint32_t base_ping_resp;
+    uint32_t base_ping_timeout;
+    uint32_t base_status_resp;
+    uint32_t base_ack_rx;
+    uint8_t status_seq;
+    uint8_t ack_seq;
+} g_mcan_test;
+
+static st_mcan_rt_t g_mcan;
+
+/* ======================================================================
+ *  FPGA data cache (populated by background poll every 200 ms)
+ * ====================================================================== */
+typedef struct {
+	bool     valid;
+	uint32_t last_read_ms;
+	uint8_t  status0;
+	uint8_t  fault_code;
+	uint8_t  state_code;    /* 0=IDLE(or FAULT),1=PRECHARGE,2=ARMED,3=COMPUTE */
+	uint8_t  actions;
+	uint8_t  inputs;
+	uint16_t pchg_timer_ms;
+	uint8_t  version;
+	/* decoded convenience flags */
+	bool fault_latch, precharge_latch, motor_en, compute_en, ovuv_ok, arm_permit;
+	bool estop_ok, mcu_cmd_arm_seen, remote_arm_latch;
+} st_fpga_cache_t;
+static st_fpga_cache_t g_fpga_cache;
+static uint32_t        g_fpga_bg_next_ms = 0U;
+#define FPGA_BG_INTERVAL_MS  200U
+
+/* ======================================================================
+ *  FPGA I2C register map constants and lookup tables
+ *  (defined here so test functions and st_fpga_poll can use them)
+ * ====================================================================== */
+#define ST_FPGA_ADDR_7BIT        0x55U
+#define ST_FPGA_ADDR_8BIT        (ST_FPGA_ADDR_7BIT << 1)
+#define ST_FPGA_I2C_TMO          10U   /* ms per transaction */
+#define ST_FPGA_REG_STATUS0      0x00U
+#define ST_FPGA_REG_FAULT        0x01U
+#define ST_FPGA_REG_STATE        0x02U
+#define ST_FPGA_REG_ACTIONS      0x03U
+#define ST_FPGA_REG_INPUTS       0x04U
+#define ST_FPGA_REG_PCHG_HI      0x05U
+#define ST_FPGA_REG_PCHG_LO      0x06U
+#define ST_FPGA_REG_VERSION      0x7FU
+#define ST_FPGA_VERSION_EXPECT   0xB2U
+#define ST_FPGA_REGS_BLOCK_LEN   7U    /* 0x00–0x06 inclusive */
+
+static const char *const k_fpga_state_names[4] = {"IDLE","PRECHARGE","ARMED","COMPUTE"};
+static const char *const g_fpga_s0_names[8] = {
+    "FAULT_LATCH", "PRECHARGE_LATCH", "MOTOR_EN", "COMPUTE_EN",
+    "K_SEL", "K_EN", "OVUV_OK", "ARM_PERMIT"
+};
+static const char *const g_fpga_act_names[8] = {
+    NULL, NULL, NULL, NULL,
+    "dump_req", "DUMP_EN", "PRECHARGE_REQ", "K_EN"
+};
+static const char *const g_fpga_in_names[8] = {
+    "arm_ok", "remote_arm_latch", "ESTOP_OK", "MCU_CMD_ARM",
+    "MCU_ALIVE", "FB_CLOSED", "PRECHARGE_OK", "VBUS_OV"
+};
+static const char *const g_fpga_fault_names[8] = {
+    "none", "ESTOP", "OV", "UV",
+    "weld", "pchg_timeout", "MCU_FAULT", "close_verify"
+};
+
+/* ======================================================================
+ *  SSD data cache (populated by stream 5-second refresh or manual ssd read)
+ * ====================================================================== */
+typedef struct {
+	float    current_a;
+	float    voltage_v;
+	float    temp_c;
+	uint32_t last_ok_ms;
+	bool     valid;
+} st_ssd_cache_t;
+static st_ssd_cache_t g_ssd_cache;
+
+/* ======================================================================
+ *  Stream / telemetry mode
+ * ====================================================================== */
+static bool     g_stream_on          = false;
+static uint32_t g_stream_interval_ms = 500U;
+static uint32_t g_stream_next_ms     = 0U;
+static uint32_t g_stream_ssd_next_ms = 0U;
+#define STREAM_SSD_INTERVAL_MS  5000U
+
+void st_dbg_printf(const char *fmt, ...)
+{
+	char buf[256];
+	va_list ap;
+	va_start(ap, fmt);
+	int n = vsnprintf(buf, sizeof(buf), fmt, ap);
+	va_end(ap);
+	if (n > 0) {
+		if (n > (int) sizeof(buf))
+			n = (int) sizeof(buf);
+		(void) HAL_UART_Transmit(&ST_DBG_UART, (uint8_t*) buf, (uint16_t) n,
+				200U);
+	}
+}
+
+static void st_prompt(void) {
+	st_dbg_printf("\r\n> ");
+}
+
+static float st_therm_apply_cal(float t_raw_c) {
+	if (isnan(t_raw_c))
+		return t_raw_c;
+	return t_raw_c + g_rt.therm_offset_c;
+}
+
+static void st_therm_print_detail(void) {
+	st_adc_sample_t s[8];
+	if (!st_adc_read_all(s)) {
+		st_dbg_printf("[THERM] adc read failed\r\n");
+		return;
+	}
+	float t1_raw = st_adc_conv_therm(s[6].raw12, 12U);
+	float t2_raw = st_adc_conv_therm(s[7].raw12, 12U);
+	float t1 = st_therm_apply_cal(t1_raw);
+	float t2 = st_therm_apply_cal(t2_raw);
+	st_dbg_printf("[THERM] CH6 raw=%u V=%.4f Traw=%.2fC T=%.2fC  CH7 raw=%u V=%.4f Traw=%.2fC T=%.2fC offs=%.2fC\r\n",
+			s[6].raw12, s[6].vadc, t1_raw, t1, s[7].raw12, s[7].vadc, t2_raw, t2,
+			g_rt.therm_offset_c);
+}
+
+static void st_led_set(uint8_t idx, bool on) {
+#if ST_LED_ACTIVE_LOW
+    GPIO_PinState s = on ? GPIO_PIN_RESET : GPIO_PIN_SET;
+#else
+	GPIO_PinState s = on ? GPIO_PIN_SET : GPIO_PIN_RESET;
+#endif
+	if (idx == 0U)
+		HAL_GPIO_WritePin(LED_0_GPIO_Port, LED_0_Pin, s);
+	if (idx == 1U)
+		HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, s);
+}
+
+static void st_led_all_off(void) {
+	st_led_set(0U, false);
+	st_led_set(1U, false);
+}
+static void st_cmd_arm_set(bool on) {
+	HAL_GPIO_WritePin(CMD_ARM_GPIO_Port, CMD_ARM_Pin,
+			on ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+static void st_cmd_fault_set(bool on) {
+	HAL_GPIO_WritePin(CMD_FAULT_GPIO_Port, CMD_FAULT_Pin,
+			on ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+static void st_can_standby_set(bool standby) {
+	HAL_GPIO_WritePin(CAN_STB_GPIO_Port, CAN_STB_Pin,
+			standby ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+static void st_rs485_de_set(bool tx_enable) {
+	HAL_GPIO_WritePin(RS485_DE_GPIO_Port, RS485_DE_Pin,
+			tx_enable ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+
+/* ======================================================================
+ *  AUX switch helpers (AUX_SW_1=PC9, AUX_SW_2=PA8, AUX_SW_3=PA9)
+ * ====================================================================== */
+static void st_aux_sw_set(uint8_t n, bool on) {
+	const uint16_t pins[]      = {0, AUX_SW_1_Pin, AUX_SW_2_Pin, AUX_SW_3_Pin};
+	GPIO_TypeDef  *ports[]     = {NULL, AUX_SW_1_GPIO_Port, AUX_SW_2_GPIO_Port, AUX_SW_3_GPIO_Port};
+	if (n < 1U || n > 3U) return;
+	HAL_GPIO_WritePin(ports[n], pins[n], on ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+static bool st_aux_sw_get(uint8_t n) {
+	if (n == 1U) return HAL_GPIO_ReadPin(AUX_SW_1_GPIO_Port, AUX_SW_1_Pin) == GPIO_PIN_SET;
+	if (n == 2U) return HAL_GPIO_ReadPin(AUX_SW_2_GPIO_Port, AUX_SW_2_Pin) == GPIO_PIN_SET;
+	if (n == 3U) return HAL_GPIO_ReadPin(AUX_SW_3_GPIO_Port, AUX_SW_3_Pin) == GPIO_PIN_SET;
+	return false;
+}
+
+static uint32_t st_tim17_kernel_clock_hz(void) {
+	RCC_ClkInitTypeDef clk_init = { 0 };
+	uint32_t flash_latency = 0U;
+	HAL_RCC_GetClockConfig(&clk_init, &flash_latency);
+	uint32_t pclk2 = HAL_RCC_GetPCLK2Freq();
+	return (clk_init.APB2CLKDivider == RCC_HCLK_DIV1) ? pclk2 : (pclk2 * 2U);
+}
+
+static void st_buzzer_off(void) {
+	HAL_TIM_PWM_Stop(&ST_BUZZER_TIM, TIM_CHANNEL_1);
+	HAL_TIMEx_PWMN_Stop(&ST_BUZZER_TIM, TIM_CHANNEL_1);
+	__HAL_TIM_SET_COMPARE(&ST_BUZZER_TIM, TIM_CHANNEL_1, 0U);
+	__HAL_TIM_SET_COUNTER(&ST_BUZZER_TIM, 0U);
+}
+
+static void st_buzzer_start(uint32_t hz) {
+	if (hz == 0U) {
+		st_buzzer_off();
+		return;
+	}
+	uint32_t tim_clk = st_tim17_kernel_clock_hz();
+	uint32_t psc = ST_BUZZER_TIM.Init.Prescaler + 1U;
+	uint32_t counts = tim_clk / (psc * hz);
+	if (counts < 2U)
+		counts = 2U;
+	if (counts > 65536U)
+		counts = 65536U;
+	HAL_TIM_PWM_Stop(&ST_BUZZER_TIM, TIM_CHANNEL_1);
+	HAL_TIMEx_PWMN_Stop(&ST_BUZZER_TIM, TIM_CHANNEL_1);
+	__HAL_TIM_SET_AUTORELOAD(&ST_BUZZER_TIM, counts - 1U);
+	__HAL_TIM_SET_COMPARE(&ST_BUZZER_TIM, TIM_CHANNEL_1, counts / 2U);
+	__HAL_TIM_SET_COUNTER(&ST_BUZZER_TIM, 0U);
+	HAL_TIM_GenerateEvent(&ST_BUZZER_TIM, TIM_EVENTSOURCE_UPDATE);
+	HAL_TIM_PWM_Start(&ST_BUZZER_TIM, TIM_CHANNEL_1);
+	HAL_TIMEx_PWMN_Start(&ST_BUZZER_TIM, TIM_CHANNEL_1);
+}
+
+/* Board-provided externs for shared MCAN layer (Group A) */
+FDCAN_HandleTypeDef *st_mcan_get_fdcan(void) {
+    return &ST_FDCAN;
+}
+
+void st_mcan_transceiver_set(bool enable) {
+    st_can_standby_set(!enable);
+}
+
+void st_mcan_action_led_set(bool on) {
+    st_led_set(0U, on);
+    st_led_set(1U, on);
+}
+
+void st_mcan_action_buzzer_set(uint32_t freq_hz) {
+    if (freq_hz == 0U) st_buzzer_off();
+    else st_buzzer_start(freq_hz);
+}
+
+static void st_safe_outputs(void) {
+	st_led_all_off();
+	st_buzzer_off();
+	st_cmd_arm_set(false);
+	st_cmd_fault_set(false);
+	st_can_standby_set(true);
+	st_rs485_de_set(false);
+}
+
+/* Runtime policy: CMD_ARM is always high during normal operation.
+ * Call after st_safe_outputs() in any non-fault path to restore it. */
+static inline void st_restore_runtime_outputs(void) {
+	st_cmd_arm_set(true);
+}
+
+static bool st_ssd_uart_apply(uint32_t baud, uint32_t stop_bits) {
+	HAL_UART_DeInit(&ST_RS485_UART);
+
+	ST_RS485_UART.Instance = USART3;
+	ST_RS485_UART.Init.BaudRate = baud;
+	ST_RS485_UART.Init.WordLength = UART_WORDLENGTH_8B;
+	ST_RS485_UART.Init.StopBits = stop_bits;
+	ST_RS485_UART.Init.Parity = UART_PARITY_NONE;
+	ST_RS485_UART.Init.Mode = UART_MODE_TX_RX;
+	ST_RS485_UART.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	ST_RS485_UART.Init.OverSampling = UART_OVERSAMPLING_16;
+	ST_RS485_UART.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+	ST_RS485_UART.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+	ST_RS485_UART.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+
+	if (HAL_UART_Init(&ST_RS485_UART) != HAL_OK) {
+		return false;
+	}
+
+	(void) HAL_UARTEx_SetTxFifoThreshold(&ST_RS485_UART,
+			UART_TXFIFO_THRESHOLD_1_8);
+	(void) HAL_UARTEx_SetRxFifoThreshold(&ST_RS485_UART,
+			UART_RXFIFO_THRESHOLD_1_8);
+	(void) HAL_UARTEx_DisableFifoMode(&ST_RS485_UART);
+
+	/* MspInit configures DE pin as AF7; override to GPIO output for manual
+	 * DE control so st_rs485_de_set() actually drives the pin. */
+	GPIO_InitTypeDef gpio_de = { 0 };
+	gpio_de.Pin   = RS485_DE_Pin;
+	gpio_de.Mode  = GPIO_MODE_OUTPUT_PP;
+	gpio_de.Pull  = GPIO_NOPULL;
+	gpio_de.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(RS485_DE_GPIO_Port, &gpio_de);
+	st_rs485_de_set(false);   /* start in receive mode */
+
+	return true;
+}
+
+static bool st_ssd_uart_apply_defaults(void) {
+	return st_ssd_uart_apply(ST_SSD_UART_BAUD, UART_STOPBITS_1);
+}
+
+/* Clear UART error flags + drain any stale RXNE byte accumulated during TX.
+ * Called after DE deassert so the receive path starts clean. */
+static void st_ssd_post_tx_cleanup(void) {
+	HAL_Delay(1U);
+	__HAL_UART_CLEAR_OREFLAG(&ST_RS485_UART);
+	__HAL_UART_CLEAR_NEFLAG(&ST_RS485_UART);
+	__HAL_UART_CLEAR_FEFLAG(&ST_RS485_UART);
+	__HAL_UART_CLEAR_PEFLAG(&ST_RS485_UART);
+	if (__HAL_UART_GET_FLAG(&ST_RS485_UART, UART_FLAG_RXNE) != RESET) {
+		(void)(ST_RS485_UART.Instance->RDR & 0xFFU);
+	}
+}
+
+static void st_ssd_flush_rx(void) {
+	uint32_t t0 = HAL_GetTick();
+
+	__HAL_UART_CLEAR_OREFLAG(&ST_RS485_UART);
+	__HAL_UART_CLEAR_NEFLAG(&ST_RS485_UART);
+	__HAL_UART_CLEAR_FEFLAG(&ST_RS485_UART);
+	__HAL_UART_CLEAR_PEFLAG(&ST_RS485_UART);
+
+	while ((HAL_GetTick() - t0) < 20U) {
+		if (__HAL_UART_GET_FLAG(&ST_RS485_UART, UART_FLAG_RXNE) != RESET) {
+			volatile uint8_t dump = (uint8_t) (ST_RS485_UART.Instance->RDR
+					& 0xFFU);
+			(void) dump;
+			t0 = HAL_GetTick();
+		}
+	}
+
+	__HAL_UART_CLEAR_OREFLAG(&ST_RS485_UART);
+	__HAL_UART_CLEAR_NEFLAG(&ST_RS485_UART);
+	__HAL_UART_CLEAR_FEFLAG(&ST_RS485_UART);
+	__HAL_UART_CLEAR_PEFLAG(&ST_RS485_UART);
+}
+
+static bool st_ssd_send_cmd(const char *cmd) {
+	st_ssd_flush_rx();
+
+	st_rs485_de_set(true);
+	HAL_Delay(2U);
+
+	HAL_StatusTypeDef st = HAL_UART_Transmit(&ST_RS485_UART, (uint8_t*) cmd,
+			(uint16_t) strlen(cmd),
+			ST_SSD_UART_TIMEOUT_MS);
+	if (st != HAL_OK) {
+		st_rs485_de_set(false);
+		return false;
+	}
+
+	while (__HAL_UART_GET_FLAG(&ST_RS485_UART, UART_FLAG_TC) == RESET) {
+	}
+	st_rs485_de_set(false);
+	st_ssd_post_tx_cleanup();
+
+	return true;
+}
+
+static size_t st_ssd_read_capture(uint8_t *buf, size_t len, uint32_t timeout_ms) {
+	if (buf == NULL || len == 0U)
+		return 0U;
+
+	size_t idx = 0U;
+	uint8_t ch = 0U;
+	uint32_t t0 = HAL_GetTick();
+	bool got_any = false;
+
+	while ((HAL_GetTick() - t0) < timeout_ms && idx < len) {
+		HAL_StatusTypeDef rc = HAL_UART_Receive(&ST_RS485_UART, &ch, 1U, 20U);
+		if (rc == HAL_OK) {
+			buf[idx++] = ch;
+			got_any = true;
+			t0 = HAL_GetTick();
+		} else {
+			if (rc == HAL_ERROR) {
+				/* Clear error flags so subsequent receives check for real data
+				 * instead of immediately returning HAL_ERROR again. */
+				__HAL_UART_CLEAR_OREFLAG(&ST_RS485_UART);
+				__HAL_UART_CLEAR_NEFLAG(&ST_RS485_UART);
+				__HAL_UART_CLEAR_FEFLAG(&ST_RS485_UART);
+				__HAL_UART_CLEAR_PEFLAG(&ST_RS485_UART);
+			}
+			if (got_any && (HAL_GetTick() - t0) > 50U) {
+				break;
+			}
+		}
+	}
+
+	return idx;
+}
+
+static bool st_ssd_extract_last_line(const uint8_t *raw, size_t raw_len,
+		char *line, size_t line_len) {
+	if (line == NULL || line_len == 0U)
+		return false;
+	line[0] = '\0';
+
+	size_t best_start = 0U, best_len = 0U;
+	size_t cur_start = 0U, cur_len = 0U;
+
+	for (size_t i = 0U; i < raw_len; ++i) {
+		uint8_t ch = raw[i];
+		if (ch == '\r' || ch == '\n') {
+			if (cur_len > 0U) {
+				best_start = cur_start;
+				best_len = cur_len;
+				cur_len = 0U;
+			}
+			cur_start = i + 1U;
+		} else {
+			if (cur_len == 0U)
+				cur_start = i;
+			cur_len++;
+		}
+	}
+	if (cur_len > 0U) {
+		best_start = cur_start;
+		best_len = cur_len;
+	}
+
+	if (best_len == 0U)
+		return false;
+	if (best_len >= line_len)
+		best_len = line_len - 1U;
+
+	memcpy(line, &raw[best_start], best_len);
+	line[best_len] = '\0';
+	return true;
+}
+
+static bool st_ssd_read_line(char *buf, size_t len, uint32_t timeout_ms) {
+	if (len == 0U)
+		return false;
+
+	size_t idx = 0U;
+	uint8_t ch = 0U;
+	uint32_t t0 = HAL_GetTick();
+	bool got_any = false;
+
+	while ((HAL_GetTick() - t0) < timeout_ms) {
+		if (HAL_UART_Receive(&ST_RS485_UART, &ch, 1U, 20U) == HAL_OK) {
+			got_any = true;
+
+			if (ch == '\r' || ch == '\n') {
+				if (idx == 0U) {
+					continue;
+				}
+				break;
+			}
+
+			if (idx < (len - 1U)) {
+				buf[idx++] = (char) ch;
+			}
+
+			t0 = HAL_GetTick();
+		}
+	}
+
+	buf[idx] = '\0';
+	return got_any && (idx > 0U);
+}
+
+static bool st_ssd_query_text(const char *cmd, char *buf, size_t len) {
+	uint8_t raw[ST_SSD_RX_BUF_LEN];
+
+	if (buf == NULL || len == 0U)
+		return false;
+	buf[0] = '\0';
+
+	if (!st_ssd_send_cmd(cmd))
+		return false;
+
+	size_t n = st_ssd_read_capture(raw, sizeof(raw), ST_SSD_RAW_TIMEOUT_MS);
+	if (n == 0U)
+		return false;
+
+	return st_ssd_extract_last_line(raw, n, buf, len);
+}
+
+static bool st_ssd_query_i32(const char *cmd, char expected_prefix,
+		int32_t *value) {
+	char buf[ST_SSD_RX_BUF_LEN];
+	char num[24];
+	size_t ni = 0U;
+	bool started = false;
+
+	if (!st_ssd_query_text(cmd, buf, sizeof(buf)))
+		return false;
+	if (buf[0] != expected_prefix)
+		return false;
+
+	for (size_t i = 1U; buf[i] != '\0' && ni < (sizeof(num) - 1U); ++i) {
+		char c = buf[i];
+		if (!started) {
+			if (c == '-' || c == '+' || isdigit((unsigned char )c)) {
+				num[ni++] = c;
+				started = true;
+			}
+		} else {
+			if (isdigit((unsigned char )c)) {
+				num[ni++] = c;
+			} else {
+				break;
+			}
+		}
+	}
+	num[ni] = '\0';
+	if (ni == 0U)
+		return false;
+	*value = (int32_t) strtol(num, NULL, 10);
+	return true;
+}
+
+static void st_ssd_print_readings(void) {
+	int32_t current_ma = 0;
+	int32_t vbus_mv = 0;
+	int32_t temp_dC = 0;
+	int32_t power_dW = 0;
+	int32_t errors = 0;
+
+	bool ok_i = st_ssd_query_i32(":1GA\r", 'A', &current_ma);
+	HAL_Delay(20U);
+	bool ok_v = st_ssd_query_i32(":1GV\r", 'V', &vbus_mv);
+	HAL_Delay(20U);
+	bool ok_t = st_ssd_query_i32(":1GT\r", 'T', &temp_dC);
+	HAL_Delay(20U);
+	bool ok_p = st_ssd_query_i32(":1GP\r", 'P', &power_dW);
+	HAL_Delay(20U);
+	bool ok_e = st_ssd_query_i32(":1G!\r", '!', &errors);
+
+	if (!(ok_i && ok_v && ok_t && ok_p && ok_e)) {
+		st_dbg_printf("[SSD] read failed (I=%u V=%u T=%u P=%u E=%u)\r\n",
+				ok_i ? 1U : 0U, ok_v ? 1U : 0U, ok_t ? 1U : 0U, ok_p ? 1U : 0U,
+				ok_e ? 1U : 0U);
+		return;
+	}
+
+	/* Update cache on successful read */
+	g_ssd_cache.current_a  = current_ma / 1000.0f;
+	g_ssd_cache.voltage_v  = vbus_mv    / 1000.0f;
+	g_ssd_cache.temp_c     = temp_dC   / 10.0f;
+	g_ssd_cache.last_ok_ms = HAL_GetTick();
+	g_ssd_cache.valid      = true;
+
+	st_dbg_printf(
+			"[SSD] I=%.3f A  V=%.3f V  T=%.1f C  P=%.1f W  ERR=0x%04lX\r\n",
+			current_ma / 1000.0f, vbus_mv / 1000.0f, temp_dC / 10.0f,
+			power_dW / 10.0f, (unsigned long) ((uint32_t) errors & 0xFFFFU));
+}
+
+/* Refresh g_ssd_cache silently (I, V, T only — no print). Used by stream mode. */
+static bool st_ssd_cache_refresh(void) {
+	if (!st_ssd_uart_apply_defaults())
+		return false;
+	int32_t current_ma = 0, vbus_mv = 0, temp_dC = 0;
+	bool ok = st_ssd_query_i32(":1GA\r", 'A', &current_ma);
+	HAL_Delay(20U);
+	ok = ok && st_ssd_query_i32(":1GV\r", 'V', &vbus_mv);
+	HAL_Delay(20U);
+	ok = ok && st_ssd_query_i32(":1GT\r", 'T', &temp_dC);
+	if (ok) {
+		g_ssd_cache.current_a  = current_ma / 1000.0f;
+		g_ssd_cache.voltage_v  = vbus_mv    / 1000.0f;
+		g_ssd_cache.temp_c     = temp_dC   / 10.0f;
+		g_ssd_cache.last_ok_ms = HAL_GetTick();
+		g_ssd_cache.valid      = true;
+	}
+	return ok;
+}
+
+static void st_ssd_print_raw_cmd(const char *cmd_in) {
+	char cmd[32];
+	uint8_t raw[ST_SSD_RX_BUF_LEN];
+	size_t n;
+
+	if (cmd_in == NULL || cmd_in[0] == '\0') {
+		st_dbg_printf("[SSD] raw requires command text, e.g. ssd raw :1VE\r\n");
+		return;
+	}
+
+	if (strchr(cmd_in, '\r') || strchr(cmd_in, '\n')) {
+		snprintf(cmd, sizeof(cmd), "%s", cmd_in);
+	} else {
+		snprintf(cmd, sizeof(cmd), "%s\r", cmd_in);
+	}
+
+	if (!st_ssd_send_cmd(cmd)) {
+		st_dbg_printf("[SSD] TX failed\r\n");
+		return;
+	}
+
+	/* Snapshot USART ISR immediately after TX — shows any error flags
+	 * or whether RXNE already has data before read_capture starts. */
+	uint32_t isr_snap = ST_RS485_UART.Instance->ISR;
+	st_dbg_printf("[SSD] ISR=0x%08lX (TC=%lu RXNE=%lu ORE=%lu FE=%lu NE=%lu)\r\n",
+			(unsigned long) isr_snap,
+			(unsigned long) ((isr_snap >> 6) & 1U),
+			(unsigned long) ((isr_snap >> 5) & 1U),
+			(unsigned long) ((isr_snap >> 3) & 1U),
+			(unsigned long) ((isr_snap >> 1) & 1U),
+			(unsigned long) ((isr_snap >> 2) & 1U));
+
+	n = st_ssd_read_capture(raw, sizeof(raw), ST_SSD_RAW_TIMEOUT_MS);
+	st_dbg_printf("[SSD] TX=\"%s\" RX_LEN=%lu\r\n", cmd, (unsigned long) n);
+	st_dbg_printf("[SSD] RX_HEX:");
+	for (size_t i = 0U; i < n; ++i)
+		st_dbg_printf(" %02X", raw[i]);
+	st_dbg_printf("\r\n");
+	st_dbg_printf("[SSD] RX_ASCII=\"");
+	for (size_t i = 0U; i < n; ++i) {
+		uint8_t ch = raw[i];
+		if (ch == '\r')
+			st_dbg_printf("<CR>");
+		else if (ch == '\n')
+			st_dbg_printf("<LF>");
+		else if (isprint((unsigned char )ch))
+			st_dbg_printf("%c", ch);
+		else
+			st_dbg_printf(".");
+	}
+	st_dbg_printf("\"\r\n");
+}
+
+static void st_ssd_discover_ascii(void) {
+	static const uint32_t baud_list[ST_SSD_DISCOVER_BAUD_COUNT] = { 9600U,
+			14400U, 19200U, 38400U, 57600U, 115200U };
+	char cmd[16];
+	char resp[ST_SSD_RX_BUF_LEN];
+	bool found = false;
+
+	st_dbg_printf("[SSD] ASCII discover start\r\n");
+
+	for (size_t bi = 0U; bi < ST_SSD_DISCOVER_BAUD_COUNT; ++bi) {
+		uint32_t baud = baud_list[bi];
+		if (!st_ssd_uart_apply(baud, UART_STOPBITS_1)) {
+			st_dbg_printf("[SSD] baud %lu init failed\r\n",
+					(unsigned long) baud);
+			continue;
+		}
+
+		for (uint32_t addr = 1U; addr <= ST_SSD_SCAN_ADDR_MAX; ++addr) {
+			snprintf(cmd, sizeof(cmd), ":%luVE\r", (unsigned long) addr);
+			if (st_ssd_query_text(cmd, resp, sizeof(resp))) {
+				found = true;
+				st_dbg_printf("[SSD] ASCII hit: baud=%lu addr=%lu VE=%s\r\n",
+						(unsigned long) baud, (unsigned long) addr, resp);
+
+				snprintf(cmd, sizeof(cmd), ":%luGM\r", (unsigned long) addr);
+				if (st_ssd_query_text(cmd, resp, sizeof(resp)))
+					st_dbg_printf("[SSD]   GM=%s\r\n", resp);
+
+				snprintf(cmd, sizeof(cmd), ":%luGB\r", (unsigned long) addr);
+				if (st_ssd_query_text(cmd, resp, sizeof(resp)))
+					st_dbg_printf("[SSD]   GB=%s\r\n", resp);
+			}
+		}
+	}
+
+	if (!found)
+		st_dbg_printf("[SSD] ASCII discover found nothing\r\n");
+
+	(void) st_ssd_uart_apply_defaults();
+}
+
+static uint16_t st_modbus_crc16(const uint8_t *data, size_t len) {
+	uint16_t crc = 0xFFFFU;
+	for (size_t i = 0U; i < len; ++i) {
+		crc ^= data[i];
+		for (uint8_t b = 0U; b < 8U; ++b) {
+			if (crc & 1U)
+				crc = (uint16_t) ((crc >> 1) ^ 0xA001U);
+			else
+				crc >>= 1;
+		}
+	}
+	return crc;
+}
+
+static bool st_ssd_modbus_probe_once(uint8_t addr, uint32_t baud,
+		uint16_t *fw_reg, uint16_t *mode_reg, uint16_t *baud_reg) {
+	uint8_t req[8];
+	uint8_t rx[32];
+	size_t n;
+	uint16_t crc;
+
+	if (!st_ssd_uart_apply(baud, UART_STOPBITS_2))
+		return false;
+
+	req[0] = addr;
+	req[1] = 0x04U;
+	req[2] = 0x00U;
+	req[3] = 17U;
+	req[4] = 0x00U;
+	req[5] = 0x01U;
+	crc = st_modbus_crc16(req, 6U);
+	req[6] = (uint8_t) (crc & 0xFFU);
+	req[7] = (uint8_t) (crc >> 8);
+
+	st_ssd_flush_rx();
+	st_rs485_de_set(true);
+	HAL_Delay(2U);
+	if (HAL_UART_Transmit(&ST_RS485_UART, req, sizeof(req),
+			ST_SSD_UART_TIMEOUT_MS) != HAL_OK) {
+		st_rs485_de_set(false);
+		return false;
+	}
+	st_rs485_de_set(false);
+	st_ssd_post_tx_cleanup();
+
+	n = st_ssd_read_capture(rx, sizeof(rx), ST_SSD_RAW_TIMEOUT_MS);
+	if (n < 7U)
+		return false;
+	if (rx[0] != addr || rx[1] != 0x04U || rx[2] != 0x02U)
+		return false;
+	crc = st_modbus_crc16(rx, n - 2U);
+	if (rx[n - 2U] != (uint8_t) (crc & 0xFFU)
+			|| rx[n - 1U] != (uint8_t) (crc >> 8))
+		return false;
+	if (fw_reg)
+		*fw_reg = (uint16_t) (((uint16_t) rx[3] << 8) | rx[4]);
+
+	req[0] = addr;
+	req[1] = 0x03U;
+	req[2] = 0x00U;
+	req[3] = 2U;
+	req[4] = 0x00U;
+	req[5] = 0x01U;
+	crc = st_modbus_crc16(req, 6U);
+	req[6] = (uint8_t) (crc & 0xFFU);
+	req[7] = (uint8_t) (crc >> 8);
+	st_ssd_flush_rx();
+	st_rs485_de_set(true);
+	HAL_Delay(2U);
+	if (HAL_UART_Transmit(&ST_RS485_UART, req, sizeof(req),
+			ST_SSD_UART_TIMEOUT_MS) != HAL_OK) {
+		st_rs485_de_set(false);
+		return false;
+	}
+	st_rs485_de_set(false);
+	st_ssd_post_tx_cleanup();
+	n = st_ssd_read_capture(rx, sizeof(rx), ST_SSD_RAW_TIMEOUT_MS);
+	if (n >= 7U && rx[0] == addr && rx[1] == 0x03U && rx[2] == 0x02U) {
+		crc = st_modbus_crc16(rx, n - 2U);
+		if (rx[n - 2U] == (uint8_t) (crc & 0xFFU)
+				&& rx[n - 1U] == (uint8_t) (crc >> 8) && mode_reg)
+			*mode_reg = (uint16_t) (((uint16_t) rx[3] << 8) | rx[4]);
+	}
+
+	req[0] = addr;
+	req[1] = 0x03U;
+	req[2] = 0x00U;
+	req[3] = 4U;
+	req[4] = 0x00U;
+	req[5] = 0x01U;
+	crc = st_modbus_crc16(req, 6U);
+	req[6] = (uint8_t) (crc & 0xFFU);
+	req[7] = (uint8_t) (crc >> 8);
+	st_ssd_flush_rx();
+	st_rs485_de_set(true);
+	HAL_Delay(2U);
+	if (HAL_UART_Transmit(&ST_RS485_UART, req, sizeof(req),
+			ST_SSD_UART_TIMEOUT_MS) != HAL_OK) {
+		st_rs485_de_set(false);
+		return true;
+	}
+	st_rs485_de_set(false);
+	st_ssd_post_tx_cleanup();
+	n = st_ssd_read_capture(rx, sizeof(rx), ST_SSD_RAW_TIMEOUT_MS);
+	if (n >= 7U && rx[0] == addr && rx[1] == 0x03U && rx[2] == 0x02U) {
+		crc = st_modbus_crc16(rx, n - 2U);
+		if (rx[n - 2U] == (uint8_t) (crc & 0xFFU)
+				&& rx[n - 1U] == (uint8_t) (crc >> 8) && baud_reg)
+			*baud_reg = (uint16_t) (((uint16_t) rx[3] << 8) | rx[4]);
+	}
+
+	return true;
+}
+
+static void st_ssd_modbus_probe(void) {
+	static const uint32_t baud_list[ST_SSD_DISCOVER_BAUD_COUNT] = { 9600U,
+			14400U, 19200U, 38400U, 57600U, 115200U };
+	bool found = false;
+
+	st_dbg_printf("[SSD] MODBUS probe start\r\n");
+
+	for (size_t bi = 0U; bi < ST_SSD_DISCOVER_BAUD_COUNT; ++bi) {
+		uint32_t baud = baud_list[bi];
+		for (uint32_t addr = 1U; addr <= ST_SSD_SCAN_ADDR_MAX; ++addr) {
+			uint16_t fw = 0U, mode = 0xFFFFU, br = 0xFFFFU;
+			if (st_ssd_modbus_probe_once((uint8_t) addr, baud, &fw, &mode,
+					&br)) {
+				found = true;
+				st_dbg_printf(
+						"[SSD] MODBUS hit: baud=%lu addr=%lu FW=0x%04X MODE=0x%04X BAUD=%u\r\n",
+						(unsigned long) baud, (unsigned long) addr, fw, mode,
+						br);
+			}
+		}
+	}
+
+	if (!found)
+		st_dbg_printf("[SSD] MODBUS probe found nothing\r\n");
+
+	(void) st_ssd_uart_apply_defaults();
+}
+
+/* Passive bus monitor — listen without transmitting for up to timeout_ms.
+ * Prints any bytes received in hex+ASCII. Useful to detect autosend data
+ * or verify the receive path is alive. */
+static void st_ssd_listen(uint32_t timeout_ms) {
+	uint8_t buf[128];
+	size_t n;
+
+	if (!st_ssd_uart_apply_defaults()) {
+		st_dbg_printf("[SSD] UART init failed\r\n");
+		return;
+	}
+
+	st_dbg_printf("[SSD] listen %lums...\r\n", (unsigned long) timeout_ms);
+	n = st_ssd_read_capture(buf, sizeof(buf), timeout_ms);
+	if (n == 0U) {
+		st_dbg_printf("[SSD] listen: no bytes (bus idle)\r\n");
+		return;
+	}
+	st_dbg_printf("[SSD] listen RX_LEN=%lu\r\n", (unsigned long) n);
+	st_dbg_printf("[SSD] HEX:");
+	for (size_t i = 0U; i < n; ++i)
+		st_dbg_printf(" %02X", buf[i]);
+	st_dbg_printf("\r\n[SSD] ASCII=\"");
+	for (size_t i = 0U; i < n; ++i) {
+		uint8_t ch = buf[i];
+		if (ch == '\r')      st_dbg_printf("<CR>");
+		else if (ch == '\n') st_dbg_printf("<LF>");
+		else if (isprint((unsigned char)ch)) st_dbg_printf("%c", ch);
+		else st_dbg_printf(".");
+	}
+	st_dbg_printf("\"\r\n");
+}
+
+/* Send a single raw Modbus frame (FC 0x04, addr, input reg 17, qty 1)
+ * and show ISR snapshot + raw RX. Mirrors what modbus-probe sends so
+ * the user can see exactly what bytes come back (or don't). */
+static void st_ssd_modraw(uint8_t addr) {
+	uint8_t req[8];
+	uint8_t rx[32];
+	uint16_t crc;
+	size_t n;
+
+	if (!st_ssd_uart_apply(19200U, UART_STOPBITS_2)) {
+		st_dbg_printf("[SSD] UART init failed\r\n");
+		return;
+	}
+
+	req[0] = addr;
+	req[1] = 0x04U;
+	req[2] = 0x00U;
+	req[3] = 17U;
+	req[4] = 0x00U;
+	req[5] = 0x01U;
+	crc = st_modbus_crc16(req, 6U);
+	req[6] = (uint8_t)(crc & 0xFFU);
+	req[7] = (uint8_t)(crc >> 8);
+
+	st_dbg_printf("[SSD] modraw TX[8]:");
+	for (size_t i = 0U; i < 8U; ++i)
+		st_dbg_printf(" %02X", req[i]);
+	st_dbg_printf("\r\n");
+
+	st_ssd_flush_rx();
+	st_rs485_de_set(true);
+	HAL_Delay(2U);
+	if (HAL_UART_Transmit(&ST_RS485_UART, req, sizeof(req), ST_SSD_UART_TIMEOUT_MS) != HAL_OK) {
+		st_rs485_de_set(false);
+		st_dbg_printf("[SSD] modraw TX failed\r\n");
+		(void) st_ssd_uart_apply_defaults();
+		return;
+	}
+	st_rs485_de_set(false);
+
+	uint32_t isr_snap = ST_RS485_UART.Instance->ISR;
+	st_dbg_printf("[SSD] ISR=0x%08lX (TC=%lu RXNE=%lu ORE=%lu FE=%lu NE=%lu)\r\n",
+			(unsigned long)isr_snap,
+			(unsigned long)((isr_snap >> 6) & 1U),
+			(unsigned long)((isr_snap >> 5) & 1U),
+			(unsigned long)((isr_snap >> 3) & 1U),
+			(unsigned long)((isr_snap >> 1) & 1U),
+			(unsigned long)((isr_snap >> 2) & 1U));
+
+	st_ssd_post_tx_cleanup();
+
+	n = st_ssd_read_capture(rx, sizeof(rx), ST_SSD_RAW_TIMEOUT_MS);
+	st_dbg_printf("[SSD] modraw RX_LEN=%lu\r\n", (unsigned long)n);
+	st_dbg_printf("[SSD] HEX:");
+	for (size_t i = 0U; i < n; ++i)
+		st_dbg_printf(" %02X", rx[i]);
+	st_dbg_printf("\r\n");
+	if (n >= 7U) {
+		crc = st_modbus_crc16(rx, n - 2U);
+		bool crc_ok = (rx[n-2U] == (uint8_t)(crc & 0xFFU) && rx[n-1U] == (uint8_t)(crc >> 8));
+		st_dbg_printf("[SSD] CRC %s, addr=%02X fc=%02X bc=%02X data=0x%04X\r\n",
+				crc_ok ? "OK" : "FAIL",
+				rx[0], rx[1], rx[2],
+				(n >= 5U) ? (uint32_t)(((uint16_t)rx[3] << 8) | rx[4]) : 0xFFFFU);
+	}
+
+	(void) st_ssd_uart_apply_defaults();
+}
+
+
+static bool st_adc_write_reg(uint8_t reg, uint8_t value) {
+	uint8_t tx[3] = { ST_TLA_OP_SINGLE_WRITE, reg, value };
+	return HAL_I2C_Master_Transmit(&ST_I2C, ST_ADC_ADDR_8BIT, tx, sizeof(tx),
+			ST_I2C_TIMEOUT_MS) == HAL_OK;
+}
+
+static bool st_adc_read_reg(uint8_t reg, uint8_t *value) {
+	uint8_t tx[2] = { ST_TLA_OP_SINGLE_READ, reg };
+	if (HAL_I2C_Master_Transmit(&ST_I2C, ST_ADC_ADDR_8BIT, tx, sizeof(tx),
+			ST_I2C_TIMEOUT_MS) != HAL_OK)
+		return false;
+	return HAL_I2C_Master_Receive(&ST_I2C, ST_ADC_ADDR_8BIT, value, 1U,
+			ST_I2C_TIMEOUT_MS) == HAL_OK;
+}
+
+static bool st_adc_ping(uint8_t *sys_status) {
+	return st_adc_read_reg(ST_TLA_REG_SYSTEM_STATUS, sys_status);
+}
+
+static bool st_adc_init_analog_defaults(void) {
+	if (!st_adc_write_reg(ST_TLA_REG_PIN_CFG, 0x00U))
+		return false;
+	if (!st_adc_write_reg(ST_TLA_REG_DATA_CFG, 0x00U))
+		return false;
+	if (!st_adc_write_reg(ST_TLA_REG_OSR_CFG, 0x00U))
+		return false;
+	if (!st_adc_write_reg(ST_TLA_REG_OPMODE_CFG, 0x00U))
+		return false;
+	return true;
+}
+
+static bool st_adc_read_channel12(uint8_t ch, uint16_t *raw12) {
+	uint8_t rx[2] = { 0, 0 };
+	if (ch > 7U)
+		return false;
+	if (!st_adc_write_reg(ST_TLA_REG_CHANNEL_SEL, ch & 0x0FU))
+		return false;
+	if (HAL_I2C_Master_Receive(&ST_I2C, ST_ADC_ADDR_8BIT, rx, sizeof(rx),
+			ST_I2C_TIMEOUT_MS) != HAL_OK)
+		return false;
+	*raw12 = (uint16_t) (((uint16_t) rx[0] << 4) | ((uint16_t) rx[1] >> 4));
+	return true;
+}
+
+static bool st_adc_read_all(st_adc_sample_t samples[8]) {
+	if (!st_adc_init_analog_defaults())
+		return false;
+	for (uint8_t i = 0U; i < 8U; ++i) {
+		if (!st_adc_read_channel12(i, &samples[i].raw12))
+			return false;
+		samples[i].vadc = st_raw_to_vadc(samples[i].raw12, 12U);
+		samples[i].eng = g_adc_info[i].convert(samples[i].raw12, 12U);
+		if ((i == 6U || i == 7U) && !isnan(samples[i].eng)) {
+			samples[i].eng = st_therm_apply_cal(samples[i].eng);
+		}
+	}
+	return true;
+}
+
+static void st_adc_print_raw(const st_adc_sample_t samples[8]) {
+	st_dbg_printf("[ADC] raw12 / Vadc\r\n");
+	for (uint8_t i = 0U; i < 8U; ++i) {
+		st_dbg_printf("  CH%u %-10s raw=%4u  Vadc=%.4f\r\n", i,
+				g_adc_info[i].name, samples[i].raw12, samples[i].vadc);
+	}
+}
+
+static void st_adc_print_eng(const st_adc_sample_t samples[8]) {
+	st_dbg_printf("[ADC] engineering values\r\n");
+	for (uint8_t i = 0U; i < 8U; ++i) {
+		st_dbg_printf("  CH%u %-10s = %.3f %s\r\n", i, g_adc_info[i].name,
+				samples[i].eng, g_adc_info[i].unit);
+	}
+}
+
+static st_status_t st_adc_sanity(const st_adc_sample_t samples[8], char *detail,
+		size_t detail_len) {
+	bool fail = false;
+	bool warn = false;
+	if (detail != NULL && detail_len > 0U)
+		detail[0] = '\0';
+	for (uint8_t i = 0U; i < 8U; ++i) {
+		float v = samples[i].eng;
+		if (isnan(v) || v < g_adc_info[i].fail_min
+				|| v > g_adc_info[i].fail_max) {
+			fail = true;
+			if (detail != NULL && detail_len > 0U)
+				snprintf(detail, detail_len, "%s out of fail range (%.3f %s)",
+						g_adc_info[i].name, v, g_adc_info[i].unit);
+			break;
+		}
+		if (v < g_adc_info[i].warn_min || v > g_adc_info[i].warn_max) {
+			warn = true;
+			if (detail != NULL && detail_len > 0U && detail[0] == '\0')
+				snprintf(detail, detail_len, "%s out of warn range (%.3f %s)",
+						g_adc_info[i].name, v, g_adc_info[i].unit);
+		}
+	}
+	if (fail)
+		return STS_FAIL;
+	if (warn)
+		return STS_WARN;
+	if (detail != NULL && detail_len > 0U)
+		snprintf(detail, detail_len, "all ADC channels sane");
+	return STS_PASS;
+}
+
+/* ======================================================================
+ *  Local (on-chip) ADC channels
+ *  THERM_0  PA6  ADC2_IN3   10K/10K NTC divider
+ *  THERM_1  PA7  ADC2_IN4   10K/10K NTC divider
+ *  THERM_2  PC4  ADC2_IN5   10K/10K NTC divider
+ *  V_SOURCE PB0  ADC1_IN15  200K/5.6K divider
+ *  V_BUS    PB1  ADC1_IN12  200K/5.6K divider
+ *  I_COIL   PB2  ADC2_IN12  10mΩ shunt, gain 50  (Vadc * 2.0 A)
+ * ====================================================================== */
+
+/* Voltage divider scale: (200K + 5.6K) / 5.6K */
+#define ST_LADC_VDIV_SCALE   36.7142857f
+/* I_COIL: shunt 10mΩ, amp gain 50 → Vout = I*0.01*50 = I/2 → I = Vadc*2 */
+#define ST_LADC_ICOIL_SCALE   2.0f
+#define ST_LADC_NCH           6U
+
+typedef struct {
+	const char        *name;
+	const char        *unit;
+	ADC_HandleTypeDef *hadc;
+	uint32_t           channel;
+	float            (*convert)(uint16_t raw, uint8_t bits);
+	float              warn_min;
+	float              warn_max;
+	float              fail_min;
+	float              fail_max;
+} st_ladc_info_t;
+
+static float st_ladc_conv_vdiv(uint16_t raw, uint8_t bits) {
+	return st_raw_to_vadc(raw, bits) * ST_LADC_VDIV_SCALE;
+}
+static float st_ladc_conv_icoil(uint16_t raw, uint8_t bits) {
+	return st_raw_to_vadc(raw, bits) * ST_LADC_ICOIL_SCALE;
+}
+/* Thermistors: same beta-model as external ADC, same cal offset */
+static float st_ladc_conv_therm_local(uint16_t raw, uint8_t bits) {
+	return st_therm_apply_cal(st_adc_conv_therm(raw, bits));
+}
+
+/* warn: 0.1–65 V (conservative — actual rail unknown)  fail: 0–80 V */
+/* warn for I_COIL: –1–20 A,  fail: –5–30 A            (no-load expected near 0) */
+static const st_ladc_info_t g_ladc_info[ST_LADC_NCH] = {
+	{ "THERM_0",  "C", &hadc2, ADC_CHANNEL_3,  st_ladc_conv_therm_local,  0.0f,  60.0f, -20.0f,  90.0f },
+	{ "THERM_1",  "C", &hadc2, ADC_CHANNEL_4,  st_ladc_conv_therm_local,  0.0f,  60.0f, -20.0f,  90.0f },
+	{ "THERM_2",  "C", &hadc2, ADC_CHANNEL_5,  st_ladc_conv_therm_local,  0.0f,  60.0f, -20.0f,  90.0f },
+	{ "V_SOURCE", "V", &hadc1, ADC_CHANNEL_15, st_ladc_conv_vdiv,          0.1f,  65.0f,   0.0f,  80.0f },
+	{ "V_BUS",    "V", &hadc1, ADC_CHANNEL_12, st_ladc_conv_vdiv,          0.1f,  65.0f,   0.0f,  80.0f },
+	{ "I_COIL",   "A", &hadc2, ADC_CHANNEL_12, st_ladc_conv_icoil,        -1.0f,  20.0f,  -5.0f,  30.0f },
+};
+
+/*
+ * Read a single local ADC channel.
+ * Calls HAL_ADC_Stop first to ensure ADSTART=0 — required on STM32G4 so that
+ * HAL_ADC_ConfigChannel can safely modify DIFSEL (switching from the CubeMX
+ * differential-channel-11 config to single-ended for each channel we want).
+ * After the CubeMX differential config is fixed this is still harmless.
+ */
+static bool st_ladc_read_one(ADC_HandleTypeDef *hadc, uint32_t channel,
+		uint16_t *raw12) {
+	ADC_ChannelConfTypeDef cfg = { 0 };
+	cfg.Channel      = channel;
+	cfg.Rank         = ADC_REGULAR_RANK_1;
+	cfg.SamplingTime = ADC_SAMPLETIME_92CYCLES_5;
+	cfg.SingleDiff   = ADC_SINGLE_ENDED;
+	cfg.OffsetNumber = ADC_OFFSET_NONE;
+	cfg.Offset       = 0;
+	(void) HAL_ADC_Stop(hadc);  /* clear ADSTART so ConfigChannel can write DIFSEL */
+	if (HAL_ADC_ConfigChannel(hadc, &cfg) != HAL_OK) return false;
+	if (HAL_ADC_Start(hadc) != HAL_OK) return false;
+	if (HAL_ADC_PollForConversion(hadc, 10U) != HAL_OK) {
+		(void) HAL_ADC_Stop(hadc);
+		return false;
+	}
+	*raw12 = (uint16_t)(HAL_ADC_GetValue(hadc) & 0x0FFFU);
+	(void) HAL_ADC_Stop(hadc);
+	return true;
+}
+
+static bool st_ladc_read_all(st_adc_sample_t samples[ST_LADC_NCH]) {
+	for (uint8_t i = 0U; i < ST_LADC_NCH; ++i) {
+		if (!st_ladc_read_one(g_ladc_info[i].hadc, g_ladc_info[i].channel,
+				&samples[i].raw12))
+			return false;
+		samples[i].vadc = st_raw_to_vadc(samples[i].raw12, 12U);
+		samples[i].eng  = g_ladc_info[i].convert(samples[i].raw12, 12U);
+	}
+	return true;
+}
+
+static void st_ladc_print_raw(const st_adc_sample_t samples[ST_LADC_NCH]) {
+	st_dbg_printf("[LADC] raw12 / Vadc\r\n");
+	for (uint8_t i = 0U; i < ST_LADC_NCH; ++i) {
+		st_dbg_printf("  CH%-2u %-9s raw=%4u  Vadc=%.4f\r\n",
+				(unsigned) i, g_ladc_info[i].name,
+				samples[i].raw12, samples[i].vadc);
+	}
+}
+
+static void st_ladc_print_eng(const st_adc_sample_t samples[ST_LADC_NCH]) {
+	st_dbg_printf("[LADC] engineering values\r\n");
+	for (uint8_t i = 0U; i < ST_LADC_NCH; ++i) {
+		if (isnan(samples[i].eng))
+			st_dbg_printf("  CH%-2u %-9s = NaN %s\r\n",
+					(unsigned) i, g_ladc_info[i].name, g_ladc_info[i].unit);
+		else
+			st_dbg_printf("  CH%-2u %-9s = %.3f %s\r\n",
+					(unsigned) i, g_ladc_info[i].name,
+					samples[i].eng, g_ladc_info[i].unit);
+	}
+}
+
+/* test implementations */
+static void test_gpio_reset(void) {
+	memset(&g_gpio_test, 0, sizeof(g_gpio_test));
+	st_led_all_off();
+}
+static void test_gpio_start(void) {
+	test_gpio_reset();
+	g_gpio_test.next_ms = HAL_GetTick();
+}
+static st_status_t test_gpio_poll(uint32_t now_ms, char *detail,
+		size_t detail_len) {
+	(void) detail;
+	(void) detail_len;
+	if (now_ms < g_gpio_test.next_ms)
+		return STS_RUNNING;
+	if (g_gpio_test.toggles >= 8U) {
+		st_led_all_off();
+		return STS_PASS;
+	}
+	if ((g_gpio_test.toggles & 1U) == 0U) {
+		st_led_set(0U, true);
+		st_led_set(1U, false);
+	} else {
+		st_led_set(0U, false);
+		st_led_set(1U, true);
+	}
+	g_gpio_test.toggles++;
+	g_gpio_test.next_ms = now_ms + (g_rt.loop_fast ? 40U : ST_GPIO_DWELL_MS);
+	return STS_RUNNING;
+}
+
+static void test_buzzer_reset(void) {
+	memset(&g_buzzer_test, 0, sizeof(g_buzzer_test));
+	st_buzzer_off();
+}
+static void test_buzzer_start(void) {
+	test_buzzer_reset();
+	g_buzzer_test.next_ms = HAL_GetTick();
+}
+static st_status_t test_buzzer_poll(uint32_t now_ms, char *detail,
+		size_t detail_len) {
+	(void) detail;
+	(void) detail_len;
+	if (now_ms < g_buzzer_test.next_ms)
+		return STS_RUNNING;
+	switch (g_buzzer_test.phase) {
+	case 0:
+		st_buzzer_start(1200U);
+		g_buzzer_test.next_ms = now_ms + (g_rt.loop_fast ? 50U : 120U);
+		break;
+	case 1:
+		st_buzzer_off();
+		g_buzzer_test.next_ms = now_ms + (g_rt.loop_fast ? 20U : 80U);
+		break;
+	case 2:
+		st_buzzer_start(1800U);
+		g_buzzer_test.next_ms = now_ms + (g_rt.loop_fast ? 50U : 120U);
+		break;
+	case 3:
+		st_buzzer_off();
+		g_buzzer_test.next_ms = now_ms + (g_rt.loop_fast ? 20U : 80U);
+		break;
+	case 4:
+		st_buzzer_start(2400U);
+		g_buzzer_test.next_ms = now_ms + (g_rt.loop_fast ? 70U : 160U);
+		break;
+	case 5:
+		st_buzzer_off();
+		return STS_PASS;
+	default:
+		st_buzzer_off();
+		return STS_PASS;
+	}
+	g_buzzer_test.phase++;
+	return STS_RUNNING;
+}
+
+static void test_can_reset(void) {
+}
+static void test_can_start(void) {
+}
+static st_status_t test_can_poll(uint32_t now_ms, char *detail,
+		size_t detail_len) {
+	(void) now_ms;
+	(void) detail;
+	(void) detail_len;
+	HAL_StatusTypeDef st;
+	bool mcan_was_online = g_mcan.online;
+	if (mcan_was_online) st_mcan_bus_disable(&g_mcan);
+	uint32_t old_mode = ST_FDCAN.Init.Mode;
+	uint8_t tx[8] = { 0x50, 0x44, 0x55, 0x5F, 0x43, 0x41, 0x4E, 0x31 };
+	uint8_t rx[8] = { 0 };
+	FDCAN_FilterTypeDef filter = { 0 };
+	FDCAN_TxHeaderTypeDef txh = { 0 };
+	FDCAN_RxHeaderTypeDef rxh = { 0 };
+
+	st_can_standby_set(true);
+	HAL_FDCAN_Stop(&ST_FDCAN);
+	ST_FDCAN.Init.Mode = FDCAN_MODE_INTERNAL_LOOPBACK;
+	if (HAL_FDCAN_Init(&ST_FDCAN) != HAL_OK)
+		goto fail;
+
+	filter.IdType = FDCAN_STANDARD_ID;
+	filter.FilterIndex = 0;
+	filter.FilterType = FDCAN_FILTER_MASK;
+	filter.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
+	filter.FilterID1 = 0;
+	filter.FilterID2 = 0;
+	if (HAL_FDCAN_ConfigFilter(&ST_FDCAN, &filter) != HAL_OK)
+		goto fail;
+	if (HAL_FDCAN_ConfigGlobalFilter(&ST_FDCAN, FDCAN_REJECT, FDCAN_REJECT,
+			FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE) != HAL_OK)
+		goto fail;
+	if (HAL_FDCAN_Start(&ST_FDCAN) != HAL_OK)
+		goto fail;
+
+	txh.Identifier = 0x123;
+	txh.IdType = FDCAN_STANDARD_ID;
+	txh.TxFrameType = FDCAN_DATA_FRAME;
+	txh.DataLength = FDCAN_DLC_BYTES_8;
+	txh.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	txh.BitRateSwitch = FDCAN_BRS_OFF;
+	txh.FDFormat = FDCAN_CLASSIC_CAN;
+	txh.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	txh.MessageMarker = 0;
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&ST_FDCAN, &txh, tx) != HAL_OK)
+		goto fail;
+
+	{
+		uint32_t t0 = HAL_GetTick();
+		while (HAL_FDCAN_GetRxFifoFillLevel(&ST_FDCAN, FDCAN_RX_FIFO0) == 0U) {
+			if ((HAL_GetTick() - t0) > 100U)
+				goto fail;
+		}
+	}
+
+	st = HAL_FDCAN_GetRxMessage(&ST_FDCAN, FDCAN_RX_FIFO0, &rxh, rx);
+	HAL_FDCAN_Stop(&ST_FDCAN);
+	ST_FDCAN.Init.Mode = old_mode;
+	(void) HAL_FDCAN_Init(&ST_FDCAN);
+	if (mcan_was_online) (void)st_mcan_bus_config(&g_mcan, true);
+	if (st != HAL_OK)
+		return STS_FAIL;
+	if (rxh.Identifier != 0x123U || memcmp(tx, rx, 8U) != 0)
+		return STS_FAIL;
+	return STS_PASS;
+
+	fail: HAL_FDCAN_Stop(&ST_FDCAN);
+	ST_FDCAN.Init.Mode = old_mode;
+	(void) HAL_FDCAN_Init(&ST_FDCAN);
+	if (mcan_was_online) (void)st_mcan_bus_config(&g_mcan, true);
+	return STS_FAIL;
+}
+
+static void test_ssd_reset(void) {
+}
+static void test_ssd_start(void) {
+}
+static st_status_t test_ssd_poll(uint32_t now_ms, char *detail,
+		size_t detail_len) {
+	(void) now_ms;
+	int32_t current_ma = 0;
+	int32_t vbus_mv = 0;
+	int32_t temp_dC = 0;
+	int32_t power_dW = 0;
+	int32_t errors = 0;
+	char fw[ST_SSD_RX_BUF_LEN] = { 0 };
+
+	if (!st_ssd_uart_apply_defaults()) {
+		if (detail && detail_len)
+			snprintf(detail, detail_len, "UART3 reinit to 19200 8N1 failed");
+		return STS_FAIL;
+	}
+	if (!st_ssd_query_text(":1VE\r", fw, sizeof(fw))) {
+		if (detail && detail_len)
+			snprintf(detail, detail_len, "SSD no response to :1VE");
+		return STS_FAIL;
+	}
+	if (!st_ssd_query_i32(":1GA\r", 'A', &current_ma)
+			|| !st_ssd_query_i32(":1GV\r", 'V', &vbus_mv)
+			|| !st_ssd_query_i32(":1GT\r", 'T', &temp_dC)
+			|| !st_ssd_query_i32(":1GP\r", 'P', &power_dW)
+			|| !st_ssd_query_i32(":1G!\r", '!', &errors)) {
+		if (detail && detail_len)
+			snprintf(detail, detail_len, "SSD read failed after FW=%s", fw);
+		return STS_FAIL;
+	}
+
+	if (detail && detail_len) {
+		snprintf(detail, detail_len,
+				"FW=%s I=%.3fA V=%.3fV T=%.1fC P=%.1fW E=0x%04lX", fw,
+				current_ma / 1000.0f, vbus_mv / 1000.0f, temp_dC / 10.0f,
+				power_dW / 10.0f,
+				(unsigned long) ((uint32_t) errors & 0xFFFFU));
+	}
+
+	if (errors != 0)
+		return STS_WARN;
+	return STS_PASS;
+}
+
+static void test_fpga_reset(void) {
+	memset(&g_fpga_test, 0, sizeof(g_fpga_test));
+}
+static void test_fpga_start(void) {
+	test_fpga_reset();
+	g_fpga_test.next_ms = HAL_GetTick();
+}
+static st_status_t test_fpga_poll(uint32_t now_ms, char *detail,
+		size_t detail_len) {
+	if (now_ms < g_fpga_test.next_ms)
+		return STS_RUNNING;
+
+	switch (g_fpga_test.phase) {
+	case 0: {
+		/* Phase 0: version check */
+		uint8_t ver = 0U;
+		if (!st_fpga_read_regs(ST_FPGA_REG_VERSION, &ver, 1U)) {
+			if (detail) snprintf(detail, detail_len, "I2C read failed (ver)");
+			return STS_FAIL;
+		}
+		if (ver != ST_FPGA_VERSION_EXPECT) {
+			if (detail) snprintf(detail, detail_len, "ver=0x%02X expected 0x%02X", ver, ST_FPGA_VERSION_EXPECT);
+			return STS_FAIL;
+		}
+		g_fpga_test.next_ms = now_ms + 5U;
+		break;
+	}
+	case 1: {
+		/* Phase 1: MCU_CMD_ARM_SEEN must be set (CMD_ARM is high at runtime) */
+		if (!st_fpga_poll()) {
+			if (detail) snprintf(detail, detail_len, "I2C read failed (regs)");
+			return STS_FAIL;
+		}
+		if (!g_fpga_cache.mcu_cmd_arm_seen) {
+			if (detail) snprintf(detail, detail_len,
+				"FPGA v0x%02X: MCU_CMD_ARM not seen (INPUTS=0x%02X)",
+				g_fpga_cache.version, g_fpga_cache.inputs);
+			return STS_FAIL;
+		}
+		g_fpga_test.next_ms = now_ms + 4U;
+		break;
+	}
+	case 2: {
+		/* Phase 2: heartbeat — FPGA_SPARE_OUT_0 (500 Hz) must toggle over 3 ms */
+		GPIO_PinState s1 = HAL_GPIO_ReadPin(FPGA_SPARE_OUT_0_GPIO_Port, FPGA_SPARE_OUT_0_Pin);
+		HAL_Delay(3U);
+		GPIO_PinState s2 = HAL_GPIO_ReadPin(FPGA_SPARE_OUT_0_GPIO_Port, FPGA_SPARE_OUT_0_Pin);
+		if (s1 == s2) {
+			/* One coincidence is possible; warn but allow pass */
+			g_fpga_test.phase++;  /* try phase 3 = repeat sample */
+			g_fpga_test.next_ms = now_ms + 3U;
+			return STS_RUNNING;
+		}
+		g_fpga_test.next_ms = now_ms + 2U;
+		break;
+	}
+	case 3: {
+		/* Phase 3: second heartbeat attempt if phase 2 didn't toggle */
+		GPIO_PinState s1 = HAL_GPIO_ReadPin(FPGA_SPARE_OUT_0_GPIO_Port, FPGA_SPARE_OUT_0_Pin);
+		HAL_Delay(3U);
+		GPIO_PinState s2 = HAL_GPIO_ReadPin(FPGA_SPARE_OUT_0_GPIO_Port, FPGA_SPARE_OUT_0_Pin);
+		if (s1 == s2) {
+			/* Both tries static — WARN (sampling coincidence less likely twice) */
+			if (detail) snprintf(detail, detail_len,
+				"FPGA v0x%02X state=%s arm=%u estop=%u hb=WARN",
+				g_fpga_cache.version,
+				g_fpga_cache.fault_latch ? "FAULT" : k_fpga_state_names[g_fpga_cache.state_code & 3U],
+				g_fpga_cache.mcu_cmd_arm_seen ? 1U : 0U,
+				g_fpga_cache.estop_ok ? 1U : 0U);
+			return STS_WARN;
+		}
+		g_fpga_test.next_ms = now_ms + 2U;
+		break;
+	}
+	case 4:
+	default: {
+		/* Phase 4: sanity — WARN if fault latched or OVUV mismatch */
+		const char *state_str = g_fpga_cache.fault_latch
+			? "FAULT" : k_fpga_state_names[g_fpga_cache.state_code & 3U];
+		bool warn = false;
+		if (g_fpga_cache.fault_latch) {
+			warn = true;
+			if (detail) snprintf(detail, detail_len,
+				"FPGA v0x%02X state=FAULT flt_code=%u (%s)",
+				g_fpga_cache.version,
+				g_fpga_cache.fault_code,
+				(g_fpga_cache.fault_code < 8U)
+					? g_fpga_fault_names[g_fpga_cache.fault_code] : "?");
+		} else if (!g_fpga_cache.ovuv_ok
+				&& HAL_GPIO_ReadPin(PGOOD_SW_GPIO_Port, PGOOD_SW_Pin) == GPIO_PIN_SET
+				&& HAL_GPIO_ReadPin(PGOOD_24V_GPIO_Port, PGOOD_24V_Pin) == GPIO_PIN_SET) {
+			warn = true;
+			if (detail) snprintf(detail, detail_len,
+				"FPGA v0x%02X state=%s OVUV_OK=0 but PGOOD_SW+24V=1",
+				g_fpga_cache.version, state_str);
+		}
+		if (!warn && detail) {
+			snprintf(detail, detail_len,
+				"FPGA v0x%02X state=%s arm=%u estop=%u hb=OK",
+				g_fpga_cache.version, state_str,
+				g_fpga_cache.mcu_cmd_arm_seen ? 1U : 0U,
+				g_fpga_cache.estop_ok ? 1U : 0U);
+		}
+		return warn ? STS_WARN : STS_PASS;
+	}
+	}
+	g_fpga_test.phase++;
+	return STS_RUNNING;
+}
+
+/* ======================================================================
+ *  FPGA I2C register interface
+ *  Slave address 0x55 (7-bit) on I2C4 (ST_I2C).  Read-only register map.
+ *  Other device on bus: TLA2528 at 0x17 — left undisturbed.
+ * ====================================================================== */
+
+/* Write register pointer then read len bytes (auto-increment). */
+static bool st_fpga_read_regs(uint8_t start, uint8_t *buf, uint8_t len) {
+	return HAL_I2C_Mem_Read(&ST_I2C, ST_FPGA_ADDR_8BIT,
+			start, I2C_MEMADD_SIZE_8BIT,
+			buf, len, ST_FPGA_I2C_TMO) == HAL_OK;
+}
+
+/* Update g_fpga_cache from I2C — silent, no print. Returns true on success. */
+static bool st_fpga_poll(void) {
+	uint8_t r[ST_FPGA_REGS_BLOCK_LEN];
+	uint8_t ver = 0U;
+	uint32_t now = HAL_GetTick();
+
+	if (!st_fpga_read_regs(ST_FPGA_REG_STATUS0, r, ST_FPGA_REGS_BLOCK_LEN))
+		return false;
+	if (!st_fpga_read_regs(ST_FPGA_REG_VERSION, &ver, 1U))
+		return false;
+
+	g_fpga_cache.valid          = true;
+	g_fpga_cache.last_read_ms   = now;
+	g_fpga_cache.status0        = r[ST_FPGA_REG_STATUS0];
+	g_fpga_cache.fault_code     = r[ST_FPGA_REG_FAULT] & 0x0FU;
+	g_fpga_cache.state_code     = r[ST_FPGA_REG_STATE] & 0x03U;
+	g_fpga_cache.actions        = r[ST_FPGA_REG_ACTIONS];
+	g_fpga_cache.inputs         = r[ST_FPGA_REG_INPUTS];
+	g_fpga_cache.pchg_timer_ms  = ((uint16_t)r[ST_FPGA_REG_PCHG_HI] << 8)
+	                             | (uint16_t)r[ST_FPGA_REG_PCHG_LO];
+	g_fpga_cache.version        = ver;
+
+	/* Decoded convenience flags (from STATUS0) */
+	g_fpga_cache.fault_latch      = (r[ST_FPGA_REG_STATUS0] & 0x80U) != 0U;
+	g_fpga_cache.precharge_latch  = (r[ST_FPGA_REG_STATUS0] & 0x40U) != 0U;
+	g_fpga_cache.motor_en         = (r[ST_FPGA_REG_STATUS0] & 0x20U) != 0U;
+	g_fpga_cache.compute_en       = (r[ST_FPGA_REG_STATUS0] & 0x10U) != 0U;
+	g_fpga_cache.ovuv_ok          = (r[ST_FPGA_REG_STATUS0] & 0x02U) != 0U;
+	g_fpga_cache.arm_permit       = (r[ST_FPGA_REG_STATUS0] & 0x01U) != 0U;
+	/* Decoded convenience flags (from INPUTS) */
+	g_fpga_cache.estop_ok         = (r[ST_FPGA_REG_INPUTS] & 0x20U) != 0U;
+	g_fpga_cache.mcu_cmd_arm_seen = (r[ST_FPGA_REG_INPUTS] & 0x10U) != 0U;
+	g_fpga_cache.remote_arm_latch = (r[ST_FPGA_REG_INPUTS] & 0x40U) != 0U;
+	return true;
+}
+
+static const char * const k_fpga_state_names[] = {"IDLE","PRECHARGE","ARMED","COMPUTE"};
+
+
+/* Print space-separated names of set bits.  names[0]=bit7 … names[7]=bit0. */
+static bool st_fpga_print_bits(uint8_t val, const char *const names[8]) {
+	bool any = false;
+	for (uint8_t b = 0U; b < 8U; ++b) {
+		if ((val & (0x80U >> b)) && names[b] != NULL) {
+			st_dbg_printf("%s%s", any ? " " : "", names[b]);
+			any = true;
+		}
+	}
+	return any;
+}
+
+static const char *st_fpga_state_str(uint8_t state_reg, uint8_t status0) {
+	switch (state_reg & 0x03U) {
+	case 0U: return (status0 & 0x80U) ? "FAULT" : "IDLE";
+	case 1U: return "PRECHARGE";
+	case 2U: return "ARMED";
+	case 3U: return "COMPUTE";
+	default:  return "?";
+	}
+}
+
+static void st_fpga_cmd_regs(void) {
+	uint8_t r[ST_FPGA_REGS_BLOCK_LEN];
+	if (!st_fpga_read_regs(ST_FPGA_REG_STATUS0, r, ST_FPGA_REGS_BLOCK_LEN)) {
+		st_dbg_printf("[FPGA] I2C read failed\r\n");
+		return;
+	}
+	uint8_t fault_code = r[ST_FPGA_REG_FAULT] & 0x0FU;
+	uint16_t pchg_ms = ((uint16_t)r[ST_FPGA_REG_PCHG_HI] << 8)
+	                 | (uint16_t)r[ST_FPGA_REG_PCHG_LO];
+	st_dbg_printf("[FPGA] regs\r\n");
+	st_dbg_printf("  STATUS0   : 0x%02X  ", r[ST_FPGA_REG_STATUS0]);
+	if (!st_fpga_print_bits(r[ST_FPGA_REG_STATUS0], g_fpga_s0_names))
+		st_dbg_printf("(none)");
+	st_dbg_printf("\r\n");
+	st_dbg_printf("  FAULT     : 0x%02X  %s\r\n", r[ST_FPGA_REG_FAULT],
+			(fault_code < 8U) ? g_fpga_fault_names[fault_code] : "?");
+	st_dbg_printf("  STATE     : 0x%02X  %s\r\n", r[ST_FPGA_REG_STATE],
+			st_fpga_state_str(r[ST_FPGA_REG_STATE], r[ST_FPGA_REG_STATUS0]));
+	st_dbg_printf("  ACTIONS   : 0x%02X  ", r[ST_FPGA_REG_ACTIONS]);
+	if (!st_fpga_print_bits(r[ST_FPGA_REG_ACTIONS], g_fpga_act_names))
+		st_dbg_printf("(none)");
+	st_dbg_printf("\r\n");
+	st_dbg_printf("  INPUTS    : 0x%02X  ", r[ST_FPGA_REG_INPUTS]);
+	if (!st_fpga_print_bits(r[ST_FPGA_REG_INPUTS], g_fpga_in_names))
+		st_dbg_printf("(none)");
+	st_dbg_printf("\r\n");
+	st_dbg_printf("  PCHG_TMR  : %u ms\r\n", (unsigned)pchg_ms);
+}
+
+static void st_fpga_cmd_state(void) {
+	uint8_t r[3];
+	if (!st_fpga_read_regs(ST_FPGA_REG_STATUS0, r, 3U)) {
+		st_dbg_printf("[FPGA] I2C read failed\r\n");
+		return;
+	}
+	st_dbg_printf("[FPGA] state=%s  FAULT_LATCH=%u\r\n",
+			st_fpga_state_str(r[ST_FPGA_REG_STATE], r[ST_FPGA_REG_STATUS0]),
+			(r[ST_FPGA_REG_STATUS0] & 0x80U) ? 1U : 0U);
+}
+
+static void st_fpga_cmd_fault(void) {
+	uint8_t r[2];
+	if (!st_fpga_read_regs(ST_FPGA_REG_STATUS0, r, 2U)) {
+		st_dbg_printf("[FPGA] I2C read failed\r\n");
+		return;
+	}
+	uint8_t code = r[ST_FPGA_REG_FAULT] & 0x0FU;
+	st_dbg_printf("[FPGA] FAULT_LATCH=%u  fault_code=%u (%s)\r\n",
+			(r[ST_FPGA_REG_STATUS0] & 0x80U) ? 1U : 0U,
+			(unsigned)code,
+			(code < 8U) ? g_fpga_fault_names[code] : "?");
+}
+
+static void st_fpga_cmd_inputs(void) {
+	uint8_t val = 0U;
+	if (!st_fpga_read_regs(ST_FPGA_REG_INPUTS, &val, 1U)) {
+		st_dbg_printf("[FPGA] I2C read failed\r\n");
+		return;
+	}
+	st_dbg_printf("[FPGA] INPUTS 0x%02X  ", val);
+	if (!st_fpga_print_bits(val, g_fpga_in_names))
+		st_dbg_printf("(none)");
+	st_dbg_printf("\r\n");
+}
+
+static void st_fpga_cmd_timers(void) {
+	uint8_t r[2];
+	if (!st_fpga_read_regs(ST_FPGA_REG_PCHG_HI, r, 2U)) {
+		st_dbg_printf("[FPGA] I2C read failed\r\n");
+		return;
+	}
+	uint16_t pchg_ms = ((uint16_t)r[0] << 8) | (uint16_t)r[1];
+	st_dbg_printf("[FPGA] pchg_timer=%u ms\r\n", (unsigned)pchg_ms);
+}
+
+static void st_fpga_cmd_ver(void) {
+	uint8_t val = 0U;
+	if (!st_fpga_read_regs(ST_FPGA_REG_VERSION, &val, 1U)) {
+		st_dbg_printf("[FPGA] I2C read failed\r\n");
+		return;
+	}
+	st_dbg_printf("[FPGA] ver=0x%02X  %s\r\n", val,
+			(val == ST_FPGA_VERSION_EXPECT) ? "OK" : "FAIL (expected 0xB2)");
+}
+
+static void st_fpga_cmd_status(void) {
+	bool cmd_arm   = HAL_GPIO_ReadPin(CMD_ARM_GPIO_Port,             CMD_ARM_Pin)             == GPIO_PIN_SET;
+	bool cmd_fault = HAL_GPIO_ReadPin(CMD_FAULT_GPIO_Port,           CMD_FAULT_Pin)           == GPIO_PIN_SET;
+	bool fl        = HAL_GPIO_ReadPin(FAULT_LATCH_GPIO_Port,         FAULT_LATCH_Pin)         == GPIO_PIN_SET;
+	bool sp0       = HAL_GPIO_ReadPin(FPGA_SPARE_OUT_0_GPIO_Port,    FPGA_SPARE_OUT_0_Pin)    == GPIO_PIN_SET;
+	bool sp1       = HAL_GPIO_ReadPin(FPGA_SPARE_OUT_1_GPIO_Port,    FPGA_SPARE_OUT_1_Pin)    == GPIO_PIN_SET;
+	st_dbg_printf("[FPGA] CMD_ARM=%u CMD_FAULT=%u  FAULT_LATCH=%u SPARE0=%u SPARE1=%u\r\n",
+			cmd_arm, cmd_fault, fl, sp0, sp1);
+}
+
+static void st_fpga_scenario_arm(void) {
+	st_dbg_printf("[FPGA] scenario arm — current state:\r\n");
+	st_fpga_cmd_state();
+	st_cmd_arm_set(true);
+	st_dbg_printf("[FPGA] CMD_ARM asserted, waiting 100 ms\r\n");
+	HAL_Delay(100U);
+	st_fpga_cmd_regs();
+}
+
+static void st_fpga_scenario_fault(void) {
+	st_dbg_printf("[FPGA] scenario fault — asserting CMD_FAULT for 50 ms\r\n");
+	st_cmd_fault_set(true);
+	HAL_Delay(50U);
+	st_cmd_fault_set(false);
+	st_dbg_printf("[FPGA] CMD_FAULT released\r\n");
+	HAL_Delay(10U);
+	st_fpga_cmd_fault();
+}
+
+static void test_adc_reset(void) {
+}
+static void test_adc_start(void) {
+}
+static st_status_t test_adc_poll(uint32_t now_ms, char *detail,
+		size_t detail_len) {
+	(void) now_ms;
+	uint8_t sys = 0U;
+	st_adc_sample_t samples[8];
+	if (!st_adc_ping(&sys)) {
+		if (detail && detail_len)
+			snprintf(detail, detail_len, "TLA2528 no ACK at 0x17");
+		return STS_FAIL;
+	}
+	if (!st_adc_read_all(samples)) {
+		if (detail && detail_len)
+			snprintf(detail, detail_len, "ADC channel read failed");
+		return STS_FAIL;
+	}
+	st_dbg_printf("[ADC] SYSTEM_STATUS=0x%02X\r\n", sys);
+	st_adc_print_eng(samples);
+	if (detail && detail_len) {
+		snprintf(detail, detail_len, "VRAW=%.2fV IVRAW=%.2fA 12V=%.2fV 24V=%.2fV I12=%.2fA I24=%.2fA T1=%.1fC T2=%.1fC",
+				samples[0].eng, samples[1].eng, samples[2].eng, samples[3].eng,
+				samples[4].eng, samples[5].eng, samples[6].eng, samples[7].eng);
+	}
+	return st_adc_sanity(samples, detail, detail_len);
+}
+
+static void test_mcan_reset(void) { memset(&g_mcan_test, 0, sizeof(g_mcan_test)); }
+static void test_mcan_start(void) {
+    memset(&g_mcan_test, 0, sizeof(g_mcan_test));
+    st_mcan_stop_ping(&g_mcan);
+}
+static st_status_t test_mcan_poll(uint32_t now_ms, char *detail, size_t detail_len)
+{
+    switch (g_mcan_test.phase) {
+        case 0: /* bus warmup — ensure local bus is online */
+            if (!g_mcan.online) (void)st_mcan_bus_config(&g_mcan, true);
+            if (!g_mcan.online) {
+                snprintf(detail, detail_len, "bus config failed");
+                return STS_FAIL;
+            }
+            g_mcan_test.phase = 1;
+            return STS_RUNNING;
+        case 1:
+            g_mcan_test.base_ping_resp = g_mcan.ping_resp;
+            g_mcan_test.base_ping_timeout = g_mcan.ping_timeout;
+            st_mcan_start_ping(&g_mcan,1U, 100U, false, false);
+            g_mcan_test.deadline_ms = now_ms + 1000U;
+            g_mcan_test.phase = 2;
+            return STS_RUNNING;
+        case 2:
+            if (g_mcan.ping_resp > g_mcan_test.base_ping_resp) {
+                g_mcan_test.base_status_resp = g_mcan.status_resp_rx;
+                g_mcan_test.status_seq = ++g_mcan.next_seq;
+                if (!st_mcan_send_simple(&g_mcan,ST_MCAN_TYPE_STATUS_REQ, g_mcan_test.status_seq, 0U, 0U, 0U)) {
+                    snprintf(detail, detail_len, "status req send failed");
+                    return STS_FAIL;
+                }
+                g_mcan.tx_req++;
+                g_mcan_test.deadline_ms = now_ms + 1000U;
+                g_mcan_test.phase = 3;
+                return STS_RUNNING;
+            }
+            if (g_mcan.ping_timeout > g_mcan_test.base_ping_timeout || (int32_t)(now_ms - g_mcan_test.deadline_ms) >= 0) {
+                snprintf(detail, detail_len, "ping timeout");
+                return STS_FAIL;
+            }
+            return STS_RUNNING;
+        case 3:
+            if (g_mcan.status_resp_rx > g_mcan_test.base_status_resp && g_mcan.last_status_seq == g_mcan_test.status_seq) {
+                g_mcan_test.base_ack_rx = g_mcan.ack_rx;
+                g_mcan_test.ack_seq = ++g_mcan.next_seq;
+                if (!st_mcan_send_simple(&g_mcan,ST_MCAN_TYPE_LED_REQ, g_mcan_test.ack_seq, 0U, 1U, 50U)) {
+                    snprintf(detail, detail_len, "led req send failed");
+                    return STS_FAIL;
+                }
+                g_mcan.tx_req++;
+                g_mcan_test.deadline_ms = now_ms + 1000U;
+                g_mcan_test.phase = 4;
+                return STS_RUNNING;
+            }
+            if ((int32_t)(now_ms - g_mcan_test.deadline_ms) >= 0) {
+                snprintf(detail, detail_len, "status timeout");
+                return STS_FAIL;
+            }
+            return STS_RUNNING;
+        case 4:
+            if (g_mcan.ack_rx > g_mcan_test.base_ack_rx &&
+                g_mcan.last_ack_seq == g_mcan_test.ack_seq &&
+                g_mcan.last_ack_type == ST_MCAN_TYPE_LED_REQ) {
+                snprintf(detail, detail_len, "ping/status/ack OK sw=0x%04X", g_mcan.last_status_word);
+                return STS_PASS;
+            }
+            if ((int32_t)(now_ms - g_mcan_test.deadline_ms) >= 0) {
+                snprintf(detail, detail_len, "ack timeout");
+                return STS_FAIL;
+            }
+            return STS_RUNNING;
+        default:
+            return STS_FAIL;
+    }
+}
+
+static st_test_t g_tests[] = { { "gpio", ST_TEST_GPIO, test_gpio_reset,
+		test_gpio_start, test_gpio_poll, STS_NOT_RUN, "" }, { "buzzer",
+		ST_TEST_BUZZER, test_buzzer_reset, test_buzzer_start, test_buzzer_poll,
+		STS_NOT_RUN, "" }, { "can", ST_TEST_CAN, test_can_reset, test_can_start,
+		test_can_poll, STS_NOT_RUN, "" }, { "ssd", ST_TEST_SSD, test_ssd_reset,
+		test_ssd_start, test_ssd_poll, STS_NOT_RUN, "" }, { "fpga",
+		ST_TEST_FPGA, test_fpga_reset, test_fpga_start, test_fpga_poll,
+		STS_NOT_RUN, "" }, { "adc", ST_TEST_ADC, test_adc_reset, test_adc_start,
+		test_adc_poll, STS_NOT_RUN, "" }, { "mcan", ST_TEST_MCAN, test_mcan_reset, test_mcan_start,
+		test_mcan_poll, STS_NOT_RUN, "" }, };
+#define ST_NUM_TESTS ((int)(sizeof(g_tests) / sizeof(g_tests[0])))
+static uint32_t g_campaign_pass[ST_NUM_TESTS];
+static uint32_t g_campaign_fail[ST_NUM_TESTS];
+static uint32_t g_campaign_warn[ST_NUM_TESTS];
+static uint32_t g_campaign_skip[ST_NUM_TESTS];
+
+static void st_reset_all_tests(void) {
+	for (int i = 0; i < ST_NUM_TESTS; ++i) {
+		g_tests[i].status = STS_NOT_RUN;
+		g_tests[i].detail[0] = '\0';
+		if (g_tests[i].reset)
+			g_tests[i].reset();
+	}
+}
+
+static int st_test_index_from_name(const char *name) {
+	for (int i = 0; i < ST_NUM_TESTS; ++i)
+		if (strcmp(name, g_tests[i].name) == 0)
+			return i;
+	return -1;
+}
+
+static void st_start_test_index(int idx) {
+	if (idx < 0 || idx >= ST_NUM_TESTS)
+		return;
+	g_rt.current_test = idx;
+	g_tests[idx].status = STS_RUNNING;
+	g_tests[idx].detail[0] = '\0';
+	if (g_tests[idx].start)
+		g_tests[idx].start();
+	st_dbg_printf("[RUN] %s\r\n", g_tests[idx].name);
+}
+
+static int st_next_enabled_test_after(int idx) {
+	for (int i = idx + 1; i < ST_NUM_TESTS; ++i)
+		if ((g_rt.current_mask & g_tests[i].mask) != 0U)
+			return i;
+	return -1;
+}
+
+static void st_abort(bool announce) {
+	st_safe_outputs();
+	st_restore_runtime_outputs();
+	g_rt.mode = RUN_IDLE;
+	g_rt.current_test = -1;
+	g_rt.current_mask = 0U;
+	g_rt.campaign_active = false;
+	g_rt.loop_enabled = false;
+	g_rt.loop_target_count = 0U;
+	if (announce)
+		st_dbg_printf("[RUN] stopped\r\n");
+}
+
+static void st_start_all(void) {
+	st_reset_all_tests();
+	g_rt.mode = RUN_ALL;
+	g_rt.current_mask = g_rt.enabled_mask;
+	g_rt.current_test = -1;
+	g_rt.run_fail_count = 0U;
+	g_rt.run_warn_count = 0U;
+	for (int i = 0; i < ST_NUM_TESTS; ++i) {
+		if ((g_tests[i].mask & g_rt.enabled_mask) != 0U) {
+			g_rt.current_test = i;
+			g_tests[i].status = STS_RUNNING;
+			if (g_tests[i].start)
+				g_tests[i].start();
+			if (!g_rt.loop_fast)
+				st_dbg_printf("[RUN] %s\r\n", g_tests[i].name);
+			return;
+		} else {
+			g_tests[i].status = STS_SKIPPED;
+		}
+	}
+	g_rt.mode = RUN_IDLE;
+}
+
+static void st_start_one(uint32_t mask) {
+	st_reset_all_tests();
+	g_rt.mode = RUN_ONE;
+	g_rt.current_mask = mask;
+	g_rt.current_test = -1;
+	g_rt.run_fail_count = 0U;
+	g_rt.run_warn_count = 0U;
+	for (int i = 0; i < ST_NUM_TESTS; ++i) {
+		if ((g_tests[i].mask & mask) != 0U) {
+			g_rt.current_test = i;
+			g_tests[i].status = STS_RUNNING;
+			g_tests[i].detail[0] = '\0';
+			if (g_tests[i].start)
+				g_tests[i].start();
+			st_dbg_printf("[RUN] %s\r\n", g_tests[i].name);
+			return;
+		}
+	}
+	g_rt.mode = RUN_IDLE;
+}
+
+/* Board-provided externs for shared MCAN layer (Group B) */
+uint8_t st_mcan_get_summary_code(void) {
+    bool any_fail = false, any_warn = false;
+    for (int i = 0; i < ST_NUM_TESTS; ++i) {
+        if (g_tests[i].status == STS_FAIL) any_fail = true;
+        else if (g_tests[i].status == STS_WARN) any_warn = true;
+    }
+    return any_fail ? 2U : (any_warn ? 1U : 0U);
+}
+
+uint16_t st_mcan_get_status_word(void) {
+	uint16_t w = 0U;
+	if (HAL_GPIO_ReadPin(FAULT_LATCH_GPIO_Port, FAULT_LATCH_Pin) == GPIO_PIN_SET) w |= MCAN_PDU_SW_FAULT_LATCH;
+	if (HAL_GPIO_ReadPin(SW_FAULT_GPIO_Port,    SW_FAULT_Pin)    == GPIO_PIN_SET) w |= MCAN_PDU_SW_FAULT_BTN;
+	if (HAL_GPIO_ReadPin(PGOOD_SW_GPIO_Port,    PGOOD_SW_Pin)    == GPIO_PIN_SET) w |= MCAN_PDU_SW_PGOOD_SW;
+	if (HAL_GPIO_ReadPin(PGOOD_24V_GPIO_Port,   PGOOD_24V_Pin)   == GPIO_PIN_SET) w |= MCAN_PDU_SW_PGOOD_24V;
+	if (g_fpga_cache.valid) {
+		w |= (uint16_t)((g_fpga_cache.state_code & 0x3U) << MCAN_PDU_SW_FPGA_STATE_SHIFT);
+		if (g_fpga_cache.fault_latch)  w |= MCAN_PDU_SW_FPGA_FLTL;
+		if (g_fpga_cache.arm_permit)   w |= MCAN_PDU_SW_ARM_PERMIT;
+		if (g_fpga_cache.estop_ok)     w |= MCAN_PDU_SW_ESTOP_OK;
+	}
+	return w;
+}
+
+uint32_t st_mcan_local_mask_from_selector(uint16_t selector) {
+    switch (selector) {
+        case ST_MCAN_SEL_ALL:    return ST_TEST_ALL;
+        case ST_MCAN_SEL_GPIO:   return ST_TEST_GPIO;
+        case ST_MCAN_SEL_BUZZER: return ST_TEST_BUZZER;
+        case ST_MCAN_SEL_MCAN:   return ST_TEST_MCAN;
+        case ST_MCAN_SEL_CAN:    return ST_TEST_CAN;
+        case ST_MCAN_SEL_SSD:    return ST_TEST_SSD;
+        case ST_MCAN_SEL_FPGA:   return ST_TEST_FPGA;
+        case ST_MCAN_SEL_ADC:    return ST_TEST_ADC;
+        default: return 0U;
+    }
+}
+
+void st_mcan_on_start_remote_selftest(uint32_t mask, bool fast) {
+    g_rt.loop_fast = fast;
+    g_rt.campaign_active = false;
+    if (mask == ST_TEST_ALL) st_start_all();
+    else st_start_one(mask);
+}
+
+static void st_print_tests(void) {
+	st_dbg_printf("Tests:\r\n");
+	for (int i = 0; i < ST_NUM_TESTS; ++i) {
+		st_dbg_printf("  %-8s enabled=%s\r\n", g_tests[i].name,
+				(g_rt.enabled_mask & g_tests[i].mask) ? "yes" : "no");
+	}
+}
+
+static void st_print_status(void) {
+	st_dbg_printf("[STATUS] mode=%d loop=%u fast=%u stoponfail=%u target=%lu done=%lu delay=%lu monitor_adc=%u monitor_inputs=%u monitor_ssd=%u therm_offs=%.2f\r\n",
+			(int) g_rt.mode, g_rt.loop_enabled ? 1U : 0U, g_rt.loop_fast ? 1U : 0U,
+			g_rt.loop_stop_on_fail ? 1U : 0U, (unsigned long) g_rt.loop_target_count,
+			(unsigned long) g_rt.loop_completed_count, (unsigned long) g_rt.loop_delay_ms,
+			g_rt.monitor_adc ? 1U : 0U, g_rt.monitor_inputs ? 1U : 0U,
+			g_rt.monitor_ssd ? 1U : 0U, g_rt.therm_offset_c);
+	for (int i = 0; i < ST_NUM_TESTS; ++i) {
+		st_dbg_printf("  %-8s %-8s %s\r\n", g_tests[i].name,
+				st_status_str(g_tests[i].status), g_tests[i].detail);
+	}
+}
+
+static void st_print_summary(void) {
+	uint32_t pass = 0U, fail = 0U, warn = 0U, skip = 0U;
+	st_dbg_printf("[SUMMARY]\r\n");
+	for (int i = 0; i < ST_NUM_TESTS; ++i) {
+		switch (g_tests[i].status) {
+		case STS_PASS: pass++; break;
+		case STS_FAIL: fail++; break;
+		case STS_WARN: warn++; break;
+		case STS_SKIPPED: skip++; break;
+		default: break;
+		}
+		st_dbg_printf("  %-8s %-8s %s\r\n", g_tests[i].name,
+				st_status_str(g_tests[i].status), g_tests[i].detail);
+	}
+	st_dbg_printf("[SUMMARY TOTALS] pass=%lu fail=%lu warn=%lu skip=%lu\r\n",
+			(unsigned long) pass, (unsigned long) fail,
+			(unsigned long) warn, (unsigned long) skip);
+}
+
+static void st_print_campaign_totals(void) {
+	st_dbg_printf("[CAMPAIGN TOTALS] passes=%lu\r\n",
+			(unsigned long) g_rt.loop_completed_count);
+	for (int i = 0; i < ST_NUM_TESTS; ++i) {
+		st_dbg_printf("  %-8s P=%lu F=%lu W=%lu S=%lu\r\n",
+				g_tests[i].name, (unsigned long) g_campaign_pass[i],
+				(unsigned long) g_campaign_fail[i], (unsigned long) g_campaign_warn[i],
+				(unsigned long) g_campaign_skip[i]);
+	}
+}
+
+static void st_runner_poll(uint32_t now_ms) {
+	if (g_rt.mode == RUN_IDLE)
+		return;
+	if (g_rt.mode == RUN_WAIT_LOOP) {
+		if ((int32_t) (now_ms - g_rt.wait_until_ms) >= 0) {
+			if (g_rt.campaign_active) {
+				if (g_rt.loop_target_count != 0U
+						&& g_rt.loop_completed_count >= g_rt.loop_target_count) {
+					g_rt.mode = RUN_IDLE;
+					st_dbg_printf("[LOOP] done\r\n");
+					st_print_campaign_totals();
+					st_prompt();
+					g_rt.campaign_active = false;
+					g_rt.loop_enabled = false;
+					return;
+				}
+				st_start_all();
+			} else {
+				g_rt.mode = RUN_IDLE;
+				st_prompt();
+			}
+		}
+		return;
+	}
+	if (g_rt.current_test < 0 || g_rt.current_test >= ST_NUM_TESTS) {
+		g_rt.mode = RUN_IDLE;
+		return;
+	}
+
+	st_test_t *t = &g_tests[g_rt.current_test];
+	st_status_t st = t->poll(now_ms, t->detail, sizeof(t->detail));
+	if (st == STS_RUNNING)
+		return;
+
+	t->status = st;
+	if (st == STS_FAIL)
+		g_rt.run_fail_count++;
+	else if (st == STS_WARN)
+		g_rt.run_warn_count++;
+	if (g_mcan.remote_selftest_active) {
+		int sel = st_mcan_selector_from_name(t->name);
+		if (sel >= 0)
+			(void) st_mcan_send_selftest_result(&g_mcan,g_mcan.remote_selftest_req_seq, (uint16_t) sel, st);
+	}
+
+	if (g_rt.campaign_active) {
+		if (st == STS_PASS)
+			g_campaign_pass[g_rt.current_test]++;
+		else if (st == STS_FAIL)
+			g_campaign_fail[g_rt.current_test]++;
+		else if (st == STS_WARN)
+			g_campaign_warn[g_rt.current_test]++;
+		else if (st == STS_SKIPPED)
+			g_campaign_skip[g_rt.current_test]++;
+	}
+
+	if (!g_rt.loop_fast) {
+		st_dbg_printf("[DONE] %-8s %-8s", t->name, st_status_str(st));
+		if (t->detail[0] != '\0')
+			st_dbg_printf("  %s", t->detail);
+		st_dbg_printf("\r\n");
+	}
+
+	if (g_rt.campaign_active && g_rt.loop_stop_on_fail && st == STS_FAIL) {
+		g_rt.loop_completed_count++;
+		st_dbg_printf("[LOOP] stop-on-fail at pass %lu test %s\r\n",
+				(unsigned long) g_rt.loop_completed_count, t->name);
+		st_print_summary();
+		st_print_campaign_totals();
+		if (g_mcan.remote_selftest_active) {
+			(void) st_mcan_send_selftest_done(&g_mcan,g_mcan.remote_selftest_req_seq,
+					(uint16_t) g_rt.run_fail_count, (uint16_t) g_rt.run_warn_count);
+			g_mcan.remote_selftest_active = false;
+		}
+		g_rt.mode = RUN_IDLE;
+		g_rt.campaign_active = false;
+		g_rt.loop_enabled = false;
+		st_prompt();
+		return;
+	}
+
+	int next = -1;
+	for (int i = g_rt.current_test + 1; i < ST_NUM_TESTS; ++i) {
+		if ((g_rt.current_mask & g_tests[i].mask) != 0U) {
+			next = i;
+			break;
+		} else if (g_rt.mode == RUN_ALL) {
+			g_tests[i].status = STS_SKIPPED;
+		}
+	}
+
+	if (next >= 0) {
+		g_rt.current_test = next;
+		g_tests[next].status = STS_RUNNING;
+		g_tests[next].detail[0] = '\0';
+		if (g_tests[next].start)
+			g_tests[next].start();
+		if (!g_rt.loop_fast)
+			st_dbg_printf("[RUN] %s\r\n", g_tests[next].name);
+	} else {
+		st_print_summary();
+		st_safe_outputs();
+		st_restore_runtime_outputs();
+
+		if (g_rt.campaign_active) {
+			g_rt.loop_completed_count++;
+			st_dbg_printf("[LOOP] pass %lu",
+					(unsigned long) g_rt.loop_completed_count);
+			if (g_rt.run_fail_count == 0U && g_rt.run_warn_count == 0U)
+				st_dbg_printf(" PASS");
+			else
+				st_dbg_printf(" fail=%lu warn=%lu",
+						(unsigned long) g_rt.run_fail_count,
+						(unsigned long) g_rt.run_warn_count);
+			st_dbg_printf("\r\n");
+
+			if (g_rt.loop_target_count != 0U
+					&& g_rt.loop_completed_count >= g_rt.loop_target_count) {
+				if (g_mcan.remote_selftest_active) {
+					(void) st_mcan_send_selftest_done(&g_mcan,g_mcan.remote_selftest_req_seq,
+							(uint16_t) g_rt.run_fail_count, (uint16_t) g_rt.run_warn_count);
+					g_mcan.remote_selftest_active = false;
+				}
+				g_rt.mode = RUN_IDLE;
+				g_rt.campaign_active = false;
+				g_rt.loop_enabled = false;
+				st_print_campaign_totals();
+				st_prompt();
+			} else {
+				g_rt.mode = RUN_WAIT_LOOP;
+				g_rt.wait_until_ms = now_ms + g_rt.loop_delay_ms;
+				if (!g_rt.loop_fast)
+					st_dbg_printf("[LOOP] waiting %lu ms\r\n",
+							(unsigned long) g_rt.loop_delay_ms);
+			}
+		} else if (g_rt.loop_enabled) {
+			g_rt.mode = RUN_WAIT_LOOP;
+			g_rt.wait_until_ms = now_ms + g_rt.loop_delay_ms;
+			if (!g_rt.loop_fast)
+				st_dbg_printf("[LOOP] waiting %lu ms\r\n",
+						(unsigned long) g_rt.loop_delay_ms);
+		} else {
+			if (g_mcan.remote_selftest_active) {
+				(void) st_mcan_send_selftest_done(&g_mcan,g_mcan.remote_selftest_req_seq,
+						(uint16_t) g_rt.run_fail_count, (uint16_t) g_rt.run_warn_count);
+				g_mcan.remote_selftest_active = false;
+			}
+			g_rt.mode = RUN_IDLE;
+			g_rt.current_test = -1;
+			g_rt.current_mask = 0U;
+			st_prompt();
+		}
+	}
+}
+
+static void st_adc_monitor_print(void) {
+	st_adc_sample_t s[8];
+	if (!st_adc_read_all(s)) {
+		st_dbg_printf("[MON] adc read failed\r\n");
+		return;
+	}
+	st_dbg_printf(
+			"[MON] VRAW=%.2fV IVRAW=%.2fA 12V=%.2fV 24V=%.2fV I12=%.2fA I24=%.2fA T1=%.1fC T2=%.1fC\r\n",
+			s[0].eng, s[1].eng, s[2].eng, s[3].eng, s[4].eng, s[5].eng,
+			s[6].eng, s[7].eng);
+}
+
+static void st_ladc_monitor_print(void) {
+	st_adc_sample_t s[ST_LADC_NCH];
+	if (!st_ladc_read_all(s)) {
+		st_dbg_printf("[MON] ladc read failed\r\n");
+		return;
+	}
+	st_dbg_printf(
+			"[LADC] T0=%.1fC T1=%.1fC T2=%.1fC VSRC=%.2fV VBUS=%.2fV ICOIL=%.3fA\r\n",
+			s[0].eng, s[1].eng, s[2].eng, s[3].eng, s[4].eng, s[5].eng);
+}
+
+static void st_fpga_monitor_print(void) {
+	uint8_t r[ST_FPGA_REGS_BLOCK_LEN];
+	if (!st_fpga_read_regs(ST_FPGA_REG_STATUS0, r, ST_FPGA_REGS_BLOCK_LEN)) {
+		st_dbg_printf("[FPGA] I2C read failed\r\n");
+		return;
+	}
+	uint8_t code = r[ST_FPGA_REG_FAULT] & 0x0FU;
+	uint16_t pchg = ((uint16_t)r[ST_FPGA_REG_PCHG_HI] << 8)
+	              | (uint16_t)r[ST_FPGA_REG_PCHG_LO];
+	st_dbg_printf(
+			"[FPGA] state=%s FAULT_LATCH=%u fault=%s ARM_PERMIT=%u ESTOP_OK=%u MCU_CMD_ARM=%u pchg=%u ms\r\n",
+			st_fpga_state_str(r[ST_FPGA_REG_STATE], r[ST_FPGA_REG_STATUS0]),
+			(r[ST_FPGA_REG_STATUS0] & 0x80U) ? 1U : 0U,
+			(code < 8U) ? g_fpga_fault_names[code] : "?",
+			(r[ST_FPGA_REG_STATUS0] & 0x01U) ? 1U : 0U,
+			(r[ST_FPGA_REG_INPUTS]  & 0x20U) ? 1U : 0U,
+			(r[ST_FPGA_REG_INPUTS]  & 0x10U) ? 1U : 0U,
+			(unsigned)pchg);
+}
+
+static void st_inputs_monitor_print(void) {
+	st_dbg_printf("[IN] FL=%u SWFLT=%u PG_SW=%u PG24=%u FPGA0=%u FPGA1=%u\r\n",
+			HAL_GPIO_ReadPin(FAULT_LATCH_GPIO_Port, FAULT_LATCH_Pin),
+			HAL_GPIO_ReadPin(SW_FAULT_GPIO_Port, SW_FAULT_Pin),
+			HAL_GPIO_ReadPin(PGOOD_SW_GPIO_Port, PGOOD_SW_Pin),
+			HAL_GPIO_ReadPin(PGOOD_24V_GPIO_Port, PGOOD_24V_Pin),
+			HAL_GPIO_ReadPin(FPGA_SPARE_OUT_0_GPIO_Port, FPGA_SPARE_OUT_0_Pin),
+			HAL_GPIO_ReadPin(FPGA_SPARE_OUT_1_GPIO_Port, FPGA_SPARE_OUT_1_Pin));
+}
+
+/* ======================================================================
+ *  Stream / telemetry mode
+ * ====================================================================== */
+static void st_stream_poll(uint32_t now_ms) {
+	if (!g_stream_on)
+		return;
+
+	/* Low-rate SSD background refresh (every STREAM_SSD_INTERVAL_MS) */
+	if ((int32_t)(now_ms - g_stream_ssd_next_ms) >= 0) {
+		st_ssd_cache_refresh();  /* silent — populates g_ssd_cache */
+		g_stream_ssd_next_ms = now_ms + STREAM_SSD_INTERVAL_MS;
+	}
+
+	/* Telemetry line */
+	if ((int32_t)(now_ms - g_stream_next_ms) < 0)
+		return;
+	g_stream_next_ms = now_ms + g_stream_interval_ms;
+
+	/* Refresh FPGA cache (background also does this, but grab latest) */
+	st_fpga_poll();
+
+	/* ADC — use internal STM32 ADC for local rails */
+	st_adc_sample_t s[8];
+	bool adc_ok = st_adc_read_all(s);
+	float vsrc = adc_ok ? s[0].eng : NAN;
+	float vbus = adc_ok ? s[3].eng : NAN;
+	float icoil = adc_ok ? s[1].eng : NAN;
+	float t0 = adc_ok ? st_therm_apply_cal(st_adc_conv_therm(s[6].raw12, 12U)) : NAN;
+	float t1 = adc_ok ? st_therm_apply_cal(st_adc_conv_therm(s[7].raw12, 12U)) : NAN;
+
+	/* FPGA state string */
+	const char *fpga_state = g_fpga_cache.valid
+		? (g_fpga_cache.fault_latch ? "FAULT" : k_fpga_state_names[g_fpga_cache.state_code & 3U])
+		: "NA";
+	uint8_t fpga_flt  = g_fpga_cache.valid ? g_fpga_cache.fault_code : 0U;
+	uint8_t fpga_arm  = g_fpga_cache.valid ? (g_fpga_cache.mcu_cmd_arm_seen ? 1U : 0U) : 0U;
+	uint8_t fpga_est  = g_fpga_cache.valid ? (g_fpga_cache.estop_ok ? 1U : 0U) : 0U;
+
+	/* GPIO inputs */
+	uint8_t pg_sw  = HAL_GPIO_ReadPin(PGOOD_SW_GPIO_Port, PGOOD_SW_Pin) == GPIO_PIN_SET ? 1U : 0U;
+	uint8_t pg_24v = HAL_GPIO_ReadPin(PGOOD_24V_GPIO_Port, PGOOD_24V_Pin) == GPIO_PIN_SET ? 1U : 0U;
+	uint8_t flt    = HAL_GPIO_ReadPin(FAULT_LATCH_GPIO_Port, FAULT_LATCH_Pin) == GPIO_PIN_SET ? 1U : 0U;
+
+	/* MCAN HB status */
+	const char *mcan_hb = g_mcan.peer_online ? "OK" : "LOST";
+	uint32_t rtt = g_mcan.rtt_last_ms;
+
+	/* AUX switch states */
+	uint8_t a1 = st_aux_sw_get(1U) ? 1U : 0U;
+	uint8_t a2 = st_aux_sw_get(2U) ? 1U : 0U;
+	uint8_t a3 = st_aux_sw_get(3U) ? 1U : 0U;
+
+	st_dbg_printf("[STR] t=%lu FPGA=%s/%u arm=%u estop=%u"
+		" | Vsrc=%.2f Vbus=%.2f Icoil=%.2f T0=%.1f T1=%.1f"
+		" | IN PG_SW=%u PG24=%u FL=%u",
+		(unsigned long)now_ms,
+		fpga_state, fpga_flt, fpga_arm, fpga_est,
+		vsrc, vbus, icoil, t0, t1,
+		pg_sw, pg_24v, flt);
+
+	if (g_ssd_cache.valid) {
+		st_dbg_printf(" | SSD I=%.1fA V=%.1fV T=%.1fC",
+			g_ssd_cache.current_a, g_ssd_cache.voltage_v, g_ssd_cache.temp_c);
+	} else {
+		st_dbg_printf(" | SSD=NA");
+	}
+
+	st_dbg_printf(" | MCAN hb=%s rtt=%lums | AUX %u %u %u\r\n",
+		mcan_hb, (unsigned long)rtt, a1, a2, a3);
+}
+
+
+static void st_monitor_poll(uint32_t now_ms) {
+	if (!g_rt.monitor_adc && !g_rt.monitor_inputs && !g_rt.monitor_ssd
+			&& !g_rt.monitor_adc_local && !g_rt.monitor_fpga)
+		return;
+	if ((now_ms - g_rt.last_monitor_ms) < g_rt.monitor_interval_ms)
+		return;
+	g_rt.last_monitor_ms = now_ms;
+	if (g_rt.monitor_adc)
+		st_adc_monitor_print();
+	if (g_rt.monitor_inputs)
+		st_inputs_monitor_print();
+	if (g_rt.monitor_ssd)
+		st_ssd_print_readings();
+	if (g_rt.monitor_adc_local)
+		st_ladc_monitor_print();
+	if (g_rt.monitor_fpga)
+		st_fpga_monitor_print();
+}
+
+static void st_print_help(void) {
+	st_dbg_printf("\r\n=== PDU Self-Test CLI ===\r\n");
+	st_dbg_printf("[TESTS]   run all|<name> [fast] [both] | stop | clear | summary | status | list\r\n");
+	st_dbg_printf("          enable|disable <name>|all\r\n");
+	st_dbg_printf("          loop on|off | loop count <n> [fast] | loop delay <ms>\r\n");
+	st_dbg_printf("          loop fast on|off | loop stoponfail on|off\r\n");
+	st_dbg_printf("[STREAM]  stream on|off [ms]\r\n");
+	st_dbg_printf("[MONITOR] monitor adc|adc_local|inputs|fpga|ssd on|off\r\n");
+	st_dbg_printf("          monitor interval <ms>\r\n");
+	st_dbg_printf("[FPGA]    fpga regs|state|fault|inputs|timers|ver\r\n");
+	st_dbg_printf("[ADC]     adc ping|raw|eng|scan | adc local raw|eng|scan\r\n");
+	st_dbg_printf("[SSD]     ssd ping|fw|read|raw <cmd>|discover|modbus-probe|listen|modraw\r\n");
+	st_dbg_printf("[CAN]     mcan monitor|diag|hb|ping|status|led|beep|selftest|stats|enable|reset\r\n");
+	st_dbg_printf("[AUX]     aux 1|2|3 on|off|toggle | aux all on|off | aux status\r\n");
+	st_dbg_printf("[GPIO]    set led0|led1|cmd_arm|cmd_fault|can_stb|aux1|aux2|aux3 <0|1>\r\n");
+	st_dbg_printf("[BUZZER]  beep <hz> <ms>\r\n");
+	st_dbg_printf("[THERM]   therm raw | therm cal show|clear|offset <degC>\r\n");
+}
+static void st_handle_set(const char *what, const char *val) {
+	bool on = (strcmp(val, "1") == 0 || st_str_eq_nocase(val, "on"));
+	if (strcmp(what, "led0") == 0)
+		st_led_set(0U, on);
+	else if (strcmp(what, "led1") == 0)
+		st_led_set(1U, on);
+	else if (strcmp(what, "cmd_arm") == 0)
+		st_cmd_arm_set(on);
+	else if (strcmp(what, "cmd_fault") == 0)
+		st_cmd_fault_set(on);
+	else if (strcmp(what, "can_stb") == 0)
+		st_can_standby_set(on);
+	else if (strcmp(what, "rs485_de") == 0)
+		st_rs485_de_set(on);
+	else if (strcmp(what, "aux1") == 0)
+		st_aux_sw_set(1U, on);
+	else if (strcmp(what, "aux2") == 0)
+		st_aux_sw_set(2U, on);
+	else if (strcmp(what, "aux3") == 0)
+		st_aux_sw_set(3U, on);
+	else {
+		st_dbg_printf("unknown set target\r\n");
+		return;
+	}
+	st_dbg_printf("[SET] %s=%u\r\n", what, on ? 1U : 0U);
+}
+
+static void st_process_line(char *line) {
+	char *argv[8] = { 0 };
+	int argc = 0;
+	while (*line != '\0' && argc < 8) {
+		while (isspace((unsigned char )*line))
+			++line;
+		if (*line == '\0')
+			break;
+		argv[argc++] = line;
+		while (*line != '\0' && !isspace((unsigned char )*line))
+			++line;
+		if (*line == '\0')
+			break;
+		*line++ = '\0';
+	}
+	if (argc == 0) {
+		st_prompt();
+		return;
+	}
+
+	if (strcmp(argv[0], "help") == 0) {
+		st_print_help();
+	} else if (strcmp(argv[0], "list") == 0) {
+		st_print_tests();
+	} else if (strcmp(argv[0], "status") == 0) {
+		st_print_status();
+	} else if (strcmp(argv[0], "summary") == 0) {
+		st_print_summary();
+	} else if (strcmp(argv[0], "clear") == 0) {
+		st_reset_all_tests();
+		memset(g_campaign_pass, 0, sizeof(g_campaign_pass));
+		memset(g_campaign_fail, 0, sizeof(g_campaign_fail));
+		memset(g_campaign_warn, 0, sizeof(g_campaign_warn));
+		memset(g_campaign_skip, 0, sizeof(g_campaign_skip));
+		g_rt.loop_completed_count = 0U;
+		g_rt.run_fail_count = 0U;
+		g_rt.run_warn_count = 0U;
+		st_dbg_printf("[CLR] statuses cleared\r\n");
+	} else if (strcmp(argv[0], "stop") == 0) {
+		st_abort(true);
+	} else if (strcmp(argv[0], "run") == 0 && argc >= 2) {
+		bool fast = false;
+		bool both = false;
+		for (int i = 2; i < argc; ++i) {
+			if (st_str_eq_nocase(argv[i], "fast"))
+				fast = true;
+			else if (st_str_eq_nocase(argv[i], "both"))
+				both = true;
+		}
+		g_rt.loop_fast = fast;
+		if (strcmp(argv[1], "all") == 0) {
+			g_rt.campaign_active = false;
+			st_start_all();
+		} else {
+			int idx = st_test_index_from_name(argv[1]);
+			if (idx < 0)
+				st_dbg_printf("unknown test\r\n");
+			else {
+				g_rt.campaign_active = false;
+				st_start_one(g_tests[idx].mask);
+			}
+		}
+		if (both) {
+			int sel = st_mcan_selector_from_name(argv[1]);
+			if (sel < 0)
+				st_dbg_printf("[MCAN] no remote mapping for %s\r\n", argv[1]);
+			else
+				(void) st_mcan_send_selftest_req(&g_mcan,(uint16_t) sel, fast ? 0x0001U : 0U);
+		}
+		if (g_rt.mode != RUN_IDLE) return;  /* runner will prompt when done */
+	} else if ((strcmp(argv[0], "enable") == 0
+			|| strcmp(argv[0], "disable") == 0) && argc >= 2) {
+		bool en = (strcmp(argv[0], "enable") == 0);
+		if (strcmp(argv[1], "all") == 0)
+			g_rt.enabled_mask = en ? ST_TEST_ALL : 0U;
+		else {
+			int idx = st_test_index_from_name(argv[1]);
+			if (idx < 0) {
+				st_dbg_printf("unknown test\r\n");
+				st_prompt();
+				return;
+			}
+			if (en)
+				g_rt.enabled_mask |= g_tests[idx].mask;
+			else
+				g_rt.enabled_mask &= ~g_tests[idx].mask;
+		}
+		st_print_tests();
+	} else if (strcmp(argv[0], "loop") == 0 && argc >= 2) {
+		if (strcmp(argv[1], "on") == 0) {
+			g_rt.loop_enabled = true;
+			g_rt.campaign_active = true;
+			g_rt.loop_target_count = 0U;
+			g_rt.loop_completed_count = 0U;
+			memset(g_campaign_pass, 0, sizeof(g_campaign_pass));
+			memset(g_campaign_fail, 0, sizeof(g_campaign_fail));
+			memset(g_campaign_warn, 0, sizeof(g_campaign_warn));
+			memset(g_campaign_skip, 0, sizeof(g_campaign_skip));
+			if (g_rt.mode == RUN_IDLE)
+				st_start_all();
+			st_dbg_printf("[LOOP] on\r\n");
+		} else if (strcmp(argv[1], "off") == 0) {
+			g_rt.loop_enabled = false;
+			g_rt.campaign_active = false;
+			g_rt.loop_target_count = 0U;
+			st_dbg_printf("[LOOP] off\r\n");
+		} else if (strcmp(argv[1], "count") == 0 && argc >= 3) {
+			uint32_t count = (uint32_t) strtoul(argv[2], NULL, 0);
+			bool fast = (argc >= 4 && st_str_eq_nocase(argv[3], "fast"));
+			g_rt.loop_enabled = true;
+			g_rt.campaign_active = true;
+			g_rt.loop_target_count = count;
+			g_rt.loop_completed_count = 0U;
+			g_rt.loop_fast = fast;
+			if (g_rt.loop_fast && g_rt.loop_delay_ms > ST_FAST_LOOP_DELAY_MS)
+				g_rt.loop_delay_ms = ST_FAST_LOOP_DELAY_MS;
+			memset(g_campaign_pass, 0, sizeof(g_campaign_pass));
+			memset(g_campaign_fail, 0, sizeof(g_campaign_fail));
+			memset(g_campaign_warn, 0, sizeof(g_campaign_warn));
+			memset(g_campaign_skip, 0, sizeof(g_campaign_skip));
+			if (g_rt.mode == RUN_IDLE)
+				st_start_all();
+			st_dbg_printf("[LOOP] count=%lu fast=%u\r\n",
+					(unsigned long) count, fast ? 1U : 0U);
+		} else if (strcmp(argv[1], "delay") == 0 && argc >= 3) {
+			g_rt.loop_delay_ms = (uint32_t) strtoul(argv[2], NULL, 0);
+			st_dbg_printf("[LOOP] delay=%lu ms\r\n",
+					(unsigned long) g_rt.loop_delay_ms);
+		} else if (strcmp(argv[1], "fast") == 0 && argc >= 3) {
+			g_rt.loop_fast = st_str_eq_nocase(argv[2], "on");
+			if (g_rt.loop_fast && g_rt.loop_delay_ms > ST_FAST_LOOP_DELAY_MS)
+				g_rt.loop_delay_ms = ST_FAST_LOOP_DELAY_MS;
+			st_dbg_printf("[LOOP] fast=%u\r\n", g_rt.loop_fast ? 1U : 0U);
+		} else if (strcmp(argv[1], "stoponfail") == 0 && argc >= 3) {
+			g_rt.loop_stop_on_fail = st_str_eq_nocase(argv[2], "on");
+			st_dbg_printf("[LOOP] stoponfail=%u\r\n",
+					g_rt.loop_stop_on_fail ? 1U : 0U);
+		} else {
+			st_dbg_printf("bad loop command\r\n");
+		}
+	} else if (strcmp(argv[0], "therm") == 0 && argc >= 2) {
+		if (strcmp(argv[1], "raw") == 0) {
+			st_therm_print_detail();
+		} else if (strcmp(argv[1], "cal") == 0 && argc >= 3) {
+			if (strcmp(argv[2], "show") == 0) {
+				st_dbg_printf("[THERM] cal offset=%.2fC\r\n", g_rt.therm_offset_c);
+			} else if (strcmp(argv[2], "clear") == 0) {
+				g_rt.therm_offset_c = 0.0f;
+				st_dbg_printf("[THERM] cal cleared\r\n");
+			} else if (strcmp(argv[2], "offset") == 0 && argc >= 4) {
+				g_rt.therm_offset_c = strtof(argv[3], NULL);
+				st_dbg_printf("[THERM] cal offset=%.2fC\r\n", g_rt.therm_offset_c);
+			} else {
+				st_dbg_printf("bad therm cal command\r\n");
+			}
+		} else {
+			st_dbg_printf("bad therm command\r\n");
+		}
+	} else if (strcmp(argv[0], "monitor") == 0 && argc >= 3) {
+		if (strcmp(argv[1], "adc") == 0) {
+			g_rt.monitor_adc = (strcmp(argv[2], "on") == 0);
+			st_dbg_printf("[MON] adc=%s\r\n", g_rt.monitor_adc ? "on" : "off");
+		} else if (strcmp(argv[1], "inputs") == 0) {
+			g_rt.monitor_inputs = (strcmp(argv[2], "on") == 0);
+			st_dbg_printf("[MON] inputs=%s\r\n",
+					g_rt.monitor_inputs ? "on" : "off");
+		} else if (strcmp(argv[1], "ssd") == 0) {
+			g_rt.monitor_ssd = (strcmp(argv[2], "on") == 0);
+			st_dbg_printf("[MON] ssd=%s\r\n", g_rt.monitor_ssd ? "on" : "off");
+		} else if (strcmp(argv[1], "interval") == 0) {
+			g_rt.monitor_interval_ms = (uint32_t) strtoul(argv[2], NULL, 0);
+			st_dbg_printf("[MON] interval=%lu ms\r\n",
+					(unsigned long) g_rt.monitor_interval_ms);
+		} else if (strcmp(argv[1], "adc_local") == 0) {
+			g_rt.monitor_adc_local = (strcmp(argv[2], "on") == 0);
+			st_dbg_printf("[MON] adc_local=%s\r\n",
+					g_rt.monitor_adc_local ? "on" : "off");
+		} else if (strcmp(argv[1], "fpga") == 0) {
+			g_rt.monitor_fpga = (strcmp(argv[2], "on") == 0);
+			st_dbg_printf("[MON] fpga=%s\r\n", g_rt.monitor_fpga ? "on" : "off");
+		} else {
+			st_dbg_printf("bad monitor command\r\n");
+		}
+	} else if (strcmp(argv[0], "adc") == 0 && argc >= 2) {
+		uint8_t sys = 0U;
+		st_adc_sample_t s[8];
+		if (strcmp(argv[1], "ping") == 0) {
+			if (st_adc_ping(&sys))
+				st_dbg_printf("[ADC] ACK, SYSTEM_STATUS=0x%02X\r\n", sys);
+			else
+				st_dbg_printf("[ADC] no response\r\n");
+		} else if (strcmp(argv[1], "raw") == 0 || strcmp(argv[1], "scan") == 0
+				|| strcmp(argv[1], "eng") == 0) {
+			if (!st_adc_read_all(s))
+				st_dbg_printf("[ADC] read failed\r\n");
+			else if (strcmp(argv[1], "raw") == 0)
+				st_adc_print_raw(s);
+			else
+				st_adc_print_eng(s);
+		} else if (strcmp(argv[1], "local") == 0 && argc >= 3) {
+			st_adc_sample_t ls[ST_LADC_NCH];
+			if (!st_ladc_read_all(ls))
+				st_dbg_printf("[LADC] read failed\r\n");
+			else if (strcmp(argv[2], "raw") == 0 || strcmp(argv[2], "scan") == 0)
+				st_ladc_print_raw(ls);
+			else if (strcmp(argv[2], "eng") == 0)
+				st_ladc_print_eng(ls);
+			else
+				st_dbg_printf("bad adc local command\r\n");
+		} else {
+			st_dbg_printf("bad adc command\r\n");
+		}
+	} else if (strcmp(argv[0], "ssd") == 0 && argc >= 2) {
+		if (strcmp(argv[1], "discover") == 0) {
+			st_ssd_discover_ascii();
+		} else if (strcmp(argv[1], "modbus-probe") == 0) {
+			st_ssd_modbus_probe();
+		} else {
+			if (!st_ssd_uart_apply_defaults()) {
+				st_dbg_printf("[SSD] UART3 init failed\r\n");
+			} else if (strcmp(argv[1], "ping") == 0) {
+				char fw[ST_SSD_RX_BUF_LEN] = { 0 };
+				if (st_ssd_query_text(":1VE\r", fw, sizeof(fw)))
+					st_dbg_printf("[SSD] response: %s\r\n", fw);
+				else
+					st_dbg_printf("[SSD] no response to :1VE\r\n");
+			} else if (strcmp(argv[1], "fw") == 0) {
+				char fw[ST_SSD_RX_BUF_LEN] = { 0 };
+				if (st_ssd_query_text(":1VE\r", fw, sizeof(fw)))
+					st_dbg_printf("[SSD] FW=%s\r\n", fw);
+				else
+					st_dbg_printf("[SSD] no response\r\n");
+			} else if (strcmp(argv[1], "read") == 0) {
+				st_ssd_print_readings();
+			} else if (strcmp(argv[1], "errors") == 0) {
+				int32_t errors = 0;
+				if (st_ssd_query_i32(":1G!\r", '!', &errors))
+					st_dbg_printf("[SSD] ERR=0x%04lX\r\n",
+							(unsigned long) ((uint32_t) errors & 0xFFFFU));
+				else
+					st_dbg_printf("[SSD] no response to :1G!\r\n");
+			} else if (strcmp(argv[1], "mode") == 0) {
+				char buf[ST_SSD_RX_BUF_LEN] = { 0 };
+				if (st_ssd_query_text(":1GM\r", buf, sizeof(buf)))
+					st_dbg_printf("[SSD] MODE=%s\r\n", buf);
+				else
+					st_dbg_printf("[SSD] no response to :1GM\r\n");
+			} else if (strcmp(argv[1], "baud") == 0) {
+				char buf[ST_SSD_RX_BUF_LEN] = { 0 };
+				if (st_ssd_query_text(":1GB\r", buf, sizeof(buf)))
+					st_dbg_printf("[SSD] BAUD_CODE=%s\r\n", buf);
+				else
+					st_dbg_printf("[SSD] no response to :1GB\r\n");
+			} else if (strcmp(argv[1], "delay") == 0) {
+				char buf[ST_SSD_RX_BUF_LEN] = { 0 };
+				if (st_ssd_query_text(":1GD\r", buf, sizeof(buf)))
+					st_dbg_printf("[SSD] READ_DELAY_MS=%s\r\n", buf);
+				else
+					st_dbg_printf("[SSD] no response to :1GD\r\n");
+			} else if (strcmp(argv[1], "raw") == 0) {
+				if (argc >= 3)
+					st_ssd_print_raw_cmd(argv[2]);
+				else
+					st_dbg_printf("usage: ssd raw :1VE\r\n");
+			} else if (strcmp(argv[1], "detest") == 0) {
+				/* Read back actual GPIOB registers to verify DE pin state.
+				 * MODER[29:28]: 00=input 01=output 10=AF 11=analog
+				 * Expected after uart_apply_defaults(): MODER=1, ODR=0 */
+				uint32_t moder_bits = (GPIOB->MODER >> (14U * 2U)) & 0x3U;
+				st_dbg_printf("[DE] after init: MODER[29:28]=%lu (want 1=out) ODR14=%lu\r\n",
+						(unsigned long) moder_bits,
+						(unsigned long) ((GPIOB->ODR >> 14U) & 1U));
+				/* Assert DE HIGH and read back */
+				st_rs485_de_set(true);
+				HAL_Delay(2U);
+				st_dbg_printf("[DE] after assert HIGH: MODER=%lu ODR14=%lu IDR14=%lu\r\n",
+						(unsigned long) ((GPIOB->MODER >> (14U * 2U)) & 0x3U),
+						(unsigned long) ((GPIOB->ODR >> 14U) & 1U),
+						(unsigned long) ((GPIOB->IDR >> 14U) & 1U));
+				HAL_Delay(100U);
+				st_rs485_de_set(false);
+				st_dbg_printf("[DE] after assert LOW:  MODER=%lu ODR14=%lu IDR14=%lu\r\n",
+						(unsigned long) ((GPIOB->MODER >> (14U * 2U)) & 0x3U),
+						(unsigned long) ((GPIOB->ODR >> 14U) & 1U),
+						(unsigned long) ((GPIOB->IDR >> 14U) & 1U));
+			} else if (strcmp(argv[1], "listen") == 0) {
+				uint32_t ms = 2000U;
+				if (argc >= 3)
+					ms = (uint32_t)strtoul(argv[2], NULL, 10);
+				st_ssd_listen(ms);
+			} else if (strcmp(argv[1], "modraw") == 0) {
+				uint8_t a = 1U;
+				if (argc >= 3)
+					a = (uint8_t)strtoul(argv[2], NULL, 10);
+				st_ssd_modraw(a);
+			} else {
+				st_dbg_printf("bad ssd command\r\n");
+			}
+		}
+	} else if (st_str_eq_nocase(argv[0], "mcan") && argc >= 2) {
+		if (st_str_eq_nocase(argv[1], "monitor") && argc >= 3) {
+			g_mcan.monitor = st_str_eq_nocase(argv[2], "on");
+			if (g_mcan.monitor && !g_mcan.online) (void)st_mcan_bus_config(&g_mcan, true);
+			st_dbg_printf("[MCAN] monitor=%u\r\n", g_mcan.monitor ? 1U : 0U);
+		} else if (st_str_eq_nocase(argv[1], "diag")) {
+		    st_mcan_print_diag(&g_mcan);
+		} else if (st_str_eq_nocase(argv[1], "hb") && argc >= 3) {
+			if (st_str_eq_nocase(argv[2], "off")) {
+				g_mcan.hb_enabled = false;
+				st_dbg_printf("[MCAN] hb=0\r\n");
+			} else if (st_str_eq_nocase(argv[2], "on")) {
+				if (argc >= 4) g_mcan.hb_period_ms = (uint32_t)strtoul(argv[3], NULL, 0);
+				if (g_mcan.hb_period_ms == 0U) g_mcan.hb_period_ms = ST_MCAN_DEFAULT_HB_MS;
+				g_mcan.hb_enabled = true;
+				if (!g_mcan.online) (void)st_mcan_bus_config(&g_mcan, true);
+				st_dbg_printf("[MCAN] hb=1 period=%lu ms\r\n", (unsigned long)g_mcan.hb_period_ms);
+			} else {
+				st_dbg_printf("bad mcan hb command\r\n");
+			}
+		} else if (st_str_eq_nocase(argv[1], "ping") && argc >= 3) {
+			if (st_str_eq_nocase(argv[2], "once")) {
+				st_mcan_start_ping(&g_mcan,1U, ST_MCAN_DEFAULT_PING_MS, false, true);
+				st_dbg_printf("[MCAN] ping once\r\n");
+			} else if (st_str_eq_nocase(argv[2], "count") && argc >= 5) {
+				uint32_t count = (uint32_t)strtoul(argv[3], NULL, 0);
+				uint32_t period = (uint32_t)strtoul(argv[4], NULL, 0);
+				st_mcan_start_ping(&g_mcan,count, period, false, false);
+				st_dbg_printf("[MCAN] ping count=%lu period=%lu ms\r\n", (unsigned long)count, (unsigned long)period);
+			} else if (st_str_eq_nocase(argv[2], "cont") && argc >= 4) {
+				uint32_t period = (uint32_t)strtoul(argv[3], NULL, 0);
+				st_mcan_start_ping(&g_mcan,0U, period, false, false);
+				st_dbg_printf("[MCAN] ping cont period=%lu ms\r\n", (unsigned long)period);
+			} else {
+				st_dbg_printf("bad mcan ping command\r\n");
+			}
+		} else if (st_str_eq_nocase(argv[1], "pingboth") && argc >= 3) {
+			if (st_str_eq_nocase(argv[2], "off")) {
+				st_mcan_stop_ping(&g_mcan);
+				st_dbg_printf("[MCAN] pingboth off\r\n");
+			} else if (st_str_eq_nocase(argv[2], "on")) {
+				uint32_t period = (argc >= 4) ? (uint32_t)strtoul(argv[3], NULL, 0) : ST_MCAN_DEFAULT_PING_MS;
+				st_mcan_start_ping(&g_mcan,0U, period, true, false);
+				st_dbg_printf("[MCAN] pingboth on period=%lu ms\r\n", (unsigned long)period);
+			} else {
+				st_dbg_printf("bad mcan pingboth command\r\n");
+			}
+		} else if (st_str_eq_nocase(argv[1], "status") && argc >= 3 && st_str_eq_nocase(argv[2], "req")) {
+			uint8_t seq = ++g_mcan.next_seq;
+			if (st_mcan_send_simple(&g_mcan,ST_MCAN_TYPE_STATUS_REQ, seq, 0U, 0U, 0U)) {
+				g_mcan.tx_req++;
+				st_dbg_printf("[MCAN] status req seq=%u\r\n", seq);
+			} else st_dbg_printf("[MCAN] status req failed\r\n");
+		} else if (st_str_eq_nocase(argv[1], "led") && argc >= 4) {
+			uint16_t count = (uint16_t)strtoul(argv[2], NULL, 0);
+			uint16_t dwell = (uint16_t)strtoul(argv[3], NULL, 0);
+			uint8_t seq = ++g_mcan.next_seq;
+			if (st_mcan_send_simple(&g_mcan,ST_MCAN_TYPE_LED_REQ, seq, 0U, count, dwell)) {
+				g_mcan.tx_req++;
+				st_dbg_printf("[MCAN] led req seq=%u count=%u dwell=%u\r\n", seq, count, dwell);
+			} else st_dbg_printf("[MCAN] led req failed\r\n");
+		} else if (st_str_eq_nocase(argv[1], "beep") && argc >= 4) {
+			uint16_t hz = (uint16_t)strtoul(argv[2], NULL, 0);
+			uint16_t ms = (uint16_t)strtoul(argv[3], NULL, 0);
+			uint8_t seq = ++g_mcan.next_seq;
+			if (st_mcan_send_simple(&g_mcan,ST_MCAN_TYPE_BEEP_REQ, seq, 0U, hz, ms)) {
+				g_mcan.tx_req++;
+				st_dbg_printf("[MCAN] beep req seq=%u hz=%u ms=%u\r\n", seq, hz, ms);
+			} else st_dbg_printf("[MCAN] beep req failed\r\n");
+		} else if (st_str_eq_nocase(argv[1], "selftest") && argc >= 3) {
+			int sel = st_mcan_selector_from_name(argv[2]);
+			bool fast = (argc >= 4 && st_str_eq_nocase(argv[3], "fast"));
+			if (sel < 0)
+				st_dbg_printf("bad mcan selftest target\r\n");
+			else
+				(void) st_mcan_send_selftest_req(&g_mcan,(uint16_t) sel, fast ? 0x0001U : 0U);
+		} else if (st_str_eq_nocase(argv[1], "stats")) {
+			st_mcan_print_stats(&g_mcan);
+		} else if (st_str_eq_nocase(argv[1], "clear")) {
+			st_mcan_clear_stats(&g_mcan);
+			uint8_t seq = ++g_mcan.next_seq;
+			if (st_mcan_send_simple(&g_mcan,ST_MCAN_TYPE_CLEAR_STATS_REQ, seq, 0U, 0U, 0U)) {
+				g_mcan.tx_req++;
+				st_dbg_printf("[MCAN] local+remote clear req seq=%u\r\n", seq);
+			} else {
+				st_dbg_printf("[MCAN] local clear only\r\n");
+			}
+		} else if (st_str_eq_nocase(argv[1], "enable")) {
+			if (!g_mcan.online) (void)st_mcan_bus_config(&g_mcan, true);
+			st_dbg_printf("[MCAN] bus %s\r\n", g_mcan.online ? "enabled" : "enable failed");
+		} else if (st_str_eq_nocase(argv[1], "reset")) {
+			g_mcan.monitor = false;
+			g_mcan.hb_enabled = false;
+			st_mcan_stop_ping(&g_mcan);
+			st_mcan_clear_stats(&g_mcan);
+			st_mcan_bus_disable(&g_mcan);
+			g_mcan.peer_online = false;
+			g_mcan.last_peer_seen_ms = 0U;
+			st_dbg_printf("[MCAN] reset\r\n");
+		} else {
+			st_dbg_printf("bad mcan command\r\n");
+		}
+	} else if (strcmp(argv[0], "set") == 0 && argc >= 3) {
+		st_handle_set(argv[1], argv[2]);
+	} else if (strcmp(argv[0], "fpga") == 0 && argc >= 2) {
+		if (strcmp(argv[1], "regs") == 0) {
+			st_fpga_cmd_regs();
+		} else if (strcmp(argv[1], "state") == 0) {
+			st_fpga_cmd_state();
+		} else if (strcmp(argv[1], "fault") == 0) {
+			if (argc >= 3) {
+				bool on = (strcmp(argv[2], "on") == 0);
+				st_cmd_fault_set(on);
+				st_dbg_printf("[FPGA] CMD_FAULT=%u\r\n", on ? 1U : 0U);
+			} else {
+				st_fpga_cmd_fault();
+			}
+		} else if (strcmp(argv[1], "inputs") == 0) {
+			st_fpga_cmd_inputs();
+		} else if (strcmp(argv[1], "timers") == 0) {
+			st_fpga_cmd_timers();
+		} else if (strcmp(argv[1], "ver") == 0) {
+			st_fpga_cmd_ver();
+		} else if (strcmp(argv[1], "arm") == 0 && argc >= 3) {
+			bool on = (strcmp(argv[2], "on") == 0);
+			st_cmd_arm_set(on);
+			st_dbg_printf("[FPGA] CMD_ARM=%u\r\n", on ? 1U : 0U);
+		} else if (strcmp(argv[1], "status") == 0) {
+			st_fpga_cmd_status();
+		} else if (strcmp(argv[1], "scenario") == 0 && argc >= 3) {
+			if (strcmp(argv[2], "arm") == 0)
+				st_fpga_scenario_arm();
+			else if (strcmp(argv[2], "fault") == 0)
+				st_fpga_scenario_fault();
+			else
+				st_dbg_printf("bad fpga scenario command\r\n");
+		} else {
+			st_dbg_printf("bad fpga command\r\n");
+		}
+	} else if (strcmp(argv[0], "beep") == 0 && argc >= 3) {
+		uint32_t hz = (uint32_t) strtoul(argv[1], NULL, 0);
+		uint32_t ms = (uint32_t) strtoul(argv[2], NULL, 0);
+		st_buzzer_start(hz);
+		HAL_Delay(ms);
+		st_buzzer_off();
+		st_dbg_printf("[BEEP] %lu Hz for %lu ms\r\n", (unsigned long) hz,
+				(unsigned long) ms);
+	} else if (strcmp(argv[0], "stream") == 0 && argc >= 2) {
+		if (strcmp(argv[1], "on") == 0) {
+			g_stream_on = true;
+			if (argc >= 3)
+				g_stream_interval_ms = (uint32_t)strtoul(argv[2], NULL, 10);
+			uint32_t now = HAL_GetTick();
+			g_stream_next_ms     = now;
+			g_stream_ssd_next_ms = now;  /* fire SSD refresh immediately */
+			st_dbg_printf("[STR] on interval=%lums\r\n", (unsigned long)g_stream_interval_ms);
+		} else if (strcmp(argv[1], "off") == 0) {
+			g_stream_on = false;
+			st_dbg_printf("[STR] off\r\n");
+		} else {
+			st_dbg_printf("usage: stream on|off [ms]\r\n");
+		}
+	} else if (strcmp(argv[0], "aux") == 0) {
+		if (argc >= 3 && (argv[1][0] >= '1' && argv[1][0] <= '3') && argv[1][1] == '\0') {
+			uint8_t n = (uint8_t)(argv[1][0] - '0');
+			if (strcmp(argv[2], "on") == 0) {
+				st_aux_sw_set(n, true);
+				st_dbg_printf("[AUX] %u on\r\n", n);
+			} else if (strcmp(argv[2], "off") == 0) {
+				st_aux_sw_set(n, false);
+				st_dbg_printf("[AUX] %u off\r\n", n);
+			} else if (strcmp(argv[2], "toggle") == 0) {
+				bool cur = st_aux_sw_get(n);
+				st_aux_sw_set(n, !cur);
+				st_dbg_printf("[AUX] %u %s\r\n", n, !cur ? "on" : "off");
+			} else {
+				st_dbg_printf("usage: aux 1|2|3 on|off|toggle\r\n");
+			}
+		} else if (argc >= 3 && strcmp(argv[1], "all") == 0) {
+			bool v = (strcmp(argv[2], "on") == 0);
+			st_aux_sw_set(1U, v);
+			st_aux_sw_set(2U, v);
+			st_aux_sw_set(3U, v);
+			st_dbg_printf("[AUX] all %s\r\n", v ? "on" : "off");
+		} else if (argc >= 2 && strcmp(argv[1], "status") == 0) {
+			st_dbg_printf("[AUX] 1=%u 2=%u 3=%u\r\n",
+				st_aux_sw_get(1U) ? 1U : 0U,
+				st_aux_sw_get(2U) ? 1U : 0U,
+				st_aux_sw_get(3U) ? 1U : 0U);
+		} else {
+			st_dbg_printf("usage: aux 1|2|3 on|off|toggle | aux all on|off | aux status\r\n");
+		}
+	} else {
+		st_dbg_printf("unknown command\r\n");
+	}
+	st_prompt();
+}
+
+static void st_handle_uart_rx(void) {
+	while (__HAL_UART_GET_FLAG(&ST_DBG_UART, UART_FLAG_RXNE) != RESET) {
+		uint8_t ch = (uint8_t) (ST_DBG_UART.Instance->RDR & 0xFFU);
+		if (ch == '\r' || ch == '\n') {
+			st_dbg_printf("\r\n");
+			g_cli_buf[g_cli_len] = '\0';
+			st_process_line((char*) g_cli_buf);
+			g_cli_len = 0U;
+		} else if (ch == 0x08U || ch == 0x7FU) {
+			if (g_cli_len > 0U) {
+				g_cli_len--;
+				st_dbg_printf("\b \b");
+			}
+		} else if (isprint((unsigned char )ch)
+				&& g_cli_len < (ST_CLI_BUF_LEN - 1U)) {
+			g_cli_buf[g_cli_len++] = ch;
+			(void) HAL_UART_Transmit(&ST_DBG_UART, &ch, 1U, 10U);
+		}
+	}
+}
+
+void PDU_SelfTest_Init(void) {
+	st_reset_all_tests();
+	st_safe_outputs();
+	st_restore_runtime_outputs();
+	st_dbg_printf("\r\n==================================================\r\n");
+	st_dbg_printf("PDU SELFTEST %s\r\n", ST_VERSION);
+	st_dbg_printf("UART CLI ready on UART4 @ 115200\r\n");
+	st_dbg_printf("Call this init after MX_* peripheral init.\r\n");
+	st_mcan_init(&g_mcan);
+	if (st_mcan_bus_config(&g_mcan, true) == HAL_OK)
+		st_dbg_printf("[MCAN] bus auto-enabled\r\n");
+	st_dbg_printf("Type 'help'\r\n");
+	st_prompt();
+}
+
+void PDU_SelfTest_Task(void) {
+	uint32_t now_ms = HAL_GetTick();
+	st_handle_uart_rx();
+	st_runner_poll(now_ms);
+	st_monitor_poll(now_ms);
+	st_stream_poll(now_ms);
+	st_mcan_poll(&g_mcan, now_ms);
+	/* Background FPGA cache refresh (keeps MCAN status word live) */
+	if ((int32_t)(now_ms - g_fpga_bg_next_ms) >= 0) {
+		st_fpga_poll();
+		g_fpga_bg_next_ms = now_ms + FPGA_BG_INTERVAL_MS;
+	}
+}

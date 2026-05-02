@@ -69,12 +69,17 @@ from .robot_hardware_interface import (
 )
 
 # Lazy import of ROS2 message types so the module can be imported before
-# motor_test messages are sourced (useful in CI / bare Python tests).
+# workspace overlays are sourced (useful in CI / bare Python tests).
 try:
-    from motor_test.msg import RobotCommand, RobotObservation  # type: ignore
+    from motor_control.msg import RobotCommand, RobotObservation  # type: ignore
     _MSGS_AVAILABLE = True
 except ModuleNotFoundError:
-    _MSGS_AVAILABLE = False
+    try:
+        # Backward-compatibility with older package naming.
+        from motor_test.msg import RobotCommand, RobotObservation  # type: ignore
+        _MSGS_AVAILABLE = True
+    except ModuleNotFoundError:
+        _MSGS_AVAILABLE = False
 
 
 class Ros2RobotBridge:
@@ -112,8 +117,9 @@ class Ros2RobotBridge:
     ) -> None:
         if not _MSGS_AVAILABLE:
             raise ImportError(
-                'motor_test ROS2 messages not found.  '
-                'Build and source the motor_test package before importing Ros2RobotBridge.'
+                'ROS2 robot messages not found.  '
+                'Build and source the motor_control package (or legacy motor_test package) '
+                'before importing Ros2RobotBridge.'
             )
 
         self._joint_names = list(joint_names)

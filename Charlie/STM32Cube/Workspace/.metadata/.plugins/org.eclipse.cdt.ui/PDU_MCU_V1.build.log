@@ -1,0 +1,7 @@
+05:23:59 **** Incremental Build of configuration Default for project PDU_MCU_V1 ****
+make all 
+make: *** No rule to make target 'all'.  Stop.
+"make all" terminated with exit code 2. Build might be incomplete.
+
+05:23:59 Build Failed. 1 errors, 0 warnings. (took 84ms)
+

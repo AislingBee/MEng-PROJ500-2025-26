@@ -46,6 +46,8 @@ class RobotCommandMessage:
     kp: list[float]
     kd: list[float]
     tau_ff: list[float]
+    kp_gains: list[float]  # Per-joint proportional gains for MIT control
+    kd_gains: list[float]  # Per-joint derivative gains for MIT control
 
 
 @dataclass
@@ -254,6 +256,8 @@ class RobotHardwareInterface(BaseHardwareInterface):
         kp = self._flatten_control_tensor(packet.kp, "kp")
         kd = self._flatten_control_tensor(packet.kd, "kd")
         tau_ff = self._flatten_control_tensor(packet.tau_ff, "tau_ff")
+        kp_gains = self._flatten_control_tensor(packet.kp_gains, "kp_gains")
+        kd_gains = self._flatten_control_tensor(packet.kd_gains, "kd_gains")
         qd_des = torch.full_like(q_des, fill_value=self.cfg.default_qd_des_rad_s)
 
         msg = RobotCommandMessage(
@@ -263,5 +267,7 @@ class RobotHardwareInterface(BaseHardwareInterface):
             kp=kp.detach().cpu().tolist(),
             kd=kd.detach().cpu().tolist(),
             tau_ff=tau_ff.detach().cpu().tolist(),
+            kp_gains=kp_gains.detach().cpu().tolist(),
+            kd_gains=kd_gains.detach().cpu().tolist(),
         )
         self.command_writer(msg)

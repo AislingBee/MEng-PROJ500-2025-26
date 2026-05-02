@@ -1,0 +1,84 @@
+{
+  "connection": {
+    "rcu_ip": "192.168.100.10",
+    "auto_reconnect": true,
+    "reconnect_interval_s": 2.0
+  },
+  "display": {
+    "default_time_window_s": 30,
+    "update_rate_ms": 100
+  },
+  "plots": {
+    "line_width": 1.5,
+    "antialiasing": true,
+    "use_opengl": true,
+    "pdu_signals_checked": {
+      "v_vraw_v": true,
+      "v_12v_v": true,
+      "v_24v_v": true
+    },
+    "imu_signals_checked": {
+      "imu0_ax_g": true,
+      "imu0_ay_g": true,
+      "imu0_az_g": true,
+      "imu0_mag": true,
+      "imu1_ax_g": true,
+      "imu1_ay_g": true,
+      "imu1_az_g": true,
+      "imu1_mag": true
+    }
+  },
+  "alerts": {
+    "v_src_warn_min_v": 35.0,
+    "v_src_warn_max_v": 58.0,
+    "v_12v_warn_min_v": 11.0,
+    "v_12v_warn_max_v": 13.0,
+    "v_24v_warn_min_v": 22.0,
+    "v_24v_warn_max_v": 26.0,
+    "temp_warn_max_c": 40.0,
+    "temp_err_max_c": 70.0
+  },
+  "recording": {
+    "default_dir": "C:\\Users\\charl\\Documents\\STM32Cube\\Tools",
+    "signals": [
+      "v_vraw_v",
+      "v_12v_v",
+      "v_24v_v",
+      "i_vraw_sw_ma",
+      "i_12v_ma",
+      "i_24v_ma",
+      "therm1_c",
+      "therm2_c",
+      "em_v_v",
+      "em_i_ma",
+      "em_p_w",
+      "em_t_c",
+      "ladc_therm0_c",
+      "ladc_therm1_c",
+      "ladc_therm2_c",
+      "ladc_vsource_v",
+      "ladc_vbus_v",
+      "ladc_icoil_ma",
+      "imu0_ax_g",
+      "imu0_ay_g",
+      "imu0_az_g",
+      "imu0_mag",
+      "imu0_gx_dps",
+      "imu0_gy_dps",
+      "imu0_gz_dps",
+      "imu0_temp_c",
+      "imu1_ax_g",
+      "imu1_ay_g",
+      "imu1_az_g",
+      "imu1_mag",
+      "imu1_gx_dps",
+      "imu1_gy_dps",
+      "imu1_gz_dps",
+      "imu1_temp_c"
+    ]
+  },
+  "ui": {
+    "last_tab_index": 4,
+    "window_geometry": "AdnQywADAAAAAAIqAAAA+AAABykAAAQ2AAACKgAAARcAAAcpAAAENgAAAAAAAAAADXAAAAIqAAABFwAABykAAAQ2"
+  }
+}
