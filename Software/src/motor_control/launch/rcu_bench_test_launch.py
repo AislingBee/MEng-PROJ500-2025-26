@@ -21,8 +21,8 @@ def generate_launch_description():
     rcu_stack = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(rcu_launch_path),
         launch_arguments={
-            "active_motor_ids": "[1,2]",
-            "left_bus_motor_ids": "[1,2]",
+            "active_motor_ids": "[9,10]",
+            "left_bus_motor_ids": "[9]",
             "auto_enable": "True",
             "ctrl_mode": "0",
             "scan_motor_can_ids": "True",
@@ -36,7 +36,7 @@ def generate_launch_description():
         output="screen",
         parameters=[{
             "command_topic": "/robot_command",
-            "joint_names": "motor_1,motor_2",
+            "joint_names": "motor_9,motor_10",
             "rate_hz": 10.0,
             "match_plymouth_bench_mode": True,
             "target_q_rad": 0.0,
