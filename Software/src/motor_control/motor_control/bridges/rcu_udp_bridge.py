@@ -141,12 +141,10 @@ class RcuUdpBridge(Node):
         self.declare_parameter("wait_for_expected_online_ids", False)
         self.declare_parameter("expected_online_motor_ids", [])
         self.declare_parameter("startup_gate_error_after_s", 5.0)
-        # NOTE: ROS 2 Jazzy infers an empty list as BYTE_ARRAY. Use a concrete
-        # integer-array default to keep the parameter type stable.
-        if not self.has_parameter("left_bus_motor_ids"):
-            self.declare_parameter("left_bus_motor_ids", [1, 2])
-        if not self.has_parameter("active_motor_ids"):
-            self.declare_parameter("active_motor_ids", [i for i in range(1, 13)])
+        # Keep these as strings in launch-facing APIs so IncludeLaunchDescription
+        # and CLI argument overrides remain compatible on Jazzy.
+        self.declare_parameter("left_bus_motor_ids", "[1,2]")
+        self.declare_parameter("active_motor_ids", "[1,2,3,4,5,6,7,8,9,10,11,12]")
 
         rcu_ip_raw = self.get_parameter("rcu_ip").value
         cmd_port_raw = self.get_parameter("rcu_cmd_port").value
