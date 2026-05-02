@@ -14,8 +14,8 @@ RX (RCU → Thor, port 7700):
   Type 0x01 slow telem      (10  Hz) → /rcu_pdu_telem (JSON String) + CSV log
 
 Services:
-  /rcu_motor_estop  (std_srvs/SetBool)
-      True  → enable all motors  (Type 0x11 enable_mask=0x0FFF)
+    /rcu_motor_estop  (std_srvs/SetBool)
+            True  → enable configured active motors only
       False → FULL E-STOP: Type 0x11 enable_mask=0 + PDU fault assert
   /rcu_pdu_fault    (std_srvs/SetBool)
       True  → assert PDU fault (cuts power rails via debug cmd 0x07)
@@ -139,7 +139,7 @@ class RcuUdpBridge(Node):
         self.declare_parameter("can_id_online_timeout_s", 1.0)
         self.declare_parameter("can_id_scan_log_period_s", 1.0)
         self.declare_parameter("wait_for_expected_online_ids", False)
-        self.declare_parameter("expected_online_motor_ids", [])
+        self.declare_parameter("expected_online_motor_ids", "[]")
         self.declare_parameter("startup_gate_error_after_s", 5.0)
         # Keep these as strings in launch-facing APIs so IncludeLaunchDescription
         # and CLI argument overrides remain compatible on Jazzy.
@@ -285,14 +285,14 @@ class RcuUdpBridge(Node):
 
         # ----- Auto-enable -----
         if auto_enable:
-            self.get_logger().info("auto_enable=True — enabling all motors")
+            self.get_logger().info("auto_enable=True — enabling active motors")
             self._send_enable_all()
 
         self.get_logger().info(
             f"rcu_udp_bridge ready: RCU={rcu_ip}, ctrl_mode={self._ctrl_mode}, "
             f"{rate_hz:.0f} Hz TX")
         self.get_logger().info(
-            f"Active motor IDs for TX: {self._active_motor_ids}")
+            f"ENABLED motor IDs (command/enable scope): {self._active_motor_ids}")
         id_map = ", ".join(
             f"{mid}:{rp.MOTOR_JOINT_NAMES[mid]}"
             for mid in self._active_motor_ids
@@ -424,10 +424,20 @@ class RcuUdpBridge(Node):
         )
 
     def _send_enable_all(self):
+        active_enable_mask = 0
+        for mid in self._active_motor_ids:
+            active_enable_mask |= (1 << (mid - 1))
+
+        self.get_logger().info(
+            "Applying supervisory enable mask for ENABLED motor IDs: "
+            f"0x{active_enable_mask:03X} -> {self._active_motor_ids}"
+        )
+
         self._send_motor_bus_ctrl_for_active_ids()
         self._send_with_retries(
             rp.encode_motor_supervisory(
-                enable_mask=0x0FFF, clear_fault_mask=0x0FFF,
+                enable_mask=active_enable_mask,
+                clear_fault_mask=active_enable_mask,
                 ctrl_mode=self._ctrl_mode,
             ),
             retries=3,
@@ -476,7 +486,7 @@ class RcuUdpBridge(Node):
         if request.data:
             self._send_enable_all()
             response.success = True
-            response.message = "Motors enabled"
+            response.message = "Active motors enabled"
         else:
             self._send_full_estop()
             response.success = True
@@ -590,11 +600,28 @@ class RcuUdpBridge(Node):
             return
         self._last_can_scan_log_t = now
         online = self._online_motor_ids(now)
+        enabled_ids = list(self._active_motor_ids)
+        observed_not_enabled = [mid for mid in online if mid not in enabled_ids]
+        enabled_missing_observed = [mid for mid in enabled_ids if mid not in online]
+
         if online:
             online_named = [f"{mid}:{rp.MOTOR_JOINT_NAMES[mid]}" for mid in online]
-            self.get_logger().info(f"CAN scan online motor IDs: {online_named}")
+            self.get_logger().info(f"OBSERVED CAN IDs (feedback seen): {online_named}")
         else:
-            self.get_logger().error("CAN scan online motor IDs: []")
+            self.get_logger().error("OBSERVED CAN IDs (feedback seen): []")
+
+        self.get_logger().info(
+            f"ENABLED motor IDs (command/enable scope): {enabled_ids}"
+        )
+
+        if observed_not_enabled:
+            self.get_logger().warn(
+                f"OBSERVED but NOT ENABLED by this launch: {observed_not_enabled}"
+            )
+        if enabled_missing_observed:
+            self.get_logger().warn(
+                f"ENABLED but NOT OBSERVED recently: {enabled_missing_observed}"
+            )
 
         if self._expected_online_motor_ids:
             missing = [mid for mid in self._expected_online_motor_ids if mid not in online]
