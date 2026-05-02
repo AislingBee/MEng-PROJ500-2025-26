@@ -40,6 +40,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
@@ -150,14 +151,14 @@ def generate_launch_description():
                 "log_dir":      log_dir,
                 "auto_enable":  auto_enable,
                 "loop_rate_hz": loop_rate_hz,
-                "active_motor_ids": active_motor_ids,
-                "left_bus_motor_ids": left_bus_motor_ids,
-                "right_bus_motor_ids": right_bus_motor_ids,
+                "active_motor_ids": ParameterValue(active_motor_ids, value_type=str),
+                "left_bus_motor_ids": ParameterValue(left_bus_motor_ids, value_type=str),
+                "right_bus_motor_ids": ParameterValue(right_bus_motor_ids, value_type=str),
                 "scan_motor_can_ids": scan_motor_can_ids,
                 "can_id_online_timeout_s": can_id_online_timeout_s,
                 "can_id_scan_log_period_s": can_id_scan_log_period_s,
                 "wait_for_expected_online_ids": wait_for_expected_online_ids,
-                "expected_online_motor_ids": expected_online_motor_ids,
+                "expected_online_motor_ids": ParameterValue(expected_online_motor_ids, value_type=str),
                 "startup_gate_error_after_s": startup_gate_error_after_s,
             }],
         ),

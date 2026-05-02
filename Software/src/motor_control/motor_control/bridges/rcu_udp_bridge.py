@@ -47,6 +47,7 @@ from collections import defaultdict
 from datetime import datetime
 
 import rclpy
+from rcl_interfaces.msg import ParameterDescriptor
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from sensor_msgs.msg import Imu
@@ -139,13 +140,22 @@ class RcuUdpBridge(Node):
         self.declare_parameter("can_id_online_timeout_s", 1.0)
         self.declare_parameter("can_id_scan_log_period_s", 1.0)
         self.declare_parameter("wait_for_expected_online_ids", False)
-        self.declare_parameter("expected_online_motor_ids", "[]")
+        motor_ids_param_descriptor = ParameterDescriptor(dynamic_typing=True)
+        self.declare_parameter(
+            "expected_online_motor_ids", "[]", motor_ids_param_descriptor
+        )
         self.declare_parameter("startup_gate_error_after_s", 5.0)
         # Keep these as strings in launch-facing APIs so IncludeLaunchDescription
         # and CLI argument overrides remain compatible on Jazzy.
-        self.declare_parameter("left_bus_motor_ids", "[1,3,5,7,9,11]")
-        self.declare_parameter("right_bus_motor_ids", "[2,4,6,8,10,12]")
-        self.declare_parameter("active_motor_ids", "[1,2,3,4,5,6,7,8,9,10,11,12]")
+        self.declare_parameter(
+            "left_bus_motor_ids", "[1,3,5,7,9,11]", motor_ids_param_descriptor
+        )
+        self.declare_parameter(
+            "right_bus_motor_ids", "[2,4,6,8,10,12]", motor_ids_param_descriptor
+        )
+        self.declare_parameter(
+            "active_motor_ids", "[1,2,3,4,5,6,7,8,9,10,11,12]", motor_ids_param_descriptor
+        )
 
         rcu_ip_raw = self.get_parameter("rcu_ip").value
         cmd_port_raw = self.get_parameter("rcu_cmd_port").value
