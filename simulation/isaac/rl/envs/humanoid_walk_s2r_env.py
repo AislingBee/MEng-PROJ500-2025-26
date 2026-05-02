@@ -56,8 +56,8 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
 
     # Velocity command curriculum.  The policy starts slow and is only asked for
     # faster walking once the velocity-tracking term is consistently high.
-    command_lin_vel_x_min: float = 0.05
-    command_lin_vel_x_max: float = 0.12
+    command_lin_vel_x_min: float = 0.15
+    command_lin_vel_x_max: float = 0.15
     command_lin_vel_x_max_final: float = 0.0
     command_lin_vel_x_increment: float = 0.0
     command_curriculum_interval_steps: int = 2000
