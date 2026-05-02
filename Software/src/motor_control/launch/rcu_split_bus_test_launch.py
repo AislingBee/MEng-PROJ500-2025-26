@@ -124,8 +124,8 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "ctrl_mode",
-            default_value="1",
-            description="Motor control mode for test: 1=CSP, 0=MIT",
+            default_value="0",
+            description="Motor control mode for test: 0=MIT, 1=CSP",
         ),
         DeclareLaunchArgument(
             "scan_log_period_s",
