@@ -7,6 +7,8 @@ import time
 
 import torch
 
+from simulation.isaac.kinematics.thor_leg_fk import compute_foot_pos_b
+
 from .hardware_interface import BaseHardwareInterface, ControlPacket, ObservationPacket
 
 
@@ -217,6 +219,11 @@ class RobotHardwareInterface(BaseHardwareInterface):
         tau = self._joint_effort_nm(sample)
         gravity_b = self._projected_gravity_b(sample)
         gyro_b = self._imu_gyro_b(sample)
+        # Deployment-valid FK foot position: real hardware and Isaac share the
+        # same deterministic joint-angle FK helper.
+        foot_pos_b = compute_foot_pos_b(q.unsqueeze(0))
+        if foot_pos_b.shape[-1] != 6:
+            raise RuntimeError(f"FK foot_pos_b must have trailing dim 6, got {foot_pos_b.shape[-1]}")
 
         # Return batched tensors so the env sees the same shape contract as sim.
         return ObservationPacket(
@@ -225,6 +232,7 @@ class RobotHardwareInterface(BaseHardwareInterface):
             joint_effort=tau.unsqueeze(0).clone(),
             projected_gravity_b=gravity_b.unsqueeze(0).clone(),
             imu_gyro_b=gyro_b.unsqueeze(0).clone(),
+            foot_pos_b=foot_pos_b.clone(),
         )
 
     def _flatten_control_tensor(self, x: torch.Tensor, field_name: str) -> torch.Tensor:

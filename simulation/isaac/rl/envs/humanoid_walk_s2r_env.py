@@ -31,6 +31,7 @@ USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "r
 class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     decimation: int = CONTRACT.decimation
     episode_length_s: float = 10.0
+    action_delay_steps: int = 0
 
     sim: SimulationCfg = SimulationCfg(
         dt=CONTRACT.sim_dt_s,
@@ -51,16 +52,17 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
 
     usd_path: str = str(USD_PATH)
     base_height: float = 0.0
+    gait_frequency_hz: float = CONTRACT.default_gait_frequency_hz
 
     # Velocity command curriculum.  The policy starts slow and is only asked for
     # faster walking once the velocity-tracking term is consistently high.
-    command_lin_vel_x_min: float = 0.0
-    command_lin_vel_x_max: float = 0.0
+    command_lin_vel_x_min: float = 0.05
+    command_lin_vel_x_max: float = 0.12
     command_lin_vel_x_max_final: float = 0.0
     command_lin_vel_x_increment: float = 0.0
     command_curriculum_interval_steps: int = 2000
     command_curriculum_success_threshold: float = 0.70
-    zero_command_prob: float = 1.0
+    zero_command_prob: float = 0.0
     enable_command_curriculum: bool = False
 
     # Contact / gait logic.
@@ -103,7 +105,7 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "survival": 0.6,
         "pose": 0.03,
         "feet_air_time": 0.25,
-        "single_stance": 1.45, #was 1.5
+        "single_stance": 1.40, #MRC 1.45 
         "swing_clearance": 0.12,
         "com_align": 3.0,
         "forward_step": 0.45,
@@ -115,20 +117,20 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
         "roll_lean": 4.2,
         "pitch_lean": 1.15,
         "backward_vel": 5.0,
-        "feet_slide": 5.6, #was 5.2 , 5.4
+        "feet_slide": 5.6, 
         "double_swing": 1.5,
         "bootstrap_lift": 0.03,
         "bad_weight_shift": 3.0,
-        "foot_tilt": 9.5, #was 8.5 , 9.0
-        "swing_foot_tilt": 4.2, #new was 4.0
+        "foot_tilt": 9.5, 
+        "swing_foot_tilt": 4.2, 
         "lateral_step": 0.0,
         "step_width": 1.5,
         "narrow_step": 50.0,
         "foot_side": 1.8,
         "foot_centerline": 50.0,
         "pelvis_lateral": 3.0,
-         "air_time_imbalance": 0.45,
-         "contact_time_imbalance": 0.45,
+         "air_time_imbalance": 0.55,# MRC 0.45
+         "contact_time_imbalance": 0.55, #MRC 0.45
          
     }
 
@@ -146,12 +148,15 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     # Push-force curriculum scaffold.  Keep disabled for first walking rebuild.
     # Enable only after flat-ground walking is stable.
     enable_push_curriculum: bool = True
-    push_start_step: int = 30000
+
+    push_start_step: int = 300000
     push_interval_steps: int = 600
-    push_probability: float = 0.25
-    push_velocity_xy_initial: float = 0.05
-    push_velocity_xy_max: float = 0.6
-    push_velocity_xy_increment_factor: float = 1.25
+    push_probability: float = 0.20
+
+    push_velocity_xy_initial: float = 0.03
+    push_velocity_xy_max: float = 0.50
+
+    push_velocity_xy_increment_factor: float = 1.15
     push_velocity_xy_decrement: float = 0.05
 
     # Terrain curriculum is not active in this DirectRLEnv because the scene is
@@ -204,6 +209,11 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         self._actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
         self._last_actions = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
+        self._action_delay_steps = self.cfg.action_delay_steps
+        self._action_buffer = torch.zeros(
+            (self.num_envs, self._action_delay_steps + 1, self.num_dofs),
+            device=self.device,
+        )
         self._commands = torch.zeros((self.num_envs, 1), device=self.device)
         self._joint_pos_targets = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
 
@@ -368,7 +378,13 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         self._common_step_counter += 1
         self._last_actions[:] = self._actions
-        self._actions = torch.clamp(actions, -1.0, 1.0)
+        actions = torch.clamp(actions, -1.0, 1.0)
+
+        self._action_buffer = torch.roll(self._action_buffer, shifts=1, dims=1)
+        self._action_buffer[:, 0, :] = actions
+
+        delayed_actions = self._action_buffer[:, self._action_delay_steps, :]
+        self._actions[:] = delayed_actions
         self._apply_random_pushes()
 
     def _build_control_packet(self, env_ids: Sequence[int] | None = None) -> ControlPacket:
@@ -489,6 +505,16 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             "right_quat_w": right_quat_w,
         }
 
+    def _get_phase_clock(self) -> tuple[torch.Tensor, torch.Tensor]:
+        phase = torch.remainder(
+            self.episode_length_buf.float() * self._step_dt * self.cfg.gait_frequency_hz,
+            1.0,
+        )
+        phase_angle = 2.0 * torch.pi * phase
+        phase_sin = torch.sin(phase_angle).unsqueeze(1)
+        phase_cos = torch.cos(phase_angle).unsqueeze(1)
+        return phase_sin, phase_cos
+
     def _get_observations(self) -> dict:
         packet = self._hardware.read_observation_packet()
 
@@ -500,9 +526,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         root_ang_vel_b = packet.imu_gyro_b
         projected_gravity_b = packet.projected_gravity_b
         joint_effort = packet.joint_effort
+        foot_pos_b = packet.foot_pos_b
+        if foot_pos_b.shape[-1] != 6:
+            raise RuntimeError(f"FK foot_pos_b must have trailing dim 6, got {foot_pos_b.shape[-1]}")
+        phase_sin, phase_cos = self._get_phase_clock()
 
         # Deployment-clean walking policy observation: intentionally excludes
-        # simulator-only privileged state such as root linear velocity and foot kinematics.
+        # simulator-only privileged state such as root linear velocity and body-state foot kinematics.
+        # FK foot_pos_b is deployment-valid because it is computed from joint angles through the hardware interface.
         obs = torch.cat(
             (
                 q_rel,
@@ -512,6 +543,9 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
                 projected_gravity_b,
                 root_ang_vel_b,
                 self._commands,
+                phase_sin,
+                phase_cos,
+                foot_pos_b,
                 self._last_actions,
             ),
             dim=-1,
@@ -525,6 +559,9 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             + projected_gravity_b.shape[1]
             + root_ang_vel_b.shape[1]
             + self._commands.shape[1]
+            + phase_sin.shape[1]
+            + phase_cos.shape[1]
+            + foot_pos_b.shape[1]
             + self._last_actions.shape[1]
         )
         if expected_obs_dim != CONTRACT.obs_dim:
@@ -1134,14 +1171,14 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         default_root_state[:, 2] += self.cfg.base_height
 
         joint_pos = self._standing_q.unsqueeze(0).repeat(len(env_ids), 1)
-        joint_pos += 0.04 * torch.randn_like(joint_pos)
+        joint_pos += 0.01 * torch.randn_like(joint_pos)
 
         # mirror_mask = torch.rand(len(env_ids), device=self.device) < self.cfg.reset_mirror_prob
         # if mirror_mask.any():
         #     mirrored_joint_pos = self._mirror_leg_joint_positions(joint_pos)
         #     joint_pos[mirror_mask] = mirrored_joint_pos[mirror_mask]
 
-        joint_vel = 0.10 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
+        joint_vel = 0.03 * torch.randn((len(env_ids), self.num_dofs), device=self.device)
         joint_pos = torch.max(torch.min(joint_pos, self._joint_upper[env_ids]), self._joint_lower[env_ids])
 
         self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
@@ -1152,6 +1189,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
 
         self._actions[env_ids] = 0.0
         self._last_actions[env_ids] = 0.0
+        self._action_buffer[env_ids] = 0.0
         self._joint_pos_targets[env_ids] = joint_pos
         self._q_des[env_ids] = joint_pos
         self._tau_ff[env_ids] = 0.0
