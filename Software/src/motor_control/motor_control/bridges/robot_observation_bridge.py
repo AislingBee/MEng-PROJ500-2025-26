@@ -20,11 +20,15 @@ class RobotObservationBridge(Node):
         self.declare_parameter('imu_topic', 'imu0')
         self.declare_parameter('observation_topic', 'robot_observation')
         self.declare_parameter('all_logging_info', False)
+        self.declare_parameter('log_hz', 2.0)
 
         self.feedback_topic = self.get_parameter('feedback_topic').value
         self.imu_topic = self.get_parameter('imu_topic').value
         self.observation_topic = self.get_parameter('observation_topic').value
         self.all_logging_info = bool(self.get_parameter('all_logging_info').value)
+        self.log_hz = max(0.1, float(self.get_parameter('log_hz').value))
+        self._log_period_s = 1.0 / self.log_hz
+        self._last_log_t = -1.0
         self._latest_imu = None
 
         self.feedback_sub = self.create_subscription(
@@ -82,12 +86,16 @@ class RobotObservationBridge(Node):
         self.publisher.publish(obs)
 
         if self.all_logging_info:
-            n = len(obs.joint_pos_rad)
-            grav = obs.projected_gravity_b
-            self.get_logger().info(
-                f'Published RobotObservation: {n} joints, '
-                f'grav=[{grav[0]:.3f},{grav[1]:.3f},{grav[2]:.3f}]'
-            )
+            now_s = obs.timestamp_s
+            if self._last_log_t < 0.0 or (now_s - self._last_log_t) >= self._log_period_s:
+                self._last_log_t = now_s
+                n = len(obs.joint_pos_rad)
+                grav = obs.projected_gravity_b
+                self.get_logger().info(
+                    f'Published RobotObservation: {n} joints, '
+                    f'grav=[{grav[0]:.3f},{grav[1]:.3f},{grav[2]:.3f}] '
+                    f'({self.log_hz:.1f} Hz log)'
+                )
 
 
 def main(args=None):

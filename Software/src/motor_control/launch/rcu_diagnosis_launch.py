@@ -24,6 +24,7 @@ def generate_launch_description():
     ctrl_mode = LaunchConfiguration("ctrl_mode", default="0")
     log_dir = LaunchConfiguration("log_dir", default="~/rcu_logs")
     names_file = LaunchConfiguration("names_file", default="joint_limits_config.json")
+    observation_log_hz = LaunchConfiguration("observation_log_hz", default="2.0")
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -45,6 +46,11 @@ def generate_launch_description():
             "names_file",
             default_value="joint_limits_config.json",
             description="Joint name config used by motor_feedback_listener",
+        ),
+        DeclareLaunchArgument(
+            "observation_log_hz",
+            default_value="2.0",
+            description="Robot observation terminal log rate in Hz",
         ),
 
         # RCU bridge in diagnosis mode.
@@ -95,6 +101,7 @@ def generate_launch_description():
                 "imu_topic": "imu0",
                 "observation_topic": "robot_observation",
                 "all_logging_info": True,
+                "log_hz": observation_log_hz,
             }],
         ),
     ])

@@ -29,7 +29,6 @@ Parameters:
   auto_enable    (bool) default False
   log_dir        (str)  default "~/rcu_logs"
   loop_rate_hz   (float) default 200.0  (motor command TX rate)
-    split_tx_by_bus (bool) default False (send left packet then right packet each tick)
 
 Usage:
   ros2 run motor_control rcu_udp_bridge
@@ -137,7 +136,6 @@ class RcuUdpBridge(Node):
         self.declare_parameter("auto_enable",  False)
         self.declare_parameter("log_dir",      os.path.expanduser("~/rcu_logs"))
         self.declare_parameter("loop_rate_hz", 200.0)
-        self.declare_parameter("split_tx_by_bus", False)
         self.declare_parameter("scan_motor_can_ids", False)
         self.declare_parameter("can_id_online_timeout_s", 1.0)
         self.declare_parameter("can_id_scan_log_period_s", 1.0)
@@ -166,7 +164,6 @@ class RcuUdpBridge(Node):
         auto_enable_raw = self.get_parameter("auto_enable").value
         log_dir_raw = self.get_parameter("log_dir").value
         rate_hz_raw = self.get_parameter("loop_rate_hz").value
-        split_tx_by_bus_raw = self.get_parameter("split_tx_by_bus").value
         scan_motor_can_ids_raw = self.get_parameter("scan_motor_can_ids").value
         can_id_online_timeout_s_raw = self.get_parameter("can_id_online_timeout_s").value
         can_id_scan_log_period_s_raw = self.get_parameter("can_id_scan_log_period_s").value
@@ -184,7 +181,6 @@ class RcuUdpBridge(Node):
         auto_enable = _parse_bool(auto_enable_raw)
         log_dir = os.path.expanduser(str(log_dir_raw))
         rate_hz = _parse_float(rate_hz_raw, 200.0)
-        self._split_tx_by_bus = _parse_bool(split_tx_by_bus_raw)
         self._scan_motor_can_ids = _parse_bool(scan_motor_can_ids_raw)
         self._can_id_online_timeout_s = max(0.1, _parse_float(can_id_online_timeout_s_raw, 1.0))
         self._can_id_scan_log_period_s = max(0.2, _parse_float(can_id_scan_log_period_s_raw, 1.0))
@@ -306,9 +302,6 @@ class RcuUdpBridge(Node):
             f"rcu_udp_bridge ready: RCU={rcu_ip}, ctrl_mode={self._ctrl_mode}, "
             f"{rate_hz:.0f} Hz TX")
         self.get_logger().info(
-            f"TX mode: {'split-by-bus (left then right)' if self._split_tx_by_bus else 'single-packet'}"
-        )
-        self.get_logger().info(
             f"ENABLED motor IDs (command/enable scope): {self._active_motor_ids}")
         id_map = ", ".join(
             f"{mid}:{rp.MOTOR_JOINT_NAMES[mid]}"
@@ -364,19 +357,6 @@ class RcuUdpBridge(Node):
                 {"motor_id": mid, "bus": self._motor_bus_map[mid], **self._cmd_state[mid]}
                 for mid in self._active_motor_ids
             ]
-        if self._split_tx_by_bus:
-            left_entries = [e for e in entries if int(e.get("bus", 0)) == 1]
-            right_entries = [e for e in entries if int(e.get("bus", 0)) == 0]
-
-            # Diagnostic mode: transmit left-bus entries first, then right-bus entries.
-            if left_entries:
-                left_pkt = rp.encode_motor_cmd_packet(left_entries)
-                self._tx_sock.sendto(left_pkt, self._rcu_addr)
-            if right_entries:
-                right_pkt = rp.encode_motor_cmd_packet(right_entries)
-                self._tx_sock.sendto(right_pkt, self._rcu_addr)
-            return
-
         pkt = rp.encode_motor_cmd_packet(entries)
         self._tx_sock.sendto(pkt, self._rcu_addr)
 
