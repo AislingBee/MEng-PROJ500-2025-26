@@ -8,6 +8,8 @@ from isaaclab.utils.math import quat_rotate_inverse, quat_mul
 from isaaclab.utils.noise import gaussian_noise
 from isaaclab.utils.noise import AdditiveGaussianNoiseCfg
 
+from simulation.isaac.kinematics.thor_leg_fk import compute_foot_pos_b
+
 from .hardware_interface import BaseHardwareInterface, ControlPacket, ObservationPacket
 
 
@@ -32,19 +34,19 @@ class IsaacHardwareInterface(BaseHardwareInterface):
         ).view(1, 4)
 
         # self._noise_cfg = {
-        #     "joint_pos": AdditiveGaussianNoiseCfg(std=0.0035),
-        #     "joint_vel": AdditiveGaussianNoiseCfg(std=0.045),
-        #     "joint_effort": AdditiveGaussianNoiseCfg(std=0.8),
-        #     "gravity": AdditiveGaussianNoiseCfg(std=0.022),
-        #     "gyro": AdditiveGaussianNoiseCfg(std=0.035),
+        #     "joint_pos": AdditiveGaussianNoiseCfg(std=0.0),
+        #     "joint_vel": AdditiveGaussianNoiseCfg(std=0.0),
+        #     "joint_effort": AdditiveGaussianNoiseCfg(std=0.0),
+        #     "gravity": AdditiveGaussianNoiseCfg(std=0.0),
+        #     "gyro": AdditiveGaussianNoiseCfg(std=0.0),
         # }
 
-        self._noise_cfg = {
-            "joint_pos": AdditiveGaussianNoiseCfg(std=0.00),#0.0035
-            "joint_vel": AdditiveGaussianNoiseCfg(std=0.0),#0.045
-            "joint_effort": AdditiveGaussianNoiseCfg(std=0.),#0.8
-            "gravity": AdditiveGaussianNoiseCfg(std=0.0),#0.022
-            "gyro": AdditiveGaussianNoiseCfg(std=0.0),#0.035
+        self._noise_cfg = { # Last used values for the walking training vs the original values.
+            "joint_pos": AdditiveGaussianNoiseCfg(std=0.0035),#0.0035
+            "joint_vel": AdditiveGaussianNoiseCfg(std=0.045),#0.045
+            "joint_effort": AdditiveGaussianNoiseCfg(std=0.8),#0.8
+            "gravity": AdditiveGaussianNoiseCfg(std=0.022),#0.022
+            "gyro": AdditiveGaussianNoiseCfg(std=0.035),#0.035
         }
 
     def _resolve_env_ids(self, env_ids: Sequence[int] | None) -> torch.Tensor:
@@ -98,6 +100,18 @@ class IsaacHardwareInterface(BaseHardwareInterface):
         imu_gyro_b = gaussian_noise(imu_gyro_b, self._noise_cfg["gyro"])
 
         projected_gravity_b = projected_gravity_b / torch.norm(projected_gravity_b, dim=1, keepdim=True)
+        # Deployment-valid FK foot position: Isaac and Thor use the same helper,
+        # and this deliberately avoids simulator body-state kinematics.
+        foot_pos_b = compute_foot_pos_b(joint_pos)
+        if foot_pos_b.shape[-1] != 6:
+            raise RuntimeError(f"FK foot_pos_b must have trailing dim 6, got {foot_pos_b.shape[-1]}")
+
+        # TEMP TEST: bypass FK to check whether FK is causing standing jitter.
+        # foot_pos_b = torch.zeros(
+        #     (joint_pos.shape[0], 6),
+        #     dtype=joint_pos.dtype,
+        #     device=joint_pos.device,
+        # )
 
         return ObservationPacket(
             joint_pos = joint_pos,
@@ -105,6 +119,7 @@ class IsaacHardwareInterface(BaseHardwareInterface):
             joint_effort = joint_effort,
             projected_gravity_b = projected_gravity_b,
             imu_gyro_b = imu_gyro_b,
+            foot_pos_b = foot_pos_b,
         )
 
     def write_control_packet(self, packet: ControlPacket, env_ids: Sequence[int] | None = None) -> None:

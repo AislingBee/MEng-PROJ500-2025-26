@@ -23,13 +23,14 @@ ACTION_SCALE: Final[tuple[float, ...]] = (
 )
 
 SIM_DT_S: Final[float] = 1.0 / 200.0
-DECIMATION: Final[int] = 1
+DECIMATION: Final[int] = 3
 POLICY_LOOP_HZ: Final[float] = 1.0 / (SIM_DT_S * DECIMATION)
 
 DEFAULT_COMMAND_VALUE: Final[float] = 0.0
+DEFAULT_GAIT_FREQUENCY_HZ: Final[float] = 0.2
 
 ACTION_DIM: Final[int] = 12
-WALKING_OBS_DIM: Final[int] = 67
+WALKING_OBS_DIM: Final[int] = 75
 OBS_DIM: Final[int] = WALKING_OBS_DIM
 
 # Walking policy observation layout:
@@ -40,8 +41,11 @@ OBS_DIM: Final[int] = WALKING_OBS_DIM
 # projected_gravity   3
 # imu_gyro             3
 # command              1
+# phase_sin            1
+# phase_cos            1
+# foot_pos_b           6
 # last_actions        12
-# total              67
+# total               75
 OBS_LAYOUT: Final[dict[str, int]] = {
     "q_rel": 12,
     "qd": 12,
@@ -50,6 +54,9 @@ OBS_LAYOUT: Final[dict[str, int]] = {
     "projected_gravity": 3,
     "imu_gyro": 3,
     "command": 1,
+    "phase_sin": 1,
+    "phase_cos": 1,
+    "foot_pos_b": 6,
     "last_actions": 12,
 }
 
@@ -77,6 +84,7 @@ class WalkingS2RPolicyContract:
     sim_dt_s: float = SIM_DT_S
     decimation: int = DECIMATION
     default_command_value: float = DEFAULT_COMMAND_VALUE
+    default_gait_frequency_hz: float = DEFAULT_GAIT_FREQUENCY_HZ
     action_dim: int = ACTION_DIM
     obs_dim: int = OBS_DIM
     joint_lower_limits_rad: tuple[float, ...] = JOINT_LOWER_LIMITS_RAD
@@ -120,6 +128,7 @@ def get_thor_runner_defaults() -> dict:
         "action_scale": CONTRACT.action_scale,
         "loop_hz": CONTRACT.policy_loop_hz,
         "command_value": CONTRACT.default_command_value,
+        "gait_frequency_hz": CONTRACT.default_gait_frequency_hz,
         "observation_dim": CONTRACT.obs_dim,
         "action_dim": CONTRACT.action_dim,
         "joint_lower_limits_rad": CONTRACT.joint_lower_limits_rad,
