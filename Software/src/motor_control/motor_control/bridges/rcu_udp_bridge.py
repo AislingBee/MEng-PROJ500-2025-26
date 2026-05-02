@@ -387,6 +387,12 @@ class RcuUdpBridge(Node):
     def _send(self, data: bytes):
         self._tx_sock.sendto(data, self._rcu_addr)
 
+    def _send_with_retries(self, data: bytes, retries: int = 3, delay_s: float = 0.01):
+        for i in range(max(1, retries)):
+            self._send(data)
+            if i < (retries - 1):
+                time.sleep(delay_s)
+
     def _send_motor_enable(self, bus: int, motor_id: int,
                            enable: bool = True, clear_fault: bool = False):
         payload = bytes([
@@ -395,7 +401,7 @@ class RcuUdpBridge(Node):
             1 if enable else 0,
             1 if clear_fault else 0,
         ])
-        self._send(rp.encode_debug_cmd(rp.DBGCMD_MOTOR_ENABLE, payload))
+        self._send_with_retries(rp.encode_debug_cmd(rp.DBGCMD_MOTOR_ENABLE, payload), retries=3, delay_s=0.005)
 
     def _send_motor_bus_ctrl_for_active_ids(self):
         left_active = any(self._motor_bus_map[mid] == 1 for mid in self._active_motor_ids)
@@ -407,7 +413,11 @@ class RcuUdpBridge(Node):
         if not right_active:
             standby_mask |= 0b10
 
-        self._send(rp.encode_debug_cmd(rp.DBGCMD_MOTOR_BUS_CTRL, bytes([standby_mask])))
+        self._send_with_retries(
+            rp.encode_debug_cmd(rp.DBGCMD_MOTOR_BUS_CTRL, bytes([standby_mask])),
+            retries=3,
+            delay_s=0.005,
+        )
         self.get_logger().info(
             "Configured motor bus standby mask for active IDs: "
             f"0b{standby_mask:02b} (left_active={left_active}, right_active={right_active})"
@@ -415,9 +425,14 @@ class RcuUdpBridge(Node):
 
     def _send_enable_all(self):
         self._send_motor_bus_ctrl_for_active_ids()
-        self._send(rp.encode_motor_supervisory(
-            enable_mask=0x0FFF, clear_fault_mask=0x0FFF,
-            ctrl_mode=self._ctrl_mode))
+        self._send_with_retries(
+            rp.encode_motor_supervisory(
+                enable_mask=0x0FFF, clear_fault_mask=0x0FFF,
+                ctrl_mode=self._ctrl_mode,
+            ),
+            retries=3,
+            delay_s=0.005,
+        )
         for mid in self._active_motor_ids:
             self._send_motor_enable(
                 bus=self._motor_bus_map[mid], motor_id=mid,
@@ -426,7 +441,11 @@ class RcuUdpBridge(Node):
     def _send_disable_all(self):
         """Disable active motors without asserting PDU fault (limp mode)."""
         self._send_motor_bus_ctrl_for_active_ids()
-        self._send(rp.encode_motor_supervisory(enable_mask=0x0000))
+        self._send_with_retries(
+            rp.encode_motor_supervisory(enable_mask=0x0000),
+            retries=3,
+            delay_s=0.005,
+        )
         for mid in self._active_motor_ids:
             self._send_motor_enable(
                 bus=self._motor_bus_map[mid], motor_id=mid,
@@ -434,12 +453,20 @@ class RcuUdpBridge(Node):
 
     def _send_full_estop(self):
         """FULL E-STOP: CAN stop all motors + assert PDU power fault."""
-        self._send(rp.encode_motor_supervisory(enable_mask=0x0000))
+        self._send_with_retries(
+            rp.encode_motor_supervisory(enable_mask=0x0000),
+            retries=3,
+            delay_s=0.005,
+        )
         for mid in self._active_motor_ids:
             self._send_motor_enable(
                 bus=self._motor_bus_map[mid], motor_id=mid,
                 enable=False, clear_fault=False)
-        self._send(rp.encode_debug_cmd(rp.DBGCMD_ASSERT_PDU_FAULT, bytes([1])))
+        self._send_with_retries(
+            rp.encode_debug_cmd(rp.DBGCMD_ASSERT_PDU_FAULT, bytes([1])),
+            retries=3,
+            delay_s=0.005,
+        )
         self.get_logger().warn("FULL E-STOP: motors disabled + PDU fault asserted")
 
     # -----------------------------------------------------------------------
@@ -655,6 +682,11 @@ class RcuUdpBridge(Node):
     def destroy_node(self):
         self._shutting_down = True
         self._running = False
+        try:
+            # Fallback limp command in case shutdown did not come from KeyboardInterrupt.
+            self._send_disable_all()
+        except Exception:
+            pass
         try:
             self._csv_file.close()
         except Exception:

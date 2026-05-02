@@ -26,6 +26,8 @@ def generate_launch_description():
             "auto_enable": "True",
             "ctrl_mode": "0",
             "scan_motor_can_ids": "True",
+            "wait_for_expected_online_ids": "True",
+            "expected_online_motor_ids": "[9,10]",
         }.items(),
     )
 

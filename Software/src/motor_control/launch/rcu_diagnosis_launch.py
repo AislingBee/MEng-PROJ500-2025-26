@@ -61,6 +61,8 @@ def generate_launch_description():
                 "scan_motor_can_ids": True,
                 "can_id_online_timeout_s": 1.0,
                 "can_id_scan_log_period_s": 5.0,
+                "wait_for_expected_online_ids": True,
+                "expected_online_motor_ids": "[9,10]",
                 "loop_rate_hz": 200.0,
             }],
         ),
