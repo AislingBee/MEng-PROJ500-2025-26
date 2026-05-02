@@ -31,7 +31,7 @@ USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "r
 class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
     decimation: int = CONTRACT.decimation
     episode_length_s: float = 10.0
-    action_delay_steps: int = 0
+    action_delay_steps: int = 2
 
     sim: SimulationCfg = SimulationCfg(
         dt=CONTRACT.sim_dt_s,
@@ -56,14 +56,20 @@ class HumanoidWalkEnvS2rCfg(DirectRLEnvCfg):
 
     # Velocity command curriculum.  The policy starts slow and is only asked for
     # faster walking once the velocity-tracking term is consistently high.
-    command_lin_vel_x_min: float = 0.15
-    command_lin_vel_x_max: float = 0.15
-    command_lin_vel_x_max_final: float = 0.0
+    command_lin_vel_x_min: float = 0.0
+    command_lin_vel_x_max: float = 0.12
+    command_lin_vel_x_max_final: float = 0.12
     command_lin_vel_x_increment: float = 0.0
-    command_curriculum_interval_steps: int = 2000
-    command_curriculum_success_threshold: float = 0.70
-    zero_command_prob: float = 0.0
-    enable_command_curriculum: bool = False
+    command_curriculum_interval_steps: int = 10000
+    command_curriculum_success_threshold: float = 0.80
+    zero_command_prob: float = 0.05
+    enable_command_curriculum: bool = True
+    enable_stand_to_walk_transition: bool = True
+    stand_to_walk_transition_time_min_s: float = 0.5
+    stand_to_walk_transition_time_max_s: float = 1.5
+    enable_walk_to_stand_transition: bool = True
+    walk_to_stand_hold_time_min_s: float = 3.0
+    walk_to_stand_hold_time_max_s: float = 5.0
 
     # Contact / gait logic.
     contact_force_threshold: float = 2.0
@@ -215,6 +221,9 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             device=self.device,
         )
         self._commands = torch.zeros((self.num_envs, 1), device=self.device)
+        self._command_targets = torch.zeros((self.num_envs, 1), device=self.device)
+        self._command_transition_steps = torch.zeros((self.num_envs,), device=self.device, dtype=torch.long)
+        self._command_return_steps = torch.zeros((self.num_envs,), device=self.device, dtype=torch.long)
         self._joint_pos_targets = torch.zeros((self.num_envs, self.num_dofs), device=self.device)
 
         self._action_scale = torch.tensor(self.cfg.action_scale, dtype=torch.float32, device=self.device).unsqueeze(0)
@@ -377,6 +386,7 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
             raise RuntimeError("NaN detected in actions")
 
         self._common_step_counter += 1
+        self._update_commands_for_transitions()
         self._last_actions[:] = self._actions
         actions = torch.clamp(actions, -1.0, 1.0)
 
@@ -1155,6 +1165,20 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         root_vel[:, 0:2] += push
         self.robot.write_root_velocity_to_sim(root_vel, env_ids)
 
+    def _update_commands_for_transitions(self) -> None:
+        if not self.cfg.enable_stand_to_walk_transition:
+            return
+
+        walking_target_mask = self._command_targets[:, 0] > self.cfg.command_active_threshold
+        if not walking_target_mask.any():
+            return
+
+        should_walk = walking_target_mask & (self.episode_length_buf >= self._command_transition_steps)
+        if self.cfg.enable_walk_to_stand_transition:
+            should_walk = should_walk & (self.episode_length_buf < self._command_return_steps)
+
+        self._commands[:, 0] = torch.where(should_walk, self._command_targets[:, 0], torch.zeros_like(self._commands[:, 0]))
+
     def _reset_idx(self, env_ids: Sequence[int] | None):
         if env_ids is None:
             env_ids = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
@@ -1213,4 +1237,34 @@ class HumanoidWalkEnvS2r(DirectRLEnv):
         # command_x = 0.0 is the deployed stand command; command_x > 0.0 is the deployed walk command.
         zero_mask = torch.rand((num_resets, 1), device=self.device) < self.cfg.zero_command_prob
         commands[zero_mask] = 0.0
-        self._commands[env_ids] = commands
+        self._command_targets[env_ids] = commands
+
+        if self.cfg.enable_stand_to_walk_transition:
+            min_steps = max(int(round(self.cfg.stand_to_walk_transition_time_min_s / self._step_dt)), 0)
+            max_steps = max(int(round(self.cfg.stand_to_walk_transition_time_max_s / self._step_dt)), min_steps)
+            transition_steps = torch.randint(
+                low=min_steps,
+                high=max_steps + 1,
+                size=(num_resets,),
+                device=self.device,
+            )
+            self._command_transition_steps[env_ids] = transition_steps
+
+            if self.cfg.enable_walk_to_stand_transition:
+                hold_min_steps = max(int(round(self.cfg.walk_to_stand_hold_time_min_s / self._step_dt)), 1)
+                hold_max_steps = max(int(round(self.cfg.walk_to_stand_hold_time_max_s / self._step_dt)), hold_min_steps)
+                hold_steps = torch.randint(
+                    low=hold_min_steps,
+                    high=hold_max_steps + 1,
+                    size=(num_resets,),
+                    device=self.device,
+                )
+                self._command_return_steps[env_ids] = transition_steps + hold_steps
+            else:
+                self._command_return_steps[env_ids] = self.max_episode_length + 1
+
+            self._commands[env_ids] = 0.0
+        else:
+            self._command_transition_steps[env_ids] = 0
+            self._command_return_steps[env_ids] = self.max_episode_length + 1
+            self._commands[env_ids] = commands
