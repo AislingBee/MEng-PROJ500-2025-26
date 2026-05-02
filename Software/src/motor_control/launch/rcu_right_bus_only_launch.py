@@ -41,6 +41,7 @@ def generate_launch_description():
             "right_bus_motor_ids": "[10]",
             "auto_enable": auto_enable,
             "ctrl_mode": ctrl_mode,
+            "force_full_enable_mask": "True",
             "scan_motor_can_ids": "True",
             "can_id_scan_log_period_s": "1.0",
             "wait_for_expected_online_ids": "False",
@@ -70,13 +71,13 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "hold_kp",
-            default_value="10.0",
+            default_value="20.0",
             description="Hold-position proportional gain",
         ),
         DeclareLaunchArgument(
             "hold_kd",
-            default_value="0.5",
-            description="Hold-position derivative gain",
+            default_value="10.0",
+            description="Hold-position derivative gain (MIT mode; scaled to uint8 on-wire)",
         ),
         DeclareLaunchArgument(
             "auto_enable",

@@ -56,12 +56,24 @@ set(MOTOR_CONTROL_PY_SCRIPTS
 )
 
 # Ensure scripts are executable even when source checkouts lose +x bits.
-file(CHMOD ${MOTOR_CONTROL_PY_SCRIPTS}
-  PERMISSIONS
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE
-)
+set(MOTOR_CONTROL_PY_SCRIPTS_ABS "")
+foreach(_script IN LISTS MOTOR_CONTROL_PY_SCRIPTS)
+  set(_script_abs "${CMAKE_CURRENT_SOURCE_DIR}/${_script}")
+  if(EXISTS "${_script_abs}")
+    list(APPEND MOTOR_CONTROL_PY_SCRIPTS_ABS "${_script_abs}")
+  else()
+    message(WARNING "Skipping chmod for missing script: ${_script_abs}")
+  endif()
+endforeach()
+
+if(MOTOR_CONTROL_PY_SCRIPTS_ABS)
+  file(CHMOD ${MOTOR_CONTROL_PY_SCRIPTS_ABS}
+    PERMISSIONS
+      OWNER_READ OWNER_WRITE OWNER_EXECUTE
+      GROUP_READ GROUP_EXECUTE
+      WORLD_READ WORLD_EXECUTE
+  )
+endif()
 
 install(PROGRAMS
   ${MOTOR_CONTROL_PY_SCRIPTS}

@@ -17,6 +17,7 @@ Parameters (all optional):
     telem_port                  default "7700"
     ctrl_mode                   default "0"    (0=MIT Phase 2, 1=CSP Phase 1)
     auto_enable                 default "False"
+    force_full_enable_mask      default "False"
     log_dir                     default "~/rcu_logs"
     loop_rate_hz                default "200.0"
     active_motor_ids            default "[1,2,3,4,5,6,7,8,9,10,11,12]"
@@ -51,6 +52,7 @@ def generate_launch_description():
     ctrl_mode   = LaunchConfiguration("ctrl_mode",   default="0")
     log_dir     = LaunchConfiguration("log_dir",     default="~/rcu_logs")
     auto_enable = LaunchConfiguration("auto_enable", default="False")
+    force_full_enable_mask = LaunchConfiguration("force_full_enable_mask", default="False")
     loop_rate_hz = LaunchConfiguration("loop_rate_hz", default="200.0")
     active_motor_ids = LaunchConfiguration("active_motor_ids", default="[1,2,3,4,5,6,7,8,9,10,11,12]")
     left_bus_motor_ids = LaunchConfiguration("left_bus_motor_ids", default="[1,3,5,7,9,11]")
@@ -88,6 +90,9 @@ def generate_launch_description():
         DeclareLaunchArgument("auto_enable",
             default_value="False",
             description="Automatically enable active motors at startup"),
+        DeclareLaunchArgument("force_full_enable_mask",
+            default_value="False",
+            description="Use supervisory enable mask 0x0FFF instead of active-motor bitmask"),
         DeclareLaunchArgument("loop_rate_hz",
             default_value="200.0",
             description="Command TX loop rate in Hz"),
@@ -155,6 +160,7 @@ def generate_launch_description():
                 "ctrl_mode":    ctrl_mode,
                 "log_dir":      log_dir,
                 "auto_enable":  auto_enable,
+                "force_full_enable_mask": force_full_enable_mask,
                 "loop_rate_hz": loop_rate_hz,
                 "active_motor_ids": ParameterValue(active_motor_ids, value_type=str),
                 "left_bus_motor_ids": ParameterValue(left_bus_motor_ids, value_type=str),

@@ -27,6 +27,7 @@ Parameters:
   telem_port     (int)  default 7700
   ctrl_mode      (int)  default 0  (0=MIT impedance Phase 2, 1=CSP pos Phase 1)
   auto_enable    (bool) default False
+    force_full_enable_mask (bool) default False (use 0x0FFF for supervisory enable)
   log_dir        (str)  default "~/rcu_logs"
   loop_rate_hz   (float) default 200.0  (motor command TX rate)
 
@@ -134,6 +135,7 @@ class RcuUdpBridge(Node):
         self.declare_parameter("telem_port",   rp.PORT_TELEM)
         self.declare_parameter("ctrl_mode",    0)
         self.declare_parameter("auto_enable",  False)
+        self.declare_parameter("force_full_enable_mask", False)
         self.declare_parameter("log_dir",      os.path.expanduser("~/rcu_logs"))
         self.declare_parameter("loop_rate_hz", 200.0)
         self.declare_parameter("scan_motor_can_ids", False)
@@ -162,6 +164,7 @@ class RcuUdpBridge(Node):
         telem_port_raw = self.get_parameter("telem_port").value
         ctrl_mode_raw = self.get_parameter("ctrl_mode").value
         auto_enable_raw = self.get_parameter("auto_enable").value
+        force_full_enable_mask_raw = self.get_parameter("force_full_enable_mask").value
         log_dir_raw = self.get_parameter("log_dir").value
         rate_hz_raw = self.get_parameter("loop_rate_hz").value
         scan_motor_can_ids_raw = self.get_parameter("scan_motor_can_ids").value
@@ -179,6 +182,7 @@ class RcuUdpBridge(Node):
         telem_port = _parse_int(telem_port_raw, rp.PORT_TELEM)
         self._ctrl_mode = _parse_int(ctrl_mode_raw, 0)
         auto_enable = _parse_bool(auto_enable_raw)
+        self._force_full_enable_mask = _parse_bool(force_full_enable_mask_raw)
         log_dir = os.path.expanduser(str(log_dir_raw))
         rate_hz = _parse_float(rate_hz_raw, 200.0)
         self._scan_motor_can_ids = _parse_bool(scan_motor_can_ids_raw)
@@ -301,6 +305,10 @@ class RcuUdpBridge(Node):
         self.get_logger().info(
             f"rcu_udp_bridge ready: RCU={rcu_ip}, ctrl_mode={self._ctrl_mode}, "
             f"{rate_hz:.0f} Hz TX")
+        if self._force_full_enable_mask:
+            self.get_logger().warn(
+                "force_full_enable_mask=True: supervisory enable will use 0x0FFF"
+            )
         self.get_logger().info(
             f"ENABLED motor IDs (command/enable scope): {self._active_motor_ids}")
         id_map = ", ".join(
@@ -438,16 +446,18 @@ class RcuUdpBridge(Node):
         for mid in self._active_motor_ids:
             active_enable_mask |= (1 << (mid - 1))
 
+        enable_mask = 0x0FFF if self._force_full_enable_mask else active_enable_mask
+
         self.get_logger().info(
             "Applying supervisory enable mask for ENABLED motor IDs: "
-            f"0x{active_enable_mask:03X} -> {self._active_motor_ids}"
+            f"0x{enable_mask:03X} -> {self._active_motor_ids}"
         )
 
         self._send_motor_bus_ctrl_for_active_ids()
         self._send_with_retries(
             rp.encode_motor_supervisory(
-                enable_mask=active_enable_mask,
-                clear_fault_mask=active_enable_mask,
+                enable_mask=enable_mask,
+                clear_fault_mask=enable_mask,
                 ctrl_mode=self._ctrl_mode,
             ),
             retries=3,
