@@ -28,6 +28,7 @@ Parameters (all optional):
     wait_for_expected_online_ids default "False"
     expected_online_motor_ids   default "[]"
     startup_gate_error_after_s  default "5.0"
+    split_tx_by_bus             default "False"
     feedback_all_logging_info    default "False"
     imu_topic                    default "imu0"
     observation_topic            default "robot_observation"
@@ -65,6 +66,7 @@ def generate_launch_description():
     wait_for_expected_online_ids = LaunchConfiguration("wait_for_expected_online_ids", default="False")
     expected_online_motor_ids = LaunchConfiguration("expected_online_motor_ids", default="[]")
     startup_gate_error_after_s = LaunchConfiguration("startup_gate_error_after_s", default="5.0")
+    split_tx_by_bus = LaunchConfiguration("split_tx_by_bus", default="False")
 
     return LaunchDescription([
 
@@ -131,6 +133,9 @@ def generate_launch_description():
         DeclareLaunchArgument("startup_gate_error_after_s",
             default_value="5.0",
             description="Time in seconds after which startup-gate blocking is escalated as error"),
+        DeclareLaunchArgument("split_tx_by_bus",
+            default_value="False",
+            description="Send two Type 0x10 packets per tick: left-bus entries first, then right-bus entries"),
 
         # ----------------------------------------------------------------
         # RCU UDP bridge — replaces ethernet_can_bridge + nucleo_can_bridge
@@ -160,6 +165,7 @@ def generate_launch_description():
                 "wait_for_expected_online_ids": wait_for_expected_online_ids,
                 "expected_online_motor_ids": ParameterValue(expected_online_motor_ids, value_type=str),
                 "startup_gate_error_after_s": startup_gate_error_after_s,
+                "split_tx_by_bus": split_tx_by_bus,
             }],
         ),
 

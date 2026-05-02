@@ -21,6 +21,7 @@ Parameters (all overridable via --ros-args -p):
   rate_hz   (float) default 200.0  — publish rate
   kp        (float) default 20.0   — position gain  [Nm/rad]
   kd        (float) default 1.0    — velocity gain  [Nm·s/rad]
+    command_log_hz (float) default 2.0 — print commanded q_des periodically
 
 Usage:
   ros2 run motor_control hold_position_test.py
@@ -57,11 +58,13 @@ class HoldPositionTest(Node):
         self.declare_parameter("rate_hz", 200.0)
         self.declare_parameter("kp", 20.0)
         self.declare_parameter("kd", 1.0)
+        self.declare_parameter("command_log_hz", 2.0)
 
         motor_ids_raw = str(self.get_parameter("motor_ids").value)
         rate_hz = float(self.get_parameter("rate_hz").value)
         self._kp = float(self.get_parameter("kp").value)
         self._kd = float(self.get_parameter("kd").value)
+        self._command_log_hz = max(0.0, float(self.get_parameter("command_log_hz").value))
 
         requested_ids = []
         for token in motor_ids_raw.replace("[", "").replace("]", "").split(","):
@@ -80,6 +83,9 @@ class HoldPositionTest(Node):
         self._joint_names = [HOLD_REF_BY_MOTOR_ID[mid][0] for mid in requested_ids]
         self._q_des = [HOLD_REF_BY_MOTOR_ID[mid][1] for mid in requested_ids]
         self._n = len(self._joint_names)
+        self._tx_count = 0
+        self._last_log_t = -1.0
+        self._t0 = self.get_clock().now()
 
         self._pub = self.create_publisher(RobotCommand, "/robot_command", 10)
         self._timer = self.create_timer(1.0 / rate_hz, self._tick)
@@ -88,6 +94,8 @@ class HoldPositionTest(Node):
             f"hold_position_test: holding motor IDs {requested_ids} "
             f"at {rate_hz:.0f} Hz (kp={self._kp}, kd={self._kd})"
         )
+        pairs = [f"{name}={self._q_des[i]:+.3f} rad" for i, name in enumerate(self._joint_names)]
+        self.get_logger().info("hold_position_test targets: " + ", ".join(pairs))
 
     def _tick(self):
         msg = RobotCommand()
@@ -98,6 +106,17 @@ class HoldPositionTest(Node):
         msg.kp_gains = [self._kp] * self._n
         msg.kd_gains = [self._kd] * self._n
         self._pub.publish(msg)
+        self._tx_count += 1
+
+        if self._command_log_hz > 0.0:
+            t = (self.get_clock().now() - self._t0).nanoseconds * 1e-9
+            log_period = 1.0 / self._command_log_hz
+            if self._last_log_t < 0.0 or (t - self._last_log_t) >= log_period:
+                self._last_log_t = t
+                pairs = [f"{name}={self._q_des[i]:+.3f}" for i, name in enumerate(self._joint_names)]
+                self.get_logger().info(
+                    f"TX #{self._tx_count}: " + " | ".join(pairs)
+                )
 
 
 def main(args=None):
