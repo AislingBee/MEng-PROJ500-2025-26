@@ -1,7 +1,7 @@
 # PROJ500 Humanoid — RCU Motor Control Handover Instructions
 
-**Document version:** 1.0  
-**Date:** 2026-04-27  
+**Document version:** 1.1  
+**Date:** 2026-05-02  
 **Author:** MCU team (Charlie)  
 **Intended audience:** Thor ROS2 team  
 **Purpose:** Complete, self-contained handover for integrating the RCU motor
@@ -145,12 +145,18 @@ Published to `/imu0` and `/imu1` as `sensor_msgs/Imu`.
 
 ### 3.5 Type 0x10 — Motor Command (Thor → RCU)
 
-Payload: **variable** (n × 10 bytes, one entry per motor).
+Payload: **variable** (n × 12 bytes, one entry per motor).
 
-Per entry (10 bytes):
+Per entry (12 bytes):
 ```
-bus(u8), motor_id(u8), pos_u16, vel_u16, trq_u16, kp_u8, kd_u8
+bus(u8), motor_id(u8), pos_u16, vel_u16, trq_u16, kp_u16, kd_u16
 ```
+
+> **Breaking change (2026-05-02):** `kp` and `kd` are now **uint16** (2 bytes each),
+> replacing the former `kp_u8, kd_u8` + 2 padding bytes. Entry size is **unchanged
+> at 12 bytes**; the two padding bytes are repurposed. If you have existing bridge code
+> using `struct.pack("<BBHHHBBxx", ...)` you must change it to
+> `struct.pack("<BBHHHHH", ...)` (see §9).
 
 In **CSP mode (Phase 1)**, only `pos_u16` is used. Encode with:
 ```python
@@ -198,6 +204,7 @@ Payload: `subcmd(u8) [+ extra bytes]`
 | MOTOR_BUS_CTRL | 0x0A | bitmask: bit0=L_STB, bit1=R_STB | CAN transceiver standby control |
 | REQUEST_SUPV_DUMP | 0x0B | — | Force supervisory state dump to UART |
 | MOTOR_ENABLE | 0x0C | `bus(u8), motor_id(u8), enable(u8), clr_fault(u8)` | Enable/disable one motor directly, bypasses MOTOR_BUS_MAP — use for bench testing |
+| MOTOR_SET_ZERO | 0x0D | `bus(u8), motor_id(u8)` | Set the motor's current angle as its position zero reference (RS04 Type 6). Always call this before starting position control after a power cycle to establish a safe reference angle. |
 
 **Full e-stop procedure uses TWO commands:**
 1. Type 0x11 with `enable_mask=0` (stops motors via CAN Type 4)
@@ -268,10 +275,10 @@ sock.sendto(rp.encode_motor_supervisory(enable_mask=0x0000),
 # Clear fault (restore power)
 sock.sendto(rp.encode_debug_cmd(rp.DBGCMD_ASSERT_PDU_FAULT, bytes([0])),
             (rp.RCU_IP, rp.PORT_CMD))
-# Then re-enable motors
+# Then re-enable motors (ctrl_mode=0 = MIT, the firmware default)
 sock.sendto(rp.encode_motor_supervisory(enable_mask=0x0FFF,
                                          clear_fault_mask=0x0FFF,
-                                         ctrl_mode=1),
+                                         ctrl_mode=0),
             (rp.RCU_IP, rp.PORT_CMD))
 ```
 
@@ -453,26 +460,84 @@ The firmware writes `run_mode=0` before COMM_ENABLE, then accepts Type 1 CAN fra
 
 ### Type 0x10 command entries in MIT mode
 
-All fields are now used:
+All fields are now used. **kp and kd are encoded as uint16** (0–65535 mapping to
+0–RS04_KP_MAX and 0–RS04_KD_MAX respectively):
 ```python
+# Wire format changed: "<BBHHHHH" (was "<BBHHHBBxx")
 entry = rcu_protocol.encode_motor_cmd_entry(
     motor_id=1,
     bus=1,           # from MOTOR_BUS_MAP
     pos_rad=theta,   # RL target position
     vel_rads=dtheta, # RL target velocity
-    torque_nm=tau,   # feedforward torque
-    kp=200.0,        # position gain (0–5000)
-    kd=5.0,          # velocity damping (0–100)
+    torque_nm=tau,   # feedforward torque — set to 0.0 for pure position control
+    kp=30.0,         # position stiffness (0–5000 Nm/rad); see gain guidance below
+    kd=5.0,          # velocity damping (0–100 Nm·s/rad)
 )
 ```
 
 The MIT control law on the motor is:
-`torque = Kd*(vel_target - vel_actual) + Kp*(pos_target - pos_actual) + torque_ff`
+`torque = Kp*(pos_target - pos_actual) + Kd*(vel_target - vel_actual) + torque_ff`
 
-### rcu_launch.py change
+> **Important:** Setting `torque_ff` to any non-zero value while in position control
+> will cause the motor to spin continuously at `vel_steady = torque_ff / Kd`.
+> **Always set `torque_nm=0.0` unless you specifically need feedforward torque.**
+
+### `/robot_command` message requirements for MIT mode
+
+The bridge reads the following fields from `custom_msgs/RobotCommand` (all optional,
+default 0.0 if absent):
+
+| Field | Type | Required for MIT | Notes |
+|---|---|---|---|
+| `joint_names` | string[] | yes | matched to MOTOR_JOINT_NAMES |
+| `positions` | float64[] | yes | rad |
+| `velocities` | float64[] | **recommended** | rad/s — feedforward velocity |
+| `efforts` | float64[] | optional | Nm — feedforward torque |
+| `kp_gains` | float64[] | **required** | position stiffness (0–5000 Nm/rad); **0 = no movement** |
+| `kd_gains` | float64[] | **required** | velocity damping (0–100 Nm·s/rad); **0 = no movement** |
+
+> **Critical:** If `kp_gains` and `kd_gains` are zero or absent, the motor receives
+> zero PD impedance and will not track position targets regardless of the enable state.
+>
+> **Gain guidance:**
+> - If the RL policy outputs per-joint kp/kd as part of its action, use those directly.
+> - **Recommended bring-up starting point: `kp=30 Nm/rad`, `kd=5 Nm·s/rad`.**
+>   This gives an overdamped response on typical limb inertias (ζ > 1 for J < 0.6 kg·m²).
+>   Increase Kp gradually (30 → 50 → 100) once steady-state position hold is confirmed.
+> - For RL policy deployment, `kp=20–80 Nm/rad`, `kd=1–5 Nm·s/rad` is typical.
+>   The RS04 saturates at 120 Nm, so `kp=500` with a 1 rad error would hit the torque
+>   limit immediately — reserve high gains only for quasi-static commissioning tests.
+> - **kp/kd resolution:** both are now uint16-encoded (0–65535 → full range), giving
+>   ~0.076 Nm/rad steps for Kp and ~0.0015 Nm·s/rad steps for Kd. Kp values below ~0.076
+>   will be sent as zero (motor holds no position).
+
+If `custom_msgs/RobotCommand` does not yet have `kp_gains`/`kd_gains` fields, add
+them to the message definition and rebuild the package. Until then, the bridge will
+silently send zeros and the motors will not move.
+
+### Set-Zero Before Position Control
+
+The RS04 position counter is relative to the motor's angle at power-on, not a
+mechanical hard-stop. Before issuing any position commands, send `MOTOR_SET_ZERO
+(0x0D)` to define the current joint angle as `pos=0.0`:
+
 ```python
-# Change ctrl_mode parameter from "1" to "0"
-"ctrl_mode": "0",
+# Set zero reference for motor 1 on bus 0 before enabling
+sock.sendto(rp.encode_debug_cmd(0x0D, bytes([0, 1])),
+            (rp.RCU_IP, rp.PORT_CMD))
+# Then enable and send pos=0.0 commands — motor will hold current angle
+```
+
+This must be done after every power cycle. Without it, commanding `pos=0.0` will
+drive the motor toward an arbitrary power-on reference angle, which can cause large
+unexpected movements.
+
+### rcu_launch.py
+
+`ctrl_mode` now defaults to `"0"` (MIT) in both `rcu_launch.py` and `rcu_udp_bridge.py`.
+No manual override is needed for Phase 2. To run Phase 1 CSP explicitly:
+```bash
+ros2 launch proj500_control rcu_launch.py ctrl_mode:=1
 ```
 
 ---
@@ -508,3 +573,66 @@ The MIT control law on the motor is:
    (`CAN_TIMEOUT` parameter, function code `0x200B`). Default is 0 (disabled). If
    you enable it (e.g. 200000 = 10 s), the motor will reset itself if no CAN frame
    is received for that duration. Keep this in mind during debug pauses.
+
+8. **Set zero before position control** — the RS04 position counter is relative to
+   power-on angle. Always send `DBGCMD_MOTOR_SET_ZERO (0x0D)` before issuing position
+   commands to avoid large unexpected movements on first command.
+
+9. **Torque feedforward causes steady-state velocity** — in MIT mode,
+   `vel_steady = torque_ff / Kd`. A non-zero `torque_nm` while trying to hold position
+   will cause the motor to spin. This is not a firmware bug.
+
+---
+
+## 11. Changelog
+
+### 2026-05-02 — kp/kd precision upgrade, Set Zero command
+
+**Summary:** Three changes that affect the binary wire protocol and bring-up procedure.
+RCU firmware must be reflashed before these take effect.
+
+#### Wire protocol change — `rcu_motor_cmd_entry_t` (Type 0x10)
+
+| Field | Old | New |
+|---|---|---|
+| `kp` encoding | `kp_u8` (1 byte, 0–255 → 0–5000 Nm/rad) | `kp_u16` (2 bytes, 0–65535 → 0–5000 Nm/rad) |
+| `kd` encoding | `kd_u8` (1 byte, 0–255 → 0–100 Nm·s/rad) | `kd_u16` (2 bytes, 0–65535 → 0–100 Nm·s/rad) |
+| Padding | 2 bytes `_pad` at end | Repurposed as kd_u16 high byte — no longer present |
+| Entry size | 12 bytes (10 payload + 2 pad) | 12 bytes (all payload) |
+| Python format | `"<BBHHHBBxx"` | `"<BBHHHHH"` |
+
+**Why:** At 8-bit resolution, Kp steps were ~19.6 Nm/rad. `kp=10` encoded as
+`kp_u8 = int(10/5000×255) = 0` — zero stiffness, causing the motor to not hold
+position at all. The u16 encoding gives ~0.076 Nm/rad steps.
+
+**Bridge code change required:**
+```python
+# Old (DO NOT USE)
+kp_u8  = int(max(0, min(255, (kp / RS04_KP_MAX) * 255)))
+entry  = struct.pack("<BBHHHBBxx", bus, motor_id, pos_u16, vel_u16, trq_u16, kp_u8, kd_u8)
+
+# New
+kp_u16 = int(max(0, min(65535, (kp / RS04_KP_MAX) * 65535)))
+kd_u16 = int(max(0, min(65535, (kd / RS04_KD_MAX) * 65535)))
+entry  = struct.pack("<BBHHHHH", bus, motor_id, pos_u16, vel_u16, trq_u16, kp_u16, kd_u16)
+```
+
+#### New debug command — `MOTOR_SET_ZERO (0x0D)`
+
+Added to firmware (`eth_udp.c`) and bench GUI. Sends RS04 Type-6 set-zero to the
+target motor, defining its current angle as `pos=0.0`. See §3.7 and §9.
+
+#### Updated bring-up defaults
+
+The bench GUI (`plymouth_humanoid_bench_monitor.py`) default gains changed:
+- Kp: 10 → **30 Nm/rad** (previous default silently encoded as kp_u8=0 = zero stiffness)
+- Kd: 1.0 → **5.0 Nm·s/rad** (previous default was underdamped for typical limb inertia)
+
+#### Files changed
+
+| File | Change |
+|---|---|
+| `MCU_RCU_V1/Core/Inc/rcu_pkt.h` | `kp_u8/kd_u8` → `kp_u16/kd_u16` in `rcu_motor_cmd_entry_t`; added `RCU_DBGCMD_MOTOR_SET_ZERO 0x0D` |
+| `MCU_RCU_V1/Core/Src/telem_pack.c` | Kp/Kd decode: `/ 255.0f` → `/ 65535.0f`, `kp_u8/kd_u8` → `kp_u16/kd_u16` |
+| `MCU_RCU_V1/Core/Src/eth_udp.c` | Added `case RCU_DBGCMD_MOTOR_SET_ZERO` handler calling `motor_bus_send_set_zero()` |
+| `Tools/plymouth_humanoid_bench_monitor.py` | `send_motor_cmd` uses `"<BBHHHHH"` + u16 encoding; added `send_motor_set_zero()`; added "Set Zero" button; Kp/Kd defaults updated |
