@@ -42,8 +42,8 @@ HOLD_REF_BY_MOTOR_ID = {
     6: ("r_hip_pitch_link_r_roll_joint", 3.7780),
     7: ("l_thigh_link_l_knee_joint", 3.2755),
     8: ("r_thigh_link_r_knee_joint", 0.1026),
-    9: ("l_shank_link_l_ankle_joint", 2.9816),
-    10: ("r_shank_link_r_ankle_joint", 1.7341),
+    9: ("l_shank_link_l_ankle_joint", 1.2),
+    10: ("r_shank_link_r_ankle_joint", 3.0),
     11: ("l_ankle_link_l_foot_joint", 2.7925),
     12: ("r_ankle_link_r_foot_joint", 6.0962),
 }

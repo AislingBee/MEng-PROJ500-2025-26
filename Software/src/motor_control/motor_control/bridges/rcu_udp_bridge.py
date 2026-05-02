@@ -143,7 +143,8 @@ class RcuUdpBridge(Node):
         self.declare_parameter("startup_gate_error_after_s", 5.0)
         # Keep these as strings in launch-facing APIs so IncludeLaunchDescription
         # and CLI argument overrides remain compatible on Jazzy.
-        self.declare_parameter("left_bus_motor_ids", "[1,2]")
+        self.declare_parameter("left_bus_motor_ids", "[1,3,5,7,9,11]")
+        self.declare_parameter("right_bus_motor_ids", "[2,4,6,8,10,12]")
         self.declare_parameter("active_motor_ids", "[1,2,3,4,5,6,7,8,9,10,11,12]")
 
         rcu_ip_raw = self.get_parameter("rcu_ip").value
@@ -160,6 +161,7 @@ class RcuUdpBridge(Node):
         expected_online_motor_ids_raw = self.get_parameter("expected_online_motor_ids").value
         startup_gate_error_after_s_raw = self.get_parameter("startup_gate_error_after_s").value
         left_bus_motor_ids_raw = self.get_parameter("left_bus_motor_ids").value
+        right_bus_motor_ids_raw = self.get_parameter("right_bus_motor_ids").value
         active_motor_ids_raw = self.get_parameter("active_motor_ids").value
 
         rcu_ip = str(rcu_ip_raw)
@@ -176,6 +178,7 @@ class RcuUdpBridge(Node):
         self._expected_online_motor_ids = _parse_motor_id_list(expected_online_motor_ids_raw)
         self._startup_gate_error_after_s = max(0.0, _parse_float(startup_gate_error_after_s_raw, 5.0))
         left_bus_motor_ids = _parse_motor_id_list(left_bus_motor_ids_raw)
+        right_bus_motor_ids = _parse_motor_id_list(right_bus_motor_ids_raw)
         active_motor_ids = _parse_motor_id_list(active_motor_ids_raw)
 
         self._active_motor_ids = []
@@ -187,6 +190,8 @@ class RcuUdpBridge(Node):
         # Per-motor bus map (index=motor_id): default from protocol, with optional
         # overrides for bench wiring (e.g. motor IDs 1 and 2 both on left bus).
         self._motor_bus_map = list(rp.MOTOR_BUS_MAP)
+        for mid in right_bus_motor_ids:
+            self._motor_bus_map[mid] = 0
         for mid in left_bus_motor_ids:
             self._motor_bus_map[mid] = 1
 
@@ -275,6 +280,9 @@ class RcuUdpBridge(Node):
         # ----- RX drain timer (publish on main thread at same rate) -----
         self._rx_timer = self.create_timer(period, self._rx_drain)
 
+        # Ensure all selected buses are taken out of standby at startup.
+        self._send_motor_bus_ctrl_for_active_ids()
+
         # ----- Auto-enable -----
         if auto_enable:
             self.get_logger().info("auto_enable=True — enabling all motors")
@@ -295,6 +303,9 @@ class RcuUdpBridge(Node):
         if left_bus_motor_ids:
             self.get_logger().info(
                 f"Left-bus overrides active for motor IDs: {left_bus_motor_ids}")
+        if right_bus_motor_ids:
+            self.get_logger().info(
+                f"Right-bus overrides active for motor IDs: {right_bus_motor_ids}")
         if self._scan_motor_can_ids:
             self.get_logger().info(
                 "CAN ID scan enabled "
@@ -386,7 +397,24 @@ class RcuUdpBridge(Node):
         ])
         self._send(rp.encode_debug_cmd(rp.DBGCMD_MOTOR_ENABLE, payload))
 
+    def _send_motor_bus_ctrl_for_active_ids(self):
+        left_active = any(self._motor_bus_map[mid] == 1 for mid in self._active_motor_ids)
+        right_active = any(self._motor_bus_map[mid] == 0 for mid in self._active_motor_ids)
+
+        standby_mask = 0
+        if not left_active:
+            standby_mask |= 0b01
+        if not right_active:
+            standby_mask |= 0b10
+
+        self._send(rp.encode_debug_cmd(rp.DBGCMD_MOTOR_BUS_CTRL, bytes([standby_mask])))
+        self.get_logger().info(
+            "Configured motor bus standby mask for active IDs: "
+            f"0b{standby_mask:02b} (left_active={left_active}, right_active={right_active})"
+        )
+
     def _send_enable_all(self):
+        self._send_motor_bus_ctrl_for_active_ids()
         self._send(rp.encode_motor_supervisory(
             enable_mask=0x0FFF, clear_fault_mask=0x0FFF,
             ctrl_mode=self._ctrl_mode))
@@ -394,6 +422,15 @@ class RcuUdpBridge(Node):
             self._send_motor_enable(
                 bus=self._motor_bus_map[mid], motor_id=mid,
                 enable=True, clear_fault=True)
+
+    def _send_disable_all(self):
+        """Disable active motors without asserting PDU fault (limp mode)."""
+        self._send_motor_bus_ctrl_for_active_ids()
+        self._send(rp.encode_motor_supervisory(enable_mask=0x0000))
+        for mid in self._active_motor_ids:
+            self._send_motor_enable(
+                bus=self._motor_bus_map[mid], motor_id=mid,
+                enable=False, clear_fault=False)
 
     def _send_full_estop(self):
         """FULL E-STOP: CAN stop all motors + assert PDU power fault."""
@@ -635,7 +672,7 @@ def main(args=None):
         if rclpy.ok():
             node.get_logger().info("Shutting down — sending motor disable...")
         try:
-            node._send(rp.encode_motor_supervisory(enable_mask=0x0000))
+            node._send_disable_all()
         except Exception:
             pass
     finally:
