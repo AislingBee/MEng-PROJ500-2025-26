@@ -26,7 +26,7 @@ SIM_DT_S: Final[float] = 1.0 / 200.0
 DECIMATION: Final[int] = 3
 POLICY_LOOP_HZ: Final[float] = 1.0 / (SIM_DT_S * DECIMATION)
 
-DEFAULT_COMMAND_VALUE: Final[float] = 0.0
+DEFAULT_COMMAND_VALUE: Final[float] = 0.12
 DEFAULT_GAIT_FREQUENCY_HZ: Final[float] = 0.2
 
 ACTION_DIM: Final[int] = 12
