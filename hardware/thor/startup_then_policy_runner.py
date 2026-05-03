@@ -58,6 +58,7 @@ class ThorStartupThenPolicyRunnerConfig:
     max_command_value: float = 0.50
     device: str = "cpu"
     loop_hz: float = CONTRACT.policy_loop_hz
+    action_delay_steps: int = 2
     ramp_time_s: float = 8.0
     startup_kp_scale: float = 0.20
     startup_kd_scale: float = 1.00
@@ -99,6 +100,8 @@ class ThorStartupThenPolicyRunnerConfig:
             raise ValueError("max_position_error_rad must be positive")
         if self.max_command_value < 0.0:
             raise ValueError("max_command_value must be non-negative")
+        if self.action_delay_steps < 0:
+            raise ValueError("action_delay_steps must be non-negative")
         if self.debug_print_every_n_steps <= 0:
             raise ValueError("debug_print_every_n_steps must be positive")
 
@@ -134,7 +137,13 @@ class ThorStartupThenPolicyRunner:
             runner_cfg.joint_upper_rad, dtype=torch.float32, device=self.device
         ).unsqueeze(0)
         self._commands = torch.zeros((1, 1), dtype=torch.float32, device=self.device)
+        self._actions = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
         self._last_actions = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
+        self._action_buffer = torch.zeros(
+            (1, runner_cfg.action_delay_steps + 1, CONTRACT.action_dim),
+            dtype=torch.float32,
+            device=self.device,
+        )
         self._joint_pos_targets = self._standing_q.unsqueeze(0).clone()
         self._tau_ff = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
 
@@ -165,6 +174,10 @@ class ThorStartupThenPolicyRunner:
         self._pending_policy = False
         self._pending_exit = False
         self._pending_command_value: float | None = None
+        self._last_raw_actions_debug: Tensor | None = None
+        self._last_clamped_actions_debug: Tensor | None = None
+        self._last_applied_actions_debug: Tensor | None = None
+        self._last_action_saturation_pct: float = 0.0
 
     def set_command_value(self, command_value: float) -> None:
         clamped_value = min(max(float(command_value), 0.0), self.cfg.max_command_value)
@@ -288,14 +301,29 @@ class ThorStartupThenPolicyRunner:
             raise RuntimeError("NaN detected in observations")
         return obs
 
+    def _process_policy_actions(self, raw_actions: Tensor) -> Tensor:
+        self._last_actions[:] = self._actions
+        clamped_actions = torch.clamp(raw_actions, -1.0, 1.0)
+        saturated = raw_actions != clamped_actions
+        self._last_action_saturation_pct = 100.0 * saturated.float().mean().item()
+
+        self._action_buffer = torch.roll(self._action_buffer, shifts=1, dims=1)
+        self._action_buffer[:, 0, :] = clamped_actions
+        delayed_actions = self._action_buffer[:, self.cfg.action_delay_steps, :]
+        self._actions[:] = delayed_actions
+
+        self._last_raw_actions_debug = raw_actions.detach().clone()
+        self._last_clamped_actions_debug = clamped_actions.detach().clone()
+        self._last_applied_actions_debug = delayed_actions.detach().clone()
+        return delayed_actions
+
     def _generate_policy_control_packet(self, actions: Tensor) -> ControlPacket:
-        actions = torch.clamp(actions, -1.0, 1.0)
-        q_des = self._standing_q.unsqueeze(0) + self._action_scale * actions
+        applied_actions = self._process_policy_actions(actions)
+        q_des = self._standing_q.unsqueeze(0) + self._action_scale * applied_actions
         q_des = torch.max(torch.min(q_des, self._joint_upper), self._joint_lower)
         self._check_for_nan(q_des, "q_des")
         self._validate_joint_targets(q_des)
         self._joint_pos_targets = q_des.detach().clone()
-        self._last_actions = actions.detach().clone()
 
         return ControlPacket(
             joint_names=self._joint_names,
@@ -371,7 +399,9 @@ class ThorStartupThenPolicyRunner:
                 else:
                     self._mode = MODE_POLICY
                     self._joint_pos_targets = self._standing_q.unsqueeze(0).clone()
+                    self._actions.zero_()
                     self._last_actions.zero_()
+                    self._action_buffer.zero_()
                     print("Keyboard: switching to POLICY.")
 
         if pending_command_value is not None:
@@ -388,6 +418,18 @@ class ThorStartupThenPolicyRunner:
             return
 
         max_standing_error, max_joint_velocity = self._standing_metrics(q_actual, joint_vel)
+        action_debug = ""
+        if (
+            self._last_raw_actions_debug is not None
+            and self._last_clamped_actions_debug is not None
+            and self._last_applied_actions_debug is not None
+        ):
+            action_debug = (
+                f" | raw_actions={self._last_raw_actions_debug.detach().cpu()} | "
+                f"clamped_actions={self._last_clamped_actions_debug.detach().cpu()} | "
+                f"applied_actions_after_delay={self._last_applied_actions_debug.detach().cpu()} | "
+                f"action_saturation_pct={self._last_action_saturation_pct:.2f}%"
+            )
         print(
             "[THOR COMBINED DEBUG] "
             f"step={self._step_count} | "
@@ -396,6 +438,7 @@ class ThorStartupThenPolicyRunner:
             f"max standing error={max_standing_error:.6f} rad | "
             f"max velocity={max_joint_velocity:.6f} rad/s | "
             f"command value={float(self._commands[0, 0].item()):.3f}"
+            f"{action_debug}"
         )
 
     def send_standing_pose_once(self) -> None:
@@ -513,6 +556,12 @@ def parse_args() -> argparse.Namespace:
         help="Hardware control loop frequency in Hz.",
     )
     parser.add_argument(
+        "--action-delay-steps",
+        type=int,
+        default=2,
+        help="Number of policy steps to delay clamped actions before q_des generation.",
+    )
+    parser.add_argument(
         "--ramp-time-s",
         type=float,
         default=8.0,
@@ -570,6 +619,7 @@ def main() -> None:
         command_value=CONTRACT.default_command_value,
         device=args.device,
         loop_hz=args.loop_hz,
+        action_delay_steps=args.action_delay_steps,
         ramp_time_s=args.ramp_time_s,
         startup_kp_scale=args.startup_kp_scale,
         startup_kd_scale=args.startup_kd_scale,

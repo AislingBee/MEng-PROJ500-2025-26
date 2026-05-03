@@ -24,7 +24,7 @@ from simulation.isaac.configuration.zero_pose import ZERO_POSE_DEG
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
     RobotHardwareInterface,
-    RobotInterfaceConfig,
+    RobotInterfaceConfig, RobotStateSample, RobotCommandMessage,
 )
 from hardware.thor.thor_policy_runner import (
     _shutdown_ros2_bridge,

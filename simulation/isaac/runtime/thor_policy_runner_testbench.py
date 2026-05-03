@@ -111,7 +111,7 @@ def main() -> None:
     joint_names = CONTRACT.joint_names
 
     runner_cfg = ThorPolicyRunnerConfig(
-        policy_path=r"hardware\policy\walking.pt",
+        policy_path=r"hardware\policy\walking_policy_200.pt",
         joint_names=joint_names,
         joint_lower_rad=CONTRACT.joint_lower_limits_rad,
         joint_upper_rad=CONTRACT.joint_upper_limits_rad,
