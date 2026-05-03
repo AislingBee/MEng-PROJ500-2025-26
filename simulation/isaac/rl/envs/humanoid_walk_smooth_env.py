@@ -31,7 +31,7 @@ USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "r
 class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
     decimation: int = CONTRACT.decimation
     episode_length_s: float = 10.0
-    action_delay_steps: int = 2
+    action_delay_steps: int = 0
 
     sim: SimulationCfg = SimulationCfg(dt=CONTRACT.sim_dt_s, render_interval=decimation)
     scene: InteractiveSceneCfg = InteractiveSceneCfg(
@@ -80,7 +80,9 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
         "single_stance": 1.40,
         "swing_clearance": 0.12,
         "com_align": 3.0,
-        "forward_step": 0.45,
+        "forward_step": 0.0,
+        "phase_single_stance": 0.20,
+        "phase_forward_step": 0.25,
         "ang_vel": 0.16,
         "joint_vel": 0.015,
         "action_rate": 0.065,
@@ -101,6 +103,7 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
         "foot_side": 1.8,
         "foot_centerline": 50.0,
         "pelvis_lateral": 3.0,
+        "step_x_asymmetry": 0.20,
         "air_time_imbalance": 0.55,
         "contact_time_imbalance": 0.55,
     }
@@ -609,6 +612,12 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
 
         left_contact, right_contact, _, _ = self._get_foot_contact_state()
         command_active = (torch.abs(self._commands[:, 0]) > self.cfg.command_active_threshold).float()
+        phase = torch.remainder(
+            self.episode_length_buf.float() * self._step_dt * self.cfg.gait_frequency_hz,
+            1.0,
+        )
+        left_swing_phase = phase < 0.5
+        right_swing_phase = ~left_swing_phase
 
         q_err = q - self._standing_q.unsqueeze(0)
         raw_action_pen = torch.mean(self._raw_actions ** 2, dim=1)
@@ -669,6 +678,11 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
         right_swing = (~right_contact) & left_contact
         left_stance = left_contact & (~right_contact)
         right_stance = right_contact & (~left_contact)
+        left_phase_single_stance = left_swing_phase & left_swing
+        right_phase_single_stance = right_swing_phase & right_swing
+        r_phase_single_stance = command_active * (
+            left_phase_single_stance.float() + right_phase_single_stance.float()
+        )
 
         pelvis_y_b = torch.zeros_like(left_pos_b[:, 1])
         com_to_left_foot_y = torch.abs(pelvis_y_b - left_pos_b[:, 1])
@@ -698,9 +712,9 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
             + right_swing.float() * near_ground_right * right_foot_tilt
         )
 
-        r_forward_step = command_active * (
-            left_swing.float() * torch.clamp(left_vel_b[:, 0], min=0.0, max=0.75)
-            + right_swing.float() * torch.clamp(right_vel_b[:, 0], min=0.0, max=0.75)
+        r_phase_forward_step = command_active * (
+            left_phase_single_stance.float() * torch.clamp(left_vel_b[:, 0], min=0.0, max=0.75)
+            + right_phase_single_stance.float() * torch.clamp(right_vel_b[:, 0], min=0.0, max=0.75)
         )
         p_lateral_step = command_active * (
             left_swing.float() * torch.abs(left_vel_b[:, 1])
@@ -709,6 +723,7 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
         r_swing_clearance = command_active * (
             left_swing.float() * left_clearance + right_swing.float() * right_clearance
         )
+        p_step_x_asymmetry = command_active * torch.abs(left_pos_b[:, 0] + right_pos_b[:, 0])
 
         p_ang_vel = torch.mean(root_ang_vel_b**2, dim=1)
         p_joint_vel = torch.mean(qd**2, dim=1)
@@ -729,9 +744,10 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
             + self._reward_scale("pose") * r_pose
             + self._reward_scale("feet_air_time") * r_feet_air_time
             + self._reward_scale("single_stance") * r_single_stance
+            + self._reward_scale("phase_single_stance") * r_phase_single_stance
             + self._reward_scale("swing_clearance") * r_swing_clearance
             + self._reward_scale("com_align") * r_com_align
-            + self._reward_scale("forward_step") * r_forward_step
+            + self._reward_scale("phase_forward_step") * r_phase_forward_step
             + self._reward_scale("step_width") * r_step_width
             + self._reward_scale("foot_side") * r_foot_side
             - self._reward_scale("ang_vel") * p_ang_vel
@@ -748,6 +764,7 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
             - self._reward_scale("narrow_step") * p_narrow_step
             - self._reward_scale("foot_centerline") * p_foot_centerline
             - self._reward_scale("pelvis_lateral") * p_pelvis_lateral
+            - self._reward_scale("step_x_asymmetry") * p_step_x_asymmetry
             - self._reward_scale("bad_weight_shift") * p_bad_weight_shift
             - self._reward_scale("foot_tilt") * p_foot_tilt
             - self._reward_scale("lateral_step") * p_lateral_step
@@ -769,9 +786,14 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
                 f"vel_track: {(self._reward_scale('vel_track') * r_vel_track).mean().item():.4f} | "
                 f"upright: {(self._reward_scale('upright') * r_upright).mean().item():.4f} | "
                 f"single_stance: {(self._reward_scale('single_stance') * r_single_stance).mean().item():.4f} | "
+                f"phase_single_stance: {(self._reward_scale('phase_single_stance') * r_phase_single_stance).mean().item():.4f} | "
+                f"phase_forward_step: {(self._reward_scale('phase_forward_step') * r_phase_forward_step).mean().item():.4f} | "
                 f"foot_clearance: {(self._reward_scale('swing_clearance') * r_swing_clearance).mean().item():.4f} | "
+                f"step_x_asym_pen: {(self._reward_scale('step_x_asymmetry') * p_step_x_asymmetry).mean().item():.4f} | "
                 f"action_rate_pen: {(self._reward_scale('action_rate') * action_rate_pen).mean().item():.4f} | "
                 f"raw_action_pen: {(self._reward_scale('raw_action') * raw_action_pen).mean().item():.4f} | "
+                f"left_contact_ratio: {left_contact.float().mean().item():.3f} | "
+                f"right_contact_ratio: {right_contact.float().mean().item():.3f} | "
                 f"saturation_pct: {diag['action_saturation_pct']:.2f}% | "
                 f"raw_abs_mean: {diag['raw_action_abs_mean']:.3f} | "
                 f"q_des_min/max: {diag['q_des_min']:+.3f}/{diag['q_des_max']:+.3f} | "
