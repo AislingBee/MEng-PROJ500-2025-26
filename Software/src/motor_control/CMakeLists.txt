@@ -53,6 +53,7 @@ set(MOTOR_CONTROL_PY_SCRIPTS
   motor_control/testing/rcu_bench_command_test.py
   motor_control/testing/hold_position_test.py
   motor_control/testing/enable_motors.py
+  motor_control/testing/sequential_motor_zero.py
 )
 
 # Ensure scripts are executable even when source checkouts lose +x bits.
