@@ -17,7 +17,8 @@ References:
 
 Pipeline:
   startup_then_policy_runner.py -> /robot_command -> rcu_udp_bridge -> RCU
-  RCU -> /motor_can_feedback + /imu0 -> robot_observation_bridge -> /robot_observation
+  RCU -> /motor_can_feedback + /imu0 -> imu_publisher (remap) -> /imu0_remapped
+  /motor_can_feedback + /imu0_remapped -> robot_observation_bridge -> /robot_observation
 
   startup_then_policy_runner.py handles all phases in one process:
     1. STARTUP_RAMP  — ramps from zero pose to standing over ramp_time_s

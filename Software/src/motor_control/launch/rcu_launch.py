@@ -3,8 +3,9 @@ rcu_launch.py — ROS2 launch file for PROJ500 RCU motor control stack
 
 Launches:
   1. rcu_udp_bridge           — RCU UDP ↔ ROS2 bridge (replaces ethernet_can_bridge + nucleo)
-    2. motor_feedback_listener  — /motor_can_feedback → /motor_feedback
-    3. robot_observation_bridge — /motor_feedback → /robot_observation
+  2. imu_publisher            — /imu0 (raw) → remap to policy frame → /imu0_remapped
+  3. motor_feedback_listener  — /motor_can_feedback → /motor_feedback
+  4. robot_observation_bridge — /motor_feedback + /imu0_remapped → /robot_observation
 
 Usage:
     ros2 launch motor_control rcu_launch.py
@@ -30,7 +31,7 @@ Parameters (all optional):
     expected_online_motor_ids   default "[]"
     startup_gate_error_after_s  default "5.0"
     feedback_all_logging_info    default "False"
-    imu_topic                    default "imu0"
+    imu_topic                    default "imu0_remapped"
     observation_topic            default "robot_observation"
     observation_all_logging_info default "False"
     observation_log_hz           default "2.0"
@@ -62,7 +63,7 @@ def generate_launch_description():
     can_id_scan_log_period_s = LaunchConfiguration("can_id_scan_log_period_s", default="1.0")
     names_file = LaunchConfiguration("names_file", default="joint_limits_config.json")
     feedback_all_logging_info = LaunchConfiguration("feedback_all_logging_info", default="False")
-    imu_topic = LaunchConfiguration("imu_topic", default="imu0")
+    imu_topic = LaunchConfiguration("imu_topic", default="imu0_remapped")
     observation_topic = LaunchConfiguration("observation_topic", default="robot_observation")
     observation_all_logging_info = LaunchConfiguration("observation_all_logging_info", default="False")
     observation_log_hz = LaunchConfiguration("observation_log_hz", default="2.0")
@@ -121,7 +122,7 @@ def generate_launch_description():
             default_value="False",
             description="Enable verbose motor_feedback_listener ROS logs"),
         DeclareLaunchArgument("imu_topic",
-            default_value="imu0",
+            default_value="imu0_remapped",
             description="IMU topic consumed by robot_observation_bridge"),
         DeclareLaunchArgument("observation_topic",
             default_value="robot_observation",
@@ -171,6 +172,21 @@ def generate_launch_description():
                 "wait_for_expected_online_ids": wait_for_expected_online_ids,
                 "expected_online_motor_ids": ParameterValue(expected_online_motor_ids, value_type=str),
                 "startup_gate_error_after_s": startup_gate_error_after_s,
+            }],
+        ),
+
+        # ----------------------------------------------------------------
+        # IMU publisher — remaps /imu0 (raw RCU frame) → policy frame → /imu0_remapped
+        # ----------------------------------------------------------------
+        Node(
+            package="motor_control",
+            executable="imu_publisher.py",
+            name="imu_publisher",
+            output="screen",
+            parameters=[{
+                "rcu_imu_topic": "imu0",
+                "imu_topic":     imu_topic,
+                "frame_id":      "imu_link",
             }],
         ),
 
