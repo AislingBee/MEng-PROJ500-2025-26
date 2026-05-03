@@ -1,0 +1,130 @@
+from __future__ import annotations
+
+import json
+import math
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Final
+
+import torch
+
+from simulation.isaac.configuration.standing_pose import STANDING_TARGETS_DEG
+from simulation.isaac.configuration.walking_actuator_config import (
+    build_per_joint_walking_actuator_cfg,
+)
+
+# Smooth walking sim-to-real policy contract.
+# Keep deployment-critical constants aligned between training, playback, and Thor.
+
+
+ACTION_SCALE: Final[tuple[float, ...]] = (
+    0.15, 0.14, 0.20, 0.25, 0.18, 0.08,
+    0.15, 0.14, 0.20, 0.25, 0.18, 0.08,
+)
+
+SIM_DT_S: Final[float] = 1.0 / 200.0
+DECIMATION: Final[int] = 3
+
+DEFAULT_COMMAND_VALUE: Final[float] = 0.12
+DEFAULT_GAIT_FREQUENCY_HZ: Final[float] = 0.2
+
+ACTION_DIM: Final[int] = 12
+OBS_DIM: Final[int] = 75
+
+OBS_LAYOUT: Final[dict[str, int]] = {
+    "q_rel": 12,
+    "qd": 12,
+    "q_target_err": 12,
+    "joint_effort": 12,
+    "projected_gravity_b": 3,
+    "imu_gyro_b": 3,
+    "command": 1,
+    "phase_sin": 1,
+    "phase_cos": 1,
+    "foot_pos_b": 6,
+    "last_actions": 12,
+}
+
+USE_OBS_NORMALIZATION: Final[bool] = True
+OBS_NORMALIZER_REQUIRED: Final[bool] = True
+OBS_NORMALIZER_ARTIFACT_NAME: Final[str] = "obs_normalizer.pt"
+
+if sum(OBS_LAYOUT.values()) != OBS_DIM:
+    raise RuntimeError(f"Smooth walking observation layout sums to {sum(OBS_LAYOUT.values())}, expected {OBS_DIM}")
+
+_JOINT_LIMITS_PATH = Path(__file__).with_name("joint_limits_config.json")
+with _JOINT_LIMITS_PATH.open("r", encoding="utf-8") as f:
+    _JOINT_LIMITS_DATA = json.load(f)
+
+JOINT_LIMIT_NAMES: Final[tuple[str, ...]] = tuple(_JOINT_LIMITS_DATA["joint_names"])
+JOINT_LOWER_LIMITS_RAD: Final[tuple[float, ...]] = tuple(_JOINT_LIMITS_DATA["joint_lower_limits"])
+JOINT_UPPER_LIMITS_RAD: Final[tuple[float, ...]] = tuple(_JOINT_LIMITS_DATA["joint_upper_limits"])
+
+if len(JOINT_LIMIT_NAMES) != ACTION_DIM:
+    raise RuntimeError(f"Joint limit config has {len(JOINT_LIMIT_NAMES)} joints, expected {ACTION_DIM}")
+
+
+@dataclass(frozen=True)
+class HumanoidWalkSmoothPolicyContract:
+    joint_names: tuple[str, ...] = JOINT_LIMIT_NAMES
+    action_scale: tuple[float, ...] = ACTION_SCALE
+    sim_dt_s: float = SIM_DT_S
+    decimation: int = DECIMATION
+    default_command_value: float = DEFAULT_COMMAND_VALUE
+    default_gait_frequency_hz: float = DEFAULT_GAIT_FREQUENCY_HZ
+    action_dim: int = ACTION_DIM
+    obs_dim: int = OBS_DIM
+    obs_layout: dict[str, int] = field(default_factory=lambda: dict(OBS_LAYOUT))
+    joint_lower_limits_rad: tuple[float, ...] = JOINT_LOWER_LIMITS_RAD
+    joint_upper_limits_rad: tuple[float, ...] = JOINT_UPPER_LIMITS_RAD
+    use_obs_normalization: bool = USE_OBS_NORMALIZATION
+    obs_normalizer_required: bool = OBS_NORMALIZER_REQUIRED
+    obs_normalizer_artifact_name: str = OBS_NORMALIZER_ARTIFACT_NAME
+
+    @property
+    def policy_loop_hz(self) -> float:
+        return 1.0 / (self.sim_dt_s * self.decimation)
+
+    def build_standing_q(self, device: str | torch.device = "cpu") -> torch.Tensor:
+        q = torch.zeros((len(self.joint_names),), dtype=torch.float32, device=device)
+        for i, joint_name in enumerate(self.joint_names):
+            q[i] = math.radians(STANDING_TARGETS_DEG.get(joint_name, 0.0))
+        return q
+
+    def build_fixed_gains(
+        self, device: str | torch.device = "cpu"
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        per_joint_cfg = build_per_joint_walking_actuator_cfg(self.joint_names)
+        kp = torch.tensor(per_joint_cfg["stiffness"], dtype=torch.float32, device=device)
+        kd = torch.tensor(per_joint_cfg["damping"], dtype=torch.float32, device=device)
+        return kp, kd
+
+
+CONTRACT: Final[HumanoidWalkSmoothPolicyContract] = HumanoidWalkSmoothPolicyContract()
+
+
+def build_standing_q(device: str | torch.device = "cpu") -> torch.Tensor:
+    return CONTRACT.build_standing_q(device=device)
+
+
+def build_fixed_gains(
+    device: str | torch.device = "cpu",
+) -> tuple[torch.Tensor, torch.Tensor]:
+    return CONTRACT.build_fixed_gains(device=device)
+
+
+def get_thor_runner_defaults() -> dict:
+    return {
+        "joint_names": CONTRACT.joint_names,
+        "action_scale": CONTRACT.action_scale,
+        "loop_hz": CONTRACT.policy_loop_hz,
+        "command_value": CONTRACT.default_command_value,
+        "gait_frequency_hz": CONTRACT.default_gait_frequency_hz,
+        "observation_dim": CONTRACT.obs_dim,
+        "action_dim": CONTRACT.action_dim,
+        "joint_lower_limits_rad": CONTRACT.joint_lower_limits_rad,
+        "joint_upper_limits_rad": CONTRACT.joint_upper_limits_rad,
+        "use_obs_normalization": CONTRACT.use_obs_normalization,
+        "obs_normalizer_required": CONTRACT.obs_normalizer_required,
+        "obs_normalizer_artifact_name": CONTRACT.obs_normalizer_artifact_name,
+    }
