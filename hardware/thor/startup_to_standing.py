@@ -44,6 +44,7 @@ class ThorStartupToStandingConfig:
     kp_scale: float = 0.20
     kd_scale: float = 1.00
     effort_scale: float = 0.25
+    max_command_position_step_rad: float = 0.05
     position_tolerance_rad: float = 0.05
     velocity_tolerance_rad_s: float = 0.10
     max_position_error_rad: float = 0.75
@@ -74,6 +75,8 @@ class ThorStartupToStandingConfig:
             raise ValueError("kd_scale must be non-negative")
         if self.effort_scale < 0.0:
             raise ValueError("effort_scale must be non-negative")
+        if self.max_command_position_step_rad <= 0.0:
+            raise ValueError("max_command_position_step_rad must be positive")
         if self.position_tolerance_rad < 0.0:
             raise ValueError("position_tolerance_rad must be non-negative")
         if self.velocity_tolerance_rad_s < 0.0:
@@ -202,7 +205,24 @@ class ThorStartupToStandingRunner:
                 "Joint target exceeds policy contract joint limits: " + "; ".join(violating)
             )
 
-    def _build_control_packet(self, q_des: Tensor) -> ControlPacket:
+    def _build_control_packet(self, q_des: Tensor, q_actual: Tensor) -> ControlPacket:
+        error = q_des - q_actual
+        raw_max_abs_error = torch.max(torch.abs(error)).item()
+        error = torch.clamp(
+            error,
+            -self.cfg.max_command_position_step_rad,
+            self.cfg.max_command_position_step_rad,
+        )
+        q_des_limited = q_actual + error
+        limited_max_abs_error = torch.max(torch.abs(q_des_limited - q_actual)).item()
+        self._validate_joint_targets(q_des_limited)
+
+        print(
+            "[THOR STARTUP LIMIT] "
+            f"raw max abs(q_des - q_actual)={raw_max_abs_error:.6f} rad | "
+            f"limited max abs(q_des_limited - q_actual)={limited_max_abs_error:.6f} rad"
+        )
+
         # TODO: ControlPacket currently has no effort-limit field. Keep tau_ff at
         # zero during startup and apply effort scaling here once the hardware
         # command path supports explicit effort limiting.
@@ -210,17 +230,20 @@ class ThorStartupToStandingRunner:
 
         return ControlPacket(
             joint_names=self._joint_names,
-            q_des=q_des.clone(),
+            q_des=q_des_limited.clone(),
             kp=self._kp.clone(),
             kd=self._kd.clone(),
             tau_ff=self._tau_ff.clone(),
         )
 
     def send_standing_pose(self) -> None:
+        observation_packet = self.hardware.read_observation_packet()
+        q_actual = observation_packet.joint_pos.to(self.device, dtype=torch.float32)
         q_standing = self._q_standing.unsqueeze(0).clone()
+        self._check_for_nan(q_actual, "q_actual")
         self._check_for_nan(q_standing, "q_des")
         self._validate_joint_targets(q_standing)
-        packet = self._build_control_packet(q_standing)
+        packet = self._build_control_packet(q_standing, q_actual)
         self.hardware.write_control_packet(packet)
 
     def _debug_print_step(
@@ -287,7 +310,7 @@ class ThorStartupToStandingRunner:
                         f"exceeds threshold {self.cfg.max_position_error_rad:.6f} rad"
                     )
 
-                packet = self._build_control_packet(q_des)
+                packet = self._build_control_packet(q_des, q_actual)
                 self.hardware.write_control_packet(packet)
 
                 self._step_count += 1
@@ -346,6 +369,12 @@ def parse_args() -> argparse.Namespace:
         help="Scale factor applied where the command path supports effort limiting.",
     )
     parser.add_argument(
+        "--max-command-position-step-rad",
+        type=float,
+        default=0.05,
+        help="Maximum position step that software may command in a single control cycle.",
+    )
+    parser.add_argument(
         "--position-tolerance-rad",
         type=float,
         default=0.05,
@@ -386,6 +415,7 @@ def main() -> None:
         kp_scale=args.kp_scale,
         kd_scale=args.kd_scale,
         effort_scale=args.effort_scale,
+        max_command_position_step_rad=args.max_command_position_step_rad,
         position_tolerance_rad=args.position_tolerance_rad,
         velocity_tolerance_rad_s=args.velocity_tolerance_rad_s,
         max_position_error_rad=args.max_position_error_rad,
