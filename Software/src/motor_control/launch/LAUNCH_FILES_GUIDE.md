@@ -87,10 +87,15 @@ Purpose:
 
 Starts:
 - Includes `rcu_launch.py` with full 12-motor arguments.
-- Launches `hardware/thor/thor_policy_runner.py` via `ExecuteProcess`.
+- Launches `hardware/thor/startup_then_policy_runner.py` via `ExecuteProcess`.
 
 Main behavior:
-- Brings up the RCU stack and policy runner together.
+- Brings up the RCU stack, ramps the robot from zero pose to standing, holds
+  standing pose, then runs the standing policy — all in one process.
+- Keyboard controls during runtime:
+  - `p` — advance from STANDING_HOLD to POLICY
+  - `h` — return to STANDING_HOLD from POLICY
+  - `x` / Ctrl+C — safe exit (sends final standing pose)
 
 Notable defaults:
 - `auto_enable=True`
@@ -99,7 +104,7 @@ Notable defaults:
 - expected IDs set to all 12 motors
 
 When to use:
-- You want one launch command for full policy-to-hardware execution.
+- You want one launch command for full startup-to-policy execution.
 
 Example:
 ```bash

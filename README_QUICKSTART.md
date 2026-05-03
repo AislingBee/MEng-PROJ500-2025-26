@@ -17,11 +17,16 @@ source install/setup.bash
 
 ### Option A — One command (recommended)
 
-Starts RCU stack + policy runner together, with auto_enable and startup gate:
+Starts RCU stack + `startup_then_policy_runner.py` together. Handles ramp → standing hold → policy in one process:
 
 ```bash
 ros2 launch motor_control thor_12_motor_pipeline_launch.py
 ```
+
+Keyboard controls once running:
+- `p` — advance from standing hold to policy
+- `h` — return to standing hold
+- `x` or Ctrl+C — safe exit
 
 ### Option B — Two terminals (manual control)
 
@@ -30,14 +35,14 @@ Terminal A — RCU stack:
 ros2 launch motor_control rl_robot_launch.py
 ```
 
-Terminal B — Policy runner:
+Terminal B — Startup + policy runner:
 ```bash
 source /opt/ros/jazzy/setup.bash
 cd Software
 source install/setup.bash
 cd ..
 export PYTHONPATH=$(pwd):$PYTHONPATH
-python3 hardware/thor/thor_policy_runner.py
+python3 hardware/thor/startup_then_policy_runner.py
 ```
 
 This starts:

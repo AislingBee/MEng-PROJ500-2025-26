@@ -12,7 +12,8 @@ Use this index when you need to quickly find the right place to edit or run.
 
 ## Policy Runner and Hardware Integration
 
-- `hardware/thor/thor_policy_runner.py`: Thor standing policy runtime script.
+- `hardware/thor/startup_then_policy_runner.py`: **Primary runtime script.** Handles startup ramp → standing hold → policy in one process.
+- `hardware/thor/thor_policy_runner.py`: Standalone policy-only runner (no startup ramp; use after robot is already standing).
 - `simulation/isaac/rl/interface/ros2_robot_bridge.py`: ROS2 bridge used by policy runner hooks.
 - `simulation/isaac/rl/interface/robot_hardware_interface.py`: Hardware interface contract.
 

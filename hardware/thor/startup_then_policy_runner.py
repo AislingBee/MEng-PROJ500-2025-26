@@ -406,7 +406,7 @@ class ThorStartupThenPolicyRunner:
         self.hardware.write_control_packet(packet)
 
     def run(self, stop_event: threading.Event | None = None) -> None:
-        print("Thor startup + policy runner keyboard commands: h=hold, p=policy, s=stand, w=walk, x=exit")
+        print("Thor startup + policy runner keyboard commands: Enter/p=start policy, h=hold, x=exit")
 
         startup_packet = self.hardware.read_observation_packet()
         q_start = startup_packet.joint_pos.to(self.device, dtype=torch.float32).clone()
@@ -453,7 +453,7 @@ class ThorStartupThenPolicyRunner:
                     if alpha >= 1.0:
                         self._mode = MODE_STANDING_HOLD
                         self.set_stand_mode()
-                        print("Startup ramp complete. Entering STANDING_HOLD.")
+                        print("Startup ramp complete. Entering STANDING_HOLD. Press Enter (or 'p') to start policy.")
 
                 elif self._mode == MODE_STANDING_HOLD:
                     q_des = self._standing_q.unsqueeze(0).clone()
@@ -502,7 +502,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--policy-path",
         type=str,
-        default=r"hardware\policy\walking.pt",
+        default="hardware/policy/standing_policy_200.pt",
         help="Path to the deployable policy module.",
     )
     parser.add_argument("--device", type=str, default="cpu", help="Torch device for tensor operations.")
@@ -602,7 +602,7 @@ def main() -> None:
 
             if key == "h":
                 runner._request_hold()
-            elif key == "p":
+            elif key in ("", "p"):
                 runner._request_policy()
             # elif key == "s":
             #     runner._request_command_value(0.0)

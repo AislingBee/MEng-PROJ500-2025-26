@@ -16,8 +16,14 @@ References:
             debug command Type 0x20 with per-motor enable subcommand 0x0C.
 
 Pipeline:
-  thor_policy_runner.py -> /robot_command -> rcu_udp_bridge -> RCU
+  startup_then_policy_runner.py -> /robot_command -> rcu_udp_bridge -> RCU
   RCU -> /motor_can_feedback + /imu0 -> robot_observation_bridge -> /robot_observation
+
+  startup_then_policy_runner.py handles all phases in one process:
+    1. STARTUP_RAMP  — ramps from zero pose to standing over ramp_time_s
+    2. STANDING_HOLD — holds standing pose (press 'p' to proceed to policy)
+    3. POLICY        — runs standing policy inference loop
+    4. EXIT          — on Ctrl+C, sends final standing pose and shuts down
 
 Named motor mapping (CAN ID -> joint name) follows:
     simulation/isaac/configuration/joint_limits_config.json
@@ -53,7 +59,10 @@ def generate_launch_description():
     names_file = LaunchConfiguration("names_file")
     wait_for_expected_online_ids = LaunchConfiguration("wait_for_expected_online_ids")
     expected_online_motor_ids = LaunchConfiguration("expected_online_motor_ids")
-    thor_runner_script = LaunchConfiguration("thor_runner_script")
+    thor_runner_script = LaunchConfiguration("thor_runner_script")  # chmod'd only; not launched directly
+    startup_script = LaunchConfiguration("startup_script")
+
+    right_bus_motor_ids = LaunchConfiguration("right_bus_motor_ids")
 
     rcu_stack = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(rcu_launch_path),
@@ -63,6 +72,7 @@ def generate_launch_description():
             "auto_enable": auto_enable,
             "active_motor_ids": "[1,2,3,4,5,6,7,8,9,10,11,12]",
             "left_bus_motor_ids": "[1,3,5,7,9,11]",
+            "right_bus_motor_ids": right_bus_motor_ids,
             "scan_motor_can_ids": scan_motor_can_ids,
             "names_file": names_file,
             "wait_for_expected_online_ids": wait_for_expected_online_ids,
@@ -71,7 +81,7 @@ def generate_launch_description():
     )
 
     chmod_runner = ExecuteProcess(
-        cmd=["chmod", "+x", thor_runner_script],
+        cmd=["chmod", "+x", startup_script],
         output="screen",
     )
 
@@ -82,8 +92,8 @@ def generate_launch_description():
         else workspace_root_default
     )
 
-    thor_policy_runner = ExecuteProcess(
-        cmd=["python3", thor_runner_script],
+    startup_then_policy_runner = ExecuteProcess(
+        cmd=["python3", startup_script],
         cwd=workspace_root,
         additional_env={"PYTHONPATH": _runner_pythonpath},
         output="screen",
@@ -96,9 +106,14 @@ def generate_launch_description():
             description="Workspace root used for Thor policy runner working directory",
         ),
         DeclareLaunchArgument(
+            "startup_script",
+            default_value=PathJoinSubstitution([workspace_root, "hardware", "thor", "startup_then_policy_runner.py"]),
+            description="Absolute path to startup_then_policy_runner.py",
+        ),
+        DeclareLaunchArgument(
             "thor_runner_script",
             default_value=PathJoinSubstitution([workspace_root, "hardware", "thor", "thor_policy_runner.py"]),
-            description="Absolute path to thor_policy_runner.py",
+            description="Absolute path to thor_policy_runner.py (chmod'd for reference; not launched directly)",
         ),
         DeclareLaunchArgument(
             "rcu_ip",
@@ -135,12 +150,17 @@ def generate_launch_description():
             default_value="joint_limits_config.json",
             description="Joint name config used to label motor IDs 1..12",
         ),
+        DeclareLaunchArgument(
+            "right_bus_motor_ids",
+            default_value="[2,4,6,8,10,12]",
+            description="Motor IDs forced onto right CAN bus",
+        ),
         rcu_stack,
         chmod_runner,
         RegisterEventHandler(
             OnProcessExit(
                 target_action=chmod_runner,
-                on_exit=[thor_policy_runner],
+                on_exit=[startup_then_policy_runner],
             )
         ),
     ])

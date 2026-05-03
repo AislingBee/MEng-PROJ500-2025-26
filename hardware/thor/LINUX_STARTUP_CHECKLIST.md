@@ -34,7 +34,7 @@ source install/setup.bash
 
 ### Option A — One command (recommended)
 
-Starts RCU stack + policy runner together. `PYTHONPATH` is set automatically.
+Starts RCU stack + `startup_then_policy_runner.py` together. `PYTHONPATH` is set automatically.
 
 ```bash
 source /opt/ros/jazzy/setup.bash
@@ -73,9 +73,9 @@ Expected:
 - `/robot_observation` and `/imu0` publish steadily.
 - No repeated timeout/errors from bridge nodes.
 
-## 4. Start policy runner (Terminal C)
+## 4. Start startup + policy runner (Terminal C)
 
-> **Skip if using Option A above — policy runner is launched automatically.**
+> **Skip if using Option A above — `startup_then_policy_runner.py` is launched automatically.**
 
 From repo root:
 
@@ -85,7 +85,7 @@ cd Software
 source install/setup.bash
 cd ..
 export PYTHONPATH=$(pwd):$PYTHONPATH
-python3 hardware/thor/thor_policy_runner.py
+python3 hardware/thor/startup_then_policy_runner.py
 ```
 
 Policy runner defaults:
