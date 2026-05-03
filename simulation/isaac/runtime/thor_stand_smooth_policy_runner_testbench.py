@@ -9,6 +9,9 @@ from pathlib import Path
 
 import torch
 
+from simulation.isaac.configuration.humanoid_stand_smooth_ppo_cfg import (
+    SMOOTH_STAND_DEPLOYMENT_CFG,
+)
 from simulation.isaac.configuration.standing_s2r_policy_contract import (
     CONTRACT,
     build_fixed_gains,
@@ -42,6 +45,10 @@ class SmoothThorStandingRunnerConfig:
     joint_lower_rad: tuple[float, ...] = CONTRACT.joint_lower_limits_rad
     joint_upper_rad: tuple[float, ...] = CONTRACT.joint_upper_limits_rad
     action_scale: tuple[float, ...] = tuple(0.65 * x for x in CONTRACT.action_scale)
+    use_obs_normalization: bool = SMOOTH_STAND_DEPLOYMENT_CFG.use_obs_normalization
+    obs_normalizer_required: bool = SMOOTH_STAND_DEPLOYMENT_CFG.obs_normalizer_required
+    obs_normalizer_artifact_name: str = SMOOTH_STAND_DEPLOYMENT_CFG.obs_normalizer_artifact_name
+    obs_normalizer_path: str | None = None
     device: str = "cpu"
     loop_hz: float = CONTRACT.policy_loop_hz
     action_delay_steps: int = 2
@@ -58,14 +65,43 @@ class SmoothThorStandingRunnerConfig:
             raise ValueError("debug_print_every_n_steps must be positive")
 
 
-class DeployablePolicy:
-    def __init__(self, policy_path: str | Path, device: str | torch.device = "cpu"):
+class DeployableObsNormalizer:
+    def __init__(self, normalizer_path: str | Path, device: str | torch.device = "cpu"):
         self.device = torch.device(device)
-        self.policy = torch.jit.load(str(policy_path), map_location=self.device)
+        self.path = Path(normalizer_path).expanduser().resolve()
+        self.normalizer = torch.jit.load(str(self.path), map_location=self.device)
+        self.normalizer.eval()
+
+    @torch.inference_mode()
+    def normalize(self, obs: torch.Tensor) -> torch.Tensor:
+        normalized_obs = self.normalizer(obs)
+        normalized_obs = torch.as_tensor(normalized_obs, dtype=torch.float32, device=self.device)
+        if normalized_obs.shape != obs.shape:
+            raise RuntimeError(
+                f"Observation normalizer returned shape {tuple(normalized_obs.shape)}, expected {tuple(obs.shape)}"
+            )
+        if torch.isnan(normalized_obs).any():
+            raise RuntimeError("NaN detected in normalized observations")
+        return normalized_obs
+
+
+class DeployablePolicy:
+    def __init__(
+        self,
+        policy_path: str | Path,
+        device: str | torch.device = "cpu",
+        obs_normalizer: DeployableObsNormalizer | None = None,
+    ):
+        self.device = torch.device(device)
+        self.path = Path(policy_path).expanduser().resolve()
+        self.policy = torch.jit.load(str(self.path), map_location=self.device)
         self.policy.eval()
+        self.obs_normalizer = obs_normalizer
 
     @torch.inference_mode()
     def act(self, obs: torch.Tensor) -> torch.Tensor:
+        if self.obs_normalizer is not None:
+            obs = self.obs_normalizer.normalize(obs)
         out = self.policy({"policy": obs})
         if isinstance(out, dict):
             out = out["actions"]
@@ -97,7 +133,12 @@ class SmoothThorStandingPolicyRunner:
             command_writer=command_writer,
             device=self.device,
         )
-        self.policy = DeployablePolicy(runner_cfg.policy_path, device=self.device)
+        self.obs_normalizer = self._load_obs_normalizer()
+        self.policy = DeployablePolicy(
+            runner_cfg.policy_path,
+            device=self.device,
+            obs_normalizer=self.obs_normalizer,
+        )
 
         self._standing_q = build_standing_q(device=self.device)
         self._action_scale = torch.tensor(runner_cfg.action_scale, dtype=torch.float32, device=self.device).unsqueeze(0)
@@ -121,6 +162,39 @@ class SmoothThorStandingPolicyRunner:
         self._last_clamped_actions = torch.zeros_like(self._actions)
         self._last_obs = torch.zeros((1, SMOOTH_STAND_OBS_DIM), dtype=torch.float32, device=self.device)
         self._last_saturation_pct = 0.0
+        self._print_startup_summary()
+
+    def _resolve_obs_normalizer_path(self) -> Path:
+        if self.cfg.obs_normalizer_path is not None:
+            return Path(self.cfg.obs_normalizer_path).expanduser().resolve()
+        return Path(self.cfg.policy_path).expanduser().resolve().with_name(self.cfg.obs_normalizer_artifact_name)
+
+    def _load_obs_normalizer(self) -> DeployableObsNormalizer | None:
+        if not self.cfg.use_obs_normalization:
+            return None
+
+        normalizer_path = self._resolve_obs_normalizer_path()
+        if not normalizer_path.is_file():
+            if self.cfg.obs_normalizer_required:
+                raise RuntimeError(
+                    "Smooth standing policy requires observation normalization, "
+                    f"but normalizer artifact was not found at: {normalizer_path}"
+                )
+            return None
+        return DeployableObsNormalizer(normalizer_path, device=self.device)
+
+    def _print_startup_summary(self) -> None:
+        normalizer_path = "None"
+        if self.obs_normalizer is not None:
+            normalizer_path = str(self.obs_normalizer.path)
+        print(
+            "[SMOOTH STAND RUNNER] "
+            f"policy_path={self.policy.path} | "
+            f"use_obs_normalization={self.cfg.use_obs_normalization} | "
+            f"normalizer_path={normalizer_path} | "
+            f"observation_dim={SMOOTH_STAND_OBS_DIM} | "
+            f"action_dim={CONTRACT.action_dim}"
+        )
 
     def build_observation(self) -> torch.Tensor:
         packet = self.hardware.read_observation_packet()
@@ -222,12 +296,18 @@ def fake_command_writer(msg: RobotCommandMessage) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run smooth standing Thor deployment path diagnostics.")
     parser.add_argument("--policy", required=True, help="Path to exported smooth standing policy_jit.pt")
+    parser.add_argument(
+        "--obs-normalizer",
+        default=None,
+        help="Optional path to obs_normalizer.pt. Defaults to a sibling of --policy.",
+    )
     parser.add_argument("--steps", type=int, default=10)
     parser.add_argument("--delay", type=int, default=2)
     args = parser.parse_args()
 
     runner_cfg = SmoothThorStandingRunnerConfig(
         policy_path=args.policy,
+        obs_normalizer_path=args.obs_normalizer,
         action_delay_steps=args.delay,
         debug_print_every_n_steps=1,
     )

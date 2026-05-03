@@ -26,6 +26,9 @@ import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 from rsl_rl.runners import OnPolicyRunner
 
+from simulation.isaac.configuration.humanoid_stand_smooth_ppo_cfg import (
+    SMOOTH_STAND_DEPLOYMENT_CFG,
+)
 from simulation.isaac.rl.envs.humanoid_stand_smooth_s2r_env import OBS_DIM
 
 
@@ -44,17 +47,13 @@ spec.loader.exec_module(ppo_cfg_module)
 get_humanoid_stand_smooth_ppo_cfg = ppo_cfg_module.get_humanoid_stand_smooth_ppo_cfg
 
 
-class DeployableActorWithOptionalNormalizer(torch.nn.Module):
-    def __init__(self, actor: torch.nn.Module, normalizer: torch.nn.Module | None):
+class DeployableActor(torch.nn.Module):
+    def __init__(self, actor: torch.nn.Module):
         super().__init__()
         self.actor = actor
-        self.normalizer = normalizer
 
     def forward(self, obs_dict: dict[str, torch.Tensor]) -> torch.Tensor:
-        obs = obs_dict["policy"]
-        if self.normalizer is not None:
-            obs = self.normalizer(obs)
-        return self.actor({"policy": obs})
+        return self.actor(obs_dict)
 
 
 def _find_obs_normalizer(runner) -> torch.nn.Module | None:
@@ -76,18 +75,28 @@ def export_deployable_policy(runner, export_dir: str) -> None:
     actor.eval()
     device = next(actor.parameters()).device
     normalizer = _find_obs_normalizer(runner)
-    deployable = DeployableActorWithOptionalNormalizer(actor, normalizer).to(device).eval()
 
     example_obs = {"policy": torch.zeros(1, OBS_DIM, device=device)}
-    scripted_actor = torch.jit.trace(deployable, (example_obs,))
+    scripted_actor = torch.jit.trace(DeployableActor(actor).to(device).eval(), (example_obs,))
     scripted_actor.save(os.path.join(export_dir, "policy_jit.pt"))
     torch.save(actor.state_dict(), os.path.join(export_dir, "actor_state_dict.pt"))
 
-    normalizer_msg = "included" if normalizer is not None else "not found"
+    normalizer_path = os.path.join(export_dir, SMOOTH_STAND_DEPLOYMENT_CFG.obs_normalizer_artifact_name)
+    if SMOOTH_STAND_DEPLOYMENT_CFG.use_obs_normalization:
+        if normalizer is None:
+            if SMOOTH_STAND_DEPLOYMENT_CFG.obs_normalizer_required:
+                raise RuntimeError(
+                    "Smooth standing deploy export requires an observation normalizer, "
+                    "but none was found on the trained runner."
+                )
+            print("Observation normalizer export skipped: no runner normalizer found.")
+        else:
+            example_obs_tensor = torch.zeros(1, OBS_DIM, device=device)
+            scripted_normalizer = torch.jit.trace(normalizer.to(device).eval(), (example_obs_tensor,))
+            scripted_normalizer.save(normalizer_path)
+            print(f"Observation normalizer saved to: {normalizer_path}")
+
     print(f"Deployable TorchScript actor saved to: {os.path.join(export_dir, 'policy_jit.pt')}")
-    print(f"Observation normalizer in export: {normalizer_msg}")
-    if normalizer is None:
-        print("WARNING: empirical normalization was enabled, but no runner normalizer was found to wrap.")
 
 
 def main():

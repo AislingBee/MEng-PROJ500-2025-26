@@ -3,6 +3,17 @@ from isaaclab_rl.rsl_rl import (
     RslRlOnPolicyRunnerCfg,
     RslRlPpoAlgorithmCfg,
 )
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class SmoothStandingDeploymentCfg:
+    use_obs_normalization: bool = True
+    obs_normalizer_required: bool = True
+    obs_normalizer_artifact_name: str = "obs_normalizer.pt"
+
+
+SMOOTH_STAND_DEPLOYMENT_CFG = SmoothStandingDeploymentCfg()
 
 
 def get_humanoid_stand_smooth_ppo_cfg():
