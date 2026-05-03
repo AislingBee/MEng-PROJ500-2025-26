@@ -31,9 +31,10 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 
 
 def generate_launch_description():
@@ -41,10 +42,7 @@ def generate_launch_description():
     rcu_launch_path = os.path.join(pkg_share, "launch", "rcu_launch.py")
 
     workspace_root_default = os.path.abspath(
-        os.path.join(pkg_share, "..", "..", "..", "..")
-    )
-    thor_runner_default = os.path.join(
-        workspace_root_default, "hardware", "thor", "thor_policy_runner.py"
+        os.path.join(pkg_share, "..", "..", "..", "..", "..")
     )
 
     workspace_root = LaunchConfiguration("workspace_root")
@@ -72,6 +70,11 @@ def generate_launch_description():
         }.items(),
     )
 
+    chmod_runner = ExecuteProcess(
+        cmd=["chmod", "+x", thor_runner_script],
+        output="screen",
+    )
+
     thor_policy_runner = ExecuteProcess(
         cmd=["python3", thor_runner_script],
         cwd=workspace_root,
@@ -86,7 +89,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "thor_runner_script",
-            default_value=thor_runner_default,
+            default_value=PathJoinSubstitution([workspace_root, "hardware", "thor", "thor_policy_runner.py"]),
             description="Absolute path to thor_policy_runner.py",
         ),
         DeclareLaunchArgument(
@@ -125,5 +128,11 @@ def generate_launch_description():
             description="Joint name config used to label motor IDs 1..12",
         ),
         rcu_stack,
-        thor_policy_runner,
+        chmod_runner,
+        RegisterEventHandler(
+            OnProcessExit(
+                target_action=chmod_runner,
+                on_exit=[thor_policy_runner],
+            )
+        ),
     ])
