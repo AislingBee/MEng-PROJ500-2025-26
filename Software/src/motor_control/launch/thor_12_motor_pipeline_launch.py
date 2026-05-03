@@ -78,6 +78,7 @@ def generate_launch_description():
     thor_policy_runner = ExecuteProcess(
         cmd=["python3", thor_runner_script],
         cwd=workspace_root,
+        additional_env={"PYTHONPATH": workspace_root_default},
         output="screen",
     )
 

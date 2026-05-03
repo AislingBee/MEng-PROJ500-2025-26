@@ -14,12 +14,18 @@ source install/setup.bash
 ## 2. Launch Files (RCU Path)
 
 ```bash
-# Full RL-to-hardware runtime
+# Full 12-motor one-command launch (RCU stack + policy runner, auto_enable, startup gate)
+ros2 launch motor_control thor_12_motor_pipeline_launch.py
+
+# RL-ready pipeline only (run policy runner manually in a second terminal)
 ros2 launch motor_control rl_robot_launch.py
 
 # Minimal RCU bridge bring-up
 ros2 launch motor_control rcu_launch.py
 ```
+
+> **Note:** `thor_12_motor_pipeline_launch.py` sets `PYTHONPATH` to repo root automatically
+> so `simulation` is importable. No extra export needed.
 
 ## 3. Runtime Inspection
 

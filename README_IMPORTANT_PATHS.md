@@ -18,7 +18,8 @@ Use this index when you need to quickly find the right place to edit or run.
 
 ## ROS2 Launch and Nodes (motor_control)
 
-- `Software/src/motor_control/launch/rl_robot_launch.py`: Main RL-to-hardware launch.
+- `Software/src/motor_control/launch/thor_12_motor_pipeline_launch.py`: **One-command** full 12-motor launch (RCU stack + policy runner, auto_enable, startup gate, PYTHONPATH set automatically).
+- `Software/src/motor_control/launch/rl_robot_launch.py`: RL-ready 12-motor pipeline (policy runner started separately).
 - `Software/src/motor_control/launch/rcu_launch.py`: Minimal RCU bridge bring-up launch.
 
 - `Software/src/motor_control/motor_control/bridges/robot_command_bridge.py`: RobotCommand -> packed motor CAN payload.

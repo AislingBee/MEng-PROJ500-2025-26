@@ -32,6 +32,19 @@ source install/setup.bash
 
 ## 2. Launch hardware ROS pipeline (Terminal A)
 
+### Option A — One command (recommended)
+
+Starts RCU stack + policy runner together. `PYTHONPATH` is set automatically.
+
+```bash
+source /opt/ros/jazzy/setup.bash
+cd Software
+source install/setup.bash
+ros2 launch motor_control thor_12_motor_pipeline_launch.py
+```
+
+### Option B — Two terminals (manual)
+
 ```bash
 source /opt/ros/jazzy/setup.bash
 cd Software
@@ -62,6 +75,8 @@ Expected:
 
 ## 4. Start policy runner (Terminal C)
 
+> **Skip if using Option A above — policy runner is launched automatically.**
+
 From repo root:
 
 ```bash
@@ -69,6 +84,7 @@ source /opt/ros/jazzy/setup.bash
 cd Software
 source install/setup.bash
 cd ..
+export PYTHONPATH=$(pwd):$PYTHONPATH
 python3 hardware/thor/thor_policy_runner.py
 ```
 
