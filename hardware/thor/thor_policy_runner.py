@@ -18,17 +18,17 @@ import torch
 # Use exactly one active import.
 # Standing and walking use the same hardware interface.
 # The selected contract defines the policy observation layout.
-from simulation.isaac.configuration.standing_s2r_policy_contract import (
-    CONTRACT,
-    build_fixed_gains,
-    build_standing_q,
-)
-
-# from simulation.isaac.configuration.walking_s2r_policy_contract import (
+# from simulation.isaac.configuration.standing_s2r_policy_contract import (
 #     CONTRACT,
 #     build_fixed_gains,
 #     build_standing_q,
 # )
+
+from simulation.isaac.configuration.walking_s2r_policy_contract import (
+    CONTRACT,
+    build_fixed_gains,
+    build_standing_q,
+)
 
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
@@ -509,7 +509,8 @@ def main() -> None:
     joint_names = CONTRACT.joint_names
 
     runner_cfg = ThorPolicyRunnerConfig(
-        policy_path=r"hardware\policy\standing_policy_200.pt",
+        # policy_path=r"hardware\policy\standing_policy_200.pt",
+        policy_path=r"hardware/policy/standing_policy_200.pt",
         joint_names=joint_names,
         joint_lower_rad=CONTRACT.joint_lower_limits_rad,
         joint_upper_rad=CONTRACT.joint_upper_limits_rad,
