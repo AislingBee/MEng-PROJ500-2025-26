@@ -152,8 +152,8 @@ void telem_pack_apply_motor_cmd(const rcu_motor_cmd_entry_t *entries, uint16_t c
             cmd.pos_rad   = u16_to_f(e->pos_u16, -RS04_POS_MAX_RAD,  RS04_POS_MAX_RAD);
             cmd.vel_rads  = u16_to_f(e->vel_u16, -RS04_VEL_MAX_RADS, RS04_VEL_MAX_RADS);
             cmd.torque_nm = u16_to_f(e->trq_u16, -RS04_TRQ_MAX_NM,   RS04_TRQ_MAX_NM);
-            cmd.kp        = ((float)e->kp_u8 / 255.0f) * RS04_KP_MAX;
-            cmd.kd        = ((float)e->kd_u8 / 255.0f) * RS04_KD_MAX;
+            cmd.kp        = ((float)e->kp_u16 / 65535.0f) * RS04_KP_MAX;
+            cmd.kd        = ((float)e->kd_u16 / 65535.0f) * RS04_KD_MAX;
             motor_bus_send_cmd(e->bus, e->motor_id, &cmd);
         }
     }

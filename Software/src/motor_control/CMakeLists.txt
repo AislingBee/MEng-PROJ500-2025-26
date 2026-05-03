@@ -39,7 +39,7 @@ install(FILES
   DESTINATION ${MOTOR_CONTROL_PYTHON_INSTALL_DIR}/motor_control
 )
 
-install(PROGRAMS
+set(MOTOR_CONTROL_PY_SCRIPTS
   motor_control/bridges/rcu_udp_bridge.py
   motor_control/bridges/robot_command_bridge.py
   motor_control/bridges/robot_observation_bridge.py
@@ -51,6 +51,32 @@ install(PROGRAMS
   motor_control/testing/multi_motor_test.py
   motor_control/testing/multi_state_motor_test.py
   motor_control/testing/rcu_bench_command_test.py
+  motor_control/testing/hold_position_test.py
+  motor_control/testing/enable_motors.py
+)
+
+# Ensure scripts are executable even when source checkouts lose +x bits.
+set(MOTOR_CONTROL_PY_SCRIPTS_ABS "")
+foreach(_script IN LISTS MOTOR_CONTROL_PY_SCRIPTS)
+  set(_script_abs "${CMAKE_CURRENT_SOURCE_DIR}/${_script}")
+  if(EXISTS "${_script_abs}")
+    list(APPEND MOTOR_CONTROL_PY_SCRIPTS_ABS "${_script_abs}")
+  else()
+    message(WARNING "Skipping chmod for missing script: ${_script_abs}")
+  endif()
+endforeach()
+
+if(MOTOR_CONTROL_PY_SCRIPTS_ABS)
+  file(CHMOD ${MOTOR_CONTROL_PY_SCRIPTS_ABS}
+    PERMISSIONS
+      OWNER_READ OWNER_WRITE OWNER_EXECUTE
+      GROUP_READ GROUP_EXECUTE
+      WORLD_READ WORLD_EXECUTE
+  )
+endif()
+
+install(PROGRAMS
+  ${MOTOR_CONTROL_PY_SCRIPTS}
   DESTINATION lib/${PROJECT_NAME}
 )
 

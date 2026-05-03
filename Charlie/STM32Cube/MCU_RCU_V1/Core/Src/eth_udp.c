@@ -320,6 +320,17 @@ static void handle_debug_cmd(const uint8_t *payload, uint16_t len)
         send_debug_reply();
         break;
 
+    case RCU_DBGCMD_MOTOR_SET_ZERO:
+        if (len >= 3U) {
+            uint8_t sz_bus = payload[1];
+            uint8_t sz_mid = payload[2];
+            st_dbg_printf("[DBG] MOTOR_SET_ZERO bus=%u id=%u\r\n",
+                          (unsigned)sz_bus, (unsigned)sz_mid);
+            motor_bus_send_set_zero(sz_bus, sz_mid);
+        }
+        send_debug_reply();
+        break;
+
     default:
         st_dbg_printf("[DBG] unknown subcmd 0x%02X\r\n", payload[0]);
         send_debug_reply();

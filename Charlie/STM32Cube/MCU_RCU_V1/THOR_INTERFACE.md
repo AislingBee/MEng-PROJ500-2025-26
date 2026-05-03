@@ -87,7 +87,7 @@ value = min + (raw / 65535.0) * (max - min)
 ## Type 0x10 — Motor Command (Thor → RCU)
 
 Payload: array of `rcu_motor_cmd_entry_t` entries.
-`count = payload_len / sizeof(rcu_motor_cmd_entry_t)` (10 bytes each).
+`count = payload_len / sizeof(rcu_motor_cmd_entry_t)` (12 bytes each).
 
 ```
 uint8   bus        — 0=right, 1=left
@@ -95,8 +95,8 @@ uint8   motor_id   — 1..8
 uint16  pos_u16    — encoded position  (-12.57..+12.57 rad)
 uint16  vel_u16    — encoded velocity  (-15..+15 rad/s)
 uint16  trq_u16    — encoded torque ff (-120..+120 N·m)
-uint8   kp_u8      — encoded Kp: (raw/255) * 5000
-uint8   kd_u8      — encoded Kd: (raw/255) * 100
+uint16  kp_u16     — encoded Kp: (raw/65535) * 5000
+uint16  kd_u16     — encoded Kd: (raw/65535) * 100
 ```
 
 Motors default to **operation control mode (Type 1, RS04 private protocol)**.
@@ -144,9 +144,9 @@ To send a motor command from the PC:
 ```python
 import socket, struct
 
-HDR = struct.pack("<HBBh", 0x5243, 0x10, 0, 10)  # 1 entry = 10 bytes
+HDR = struct.pack("<HBBh", 0x5243, 0x10, 0, 12)  # 1 entry = 12 bytes
 # bus=0 right, motor_id=1, pos=0, vel=0, trq=0 (mid-scale=32767), kp=0, kd=0
-ENTRY = struct.pack("<BBHHHBBxx", 0, 1, 32767, 32767, 32767, 0, 0)
+ENTRY = struct.pack("<BBHHHHH", 0, 1, 32767, 32767, 32767, 0, 0)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.sendto(HDR + ENTRY, ("192.168.100.10", 7701))
 ```

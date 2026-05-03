@@ -248,6 +248,8 @@ class Ros2RobotBridge:
         ros_msg.kp = [float(v) for v in msg.kp]
         ros_msg.kd = [float(v) for v in msg.kd]
         ros_msg.tau_ff = [float(v) for v in msg.tau_ff]
+        ros_msg.kp_gains = [float(v) for v in msg.kp_gains]
+        ros_msg.kd_gains = [float(v) for v in msg.kd_gains]
         self._cmd_pub.publish(ros_msg)
 
 

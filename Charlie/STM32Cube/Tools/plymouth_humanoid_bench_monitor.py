@@ -104,6 +104,7 @@ DBGCMD_SET_TELEM_RATE    = 0x09   # payload byte = rate Hz (5 / 10 / 20)
 DBGCMD_MOTOR_BUS_CTRL    = 0x0A   # payload: bit0=L_STB, bit1=R_STB (1=standby)
 DBGCMD_REQUEST_SUPV_DUMP = 0x0B   # Force supervision state dump
 DBGCMD_MOTOR_ENABLE      = 0x0C   # payload: bus(u8), motor_id(u8), enable(u8), clr_fault(u8)
+DBGCMD_MOTOR_SET_ZERO    = 0x0D   # payload: bus(u8), motor_id(u8)
 
 PORT_TELEM     = 7700    # RCU → PC telemetry
 PORT_CMD       = 7701    # PC  → RCU commands
@@ -1294,10 +1295,10 @@ def send_motor_cmd(rcu_ip: str, bus: int, motor_id: int,
     pos_u16 = f_to_u16(pos, -RS04_POS_MAX, RS04_POS_MAX)
     vel_u16 = f_to_u16(vel, -RS04_VEL_MAX, RS04_VEL_MAX)
     trq_u16 = f_to_u16(trq, -RS04_TRQ_MAX, RS04_TRQ_MAX)
-    kp_u8   = int(max(0, min(255, (kp / RS04_KP_MAX) * 255)))
-    kd_u8   = int(max(0, min(255, (kd / RS04_KD_MAX) * 255)))
-    entry   = struct.pack("<BBHHHBBxx",
-                          bus, motor_id, pos_u16, vel_u16, trq_u16, kp_u8, kd_u8)
+    kp_u16  = int(max(0, min(65535, (kp / RS04_KP_MAX) * 65535)))
+    kd_u16  = int(max(0, min(65535, (kd / RS04_KD_MAX) * 65535)))
+    entry   = struct.pack("<BBHHHHH",
+                          bus, motor_id, pos_u16, vel_u16, trq_u16, kp_u16, kd_u16)
     hdr     = struct.pack(HDR_FMT, PKT_MAGIC, PKT_MOTOR_CMD, _next_seq(), len(entry))
     threading.Thread(
         target=_send_udp, args=(rcu_ip, hdr + entry), daemon=True
@@ -1335,6 +1336,13 @@ def send_motor_enable(rcu_ip: str, bus: int, motor_id: int,
                    bytes([bus & 0xFF, motor_id & 0xFF,
                           1 if enable else 0,
                           1 if clear_fault else 0]))
+
+
+def send_motor_set_zero(rcu_ip: str, bus: int, motor_id: int) -> None:
+    """Set the motor's current position as its zero reference (RS04 Type 6).
+    Call this before position control so pos=0.0 means the current angle."""
+    send_debug_cmd(rcu_ip, DBGCMD_MOTOR_SET_ZERO,
+                   bytes([bus & 0xFF, motor_id & 0xFF]))
 
 
 # ===========================================================================
@@ -2804,8 +2812,8 @@ class MotorsTab(QWidget):
             ("Pos (rad)",    "_pos_spin",  -12.57, 12.57,  4, 0.0),
             ("Vel (rad/s)",  "_vel_spin",  -15.0,  15.0,   3, 0.0),
             ("Torque (Nm)",  "_trq_spin",  -120.0, 120.0,  2, 0.0),
-            ("Kp",           "_kp_spin",   0.0,    5000.0, 1, 10.0),
-            ("Kd",           "_kd_spin",   0.0,    100.0,  2, 1.0),
+            ("Kp",           "_kp_spin",   0.0,    5000.0, 1, 30.0),
+            ("Kd",           "_kd_spin",   0.0,    100.0,  2, 5.0),
         ]
         for ri, (label, attr, lo, hi, dec, default) in enumerate(_PARAMS):
             cmd_grid.addWidget(_lbl(f"{label}:"), ri + 1, 0)
@@ -2821,6 +2829,7 @@ class MotorsTab(QWidget):
         send_btn   = QPushButton("Send MIT Command")
         en_btn     = QPushButton("Enable Motor")
         dis_btn    = QPushButton("Disable Motor")
+        zero_btn   = QPushButton("Set Zero")
         estop_btn  = QPushButton("E-STOP ALL")
         self._stream_chk = QCheckBox("Hold / Stream (10 Hz)")
         en_btn.setProperty("role", "ok")
@@ -2828,11 +2837,13 @@ class MotorsTab(QWidget):
         send_btn.clicked.connect(self._send_cmd)
         en_btn.clicked.connect(self._enable_motor)
         dis_btn.clicked.connect(self._disable_motor)
+        zero_btn.clicked.connect(self._set_zero)
         estop_btn.clicked.connect(self._estop_all)
         self._stream_chk.toggled.connect(self._on_stream_toggle)
         btn_row.addWidget(send_btn)
         btn_row.addWidget(en_btn)
         btn_row.addWidget(dis_btn)
+        btn_row.addWidget(zero_btn)
         btn_row.addWidget(estop_btn)
         btn_row.addWidget(self._stream_chk)
         btn_row.addStretch()
@@ -2851,6 +2862,13 @@ class MotorsTab(QWidget):
             self._trq_spin.value(), self._kp_spin.value(),
             self._kd_spin.value(),
         )
+
+    def _set_zero(self) -> None:
+        """Set the motor's current angle as position zero.
+        Call this before position control to establish a safe reference."""
+        self._stream_chk.setChecked(False)
+        bus = self._bus_combo.currentIndex()
+        send_motor_set_zero(self._rcu_ip(), bus, self._mid_spin.value())
 
     def _on_stream_toggle(self, checked: bool) -> None:
         if checked:

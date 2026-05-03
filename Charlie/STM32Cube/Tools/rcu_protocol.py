@@ -45,6 +45,8 @@ DBGCMD_SOFT_RESET       = 0x08
 DBGCMD_SET_TELEM_RATE   = 0x09
 DBGCMD_MOTOR_BUS_CTRL   = 0x0A
 DBGCMD_REQUEST_SUPV_DUMP= 0x0B
+DBGCMD_MOTOR_ENABLE     = 0x0C
+DBGCMD_MOTOR_SET_ZERO   = 0x0D
 
 # ---------------------------------------------------------------------------
 # RS04 physical limits (mirror of rs04.h)
@@ -118,16 +120,16 @@ def _u16_to_f(raw, vmin, vmax):
 def encode_motor_cmd_entry(motor_id: int, bus: int, pos_rad: float,
                            vel_rads: float = 0.0, torque_nm: float = 0.0,
                            kp: float = 0.0, kd: float = 0.0) -> bytes:
-    """Encode one rcu_motor_cmd_entry_t (10 bytes, little-endian)."""
-    pos = _f_to_u16(pos_rad,   -RS04_POS_MAX_RAD,  RS04_POS_MAX_RAD)
-    vel = _f_to_u16(vel_rads,  -RS04_VEL_MAX_RADS, RS04_VEL_MAX_RADS)
-    trq = _f_to_u16(torque_nm, -RS04_TRQ_MAX_NM,   RS04_TRQ_MAX_NM)
-    kp8 = int(kp / RS04_KP_MAX * 255) & 0xFF
-    kd8 = int(kd / RS04_KD_MAX * 255) & 0xFF
-    return struct.pack("<BBHHHBB", bus, motor_id, pos, vel, trq, kp8, kd8)
+    """Encode one rcu_motor_cmd_entry_t (12 bytes, little-endian). kp/kd are uint16."""
+    pos  = _f_to_u16(pos_rad,   -RS04_POS_MAX_RAD,  RS04_POS_MAX_RAD)
+    vel  = _f_to_u16(vel_rads,  -RS04_VEL_MAX_RADS, RS04_VEL_MAX_RADS)
+    trq  = _f_to_u16(torque_nm, -RS04_TRQ_MAX_NM,   RS04_TRQ_MAX_NM)
+    kp16 = int(max(0, min(65535, kp / RS04_KP_MAX * 65535)))
+    kd16 = int(max(0, min(65535, kd / RS04_KD_MAX * 65535)))
+    return struct.pack("<BBHHHHH", bus, motor_id, pos, vel, trq, kp16, kd16)
 
 def encode_motor_supervisory(enable_mask: int = 0, clear_fault_mask: int = 0,
-                             ctrl_mode: int = 1) -> bytes:
+                             ctrl_mode: int = 0) -> bytes:
     """Build a Type 0x11 motor supervisory packet (header + 8-byte payload)."""
     payload = struct.pack("<HHBxxx", enable_mask & 0xFFFF,
                          clear_fault_mask & 0xFFFF, ctrl_mode & 0xFF)
@@ -216,8 +218,10 @@ def decode_slow_telem(payload: bytes) -> dict:
     return scaled
 
 
-# Motor feedback slot: bus(u8), motor_id(u8), pos(u16), vel(u16), cur(u16), err(u8), _pad(u8)
-FB_SLOT_FMT  = "<BBHHHBx"
+# Motor feedback slot: bus(u8), motor_id(u8), pos(u16), vel(u16), cur(u16),
+#                      error_code(u8), mode_status(u8)
+# mode_status = bits[23:22] of Type-2 CAN ID: 0=idle, 1=calibrating, 2=MIT running
+FB_SLOT_FMT  = "<BBHHHBB"
 FB_SLOT_SIZE = struct.calcsize(FB_SLOT_FMT)   # 10 bytes
 
 def decode_motor_fb(payload: bytes) -> list:
@@ -230,15 +234,16 @@ def decode_motor_fb(payload: bytes) -> list:
     for _ in range(count):
         if offset + FB_SLOT_SIZE > len(payload):
             break
-        bus, mid, p16, v16, c16, err, *_ = struct.unpack_from(FB_SLOT_FMT, payload, offset)
+        bus, mid, p16, v16, c16, err, mode = struct.unpack_from(FB_SLOT_FMT, payload, offset)
         slots.append({
-            "bus":       bus,
-            "motor_id":  mid,
-            "joint":     MOTOR_JOINT_NAMES[mid] if 1 <= mid <= 12 else "unknown",
-            "pos_rad":   _u16_to_f(p16, -RS04_POS_MAX_RAD,  RS04_POS_MAX_RAD),
-            "vel_rads":  _u16_to_f(v16, -RS04_VEL_MAX_RADS, RS04_VEL_MAX_RADS),
-            "torque_nm": _u16_to_f(c16, -RS04_TRQ_MAX_NM,   RS04_TRQ_MAX_NM),
-            "fault":     err,
+            "bus":         bus,
+            "motor_id":    mid,
+            "joint":       MOTOR_JOINT_NAMES[mid] if 1 <= mid <= 12 else "unknown",
+            "pos_rad":     _u16_to_f(p16, -RS04_POS_MAX_RAD,  RS04_POS_MAX_RAD),
+            "vel_rads":    _u16_to_f(v16, -RS04_VEL_MAX_RADS, RS04_VEL_MAX_RADS),
+            "torque_nm":   _u16_to_f(c16, -RS04_TRQ_MAX_NM,   RS04_TRQ_MAX_NM),
+            "fault":       err,
+            "mode_status": mode,  # 0=idle, 1=cali, 2=MIT running
         })
         offset += FB_SLOT_SIZE
     return slots

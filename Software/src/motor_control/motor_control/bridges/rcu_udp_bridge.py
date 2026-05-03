@@ -14,8 +14,8 @@ RX (RCU → Thor, port 7700):
   Type 0x01 slow telem      (10  Hz) → /rcu_pdu_telem (JSON String) + CSV log
 
 Services:
-  /rcu_motor_estop  (std_srvs/SetBool)
-      True  → enable all motors  (Type 0x11 enable_mask=0x0FFF)
+    /rcu_motor_estop  (std_srvs/SetBool)
+            True  → enable configured active motors only
       False → FULL E-STOP: Type 0x11 enable_mask=0 + PDU fault assert
   /rcu_pdu_fault    (std_srvs/SetBool)
       True  → assert PDU fault (cuts power rails via debug cmd 0x07)
@@ -27,6 +27,7 @@ Parameters:
   telem_port     (int)  default 7700
   ctrl_mode      (int)  default 0  (0=MIT impedance Phase 2, 1=CSP pos Phase 1)
   auto_enable    (bool) default False
+    force_full_enable_mask (bool) default False (use 0x0FFF for supervisory enable)
   log_dir        (str)  default "~/rcu_logs"
   loop_rate_hz   (float) default 200.0  (motor command TX rate)
 
@@ -47,8 +48,10 @@ from collections import defaultdict
 from datetime import datetime
 
 import rclpy
+from rcl_interfaces.msg import ParameterDescriptor
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
+from sensor_msgs.msg import Imu
 from std_msgs.msg import UInt8MultiArray, String
 from std_srvs.srv import SetBool
 from motor_control.msg import RobotCommand
@@ -132,29 +135,46 @@ class RcuUdpBridge(Node):
         self.declare_parameter("telem_port",   rp.PORT_TELEM)
         self.declare_parameter("ctrl_mode",    0)
         self.declare_parameter("auto_enable",  False)
+        self.declare_parameter("force_full_enable_mask", False)
         self.declare_parameter("log_dir",      os.path.expanduser("~/rcu_logs"))
         self.declare_parameter("loop_rate_hz", 200.0)
         self.declare_parameter("scan_motor_can_ids", False)
         self.declare_parameter("can_id_online_timeout_s", 1.0)
         self.declare_parameter("can_id_scan_log_period_s", 1.0)
-        # NOTE: ROS 2 Jazzy infers an empty list as BYTE_ARRAY. Use a concrete
-        # integer-array default to keep the parameter type stable.
-        if not self.has_parameter("left_bus_motor_ids"):
-            self.declare_parameter("left_bus_motor_ids", [1, 2])
-        if not self.has_parameter("active_motor_ids"):
-            self.declare_parameter("active_motor_ids", [i for i in range(1, 13)])
+        self.declare_parameter("wait_for_expected_online_ids", False)
+        motor_ids_param_descriptor = ParameterDescriptor(dynamic_typing=True)
+        self.declare_parameter(
+            "expected_online_motor_ids", "[]", motor_ids_param_descriptor
+        )
+        self.declare_parameter("startup_gate_error_after_s", 5.0)
+        # Keep these as strings in launch-facing APIs so IncludeLaunchDescription
+        # and CLI argument overrides remain compatible on Jazzy.
+        self.declare_parameter(
+            "left_bus_motor_ids", "[1,3,5,7,9,11]", motor_ids_param_descriptor
+        )
+        self.declare_parameter(
+            "right_bus_motor_ids", "[2,4,6,8,10,12]", motor_ids_param_descriptor
+        )
+        self.declare_parameter(
+            "active_motor_ids", "[1,2,3,4,5,6,7,8,9,10,11,12]", motor_ids_param_descriptor
+        )
 
         rcu_ip_raw = self.get_parameter("rcu_ip").value
         cmd_port_raw = self.get_parameter("rcu_cmd_port").value
         telem_port_raw = self.get_parameter("telem_port").value
         ctrl_mode_raw = self.get_parameter("ctrl_mode").value
         auto_enable_raw = self.get_parameter("auto_enable").value
+        force_full_enable_mask_raw = self.get_parameter("force_full_enable_mask").value
         log_dir_raw = self.get_parameter("log_dir").value
         rate_hz_raw = self.get_parameter("loop_rate_hz").value
         scan_motor_can_ids_raw = self.get_parameter("scan_motor_can_ids").value
         can_id_online_timeout_s_raw = self.get_parameter("can_id_online_timeout_s").value
         can_id_scan_log_period_s_raw = self.get_parameter("can_id_scan_log_period_s").value
+        wait_for_expected_online_ids_raw = self.get_parameter("wait_for_expected_online_ids").value
+        expected_online_motor_ids_raw = self.get_parameter("expected_online_motor_ids").value
+        startup_gate_error_after_s_raw = self.get_parameter("startup_gate_error_after_s").value
         left_bus_motor_ids_raw = self.get_parameter("left_bus_motor_ids").value
+        right_bus_motor_ids_raw = self.get_parameter("right_bus_motor_ids").value
         active_motor_ids_raw = self.get_parameter("active_motor_ids").value
 
         rcu_ip = str(rcu_ip_raw)
@@ -162,12 +182,17 @@ class RcuUdpBridge(Node):
         telem_port = _parse_int(telem_port_raw, rp.PORT_TELEM)
         self._ctrl_mode = _parse_int(ctrl_mode_raw, 0)
         auto_enable = _parse_bool(auto_enable_raw)
+        self._force_full_enable_mask = _parse_bool(force_full_enable_mask_raw)
         log_dir = os.path.expanduser(str(log_dir_raw))
         rate_hz = _parse_float(rate_hz_raw, 200.0)
         self._scan_motor_can_ids = _parse_bool(scan_motor_can_ids_raw)
         self._can_id_online_timeout_s = max(0.1, _parse_float(can_id_online_timeout_s_raw, 1.0))
         self._can_id_scan_log_period_s = max(0.2, _parse_float(can_id_scan_log_period_s_raw, 1.0))
+        self._wait_for_expected_online_ids = _parse_bool(wait_for_expected_online_ids_raw)
+        self._expected_online_motor_ids = _parse_motor_id_list(expected_online_motor_ids_raw)
+        self._startup_gate_error_after_s = max(0.0, _parse_float(startup_gate_error_after_s_raw, 5.0))
         left_bus_motor_ids = _parse_motor_id_list(left_bus_motor_ids_raw)
+        right_bus_motor_ids = _parse_motor_id_list(right_bus_motor_ids_raw)
         active_motor_ids = _parse_motor_id_list(active_motor_ids_raw)
 
         self._active_motor_ids = []
@@ -179,6 +204,8 @@ class RcuUdpBridge(Node):
         # Per-motor bus map (index=motor_id): default from protocol, with optional
         # overrides for bench wiring (e.g. motor IDs 1 and 2 both on left bus).
         self._motor_bus_map = list(rp.MOTOR_BUS_MAP)
+        for mid in right_bus_motor_ids:
+            self._motor_bus_map[mid] = 0
         for mid in left_bus_motor_ids:
             self._motor_bus_map[mid] = 1
 
@@ -196,6 +223,9 @@ class RcuUdpBridge(Node):
         self._motor_fb_lock = threading.Lock()
         self._last_seen_motor_id = defaultdict(float)
         self._last_can_scan_log_t = 0.0
+        self._startup_gate_ready = not self._wait_for_expected_online_ids
+        self._last_gate_log_t = 0.0
+        self._startup_gate_started_t = time.monotonic()
 
         # Latest robot command cache from /robot_command
         # Each entry carries full MIT fields so Type-1 control is effective.
@@ -221,6 +251,8 @@ class RcuUdpBridge(Node):
         # ----- Publishers -----
         self._pub_motor_fb = self.create_publisher(
             UInt8MultiArray, "/motor_can_feedback", 10)
+        self._pub_imu0 = self.create_publisher(Imu, "/imu0", 10)
+        self._pub_imu1 = self.create_publisher(Imu, "/imu1", 10)
         self._pub_pdu_telem = self.create_publisher(String, "/rcu_pdu_telem", 10)
 
         # ----- Subscribers -----
@@ -262,24 +294,48 @@ class RcuUdpBridge(Node):
         # ----- RX drain timer (publish on main thread at same rate) -----
         self._rx_timer = self.create_timer(period, self._rx_drain)
 
+        # Ensure all selected buses are taken out of standby at startup.
+        self._send_motor_bus_ctrl_for_active_ids()
+
         # ----- Auto-enable -----
         if auto_enable:
-            self.get_logger().info("auto_enable=True — enabling all motors")
+            self.get_logger().info("auto_enable=True — enabling active motors")
             self._send_enable_all()
 
         self.get_logger().info(
             f"rcu_udp_bridge ready: RCU={rcu_ip}, ctrl_mode={self._ctrl_mode}, "
             f"{rate_hz:.0f} Hz TX")
+        if self._force_full_enable_mask:
+            self.get_logger().warn(
+                "force_full_enable_mask=True: supervisory enable will use 0x0FFF"
+            )
         self.get_logger().info(
-            f"Active motor IDs for TX: {self._active_motor_ids}")
+            f"ENABLED motor IDs (command/enable scope): {self._active_motor_ids}")
+        id_map = ", ".join(
+            f"{mid}:{rp.MOTOR_JOINT_NAMES[mid]}"
+            for mid in self._active_motor_ids
+            if 1 <= mid <= 12
+        )
+        if id_map:
+            self.get_logger().info(f"CAN ID -> joint mapping: {id_map}")
         if left_bus_motor_ids:
             self.get_logger().info(
                 f"Left-bus overrides active for motor IDs: {left_bus_motor_ids}")
+        if right_bus_motor_ids:
+            self.get_logger().info(
+                f"Right-bus overrides active for motor IDs: {right_bus_motor_ids}")
         if self._scan_motor_can_ids:
             self.get_logger().info(
                 "CAN ID scan enabled "
                 f"(period={self._can_id_scan_log_period_s:.1f}s, "
                 f"online_timeout={self._can_id_online_timeout_s:.1f}s)"
+            )
+        if self._wait_for_expected_online_ids:
+            if not self._expected_online_motor_ids:
+                self._expected_online_motor_ids = list(self._active_motor_ids)
+            self.get_logger().info(
+                "Startup gate enabled: waiting for online motor IDs "
+                f"{self._expected_online_motor_ids} before TX"
             )
 
     # -----------------------------------------------------------------------
@@ -287,6 +343,23 @@ class RcuUdpBridge(Node):
     # -----------------------------------------------------------------------
     def _tx_tick(self):
         """Called at loop_rate_hz.  Build and send motor command packet."""
+        if not self._startup_gate_ready:
+            now = time.monotonic()
+            if (now - self._last_gate_log_t) >= 1.0:
+                self._last_gate_log_t = now
+                online = self._online_motor_ids(now)
+                missing = [mid for mid in self._expected_online_motor_ids if mid not in online]
+                elapsed = now - self._startup_gate_started_t
+                self.get_logger().error(
+                    "Startup gate blocking TX: "
+                    f"online={online}, missing={missing}, elapsed={elapsed:.1f}s"
+                )
+                if self._startup_gate_error_after_s > 0.0 and elapsed >= self._startup_gate_error_after_s:
+                    self.get_logger().error(
+                        "Startup gate timeout exceeded. "
+                        "Not all expected CAN IDs are online."
+                    )
+            return
         with self._cmd_lock:
             entries = [
                 {"motor_id": mid, "bus": self._motor_bus_map[mid], **self._cmd_state[mid]}
@@ -332,6 +405,12 @@ class RcuUdpBridge(Node):
     def _send(self, data: bytes):
         self._tx_sock.sendto(data, self._rcu_addr)
 
+    def _send_with_retries(self, data: bytes, retries: int = 3, delay_s: float = 0.01):
+        for i in range(max(1, retries)):
+            self._send(data)
+            if i < (retries - 1):
+                time.sleep(delay_s)
+
     def _send_motor_enable(self, bus: int, motor_id: int,
                            enable: bool = True, clear_fault: bool = False):
         payload = bytes([
@@ -340,25 +419,84 @@ class RcuUdpBridge(Node):
             1 if enable else 0,
             1 if clear_fault else 0,
         ])
-        self._send(rp.encode_debug_cmd(rp.DBGCMD_MOTOR_ENABLE, payload))
+        self._send_with_retries(rp.encode_debug_cmd(rp.DBGCMD_MOTOR_ENABLE, payload), retries=3, delay_s=0.005)
+
+    def _send_motor_bus_ctrl_for_active_ids(self):
+        left_active = any(self._motor_bus_map[mid] == 1 for mid in self._active_motor_ids)
+        right_active = any(self._motor_bus_map[mid] == 0 for mid in self._active_motor_ids)
+
+        standby_mask = 0
+        if not left_active:
+            standby_mask |= 0b01
+        if not right_active:
+            standby_mask |= 0b10
+
+        self._send_with_retries(
+            rp.encode_debug_cmd(rp.DBGCMD_MOTOR_BUS_CTRL, bytes([standby_mask])),
+            retries=3,
+            delay_s=0.005,
+        )
+        self.get_logger().info(
+            "Configured motor bus standby mask for active IDs: "
+            f"0b{standby_mask:02b} (left_active={left_active}, right_active={right_active})"
+        )
 
     def _send_enable_all(self):
-        self._send(rp.encode_motor_supervisory(
-            enable_mask=0x0FFF, clear_fault_mask=0x0FFF,
-            ctrl_mode=self._ctrl_mode))
+        active_enable_mask = 0
+        for mid in self._active_motor_ids:
+            active_enable_mask |= (1 << (mid - 1))
+
+        enable_mask = 0x0FFF if self._force_full_enable_mask else active_enable_mask
+
+        self.get_logger().info(
+            "Applying supervisory enable mask for ENABLED motor IDs: "
+            f"0x{enable_mask:03X} -> {self._active_motor_ids}"
+        )
+
+        self._send_motor_bus_ctrl_for_active_ids()
+        self._send_with_retries(
+            rp.encode_motor_supervisory(
+                enable_mask=enable_mask,
+                clear_fault_mask=enable_mask,
+                ctrl_mode=self._ctrl_mode,
+            ),
+            retries=3,
+            delay_s=0.005,
+        )
         for mid in self._active_motor_ids:
             self._send_motor_enable(
                 bus=self._motor_bus_map[mid], motor_id=mid,
                 enable=True, clear_fault=True)
 
-    def _send_full_estop(self):
-        """FULL E-STOP: CAN stop all motors + assert PDU power fault."""
-        self._send(rp.encode_motor_supervisory(enable_mask=0x0000))
+    def _send_disable_all(self):
+        """Disable active motors without asserting PDU fault (limp mode)."""
+        self._send_motor_bus_ctrl_for_active_ids()
+        self._send_with_retries(
+            rp.encode_motor_supervisory(enable_mask=0x0000),
+            retries=3,
+            delay_s=0.005,
+        )
         for mid in self._active_motor_ids:
             self._send_motor_enable(
                 bus=self._motor_bus_map[mid], motor_id=mid,
                 enable=False, clear_fault=False)
-        self._send(rp.encode_debug_cmd(rp.DBGCMD_ASSERT_PDU_FAULT, bytes([1])))
+
+    def _send_full_estop(self):
+        """FULL E-STOP: CAN stop all motors + assert PDU power fault."""
+        self._send_with_retries(
+            rp.encode_motor_supervisory(enable_mask=0x0000),
+            retries=3,
+            delay_s=0.005,
+        )
+        for mid in self._active_motor_ids:
+            self._send_motor_enable(
+                bus=self._motor_bus_map[mid], motor_id=mid,
+                enable=False, clear_fault=False)
+        self._send_with_retries(
+            rp.encode_debug_cmd(rp.DBGCMD_ASSERT_PDU_FAULT, bytes([1])),
+            retries=3,
+            delay_s=0.005,
+        )
         self.get_logger().warn("FULL E-STOP: motors disabled + PDU fault asserted")
 
     # -----------------------------------------------------------------------
@@ -368,7 +506,7 @@ class RcuUdpBridge(Node):
         if request.data:
             self._send_enable_all()
             response.success = True
-            response.message = "Motors enabled"
+            response.message = "Active motors enabled"
         else:
             self._send_full_estop()
             response.success = True
@@ -411,6 +549,13 @@ class RcuUdpBridge(Node):
                             self._rx_queue.put_nowait(('motor_fb', slots))
                         except queue.Full:
                             pass
+                elif pkt_type == rp.PKT_IMU_FAST:
+                    d = rp.decode_imu_fast(payload)
+                    if d:
+                        try:
+                            self._rx_queue.put_nowait(('imu_fast', d))
+                        except queue.Full:
+                            pass
                 elif pkt_type == rp.PKT_SLOW_TELEM:
                     d = rp.decode_slow_telem(payload)
                     if d:
@@ -434,6 +579,8 @@ class RcuUdpBridge(Node):
                 break
             if kind == 'motor_fb':
                 self._publish_motor_fb(data)
+            elif kind == 'imu_fast':
+                self._publish_imu_fast(data)
             elif kind == 'slow_telem':
                 self._publish_slow_telem(data)
 
@@ -450,8 +597,7 @@ class RcuUdpBridge(Node):
                 mid = s["motor_id"]
                 if 1 <= mid <= 12:
                     self._motor_fb[mid] = (s["pos_rad"], s["vel_rads"])
-                    if self._scan_motor_can_ids:
-                        self._last_seen_motor_id[mid] = now
+                    self._last_seen_motor_id[mid] = now
 
         # Publish ordered 8-byte entries for motor_ids 1–12
         buf = b""
@@ -463,6 +609,9 @@ class RcuUdpBridge(Node):
         msg.data = list(buf)
         self._pub_motor_fb.publish(msg)
 
+        # Always evaluate startup gate from fresh feedback, even if scan logging is disabled.
+        self._update_startup_gate(now, self._online_motor_ids(now))
+
         if self._scan_motor_can_ids:
             self._log_online_can_ids(now)
 
@@ -470,40 +619,84 @@ class RcuUdpBridge(Node):
         if (now - self._last_can_scan_log_t) < self._can_id_scan_log_period_s:
             return
         self._last_can_scan_log_t = now
+        online = self._online_motor_ids(now)
+        enabled_ids = list(self._active_motor_ids)
+        observed_not_enabled = [mid for mid in online if mid not in enabled_ids]
+        enabled_missing_observed = [mid for mid in enabled_ids if mid not in online]
+
+        if online:
+            online_named = [f"{mid}:{rp.MOTOR_JOINT_NAMES[mid]}" for mid in online]
+            self.get_logger().info(f"OBSERVED CAN IDs (feedback seen): {online_named}")
+        else:
+            self.get_logger().error("OBSERVED CAN IDs (feedback seen): []")
+
+        self.get_logger().info(
+            f"ENABLED motor IDs (command/enable scope): {enabled_ids}"
+        )
+
+        if observed_not_enabled:
+            self.get_logger().warn(
+                f"OBSERVED but NOT ENABLED by this launch: {observed_not_enabled}"
+            )
+        if enabled_missing_observed:
+            self.get_logger().warn(
+                f"ENABLED but NOT OBSERVED recently: {enabled_missing_observed}"
+            )
+
+        if self._expected_online_motor_ids:
+            missing = [mid for mid in self._expected_online_motor_ids if mid not in online]
+            if missing:
+                self.get_logger().error(
+                    f"Missing expected CAN IDs: {missing}"
+                )
+
+        self._update_startup_gate(now, online)
+
+    def _online_motor_ids(self, now: float):
         online = []
         for mid in range(1, 13):
             last = self._last_seen_motor_id.get(mid, 0.0)
             if last > 0.0 and (now - last) <= self._can_id_online_timeout_s:
                 online.append(mid)
-        if online:
-            self.get_logger().info(f"CAN scan online motor IDs: {online}")
-        else:
-            self.get_logger().warn("CAN scan online motor IDs: []")
+        return online
 
-    # IMU publishing disabled — feedback-only observation
-    # def _handle_imu_fast(self, payload: bytes):
-    #     """Decode fast IMU and publish /imu0 + /imu1."""
-    #     d = rp.decode_imu_fast(payload)
-    #     if not d:
-    #         return
-    #     now = self.get_clock().now().to_msg()
-    #
-    #     def make_imu(accel_g, gyro_dps):
-    #         msg = Imu()
-    #         msg.header.stamp    = now
-    #         msg.header.frame_id = "imu_link"
-    #         msg.linear_acceleration.x = accel_g[0] * 9.80665
-    #         msg.linear_acceleration.y = accel_g[1] * 9.80665
-    #         msg.linear_acceleration.z = accel_g[2] * 9.80665
-    #         msg.angular_velocity.x    = gyro_dps[0] * (math.pi / 180.0)
-    #         msg.angular_velocity.y    = gyro_dps[1] * (math.pi / 180.0)
-    #         msg.angular_velocity.z    = gyro_dps[2] * (math.pi / 180.0)
-    #         # Orientation unknown — set covariance to -1 flag
-    #         msg.orientation_covariance[0] = -1.0
-    #         return msg
-    #
-    #     self._pub_imu0.publish(make_imu(d["imu0_accel_g"], d["imu0_gyro_dps"]))
-    #     self._pub_imu1.publish(make_imu(d["imu1_accel_g"], d["imu1_gyro_dps"]))
+    def _update_startup_gate(self, now: float, online_ids: list):
+        if self._startup_gate_ready or not self._wait_for_expected_online_ids:
+            return
+        missing = [mid for mid in self._expected_online_motor_ids if mid not in online_ids]
+        if not missing:
+            self._startup_gate_ready = True
+            self.get_logger().info(
+                "Startup gate released: all expected motor IDs online "
+                f"{self._expected_online_motor_ids}"
+            )
+
+    def _publish_imu_fast(self, d: dict):
+        """Publish decoded fast IMU data on /imu0 and /imu1."""
+        if not d:
+            return
+        stamp = self.get_clock().now().to_msg()
+
+        def make_imu(accel_g, gyro_dps):
+            msg = Imu()
+            msg.header.stamp = stamp
+            msg.header.frame_id = "imu_link"
+            msg.linear_acceleration.x = float(accel_g[0]) * ACCEL_M_S2
+            msg.linear_acceleration.y = float(accel_g[1]) * ACCEL_M_S2
+            msg.linear_acceleration.z = float(accel_g[2]) * ACCEL_M_S2
+            msg.angular_velocity.x = float(gyro_dps[0]) * GYRO_RAD_S
+            msg.angular_velocity.y = float(gyro_dps[1]) * GYRO_RAD_S
+            msg.angular_velocity.z = float(gyro_dps[2]) * GYRO_RAD_S
+            # Orientation is not present in Type 0x04 packets.
+            msg.orientation_covariance[0] = -1.0
+            return msg
+
+        self._pub_imu0.publish(
+            make_imu(d.get("imu0_accel_g", [0.0, 0.0, 0.0]), d.get("imu0_gyro_dps", [0.0, 0.0, 0.0]))
+        )
+        self._pub_imu1.publish(
+            make_imu(d.get("imu1_accel_g", [0.0, 0.0, 0.0]), d.get("imu1_gyro_dps", [0.0, 0.0, 0.0]))
+        )
 
     def _handle_slow_telem(self, payload: bytes):
         """Decode slow telem payload and publish."""
@@ -537,6 +730,11 @@ class RcuUdpBridge(Node):
         self._shutting_down = True
         self._running = False
         try:
+            # Fallback limp command in case shutdown did not come from KeyboardInterrupt.
+            self._send_disable_all()
+        except Exception:
+            pass
+        try:
             self._csv_file.close()
         except Exception:
             pass
@@ -553,7 +751,7 @@ def main(args=None):
         if rclpy.ok():
             node.get_logger().info("Shutting down — sending motor disable...")
         try:
-            node._send(rp.encode_motor_supervisory(enable_mask=0x0000))
+            node._send_disable_all()
         except Exception:
             pass
     finally:

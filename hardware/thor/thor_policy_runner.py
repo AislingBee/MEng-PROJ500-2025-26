@@ -428,7 +428,7 @@ _THOR_ROS_BRIDGE = None
 _THOR_ROS_INIT_DONE_HERE = False
 
 
-def _get_thor_ros_bridge():
+def _get_ros2_bridge():
     global _THOR_ROS_BRIDGE
     global _THOR_ROS_INIT_DONE_HERE
 
@@ -461,7 +461,7 @@ def _get_thor_ros_bridge():
     return _THOR_ROS_BRIDGE
 
 
-def _shutdown_thor_ros_bridge() -> None:
+def _shutdown_ros2_bridge() -> None:
     global _THOR_ROS_BRIDGE
     global _THOR_ROS_INIT_DONE_HERE
 
@@ -483,15 +483,15 @@ def _shutdown_thor_ros_bridge() -> None:
     _THOR_ROS_INIT_DONE_HERE = False
 
 
-atexit.register(_shutdown_thor_ros_bridge)
+atexit.register(_shutdown_ros2_bridge)
 
-def example_state_reader() -> RobotStateSample:
-    return _get_thor_ros_bridge().state_reader()
+def ros2_state_reader() -> RobotStateSample:
+    return _get_ros2_bridge().state_reader()
 
 
 
-def example_command_writer(msg: RobotCommandMessage) -> None:
-    _get_thor_ros_bridge().command_writer(msg)
+def ros2_command_writer(msg: RobotCommandMessage) -> None:
+    _get_ros2_bridge().command_writer(msg)
 
 
 
