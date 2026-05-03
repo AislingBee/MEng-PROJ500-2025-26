@@ -68,6 +68,7 @@ class ThorWalkingPolicyRunnerConfig:
     policy_path: str = "hardware/policy/walking_policy_200.pt"
     device: str = "cpu"
     loop_hz: float = CONTRACT.policy_loop_hz
+    action_delay_steps: int = 2
     command_value: float = CONTRACT.default_command_value
     max_command_value: float = 0.50
     debug_print_every_n_steps: int = 1
@@ -77,6 +78,8 @@ class ThorWalkingPolicyRunnerConfig:
             raise ValueError("loop_hz must be positive")
         if self.max_command_value < 0.0:
             raise ValueError("max_command_value must be non-negative")
+        if self.action_delay_steps < 0:
+            raise ValueError("action_delay_steps must be non-negative")
         if self.debug_print_every_n_steps <= 0:
             raise ValueError("debug_print_every_n_steps must be positive")
 
@@ -109,7 +112,13 @@ class ThorWalkingPolicyRunnerTestHarness:
             CONTRACT.joint_upper_limits_rad, dtype=torch.float32, device=self.device
         ).unsqueeze(0)
         self._commands = torch.zeros((1, 1), dtype=torch.float32, device=self.device)
+        self._actions = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
         self._last_actions = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
+        self._action_buffer = torch.zeros(
+            (1, runner_cfg.action_delay_steps + 1, CONTRACT.action_dim),
+            dtype=torch.float32,
+            device=self.device,
+        )
         self._joint_pos_targets = self._standing_q.unsqueeze(0).clone()
         self._tau_ff = torch.zeros((1, CONTRACT.action_dim), dtype=torch.float32, device=self.device)
 
@@ -120,6 +129,7 @@ class ThorWalkingPolicyRunnerTestHarness:
         self._kd_gains = torch.full((1, CONTRACT.action_dim), 2.0, dtype=torch.float32, device=self.device)
 
         self._step_count = 0
+        self._last_action_saturation_pct = 0.0
         self.set_command_value(runner_cfg.command_value)
 
     def set_command_value(self, command_value: float) -> None:
@@ -163,14 +173,25 @@ class ThorWalkingPolicyRunnerTestHarness:
             raise RuntimeError("NaN detected in walking observation")
         return obs
 
-    def generate_control_packet(self, actions: Tensor) -> ControlPacket:
-        actions = torch.clamp(actions, -1.0, 1.0)
-        q_des = self._standing_q.unsqueeze(0) + self._action_scale * actions
+    def _process_policy_actions(self, raw_actions: Tensor) -> tuple[Tensor, Tensor]:
+        self._last_actions[:] = self._actions
+        clamped_actions = torch.clamp(raw_actions, -1.0, 1.0)
+        saturated = raw_actions != clamped_actions
+        self._last_action_saturation_pct = 100.0 * saturated.float().mean().item()
+
+        self._action_buffer = torch.roll(self._action_buffer, shifts=1, dims=1)
+        self._action_buffer[:, 0, :] = clamped_actions
+        delayed_actions = self._action_buffer[:, self.cfg.action_delay_steps, :]
+        self._actions[:] = delayed_actions
+        return clamped_actions, delayed_actions
+
+    def generate_control_packet(self, actions: Tensor) -> tuple[ControlPacket, Tensor, Tensor]:
+        clamped_actions, applied_actions = self._process_policy_actions(actions)
+        q_des = self._standing_q.unsqueeze(0) + self._action_scale * applied_actions
         q_des = torch.max(torch.min(q_des, self._joint_upper), self._joint_lower)
         self._joint_pos_targets = q_des.detach().clone()
-        self._last_actions = actions.detach().clone()
 
-        return ControlPacket(
+        packet = ControlPacket(
             joint_names=self._joint_names,
             q_des=q_des.clone(),
             kp=self._kp_fixed.clone(),
@@ -179,18 +200,26 @@ class ThorWalkingPolicyRunnerTestHarness:
             kp_gains=self._kp_gains.clone(),
             kd_gains=self._kd_gains.clone(),
         )
+        return packet, clamped_actions, applied_actions
 
     def step(self) -> ControlPacket:
         observation_packet = self.hardware.read_observation_packet()
         obs = self.build_observation(observation_packet)
         actions = self.policy.act(obs)
-        packet = self.generate_control_packet(actions)
+        packet, clamped_actions, applied_actions = self.generate_control_packet(actions)
         self.hardware.write_control_packet(packet)
         self._step_count += 1
-        self._debug_print_step(obs, actions, packet)
+        self._debug_print_step(obs, actions, clamped_actions, applied_actions, packet)
         return packet
 
-    def _debug_print_step(self, obs: Tensor, actions: Tensor, packet: ControlPacket) -> None:
+    def _debug_print_step(
+        self,
+        obs: Tensor,
+        raw_actions: Tensor,
+        clamped_actions: Tensor,
+        applied_actions: Tensor,
+        packet: ControlPacket,
+    ) -> None:
         if self._step_count % self.cfg.debug_print_every_n_steps != 0:
             return
 
@@ -210,8 +239,11 @@ class ThorWalkingPolicyRunnerTestHarness:
         print("phase_cos:", obs[:, 56:57])
         print("foot_pos_b:", obs[:, 57:63])
         print("last_actions:", obs[:, 63:75])
-        print("actions:", actions.detach().cpu())
-        print("actions min/max:", actions.min().item(), actions.max().item())
+        print("raw_actions:", raw_actions.detach().cpu())
+        print("raw_actions min/max:", raw_actions.min().item(), raw_actions.max().item())
+        print("clamped_actions:", clamped_actions.detach().cpu())
+        print("applied_actions_after_delay:", applied_actions.detach().cpu())
+        print(f"action_saturation_pct: {self._last_action_saturation_pct:.2f}%")
         print("q_des min/max:", packet.q_des.min().item(), packet.q_des.max().item())
         print("joint order:")
         q_des = packet.q_des.detach().cpu()
