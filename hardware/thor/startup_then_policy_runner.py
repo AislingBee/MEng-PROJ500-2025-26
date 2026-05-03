@@ -27,13 +27,16 @@ from simulation.isaac.configuration.standing_s2r_policy_contract import (
 
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket, ObservationPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
-    RobotCommandMessage,
     RobotHardwareInterface,
     RobotInterfaceConfig,
-    RobotStateSample,
 )
 
-from hardware.thor.thor_policy_runner import DeployablePolicy
+from hardware.thor.thor_policy_runner import (
+    DeployablePolicy,
+    _shutdown_ros2_bridge,
+    ros2_command_writer,
+    ros2_state_reader,
+)
 
 
 Tensor = torch.Tensor
@@ -140,6 +143,16 @@ class ThorStartupThenPolicyRunner:
         self._kd_policy = kd_fixed.unsqueeze(0)
         self._kp_startup = self._kp_policy * float(runner_cfg.startup_kp_scale)
         self._kd_startup = self._kd_policy * float(runner_cfg.startup_kd_scale)
+
+        # Per-joint MIT gains follow the policy runner during policy control.
+        self._kp_gains_policy = torch.full(
+            (1, CONTRACT.action_dim), 30.0, dtype=torch.float32, device=self.device
+        )
+        self._kd_gains_policy = torch.full(
+            (1, CONTRACT.action_dim), 2.0, dtype=torch.float32, device=self.device
+        )
+        self._kp_gains_startup = self._kp_startup.clone()
+        self._kd_gains_startup = self._kd_startup.clone()
         self.set_command_value(runner_cfg.command_value)
 
         self._mode = MODE_STARTUP_RAMP
@@ -192,6 +205,8 @@ class ThorStartupThenPolicyRunner:
             kp=self._kp_startup.clone(),
             kd=self._kd_startup.clone(),
             tau_ff=self._tau_ff.clone(),
+            kp_gains=self._kp_gains_startup.clone(),
+            kd_gains=self._kd_gains_startup.clone(),
         )
 
     def _build_standing_policy_packet(self) -> ControlPacket:
@@ -204,6 +219,8 @@ class ThorStartupThenPolicyRunner:
             kp=self._kp_policy.clone(),
             kd=self._kd_policy.clone(),
             tau_ff=self._tau_ff.clone(),
+            kp_gains=self._kp_gains_policy.clone(),
+            kd_gains=self._kd_gains_policy.clone(),
         )
 
     def _get_phase_clock(self) -> tuple[Tensor, Tensor]:
@@ -286,6 +303,8 @@ class ThorStartupThenPolicyRunner:
             kp=self._kp_policy.clone(),
             kd=self._kd_policy.clone(),
             tau_ff=self._tau_ff.clone(),
+            kp_gains=self._kp_gains_policy.clone(),
+            kd_gains=self._kd_gains_policy.clone(),
         )
 
     def _standing_metrics(self, q_actual: Tensor, joint_vel: Tensor) -> tuple[float, float]:
@@ -476,20 +495,6 @@ class ThorStartupThenPolicyRunner:
                 self.send_standing_pose_once()
 
 
-# -----------------------------------------------------------------------------
-# Wiring example
-# Replace these with the actual Thor ROS/CAN hooks.
-# -----------------------------------------------------------------------------
-
-
-def example_state_reader() -> RobotStateSample:
-    raise NotImplementedError("Inject your real Thor state reader here")
-
-
-def example_command_writer(msg: RobotCommandMessage) -> None:
-    raise NotImplementedError("Inject your real Thor command writer here")
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run Thor startup ramp, hold standing, then hand over to policy control."
@@ -583,8 +588,8 @@ def main() -> None:
     runner = ThorStartupThenPolicyRunner(
         runner_cfg=runner_cfg,
         hardware_cfg=hardware_cfg,
-        state_reader=example_state_reader,
-        command_writer=example_command_writer,
+        state_reader=ros2_state_reader,
+        command_writer=ros2_command_writer,
     )
     stop_event = threading.Event()
 
@@ -610,7 +615,10 @@ def main() -> None:
 
     keyboard_thread = threading.Thread(target=keyboard_loop, daemon=True)
     keyboard_thread.start()
-    runner.run(stop_event=stop_event)
+    try:
+        runner.run(stop_event=stop_event)
+    finally:
+        _shutdown_ros2_bridge()
 
 
 if __name__ == "__main__":

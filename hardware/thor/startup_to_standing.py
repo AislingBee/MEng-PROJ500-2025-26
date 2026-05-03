@@ -23,10 +23,13 @@ from simulation.isaac.configuration.walking_actuator_config import (
 from simulation.isaac.configuration.zero_pose import ZERO_POSE_DEG
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
-    RobotCommandMessage,
     RobotHardwareInterface,
     RobotInterfaceConfig,
-    RobotStateSample,
+)
+from hardware.thor.thor_policy_runner import (
+    _shutdown_ros2_bridge,
+    ros2_command_writer,
+    ros2_state_reader,
 )
 
 
@@ -215,6 +218,8 @@ class ThorStartupToStandingRunner:
             kp=self._kp.clone(),
             kd=self._kd.clone(),
             tau_ff=self._tau_ff.clone(),
+            kp_gains=self._kp.clone(),
+            kd_gains=self._kd.clone(),
         )
 
     def send_standing_pose(self) -> None:
@@ -309,20 +314,6 @@ class ThorStartupToStandingRunner:
                 self.send_standing_pose()
 
 
-# -----------------------------------------------------------------------------
-# Wiring example
-# Replace these with the actual Thor ROS/CAN hooks.
-# -----------------------------------------------------------------------------
-
-
-def example_state_reader() -> RobotStateSample:
-    raise NotImplementedError("Inject your real Thor state reader here")
-
-
-def example_command_writer(msg: RobotCommandMessage) -> None:
-    raise NotImplementedError("Inject your real Thor command writer here")
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Move Thor from calibrated zero pose into the standing policy pose."
@@ -404,10 +395,13 @@ def main() -> None:
     runner = ThorStartupToStandingRunner(
         startup_cfg=startup_cfg,
         hardware_cfg=hardware_cfg,
-        state_reader=example_state_reader,
-        command_writer=example_command_writer,
+        state_reader=ros2_state_reader,
+        command_writer=ros2_command_writer,
     )
-    runner.run()
+    try:
+        runner.run()
+    finally:
+        _shutdown_ros2_bridge()
 
 
 if __name__ == "__main__":
