@@ -23,6 +23,9 @@ from simulation.isaac.rl.interface.robot_hardware_interface import (
 
 
 Tensor = torch.Tensor
+REPO_ROOT = Path(__file__).resolve().parents[3]
+SMOOTH_WALK_LOG_ROOT = REPO_ROOT / "logs" / "rsl_rl" / "humanoid_walk_smooth"
+DEFAULT_SMOOTH_WALK_POLICY_PATH = r"hardware\policy\walking_smooth_policy.pt"
 
 
 def rad_to_encoder_counts(q_rad: list[float]) -> list[int]:
@@ -63,9 +66,31 @@ def fake_command_writer(msg: RobotCommandMessage) -> None:
     return None
 
 
+def _latest_exported_policy() -> Path:
+    if not SMOOTH_WALK_LOG_ROOT.exists():
+        raise FileNotFoundError(
+            f"No smooth walking log directory found at {SMOOTH_WALK_LOG_ROOT.resolve()}. "
+            "Train a smooth walking policy first or pass --policy explicitly."
+        )
+
+    run_dirs = sorted(
+        (path for path in SMOOTH_WALK_LOG_ROOT.iterdir() if path.is_dir()),
+        key=lambda path: (path.stat().st_mtime, path.name),
+    )
+    for run_dir in reversed(run_dirs):
+        candidate = run_dir / "exported" / "policy_jit.pt"
+        if candidate.is_file():
+            return candidate.resolve()
+
+    raise FileNotFoundError(
+        f"No exported smooth walking policy_jit.pt found under {SMOOTH_WALK_LOG_ROOT.resolve()}. "
+        "Train/export a smooth walking policy first or pass --policy explicitly."
+    )
+
+
 @dataclass
 class ThorHumanoidWalkSmoothRunnerConfig:
-    policy_path: str
+    policy_path: str = DEFAULT_SMOOTH_WALK_POLICY_PATH
     obs_normalizer_path: str | None = None
     device: str = "cpu"
     loop_hz: float = CONTRACT.policy_loop_hz
@@ -329,7 +354,11 @@ class ThorHumanoidWalkSmoothPolicyRunnerTestHarness:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run smooth walking Thor deployment path diagnostics.")
-    parser.add_argument("--policy", required=True, help="Path to exported smooth walking policy_jit.pt")
+    parser.add_argument(
+        "--policy",
+        default=None,
+        help="Path to exported smooth walking policy_jit.pt. Defaults to runner_cfg.policy_path, then falls back to latest export.",
+    )
     parser.add_argument(
         "--obs-normalizer",
         default=None,
@@ -339,9 +368,16 @@ def main() -> None:
     parser.add_argument("--delay", type=int, default=2)
     parser.add_argument("--command", type=float, default=CONTRACT.default_command_value)
     args = parser.parse_args()
+    default_runner_cfg = ThorHumanoidWalkSmoothRunnerConfig()
+    policy_path = args.policy if args.policy is not None else default_runner_cfg.policy_path
+    policy_path_obj = Path(policy_path).expanduser()
+    if not policy_path_obj.is_absolute():
+        policy_path_obj = (REPO_ROOT / policy_path_obj).resolve()
+    if not policy_path_obj.is_file():
+        policy_path_obj = _latest_exported_policy()
 
     runner_cfg = ThorHumanoidWalkSmoothRunnerConfig(
-        policy_path=args.policy,
+        policy_path=str(policy_path_obj),
         obs_normalizer_path=args.obs_normalizer,
         action_delay_steps=args.delay,
         command_value=args.command,
