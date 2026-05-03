@@ -22,7 +22,7 @@ from simulation.isaac.rl.interface.hardware_interface import ControlPacket
 from simulation.isaac.rl.interface.isaac_hardware_interface import IsaacHardwareInterface
 
 
-USD_PATH = Path(__file__).resolve().parents[3] / "assets" / "usd_generated" / "robot" / "robot.usd"
+USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "robot" / "robot.usd"
 
 OBS_LAYOUT: dict[str, int] = {
     "q_rel": 12,

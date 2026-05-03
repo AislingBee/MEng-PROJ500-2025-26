@@ -26,7 +26,7 @@ import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 from rsl_rl.runners import OnPolicyRunner
 
-from simulation.isaac.rl.tasks.direct.humanoid_stand_smooth_s2r_env import OBS_DIM
+from simulation.isaac.rl.envs.humanoid_stand_smooth_s2r_env import OBS_DIM
 
 
 THIS_DIR = Path(__file__).resolve().parent
@@ -37,7 +37,7 @@ spec = importlib.util.spec_from_file_location("humanoid_stand_smooth_s2r_task", 
 task_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(task_module)
 
-ppo_cfg_file = THIS_DIR / "rsl_rl_ppo_cfg" / "humanoid_stand_smooth_ppo_cfg.py"
+ppo_cfg_file = ISAAC_DIR / "configuration" / "humanoid_stand_smooth_ppo_cfg.py"
 spec = importlib.util.spec_from_file_location("humanoid_stand_smooth_ppo_cfg", ppo_cfg_file)
 ppo_cfg_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ppo_cfg_module)
@@ -91,7 +91,7 @@ def export_deployable_policy(runner, export_dir: str) -> None:
 
 
 def main():
-    from simulation.isaac.rl.tasks.direct.humanoid_stand_smooth_s2r_env import HumanoidStandSmoothS2REnvCfg
+    from simulation.isaac.rl.envs.humanoid_stand_smooth_s2r_env import HumanoidStandSmoothS2REnvCfg
 
     env_cfg = HumanoidStandSmoothS2REnvCfg()
     if env_cfg.observation_space != OBS_DIM:
