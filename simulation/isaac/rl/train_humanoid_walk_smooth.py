@@ -62,7 +62,12 @@ class DeployableActor(torch.nn.Module):
 
 
 def _find_obs_normalizer(runner) -> torch.nn.Module | None:
-    for owner in (runner, getattr(runner, "alg", None)):
+    for owner in (
+        runner,
+        getattr(runner, "alg", None),
+        getattr(getattr(runner, "alg", None), "actor", None),
+        getattr(getattr(runner, "alg", None), "critic", None),
+    ):
         if owner is None:
             continue
         for name in ("obs_normalizer", "empirical_normalizer", "normalizer", "obs_norm"):
@@ -112,6 +117,7 @@ def export_deployable_policy(runner, export_dir: str) -> None:
 
     scripted_actor = torch.jit.trace(DeployableActor(actor).to(device).eval(), (example_obs,))
     scripted_actor.save(os.path.join(export_dir, "policy_jit.pt"))
+    scripted_actor.save(os.path.join(export_dir, "walking_smooth_policy.pt"))
     torch.save(actor.state_dict(), os.path.join(export_dir, "actor_state_dict.pt"))
 
     if CONTRACT.use_obs_normalization:

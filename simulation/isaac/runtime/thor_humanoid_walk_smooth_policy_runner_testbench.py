@@ -177,6 +177,7 @@ class ThorHumanoidWalkSmoothPolicyRunnerTestHarness:
             command_writer=fake_command_writer,
             device=self.device,
         )
+        self._policy_has_embedded_obs_normalizer = self._policy_embeds_obs_normalizer(runner_cfg.policy_path)
         self.obs_normalizer = self._load_obs_normalizer()
         self.policy = DeployablePolicy(runner_cfg.policy_path, device=self.device, obs_normalizer=self.obs_normalizer)
 
@@ -211,6 +212,11 @@ class ThorHumanoidWalkSmoothPolicyRunnerTestHarness:
         self.set_command_value(runner_cfg.command_value)
         self._print_startup_summary()
 
+    def _policy_embeds_obs_normalizer(self, policy_path: str | Path) -> bool:
+        policy = torch.jit.load(str(Path(policy_path).expanduser().resolve()), map_location="cpu")
+        actor = getattr(policy, "actor", None)
+        return actor is not None and hasattr(actor, "obs_normalizer")
+
     def _resolve_obs_normalizer_path(self) -> Path:
         if self.cfg.obs_normalizer_path is not None:
             return Path(self.cfg.obs_normalizer_path).expanduser().resolve()
@@ -218,6 +224,9 @@ class ThorHumanoidWalkSmoothPolicyRunnerTestHarness:
 
     def _load_obs_normalizer(self) -> DeployableObsNormalizer | None:
         if not CONTRACT.use_obs_normalization:
+            return None
+
+        if self._policy_has_embedded_obs_normalizer:
             return None
 
         normalizer_path = self._resolve_obs_normalizer_path()
@@ -232,7 +241,9 @@ class ThorHumanoidWalkSmoothPolicyRunnerTestHarness:
 
     def _print_startup_summary(self) -> None:
         normalizer_path = "None"
-        if self.obs_normalizer is not None:
+        if self._policy_has_embedded_obs_normalizer:
+            normalizer_path = "embedded-in-policy"
+        elif self.obs_normalizer is not None:
             normalizer_path = str(self.obs_normalizer.path)
         print(
             "[SMOOTH WALK RUNNER] "
