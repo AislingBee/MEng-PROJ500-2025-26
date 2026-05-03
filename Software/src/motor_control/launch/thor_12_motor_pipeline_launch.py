@@ -75,10 +75,17 @@ def generate_launch_description():
         output="screen",
     )
 
+    _existing_pythonpath = os.environ.get("PYTHONPATH", "")
+    _runner_pythonpath = (
+        workspace_root_default + ":" + _existing_pythonpath
+        if _existing_pythonpath
+        else workspace_root_default
+    )
+
     thor_policy_runner = ExecuteProcess(
         cmd=["python3", thor_runner_script],
         cwd=workspace_root,
-        additional_env={"PYTHONPATH": workspace_root_default},
+        additional_env={"PYTHONPATH": _runner_pythonpath},
         output="screen",
     )
 
