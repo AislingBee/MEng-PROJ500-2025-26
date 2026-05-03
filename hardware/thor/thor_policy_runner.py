@@ -448,9 +448,8 @@ def _get_ros2_bridge():
         rclpy.init()
         _THOR_ROS_INIT_DONE_HERE = True
 
-    defaults = get_thor_runner_defaults()
     _THOR_ROS_BRIDGE = Ros2RobotBridge(
-        joint_names=defaults["joint_names"],
+        joint_names=CONTRACT.joint_names,
         command_topic=os.getenv("THOR_ROS_COMMAND_TOPIC", "robot_command"),
         observation_topic=os.getenv("THOR_ROS_OBSERVATION_TOPIC", "robot_observation"),
         node_name=os.getenv("THOR_ROS_NODE_NAME", "thor_policy_runner_bridge"),
@@ -492,6 +491,14 @@ def ros2_state_reader() -> RobotStateSample:
 
 def ros2_command_writer(msg: RobotCommandMessage) -> None:
     _get_ros2_bridge().command_writer(msg)
+
+
+def example_state_reader() -> RobotStateSample:
+    return ros2_state_reader()
+
+
+def example_command_writer(msg: RobotCommandMessage) -> None:
+    ros2_command_writer(msg)
 
 
 
