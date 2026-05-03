@@ -28,7 +28,7 @@ from simulation.isaac.configuration.standing_s2r_policy_contract import (
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket, ObservationPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
     RobotHardwareInterface,
-    RobotInterfaceConfig,
+    RobotInterfaceConfig, RobotStateSample, RobotCommandMessage,
 )
 
 from hardware.thor.thor_policy_runner import (
