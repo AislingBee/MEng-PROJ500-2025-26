@@ -211,7 +211,9 @@ class ThorStartupThenPolicyRunner:
 
     def _build_startup_control_packet(self, q_des: Tensor) -> ControlPacket:
         self._check_for_nan(q_des, "q_des")
-        self._validate_joint_targets(q_des)
+        # No joint-limit validation here: the ramp starts from the real motor
+        # positions which may be outside policy limits. Validation runs once the
+        # robot reaches STANDING_HOLD.
         return ControlPacket(
             joint_names=self._joint_names,
             q_des=q_des.clone(),
@@ -481,7 +483,9 @@ class ThorStartupThenPolicyRunner:
                     alpha = min(max(elapsed_time_s / self.cfg.ramp_time_s, 0.0), 1.0)
                     q_des = self._q_start + alpha * (self._standing_q.unsqueeze(0) - self._q_start)
                     self._check_for_nan(q_des, "q_des")
-                    self._validate_joint_targets(q_des)
+                    # Intentionally no _validate_joint_targets here: the ramp
+                    # starts from the real motor positions which may be outside
+                    # policy limits. Validation is deferred to STANDING_HOLD.
 
                     max_position_error = torch.max(torch.abs(q_actual - q_des)).item()
                     if max_position_error > self.cfg.max_position_error_rad:
