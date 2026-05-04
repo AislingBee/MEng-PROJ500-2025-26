@@ -34,10 +34,10 @@ import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 from rsl_rl.runners import OnPolicyRunner
 
+from simulation.isaac.configuration.stand_smooth_s2r_policy_contract import CONTRACT
 from simulation.isaac.configuration.humanoid_stand_smooth_ppo_cfg import (
     SMOOTH_STAND_DEPLOYMENT_CFG,
 )
-from simulation.isaac.rl.envs.humanoid_stand_smooth_s2r_env import OBS_DIM
 
 
 THIS_DIR = Path(__file__).resolve().parent
@@ -89,7 +89,7 @@ def export_deployable_policy(runner, export_dir: str) -> None:
     device = next(actor.parameters()).device
     normalizer = _find_obs_normalizer(runner)
 
-    example_obs = {"policy": torch.zeros(1, OBS_DIM, device=device)}
+    example_obs = {"policy": torch.zeros(1, CONTRACT.obs_dim, device=device)}
     scripted_actor = torch.jit.trace(DeployableActor(actor).to(device).eval(), (example_obs,))
     scripted_actor.save(os.path.join(export_dir, "policy_jit.pt"))
     scripted_actor.save(os.path.join(export_dir, "standing_smooth_policy.pt"))
@@ -105,7 +105,7 @@ def export_deployable_policy(runner, export_dir: str) -> None:
                 )
             print("Observation normalizer export skipped: no runner normalizer found.")
         else:
-            example_obs_tensor = torch.zeros(1, OBS_DIM, device=device)
+            example_obs_tensor = torch.zeros(1, CONTRACT.obs_dim, device=device)
             scripted_normalizer = torch.jit.trace(normalizer.to(device).eval(), (example_obs_tensor,))
             scripted_normalizer.save(normalizer_path)
             print(f"Observation normalizer saved to: {normalizer_path}")
@@ -126,8 +126,24 @@ def main():
     env_cfg = HumanoidStandSmoothS2REnvCfg()
     if args.task != "Humanoid-Stand-Smooth-S2R-v0":
         raise RuntimeError("train_stand_smooth_s2r.py is dedicated to Humanoid-Stand-Smooth-S2R-v0 only.")
-    if env_cfg.observation_space != OBS_DIM:
-        raise RuntimeError(f"Smooth standing observation dim mismatch: cfg={env_cfg.observation_space}, layout={OBS_DIM}")
+    if env_cfg.action_space != CONTRACT.action_dim:
+        raise RuntimeError(
+            f"Smooth standing contract expects action dim {CONTRACT.action_dim}, but env config uses {env_cfg.action_space}."
+        )
+    if env_cfg.observation_space != CONTRACT.obs_dim:
+        raise RuntimeError(
+            f"Smooth standing observation dim mismatch: cfg={env_cfg.observation_space}, contract={CONTRACT.obs_dim}"
+        )
+    if tuple(env_cfg.action_scale) != CONTRACT.action_scale:
+        raise RuntimeError("Smooth standing action_scale no longer matches the smooth standing policy contract.")
+    if env_cfg.decimation != CONTRACT.decimation:
+        raise RuntimeError(
+            f"Smooth standing contract expects decimation {CONTRACT.decimation}, but env config uses {env_cfg.decimation}."
+        )
+    if env_cfg.sim.dt != CONTRACT.sim_dt_s:
+        raise RuntimeError(
+            f"Smooth standing contract expects sim dt {CONTRACT.sim_dt_s}, but env config uses {env_cfg.sim.dt}."
+        )
 
     env_cfg.scene.num_envs = args.num_envs
 
@@ -143,7 +159,7 @@ def main():
     print(f"num_envs: {args.num_envs}")
     print(f"max_iterations: {args.max_iterations}")
     print(f"device: {agent_cfg.device}")
-    print(f"policy_loop_hz: {1.0 / (env_cfg.sim.dt * env_cfg.decimation):.3f}")
+    print(f"policy_loop_hz: {CONTRACT.policy_loop_hz:.3f}")
     print(f"action_delay_steps: {env_cfg.action_delay_steps}")
     print(f"observation_normalization_enabled: {_observation_normalization_enabled(agent_cfg)}")
     print("====================================\n")
