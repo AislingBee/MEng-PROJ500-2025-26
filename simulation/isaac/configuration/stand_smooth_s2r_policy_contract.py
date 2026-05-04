@@ -25,8 +25,8 @@ from simulation.isaac.configuration.walking_actuator_config import (
 
 
 ACTION_SCALE: Final[tuple[float, ...]] = (
-    0.065, 0.052, 0.0975, 0.13, 0.078, 0.052,
-    0.065, 0.052, 0.0975, 0.13, 0.078, 0.052,
+    0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
+    0.10, 0.08, 0.15, 0.20, 0.12, 0.08,
 )
 
 SIM_DT_S: Final[float] = 1.0 / 200.0
