@@ -72,7 +72,7 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
 
     reward_scales = {
         "vel_track": 6.0,
-        "torso_forward": 0.60,
+        "torso_forward": 0.70,
         "upright": 1.60,
         "survival": 0.6,
         "pose": 0.03,
