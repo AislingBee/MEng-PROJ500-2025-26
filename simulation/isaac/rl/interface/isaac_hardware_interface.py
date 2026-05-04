@@ -43,7 +43,7 @@ class IsaacHardwareInterface(BaseHardwareInterface):
 
         self._noise_cfg = { # Last used values for the walking training vs the original values.
             "joint_pos": AdditiveGaussianNoiseCfg(std=0.0023),#0.0035
-            "joint_vel": AdditiveGaussianNoiseCfg(std=0.015),#0.045
+            "joint_vel": AdditiveGaussianNoiseCfg(std=0.03),#0.045
             "joint_effort": AdditiveGaussianNoiseCfg(std=0.53),#0.8
             "gravity": AdditiveGaussianNoiseCfg(std=0.008),#0.022
             "gyro": AdditiveGaussianNoiseCfg(std=0.012),#0.035
