@@ -72,7 +72,7 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
 
     reward_scales = {
         "vel_track": 6.0,
-        "torso_forward": 0.45,
+        "torso_forward": 0.60,
         "upright": 1.60,
         "survival": 0.6,
         "pose": 0.03,
@@ -82,7 +82,7 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
         "com_align": 3.0,
         "forward_step": 0.0,
         "phase_single_stance": 0.50,
-        "phase_forward_step": 0.50,
+        "phase_forward_step": 0.65,
         "ang_vel": 0.16,
         "joint_vel": 0.015,
         "action_rate": 0.065,
@@ -103,9 +103,9 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
         "foot_side": 1.8,
         "foot_centerline": 50.0,
         "pelvis_lateral": 3.0,
-        "step_x_asymmetry": 0.45,
-        "air_time_imbalance": 1.10,
-        "contact_time_imbalance": 1.10,
+        "step_x_asymmetry": 0.55,
+        "air_time_imbalance": 1.25,
+        "contact_time_imbalance": 1.25,
     }
 
     tilt_limit: float = 0.25
