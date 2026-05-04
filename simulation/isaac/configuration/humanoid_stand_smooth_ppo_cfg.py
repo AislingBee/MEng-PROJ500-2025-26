@@ -5,12 +5,14 @@ from isaaclab_rl.rsl_rl import (
 )
 from dataclasses import dataclass
 
+from simulation.isaac.configuration.humanoid_stand_smooth_policy_contract import CONTRACT
+
 
 @dataclass(frozen=True)
 class SmoothStandingDeploymentCfg:
-    use_obs_normalization: bool = True
-    obs_normalizer_required: bool = True
-    obs_normalizer_artifact_name: str = "obs_normalizer.pt"
+    use_obs_normalization: bool = CONTRACT.use_obs_normalization
+    obs_normalizer_required: bool = CONTRACT.obs_normalizer_required
+    obs_normalizer_artifact_name: str = CONTRACT.obs_normalizer_artifact_name
 
 
 SMOOTH_STAND_DEPLOYMENT_CFG = SmoothStandingDeploymentCfg()
@@ -22,18 +24,18 @@ def get_humanoid_stand_smooth_ppo_cfg():
         device="cuda:0",
         num_steps_per_env=32,
         max_iterations=1200,
-        empirical_normalization=True,
+        empirical_normalization=CONTRACT.use_obs_normalization,
         save_interval=50,
         experiment_name="humanoid_stand_smooth_s2r",
         run_name="",
         logger="tensorboard",
         # Keep PPO from hiding saturated raw outputs. The env applies the
-        # deployment safety clamp and penalizes the unclamped raw action.
+        # deployment safety clamp and physical joint limits.
         clip_actions=100.0,
         actor=RslRlMLPModelCfg(
             hidden_dims=[256, 256, 128],
             activation="elu",
-            obs_normalization=True,
+            obs_normalization=CONTRACT.use_obs_normalization,
             distribution_cfg=RslRlMLPModelCfg.GaussianDistributionCfg(
                 init_std=0.3,
                 std_type="scalar",
@@ -42,7 +44,7 @@ def get_humanoid_stand_smooth_ppo_cfg():
         critic=RslRlMLPModelCfg(
             hidden_dims=[256, 256, 128],
             activation="elu",
-            obs_normalization=True,
+            obs_normalization=CONTRACT.use_obs_normalization,
             distribution_cfg=None,
         ),
         algorithm=RslRlPpoAlgorithmCfg(

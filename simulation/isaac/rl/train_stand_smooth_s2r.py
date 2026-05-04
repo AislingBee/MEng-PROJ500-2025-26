@@ -22,7 +22,7 @@ parser.add_argument(
     "--checkpoint",
     type=str,
     default=None,
-    help="Optional RSL-RL model_*.pt checkpoint to resume from.",
+    help="Optional checkpoint file or run directory to resume from.",
 )
 args = parser.parse_args()
 
@@ -34,10 +34,7 @@ import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 from rsl_rl.runners import OnPolicyRunner
 
-from simulation.isaac.configuration.stand_smooth_s2r_policy_contract import CONTRACT
-from simulation.isaac.configuration.humanoid_stand_smooth_ppo_cfg import (
-    SMOOTH_STAND_DEPLOYMENT_CFG,
-)
+from simulation.isaac.configuration.humanoid_stand_smooth_policy_contract import CONTRACT
 
 
 THIS_DIR = Path(__file__).resolve().parent
@@ -81,30 +78,58 @@ def _find_obs_normalizer(runner) -> torch.nn.Module | None:
     return None
 
 
+def _latest_model_in_dir(run_dir: Path) -> Path | None:
+    def _checkpoint_sort_key(path: Path) -> tuple[int, float, str]:
+        try:
+            iteration = int(path.stem.split("_")[-1])
+        except ValueError:
+            iteration = -1
+        return iteration, path.stat().st_mtime, path.name
+
+    checkpoints = sorted(run_dir.glob("model_*.pt"), key=_checkpoint_sort_key)
+    if checkpoints:
+        return checkpoints[-1]
+    return None
+
+
+def resolve_checkpoint_path(raw_checkpoint: str | None) -> Path | None:
+    if raw_checkpoint is None:
+        return None
+
+    candidate = Path(raw_checkpoint).expanduser().resolve()
+    if candidate.is_file():
+        return candidate
+    if candidate.is_dir():
+        latest = _latest_model_in_dir(candidate)
+        if latest is not None:
+            return latest.resolve()
+        raise FileNotFoundError(f"No model_*.pt checkpoint found in run directory: {candidate}")
+    raise FileNotFoundError(f"Checkpoint path does not exist: {candidate}")
+
+
 def export_deployable_policy(runner, export_dir: str) -> None:
     os.makedirs(export_dir, exist_ok=True)
 
     actor = runner.alg.actor
     actor.eval()
     device = next(actor.parameters()).device
-    normalizer = _find_obs_normalizer(runner)
-
     example_obs = {"policy": torch.zeros(1, CONTRACT.obs_dim, device=device)}
+
     scripted_actor = torch.jit.trace(DeployableActor(actor).to(device).eval(), (example_obs,))
     scripted_actor.save(os.path.join(export_dir, "policy_jit.pt"))
     scripted_actor.save(os.path.join(export_dir, "standing_smooth_policy.pt"))
     torch.save(actor.state_dict(), os.path.join(export_dir, "actor_state_dict.pt"))
 
-    normalizer_path = os.path.join(export_dir, SMOOTH_STAND_DEPLOYMENT_CFG.obs_normalizer_artifact_name)
-    if SMOOTH_STAND_DEPLOYMENT_CFG.use_obs_normalization:
+    if CONTRACT.use_obs_normalization:
+        normalizer = _find_obs_normalizer(runner)
         if normalizer is None:
-            if SMOOTH_STAND_DEPLOYMENT_CFG.obs_normalizer_required:
+            if CONTRACT.obs_normalizer_required:
                 raise RuntimeError(
                     "Smooth standing deploy export requires an observation normalizer, "
                     "but none was found on the trained runner."
                 )
-            print("Observation normalizer export skipped: no runner normalizer found.")
         else:
+            normalizer_path = os.path.join(export_dir, CONTRACT.obs_normalizer_artifact_name)
             example_obs_tensor = torch.zeros(1, CONTRACT.obs_dim, device=device)
             scripted_normalizer = torch.jit.trace(normalizer.to(device).eval(), (example_obs_tensor,))
             scripted_normalizer.save(normalizer_path)
@@ -130,10 +155,6 @@ def main():
         raise RuntimeError(
             f"Smooth standing contract expects action dim {CONTRACT.action_dim}, but env config uses {env_cfg.action_space}."
         )
-    if env_cfg.observation_space != CONTRACT.obs_dim:
-        raise RuntimeError(
-            f"Smooth standing observation dim mismatch: cfg={env_cfg.observation_space}, contract={CONTRACT.obs_dim}"
-        )
     if tuple(env_cfg.action_scale) != CONTRACT.action_scale:
         raise RuntimeError("Smooth standing action_scale no longer matches the smooth standing policy contract.")
     if env_cfg.decimation != CONTRACT.decimation:
@@ -144,37 +165,40 @@ def main():
         raise RuntimeError(
             f"Smooth standing contract expects sim dt {CONTRACT.sim_dt_s}, but env config uses {env_cfg.sim.dt}."
         )
+    if env_cfg.observation_space != CONTRACT.obs_dim:
+        raise RuntimeError(
+            f"Smooth standing observation dim mismatch: cfg={env_cfg.observation_space}, contract={CONTRACT.obs_dim}"
+        )
 
     env_cfg.scene.num_envs = args.num_envs
+    env_cfg.default_command_value = CONTRACT.default_command_value
+    env = gym.make(args.task, cfg=env_cfg, render_mode=None)
+    env = RslRlVecEnvWrapper(env, clip_actions=100.0)
 
     agent_cfg = get_humanoid_stand_smooth_ppo_cfg()
-    agent_cfg.seed = args.seed
     agent_cfg.max_iterations = args.max_iterations
-    agent_cfg.run_name = args.run_name
-    if hasattr(args, "device") and args.device is not None:
+    agent_cfg.seed = args.seed
+    if args.run_name:
+        agent_cfg.run_name = args.run_name
+    if hasattr(args, "device"):
         agent_cfg.device = args.device
-
-    print("\n=== Smooth Standing S2R Training ===")
-    print(f"task: {args.task}")
-    print(f"num_envs: {args.num_envs}")
-    print(f"max_iterations: {args.max_iterations}")
-    print(f"device: {agent_cfg.device}")
-    print(f"policy_loop_hz: {CONTRACT.policy_loop_hz:.3f}")
-    print(f"action_delay_steps: {env_cfg.action_delay_steps}")
-    print(f"observation_normalization_enabled: {_observation_normalization_enabled(agent_cfg)}")
-    print("====================================\n")
-
-    env = gym.make(args.task, cfg=env_cfg, render_mode=None)
-
-    # Use a wide wrapper action clip so raw policy saturation reaches the env
-    # diagnostics and reward; the env still applies the deployable [-1, 1] clamp.
-    env = RslRlVecEnvWrapper(env, clip_actions=100.0)
-    print("Smooth standing env ready.")
 
     try:
         rsl_rl_version = version("rsl-rl-lib")
     except PackageNotFoundError:
         rsl_rl_version = version("rsl-rl")
+
+    print(
+        "smooth stand train | "
+        f"task={args.task} | "
+        f"num_envs={args.num_envs} | "
+        f"max_iterations={args.max_iterations} | "
+        f"device={agent_cfg.device} | "
+        f"policy_loop_hz={CONTRACT.policy_loop_hz:.3f} | "
+        f"action_delay_steps={env_cfg.action_delay_steps} | "
+        f"obs_normalization={_observation_normalization_enabled(agent_cfg)} | "
+        f"command_value={CONTRACT.default_command_value:.2f}"
+    )
 
     agent_cfg = handle_deprecated_rsl_rl_cfg(agent_cfg, rsl_rl_version)
     cfg_dict = agent_cfg.to_dict()
@@ -192,24 +216,21 @@ def main():
 
     log_root = os.path.abspath(os.path.join("logs", "rsl_rl", agent_cfg.experiment_name))
     os.makedirs(log_root, exist_ok=True)
-    run_name = args.run_name if args.run_name else datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    run_name = args.run_name or datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     log_dir = os.path.join(log_root, run_name)
     os.makedirs(log_dir, exist_ok=True)
 
     print("Creating smooth standing PPO runner...")
     runner = OnPolicyRunner(env, cfg_dict, log_dir=log_dir, device=agent_cfg.device)
 
-    if args.checkpoint:
-        checkpoint_path = Path(args.checkpoint).expanduser().resolve()
-        if not checkpoint_path.is_file():
-            raise FileNotFoundError(f"Checkpoint does not exist: {checkpoint_path}")
+    checkpoint_path = resolve_checkpoint_path(args.checkpoint)
+    if checkpoint_path is not None:
         print(f"Loading checkpoint: {checkpoint_path}")
         runner.load(str(checkpoint_path))
 
     print("Starting smooth standing training...")
     runner.learn(num_learning_iterations=agent_cfg.max_iterations, init_at_random_ep_len=True)
     export_deployable_policy(runner, os.path.join(log_dir, "exported"))
-    print(f"Training run saved under: {log_dir}")
     env.close()
 
 
