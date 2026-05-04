@@ -236,10 +236,10 @@ class HumanoidStandSmoothS2REnv(DirectRLEnv):
         self._common_step_counter += 1
         self._raw_actions[:] = actions
         self._last_actions[:] = self._actions
-        self._clamped_actions[:] = torch.clamp(actions, -1.0, 1.0)
+        self._clamped_actions[:] = actions
 
         self._action_buffer = torch.roll(self._action_buffer, shifts=1, dims=1)
-        self._action_buffer[:, 0, :] = self._clamped_actions
+        self._action_buffer[:, 0, :] = actions
 
         delayed_actions = self._action_buffer[:, self._action_delay_steps, :]
         self._actions[:] = delayed_actions
@@ -264,6 +264,8 @@ class HumanoidStandSmoothS2REnv(DirectRLEnv):
             kp=kp.clone(),
             kd=kd.clone(),
             tau_ff=tau_ff.clone(),
+            kp_gains=kp.clone(),
+            kd_gains=kd.clone(),
         )
 
     def _apply_action(self) -> None:
