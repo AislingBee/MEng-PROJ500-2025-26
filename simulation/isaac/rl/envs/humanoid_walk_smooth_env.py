@@ -31,7 +31,7 @@ USD_PATH = Path(__file__).resolve().parents[2] / "assets" / "usd_generated" / "r
 class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
     decimation: int = CONTRACT.decimation
     episode_length_s: float = 10.0
-    action_delay_steps: int = 2
+    action_delay_steps: int = 1
 
     sim: SimulationCfg = SimulationCfg(dt=CONTRACT.sim_dt_s, render_interval=decimation)
     scene: InteractiveSceneCfg = InteractiveSceneCfg(
@@ -72,7 +72,7 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
 
     reward_scales = {
         "vel_track": 6.0,
-        "torso_forward": 0.45,
+        "torso_forward": 0.70,
         "upright": 1.60,
         "survival": 0.6,
         "pose": 0.03,
@@ -81,8 +81,8 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
         "swing_clearance": 0.12,
         "com_align": 3.0,
         "forward_step": 0.0,
-        "phase_single_stance": 0.50,
-        "phase_forward_step": 0.50,
+        "phase_single_stance": 0.65,
+        "phase_forward_step": 0.65,
         "ang_vel": 0.16,
         "joint_vel": 0.015,
         "action_rate": 0.065,
@@ -103,9 +103,9 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
         "foot_side": 1.8,
         "foot_centerline": 50.0,
         "pelvis_lateral": 3.0,
-        "step_x_asymmetry": 0.45,
-        "air_time_imbalance": 1.10,
-        "contact_time_imbalance": 1.10,
+        "step_x_asymmetry": 0.55,
+        "air_time_imbalance": 1.5,
+        "contact_time_imbalance": 1.5,
     }
 
     tilt_limit: float = 0.25
