@@ -12,7 +12,7 @@ from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
 
-from simulation.isaac.configuration.standing_s2r_policy_contract import (
+from simulation.isaac.configuration.stand_smooth_s2r_policy_contract import (
     CONTRACT,
     build_fixed_gains,
     build_standing_q,
