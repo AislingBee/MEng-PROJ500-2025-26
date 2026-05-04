@@ -81,7 +81,7 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
         "swing_clearance": 0.12,
         "com_align": 3.0,
         "forward_step": 0.0,
-        "phase_single_stance": 0.40,
+        "phase_single_stance": 0.50,
         "phase_forward_step": 0.50,
         "ang_vel": 0.16,
         "joint_vel": 0.015,
@@ -103,9 +103,9 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
         "foot_side": 1.8,
         "foot_centerline": 50.0,
         "pelvis_lateral": 3.0,
-        "step_x_asymmetry": 0.30,
-        "air_time_imbalance": 0.65,
-        "contact_time_imbalance": 0.65,
+        "step_x_asymmetry": 0.45,
+        "air_time_imbalance": 1.10,
+        "contact_time_imbalance": 1.10,
     }
 
     tilt_limit: float = 0.25
