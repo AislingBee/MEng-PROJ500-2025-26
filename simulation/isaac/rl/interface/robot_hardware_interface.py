@@ -173,6 +173,8 @@ class RobotHardwareInterface(BaseHardwareInterface):
                 raise ValueError(
                     f"Expected {self.num_joints} joint velocities, got {qd.numel()}"
                 )
+            signs = torch.as_tensor(self.cfg.joint_signs, dtype=torch.float32, device=self.device)
+            qd = signs * qd
             return torch.clamp(qd, -self.cfg.velocity_clip_rad_s, self.cfg.velocity_clip_rad_s)
 
         now_s = sample.timestamp_s if sample.timestamp_s is not None else time.monotonic()
@@ -203,6 +205,8 @@ class RobotHardwareInterface(BaseHardwareInterface):
             raise ValueError(
                 f"Expected {self.num_joints} joint efforts, got {tau.numel()}"
             )
+        signs = torch.as_tensor(self.cfg.joint_signs, dtype=torch.float32, device=self.device)
+        tau = signs * tau
         return torch.clamp(tau, -self.cfg.effort_clip_nm, self.cfg.effort_clip_nm)
 
     def _projected_gravity_b(self, sample: RobotStateSample) -> torch.Tensor:
