@@ -674,6 +674,7 @@ class RcuUdpBridge(Node):
         missing = [mid for mid in self._expected_online_motor_ids if mid not in online_ids]
         if not missing:
             self._startup_gate_ready = True
+            self._scan_motor_can_ids = False
             self.get_logger().info(
                 "Startup gate released: all expected motor IDs online "
                 f"{self._expected_online_motor_ids}"
