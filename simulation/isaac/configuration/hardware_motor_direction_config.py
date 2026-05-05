@@ -11,7 +11,7 @@ MOTOR_DIRECTION_SIGNS: dict[str, float] = {
     "pelvis_link_l_hip_pitch_joint": +1.0,
     "left_knee_joint": +1.0,
     "left_ankle_pitch_joint": -1.0,
-    "left_ankle_roll_joint": +1.0,
+    "left_ankle_roll_joint": -1.0,
 
     # Right leg
     "pelvis_link_r_yaw_joint": +1.0,
