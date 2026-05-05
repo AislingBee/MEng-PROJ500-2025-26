@@ -25,7 +25,7 @@ from simulation.isaac.rl.interface.robot_hardware_interface import (
 Tensor = torch.Tensor
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SMOOTH_STAND_LOG_ROOT = REPO_ROOT / "logs" / "rsl_rl" / "humanoid_stand_smooth_s2r"
-DEFAULT_SMOOTH_STAND_POLICY_PATH = r"hardware\policy\standing_smooth_policy.pt"
+DEFAULT_SMOOTH_STAND_POLICY_PATH = r"hardware\policy\standing_policy.pt"
 
 
 def rad_to_encoder_counts(q_rad: list[float]) -> list[int]:
