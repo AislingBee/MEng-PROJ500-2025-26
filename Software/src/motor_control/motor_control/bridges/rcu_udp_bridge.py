@@ -471,6 +471,10 @@ class RcuUdpBridge(Node):
                 bus=self._motor_bus_map[mid], motor_id=mid,
                 enable=True, clear_fault=True)
 
+        # Clear command cache so the first TX tick after enable is always
+        # zero torque/gains — prevents stale commands from jogging motors.
+        self._clear_command_state()
+
     def _send_disable_all(self):
         """Disable active motors without asserting PDU fault (limp mode)."""
         self._send_motor_bus_ctrl_for_active_ids()
