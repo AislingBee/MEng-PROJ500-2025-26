@@ -497,7 +497,8 @@ class RcuUdpBridge(Node):
             retries=3,
             delay_s=0.005,
         )
-        self.get_logger().warn("FULL E-STOP: motors disabled + PDU fault asserted")
+        self._clear_command_state()
+        self.get_logger().warn("FULL E-STOP: motors disabled + PDU fault asserted + command state cleared")
 
     # -----------------------------------------------------------------------
     # Services
@@ -724,6 +725,15 @@ class RcuUdpBridge(Node):
         self._csv_file.flush()
 
     # -----------------------------------------------------------------------
+    def _clear_command_state(self):
+        """Zero all gains and torques in the command state cache."""
+        with self._cmd_lock:
+            for mid in self._cmd_state:
+                self._cmd_state[mid]["vel_rads"] = 0.0
+                self._cmd_state[mid]["torque_nm"] = 0.0
+                self._cmd_state[mid]["kp"] = 0.0
+                self._cmd_state[mid]["kd"] = 0.0
+
     # Shutdown
     # -----------------------------------------------------------------------
     def destroy_node(self):
@@ -734,6 +744,7 @@ class RcuUdpBridge(Node):
             self._send_disable_all()
         except Exception:
             pass
+        self._clear_command_state()
         try:
             self._csv_file.close()
         except Exception:
