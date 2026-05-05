@@ -127,6 +127,16 @@ class HumanoidWalkSmoothEnvCfg(DirectRLEnvCfg):
     reset_joint_vel_noise: float = 0.03
     reward_debug_interval: int = 100
 
+    # Push-force curriculum scaffold.  Keep disabled until flat-ground walking is stable.
+    enable_push_curriculum: bool = False
+    push_start_step: int = 300000
+    push_interval_steps: int = 600
+    push_probability: float = 0.20
+    push_velocity_xy_initial: float = 0.03
+    push_velocity_xy_max: float = 0.50
+    push_velocity_xy_increment_factor: float = 1.15
+    push_velocity_xy_decrement: float = 0.05
+
 
 class HumanoidWalkSmoothEnv(DirectRLEnv):
     cfg: HumanoidWalkSmoothEnvCfg
@@ -228,6 +238,10 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
         self._right_air_steps = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
         self._left_contact_steps = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
         self._right_contact_steps = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
+        self._last_terminated = torch.zeros(self.num_envs, device=self.device, dtype=torch.bool)
+        self._last_time_out = torch.zeros(self.num_envs, device=self.device, dtype=torch.bool)
+        self._last_push_curriculum_step = 0
+        self._current_push_velocity_xy = float(self.cfg.push_velocity_xy_initial)
 
         self._root_to_imu_quat = torch.tensor([1.0, 0.0, 0.0, 0.0], dtype=torch.float32, device=self.device)
         self._hardware = IsaacHardwareInterface(
@@ -309,6 +323,7 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
         delayed_actions = self._action_buffer[:, self._action_delay_steps, :]
         self._actions[:] = delayed_actions
         self._action_rate[:] = delayed_actions - self._last_actions
+        self._apply_random_pushes()
 
     def _build_control_packet(self, env_ids: Sequence[int] | None = None) -> ControlPacket:
         if env_ids is None:
@@ -797,6 +812,7 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
                 f"saturation_pct: {diag['action_saturation_pct']:.2f}% | "
                 f"raw_abs_mean: {diag['raw_action_abs_mean']:.3f} | "
                 f"q_des_min/max: {diag['q_des_min']:+.3f}/{diag['q_des_max']:+.3f} | "
+                f"push_max: {self._current_push_velocity_xy:.2f} | "
                 f"total_reward: {reward.mean().item():.4f}"
             )
 
@@ -820,13 +836,69 @@ class HumanoidWalkSmoothEnv(DirectRLEnv):
 
         terminated = over_tilted | bad_state | body_hit_ground
         time_out = self.episode_length_buf >= self.max_episode_length - 1
+        self._last_terminated[:] = terminated
+        self._last_time_out[:] = time_out
         return terminated, time_out
+
+    def _update_push_curriculum(self, env_ids: torch.Tensor) -> None:
+        if not self.cfg.enable_push_curriculum:
+            return
+        if self._common_step_counter < self.cfg.push_start_step:
+            return
+        if self._common_step_counter - self._last_push_curriculum_step < self.cfg.push_interval_steps:
+            return
+
+        terminated_count = torch.sum(self._last_terminated[env_ids]).item()
+        timeout_count = torch.sum(self._last_time_out[env_ids]).item()
+
+        if terminated_count < timeout_count * 2:
+            if self._current_push_velocity_xy <= 0.0:
+                self._current_push_velocity_xy = 0.05
+            else:
+                self._current_push_velocity_xy *= self.cfg.push_velocity_xy_increment_factor
+            self._current_push_velocity_xy = min(self._current_push_velocity_xy, self.cfg.push_velocity_xy_max)
+        elif terminated_count > timeout_count / 2:
+            self._current_push_velocity_xy = max(
+                self._current_push_velocity_xy - self.cfg.push_velocity_xy_decrement,
+                0.0,
+            )
+
+        self._last_push_curriculum_step = self._common_step_counter
+        print(f"[smooth walk curriculum] push_velocity_xy -> {self._current_push_velocity_xy:.2f} m/s")
+
+    def _apply_random_pushes(self) -> None:
+        if not self.cfg.enable_push_curriculum:
+            return
+        if self._common_step_counter < self.cfg.push_start_step:
+            return
+        if self._current_push_velocity_xy <= 0.0:
+            return
+        if self._common_step_counter % self.cfg.push_interval_steps != 0:
+            return
+
+        push_mask = torch.rand(self.num_envs, device=self.device) < self.cfg.push_probability
+        if not push_mask.any():
+            return
+
+        env_ids = torch.nonzero(push_mask, as_tuple=False).flatten()
+        root_vel = self.robot.data.root_vel_w[env_ids].clone()
+        push = torch.zeros((len(env_ids), 2), device=self.device)
+
+        # Smaller forward/backward disturbance.
+        push[:, 0] = (2.0 * torch.rand(len(env_ids), device=self.device) - 1.0) * self._current_push_velocity_xy * 0.5
+
+        # Stronger left/right disturbance.
+        push[:, 1] = (2.0 * torch.rand(len(env_ids), device=self.device) - 1.0) * self._current_push_velocity_xy
+        root_vel[:, 0:2] += push
+        self.robot.write_root_velocity_to_sim(root_vel, env_ids)
 
     def _reset_idx(self, env_ids: Sequence[int] | None):
         if env_ids is None:
             env_ids = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
         else:
             env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
+
+        self._update_push_curriculum(env_ids)
 
         super()._reset_idx(env_ids)
 

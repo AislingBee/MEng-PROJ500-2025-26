@@ -14,7 +14,14 @@ import torch
 # Use exactly one active import.
 # Standing and walking use the same hardware interface.
 # The selected contract defines the policy observation layout.
-# from simulation.isaac.configuration.walking_s2r_policy_contract import (
+from simulation.isaac.configuration.walking_s2r_policy_contract import (
+    CONTRACT,
+    build_fixed_gains,
+    build_standing_q,
+)
+from simulation.isaac.configuration.hardware_motor_direction_config import motor_direction_tuple
+
+# from simulation.isaac.configuration.stand_smooth_s2r_policy_contract import (
 #     CONTRACT,
 #     build_fixed_gains,
 #     build_standing_q,
@@ -737,6 +744,7 @@ def main() -> None:
         joint_names=joint_names,
         encoder_offsets_rad=tuple(0.0 for _ in joint_names),
         joint_signs=tuple(1.0 for _ in joint_names),
+        motor_direction_signs=motor_direction_tuple(joint_names),
     )
 
     runner = ThorStartupThenPolicyRunner(
