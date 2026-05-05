@@ -35,8 +35,8 @@ Notes
 """
 
 from simulation.isaac.configuration.walking_actuator_config import (
-    ACTUATOR_SETTINGS,
-    build_per_joint_limits_and_gains,
+    WALKING_ACTUATOR_SETTINGS,
+    build_per_joint_walking_actuator_cfg,
 )
 
 
@@ -242,11 +242,11 @@ def main():
 
     actuators = {}
 
-    for group_name, cfg in ACTUATOR_SETTINGS.items():
+    for group_name, cfg in WALKING_ACTUATOR_SETTINGS.items():
         actuators[group_name] = ImplicitActuatorCfg(
             joint_names_expr=cfg["joint_names"],
-            effort_limit_sim=cfg["effort_limit"],
-            velocity_limit_sim=cfg["velocity_limit"],
+            effort_limit_sim=cfg.get("effort_limit_sim", cfg["effort_limit"]),
+            velocity_limit_sim=cfg.get("velocity_limit_sim", cfg["velocity_limit"]),
             stiffness=cfg["stiffness"],
             damping=cfg["damping"],
         )
@@ -275,12 +275,11 @@ def main():
 
     joint_names = robot.joint_names
 
-    (   
-        effort_limits_per_joint, 
-        velocity_limits_per_joint, 
-        stiffness_per_joint, 
-        damping_per_joint,
-    ) = build_per_joint_limits_and_gains(joint_names)
+    per_joint_cfg = build_per_joint_walking_actuator_cfg(joint_names)
+    effort_limits_per_joint = per_joint_cfg["effort_limit"]
+    velocity_limits_per_joint = per_joint_cfg["velocity_limit"]
+    stiffness_per_joint = per_joint_cfg["stiffness"]
+    damping_per_joint = per_joint_cfg["damping"]
 
 
     print("\n[RUNTIME JOINT GAINS]")
@@ -302,7 +301,7 @@ def main():
 
     print(f"[INFO] Loaded robot: {args.usd}")
     print(f"[INFO] Number of joints: {num_joints}")
-    print("[INFO] Per-joint actuator settings active from ACTUATOR_SETTINGS")
+    print("[INFO] Per-joint actuator settings active from WALKING_ACTUATOR_SETTINGS")
     print(f"[INFO] CSV output: {args.output_csv}")
 
     sample_effort = get_joint_efforts(robot)
