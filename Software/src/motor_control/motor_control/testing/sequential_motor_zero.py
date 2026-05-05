@@ -163,7 +163,15 @@ class SequentialMotorZero(Node):
             # Read the current position so we ramp from here, not from 0.0.
             # This prevents violent movement if the motor is far from encoder zero.
             rclpy.spin_once(self, timeout_sec=0.0)
-            q_start = self._latest_q.get(joint_name, 0.0)
+            if joint_name in self._latest_q:
+                q_start = self._latest_q[joint_name]
+            else:
+                self.get_logger().warn(
+                    f"  Motor {mid}: no feedback received for '{joint_name}'. "
+                    "It may be offline, not connected, or have a wrong CAN ID. "
+                    "Skipping — check bridge log for 'ENABLED but NOT OBSERVED'."
+                )
+                continue
 
             self.get_logger().info(
                 f"[{idx + 1}/{len(self._motor_ids)}]  Motor {mid}: {joint_name}"
