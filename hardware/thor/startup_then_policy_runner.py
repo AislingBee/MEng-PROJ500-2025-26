@@ -14,17 +14,17 @@ import torch
 # Use exactly one active import.
 # Standing and walking use the same hardware interface.
 # The selected contract defines the policy observation layout.
-from simulation.isaac.configuration.walking_s2r_policy_contract import (
-    CONTRACT,
-    build_fixed_gains,
-    build_standing_q,
-)
-
-# from simulation.isaac.configuration.stand_smooth_s2r_policy_contract import (
+# from simulation.isaac.configuration.walking_s2r_policy_contract import (
 #     CONTRACT,
 #     build_fixed_gains,
 #     build_standing_q,
 # )
+
+from simulation.isaac.configuration.stand_smooth_s2r_policy_contract import (
+    CONTRACT,
+    build_fixed_gains,
+    build_standing_q,
+)
 
 
 
@@ -48,7 +48,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_POLICY_PATH = (
     "hardware/policy/standing_policy.pt"
     if CONTRACT.obs_dim == 55 and CONTRACT.default_command_value == 0.0
-    else "hardware/policy/walking_policy.pt"
+    else "hardware/policy/standing_policy.pt"
 )
 
 MODE_STARTUP_RAMP = "STARTUP_RAMP"
