@@ -87,7 +87,14 @@ Stop with **Ctrl+C** before proceeding.
 
 ## 3. STAGE B — IMU frame validation
 
-With the RCU stack running (from Stage A or a fresh launch):
+With the RCU stack running (from Stage A or a fresh launch), the `imu_publisher`
+node prints a compact one-line summary to the terminal at **4 Hz** automatically:
+
+```
+  accel [g]   x:  +0.001  y:  +0.002  z:  -1.000     gyro [r/s]  x:  +0.000  y:  +0.000  z:  +0.000
+```
+
+You can also echo the topic directly:
 
 ```bash
 ros2 topic echo /imu0_remapped
@@ -95,15 +102,22 @@ ros2 topic echo /imu0_remapped
 
 With the robot **upright and stationary**, verify:
 
-| Field | Expected value |
-|---|---|
-| `linear_acceleration.x` | ≈ 0.0 |
-| `linear_acceleration.y` | ≈ 0.0 |
-| `linear_acceleration.z` | ≈ −9.81 |
-| `angular_velocity.*` | ≈ 0.0, 0.0, 0.0 |
+| Field | Expected value | Units |
+|---|---|---|
+| `linear_acceleration.x` | ≈ 0.0 | g |
+| `linear_acceleration.y` | ≈ 0.0 | g |
+| `linear_acceleration.z` | ≈ −1.0 | g |
+| `angular_velocity.*` | ≈ 0.0, 0.0, 0.0 | rad/s |
 
-If the gravity vector is wrong (e.g. `[0, 0, +9.81]` or on the wrong axis) stop and
-report to the simulation team — do not proceed to motor testing.
+> **Note:** Values are in **g-units** (not m/s²). The policy expects a unit gravity
+> vector in the range [−1, 1]. `z ≈ −1.0` is correct for an upright robot.
+
+**Tilt verification (x/y axes — do this once):**
+- Tilt robot **nose down** → `accel.x` should go **negative**
+- Tilt robot **right** → `accel.y` should go **negative**
+
+If the gravity vector is wrong (e.g. on the wrong axis or wrong sign) stop and
+update `imu_to_policy_frame` in `imu_publisher.py` before proceeding.
 
 ---
 
@@ -250,7 +264,7 @@ ros2 node list
 ## 8. Emergency stop
 
 ```bash
-# Software e-stop — disables all motors immediately
+# Software e-stop — disables all motors + clears command state (gains/torques zeroed)
 ros2 service call /rcu_motor_estop std_srvs/srv/SetBool "{data: false}"
 
 # Assert PDU fault (full power cut)
@@ -258,6 +272,9 @@ ros2 service call /rcu_pdu_fault std_srvs/srv/SetBool "{data: true}"
 ```
 
 > Always have the physical e-stop within reach during any motor test.
+
+The e-stop and a clean node shutdown (Ctrl+C) both zero all motor gains and
+torques in the command cache — motors will not resume stale commands if re-enabled.
 
 ---
 
