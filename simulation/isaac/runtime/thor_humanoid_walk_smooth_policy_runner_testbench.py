@@ -25,7 +25,7 @@ from simulation.isaac.rl.interface.robot_hardware_interface import (
 Tensor = torch.Tensor
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SMOOTH_WALK_LOG_ROOT = REPO_ROOT / "logs" / "rsl_rl" / "humanoid_walk_smooth"
-DEFAULT_SMOOTH_WALK_POLICY_PATH = r"hardware\policy\walking_smooth_policy.pt"
+DEFAULT_SMOOTH_WALK_POLICY_PATH = r"hardware\policy\walking_smooth_policy_200\walking_smooth_policy.pt"
 
 
 def rad_to_encoder_counts(q_rad: list[float]) -> list[int]:
