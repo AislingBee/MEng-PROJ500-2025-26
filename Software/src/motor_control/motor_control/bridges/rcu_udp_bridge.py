@@ -674,6 +674,15 @@ class RcuUdpBridge(Node):
                 "Startup gate released: all expected motor IDs online "
                 f"{self._expected_online_motor_ids}"
             )
+            # Immediately send a zero-torque packet so the first TX tick after
+            # gate release is always kp=0/kd=0/tau=0, regardless of what is
+            # already in the command cache.
+            with self._cmd_lock:
+                for mid in self._active_motor_ids:
+                    self._cmd_state[mid]["vel_rads"]  = 0.0
+                    self._cmd_state[mid]["torque_nm"] = 0.0
+                    self._cmd_state[mid]["kp"]        = 0.0
+                    self._cmd_state[mid]["kd"]        = 0.0
 
     def _publish_imu_fast(self, d: dict):
         """Publish decoded fast IMU data on /imu0 and /imu1."""

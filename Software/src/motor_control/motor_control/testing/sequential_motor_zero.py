@@ -107,6 +107,19 @@ class SequentialMotorZero(Node):
 
     # ------------------------------------------------------------------
     def run(self) -> None:
+        # Send one zero-torque packet to all motors before any ramp starts.
+        # This ensures motors receive a safe kp=0/kd=0/tau=0 command the
+        # moment they come up, rather than whatever was in the bridge cache.
+        all_names = [rp.MOTOR_JOINT_NAMES[mid] for mid in self._motor_ids]
+        self.get_logger().info("Sending zero-torque safety packet to all motors...")
+        self._publish(
+            all_names,
+            [0.0] * len(all_names),
+            [0.0] * len(all_names),
+            [0.0] * len(all_names),
+        )
+        time.sleep(self._period_s * 5)  # let a few TX cycles flush before ramping
+
         zeroed_names: list[str]   = []
         zeroed_q:     list[float] = []
 
