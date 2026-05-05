@@ -36,14 +36,14 @@ JOINT_FEEDBACK_SIGNS: dict[str, float] = {
     "pelvis_link_l_yaw_joint":          -1.0, # CAN ID 1  - Left yaw
     "pelvis_link_r_yaw_joint":          +1.0, # CAN ID 2  - Right yaw
 
-    "l_hip_yaw_link_l_pitch_joint":     +1.0, # CAN ID 3  - Left hip pitch
-    "r_hip_yaw_link_r_pitch_joint":     -1.0, # CAN ID 4  - Right hip pitch
+    "l_hip_yaw_link_l_pitch_joint":     -1.0, # CAN ID 3  - Left hip pitch
+    "r_hip_yaw_link_r_pitch_joint":     +1.0, # CAN ID 4  - Right hip pitch
 
     "l_hip_pitch_link_l_roll_joint":    +1.0, # CAN ID 5  - Left hip roll
     "r_hip_pitch_link_r_roll_joint":    -1.0, # CAN ID 6  - Right hip roll
 
-    "l_thigh_link_l_knee_joint":        +1.0, # CAN ID 7  - Left knee
-    "r_thigh_link_r_knee_joint":        -1.0, # CAN ID 8  - Right knee
+    "l_thigh_link_l_knee_joint":        -1.0, # CAN ID 7  - Left knee
+    "r_thigh_link_r_knee_joint":        +1.0, # CAN ID 8  - Right knee
 
     "l_shank_link_l_ankle_joint":       -1.0, # CAN ID 9  - Left ankle
     "r_shank_link_r_ankle_joint":       +1.0, # CAN ID 10 - Right ankle
