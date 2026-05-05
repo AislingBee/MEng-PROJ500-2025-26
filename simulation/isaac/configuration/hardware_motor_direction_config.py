@@ -48,8 +48,8 @@ JOINT_FEEDBACK_SIGNS: dict[str, float] = {
     "l_shank_link_l_ankle_joint":       +1.0, # CAN ID 9  - Left ankle
     "r_shank_link_r_ankle_joint":       -1.0, # CAN ID 10 - Right ankle
 
-    "l_ankle_link_l_foot_joint":        +1.0, # CAN ID 11 - Left foot roll
-    "r_ankle_link_r_foot_joint":        +1.0, # CAN ID 12 - Right foot roll
+    "l_ankle_link_l_foot_joint":        -1.0, # CAN ID 11 - Left foot roll
+    "r_ankle_link_r_foot_joint":        -1.0, # CAN ID 12 - Right foot roll
 }
 
 # DO NOT DELETE THIS COMMENTED SECTION!
