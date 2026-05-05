@@ -292,6 +292,7 @@ class ThorStartupThenPolicyRunner:
         # No joint-limit validation here: the ramp starts from the real motor
         # positions which may be outside policy limits. Validation runs once the
         # robot reaches STANDING_HOLD.
+        self._joint_pos_targets = q_des.detach().clone()
         return ControlPacket(
             joint_names=self._joint_names,
             q_des=q_des.clone(),
@@ -306,6 +307,7 @@ class ThorStartupThenPolicyRunner:
         q_des = self._standing_q.unsqueeze(0).clone()
         self._check_for_nan(q_des, "q_des")
         self._validate_joint_targets(q_des)
+        self._joint_pos_targets = q_des.detach().clone()
         return ControlPacket(
             joint_names=self._joint_names,
             q_des=q_des,
@@ -503,11 +505,11 @@ class ThorStartupThenPolicyRunner:
         if mode == "STARTUP_RAMP":
             kp_now = self._kp_startup
             kd_now = self._kd_startup
-            q_des_now = self._q_start if self._q_start is not None else q_actual
+            q_des_now = self._joint_pos_targets
         else:
             kp_now = self._kp_policy
             kd_now = self._kd_policy
-            q_des_now = self._standing_q
+            q_des_now = self._joint_pos_targets
 
         q_des_str   = " ".join(f"{v:+.3f}" for v in q_des_now.flatten().tolist())
         q_actual_str = " ".join(f"{v:+.3f}" for v in q_actual.flatten().tolist())
@@ -553,6 +555,15 @@ class ThorStartupThenPolicyRunner:
         q_start = startup_packet.joint_pos.to(self.device, dtype=torch.float32).clone()
         self._check_for_nan(q_start, "q_actual")
         self._q_start = q_start
+
+        initial_packet = self._build_startup_control_packet(q_start)
+        self.hardware.write_control_packet(initial_packet)
+        print(
+            "Startup q_des initialised from measured joint positions before ramp start: "
+            f"min={q_start.min().item():+.6f} rad, max={q_start.max().item():+.6f} rad.",
+            flush=True,
+        )
+
         self._ramp_start_time_s = time.monotonic()
 
         period_s = 1.0 / self.cfg.loop_hz
