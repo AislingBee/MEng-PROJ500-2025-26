@@ -422,6 +422,17 @@ class ThorStartupThenPolicyRunner:
         max_joint_velocity = torch.max(torch.abs(joint_vel)).item()
         return max_standing_error, max_joint_velocity
 
+    def _max_position_error_details(self, q_actual: Tensor, q_des: Tensor) -> tuple[float, str, float, float]:
+        position_errors = torch.abs(q_actual - q_des)
+        flat_joint_index = int(torch.argmax(position_errors).item())
+        joint_index = flat_joint_index % len(self._joint_names)
+        return (
+            float(position_errors.flatten()[flat_joint_index].item()),
+            self._joint_names[joint_index],
+            float(q_actual.flatten()[flat_joint_index].item()),
+            float(q_des.flatten()[flat_joint_index].item()),
+        )
+
     def _request_hold(self) -> None:
         with self._request_lock:
             self._pending_hold = True
@@ -594,10 +605,17 @@ class ThorStartupThenPolicyRunner:
                     # starts from the real motor positions which may be outside
                     # policy limits. Validation is deferred to STANDING_HOLD.
 
-                    max_position_error = torch.max(torch.abs(q_actual - q_des)).item()
+                    (
+                        max_position_error,
+                        worst_joint_name,
+                        worst_q_actual,
+                        worst_q_des,
+                    ) = self._max_position_error_details(q_actual, q_des)
                     if max_position_error > self.cfg.max_position_error_rad:
                         raise RuntimeError(
                             f"Startup aborted: max abs(q_actual - q_des)={max_position_error:.6f} rad "
+                            f"at joint {worst_joint_name} "
+                            f"(q_actual={worst_q_actual:+.6f} rad, q_des={worst_q_des:+.6f} rad) "
                             f"exceeds threshold {self.cfg.max_position_error_rad:.6f} rad"
                         )
 
@@ -614,10 +632,17 @@ class ThorStartupThenPolicyRunner:
                     self._check_for_nan(q_des, "q_des")
                     self._validate_joint_targets(q_des)
 
-                    max_position_error = torch.max(torch.abs(q_actual - q_des)).item()
+                    (
+                        max_position_error,
+                        worst_joint_name,
+                        worst_q_actual,
+                        worst_q_des,
+                    ) = self._max_position_error_details(q_actual, q_des)
                     if max_position_error > self.cfg.max_position_error_rad:
                         raise RuntimeError(
                             f"Startup hold aborted: max abs(q_actual - q_des)={max_position_error:.6f} rad "
+                            f"at joint {worst_joint_name} "
+                            f"(q_actual={worst_q_actual:+.6f} rad, q_des={worst_q_des:+.6f} rad) "
                             f"exceeds threshold {self.cfg.max_position_error_rad:.6f} rad"
                         )
 
