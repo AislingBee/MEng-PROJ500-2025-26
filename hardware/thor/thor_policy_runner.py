@@ -495,6 +495,7 @@ class ThorStandingPolicyRunner:
 
 _THOR_ROS_BRIDGE = None
 _THOR_ROS_INIT_DONE_HERE = False
+DEBUG_COMMAND_WRITER = False
 
 
 def _get_ros2_bridge():
@@ -559,6 +560,14 @@ def ros2_state_reader() -> RobotStateSample:
 
 
 def ros2_command_writer(msg: RobotCommandMessage) -> None:
+    if DEBUG_COMMAND_WRITER:
+        print(
+            "[CMD DEBUG] "
+            + " | ".join(
+                f"{name}:{q:+.3f}"
+                for name, q in zip(msg.joint_names, msg.q_des)
+            )
+        )
     _get_ros2_bridge().command_writer(msg)
 
 
