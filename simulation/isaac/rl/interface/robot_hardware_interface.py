@@ -63,7 +63,10 @@ class RobotInterfaceConfig:
     encoder_min: int = 0
     encoder_max: int = 16383
     encoder_offsets_rad: tuple[float, ...] | None = None
+    # joint_signs converts raw encoder readings into the policy/sim joint convention.
     joint_signs: tuple[float, ...] | None = None
+    # motor_direction_signs converts policy/sim commands into the real actuator command convention.
+    motor_direction_signs: tuple[float, ...] | None = None
     default_qd_des_rad_s: float = 0.0
     velocity_clip_rad_s: float = 25.0
     effort_clip_nm: float = 150.0
@@ -78,10 +81,22 @@ class RobotInterfaceConfig:
             self.encoder_offsets_rad = tuple(0.0 for _ in range(n))
         if self.joint_signs is None:
             self.joint_signs = tuple(1.0 for _ in range(n))
+        if self.motor_direction_signs is None:
+            self.motor_direction_signs = tuple(1.0 for _ in range(n))
         if len(self.encoder_offsets_rad) != n:
             raise ValueError("encoder_offsets_rad length must match joint_names")
         if len(self.joint_signs) != n:
             raise ValueError("joint_signs length must match joint_names")
+        if len(self.motor_direction_signs) != n:
+            raise ValueError("motor_direction_signs length must match joint_names")
+        invalid_joint_signs = [value for value in self.joint_signs if value not in (-1.0, +1.0)]
+        if invalid_joint_signs:
+            raise ValueError("joint_signs values must be +1.0 or -1.0")
+        invalid_motor_signs = [
+            value for value in self.motor_direction_signs if value not in (-1.0, +1.0)
+        ]
+        if invalid_motor_signs:
+            raise ValueError("motor_direction_signs values must be +1.0 or -1.0")
         if self.encoder_cpr <= 0:
             raise ValueError("encoder_cpr must be positive")
 
@@ -258,15 +273,23 @@ class RobotHardwareInterface(BaseHardwareInterface):
         tau_ff = self._flatten_control_tensor(packet.tau_ff, "tau_ff")
         kp_gains = self._flatten_control_tensor(packet.kp_gains, "kp_gains")
         kd_gains = self._flatten_control_tensor(packet.kd_gains, "kd_gains")
+        motor_signs = torch.as_tensor(
+            self.cfg.motor_direction_signs,
+            dtype=torch.float32,
+            device=self.device,
+        )
         qd_des = torch.full_like(q_des, fill_value=self.cfg.default_qd_des_rad_s)
+        q_des_hw = motor_signs * q_des
+        qd_des_hw = motor_signs * qd_des
+        tau_ff_hw = motor_signs * tau_ff
 
         msg = RobotCommandMessage(
             joint_names=tuple(packet.joint_names),
-            q_des=q_des.detach().cpu().tolist(),
-            qd_des=qd_des.detach().cpu().tolist(),
+            q_des=q_des_hw.detach().cpu().tolist(),
+            qd_des=qd_des_hw.detach().cpu().tolist(),
             kp=kp.detach().cpu().tolist(),
             kd=kd.detach().cpu().tolist(),
-            tau_ff=tau_ff.detach().cpu().tolist(),
+            tau_ff=tau_ff_hw.detach().cpu().tolist(),
             kp_gains=kp_gains.detach().cpu().tolist(),
             kd_gains=kd_gains.detach().cpu().tolist(),
         )

@@ -29,6 +29,7 @@ from simulation.isaac.configuration.walking_s2r_policy_contract import (
     build_fixed_gains,
     build_standing_q,
 )
+from simulation.isaac.configuration.hardware_motor_direction_config import motor_direction_tuple
 
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
@@ -589,6 +590,7 @@ def main() -> None:
         joint_names=joint_names,
         encoder_offsets_rad=tuple(0.0 for _ in joint_names),
         joint_signs=tuple(1.0 for _ in joint_names),
+        motor_direction_signs=motor_direction_tuple(joint_names),
     )
 
     rclpy.init()
