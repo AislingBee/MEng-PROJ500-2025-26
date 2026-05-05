@@ -77,7 +77,7 @@ class ThorStartupThenPolicyRunnerConfig:
     velocity_tolerance_rad_s: float = 0.10
     max_position_error_rad: float = 0.75
     send_standing_pose_on_exit: bool = True
-    debug_print_every_n_steps: int = 50
+    debug_print_every_n_steps: int = 200  # 1 s at 200 Hz
 
     def __post_init__(self) -> None:
         joint_count = len(self.joint_names)
@@ -486,6 +486,22 @@ class ThorStartupThenPolicyRunner:
             return
 
         max_standing_error, max_joint_velocity = self._standing_metrics(q_actual, joint_vel)
+
+        # Compact per-joint command summary (q_des and gains)
+        if mode == "STARTUP_RAMP":
+            kp_now = self._kp_startup
+            kd_now = self._kd_startup
+            q_des_now = self._q_start if self._q_start is not None else q_actual
+        else:
+            kp_now = self._kp_policy
+            kd_now = self._kd_policy
+            q_des_now = self._standing_q
+
+        q_des_str   = " ".join(f"{v:+.3f}" for v in q_des_now.flatten().tolist())
+        q_actual_str = " ".join(f"{v:+.3f}" for v in q_actual.flatten().tolist())
+        kp_str      = " ".join(f"{v:.1f}" for v in kp_now.flatten().tolist())
+        kd_str      = " ".join(f"{v:.2f}" for v in kd_now.flatten().tolist())
+
         action_debug = ""
         if (
             self._last_raw_actions_debug is not None
@@ -493,20 +509,22 @@ class ThorStartupThenPolicyRunner:
             and self._last_applied_actions_debug is not None
         ):
             action_debug = (
-                f" | raw_actions={self._last_raw_actions_debug.detach().cpu()} | "
-                f"clamped_actions={self._last_clamped_actions_debug.detach().cpu()} | "
-                f"applied_actions_after_delay={self._last_applied_actions_debug.detach().cpu()} | "
-                f"action_saturation_pct={self._last_action_saturation_pct:.2f}%"
+                f"\n  raw_actions        : {self._last_raw_actions_debug.detach().cpu()}"
+                f"\n  clamped_actions    : {self._last_clamped_actions_debug.detach().cpu()}"
+                f"\n  applied_actions    : {self._last_applied_actions_debug.detach().cpu()}"
+                f"\n  action_saturation  : {self._last_action_saturation_pct:.2f}%"
             )
         print(
-            "[THOR COMBINED DEBUG] "
-            f"step={self._step_count} | "
-            f"mode={mode} | "
-            f"alpha={alpha:.3f} | "
-            f"max standing error={max_standing_error:.6f} rad | "
-            f"max velocity={max_joint_velocity:.6f} rad/s | "
-            f"command value={float(self._commands[0, 0].item()):.3f}"
-            f"{action_debug}"
+            f"\n[THOR DEBUG] step={self._step_count}  mode={mode}  alpha={alpha:.3f}"
+            f"\n  q_des    [rad] : {q_des_str}"
+            f"\n  q_actual [rad] : {q_actual_str}"
+            f"\n  kp       [N/r] : {kp_str}"
+            f"\n  kd     [Ns/r]  : {kd_str}"
+            f"\n  max pos error  : {max_standing_error:.4f} rad"
+            f"\n  max velocity   : {max_joint_velocity:.4f} rad/s"
+            f"\n  command value  : {float(self._commands[0, 0].item()):.3f}"
+            f"{action_debug}",
+            flush=True,
         )
 
     def send_standing_pose_once(self) -> None:

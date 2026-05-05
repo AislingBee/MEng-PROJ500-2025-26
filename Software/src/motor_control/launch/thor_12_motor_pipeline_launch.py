@@ -78,6 +78,7 @@ def generate_launch_description():
             "names_file": names_file,
             "wait_for_expected_online_ids": wait_for_expected_online_ids,
             "expected_online_motor_ids": expected_online_motor_ids,
+            "imu_print_hz": "0.0",  # IMU console output disabled in full pipeline
         }.items(),
     )
 
