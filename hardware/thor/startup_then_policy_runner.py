@@ -743,7 +743,12 @@ def main() -> None:
     hardware_cfg = RobotInterfaceConfig(
         joint_names=joint_names,
         encoder_offsets_rad=tuple(0.0 for _ in joint_names),
-        joint_signs=tuple(1.0 for _ in joint_names),
+        # joint_signs must mirror motor_direction_signs so that encoder readings
+        # are transformed into the same policy frame as the commanded targets.
+        # If motor_direction_signs[i] = -1 (command is flipped), the encoder
+        # reading for that joint must also be flipped (+1 * (-q_hw) = -q_hw
+        # would give the wrong frame; -1 * (-q_hw) = q_hw restores policy frame).
+        joint_signs=motor_direction_tuple(joint_names),
         motor_direction_signs=motor_direction_tuple(joint_names),
     )
 
