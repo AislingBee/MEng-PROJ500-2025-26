@@ -88,7 +88,6 @@ class ThorStartupThenPolicyRunnerConfig:
     position_tolerance_rad: float = 0.05
     velocity_tolerance_rad_s: float = 0.10
     max_position_error_rad: float = 0.75
-    startup_sample_count: int = 5
     send_standing_pose_on_exit: bool = True
     debug_print_every_n_steps: int = 200  # 1 s at 200 Hz
 
@@ -122,8 +121,6 @@ class ThorStartupThenPolicyRunnerConfig:
             raise ValueError("velocity_tolerance_rad_s must be non-negative")
         if self.max_position_error_rad <= 0.0:
             raise ValueError("max_position_error_rad must be positive")
-        if self.startup_sample_count <= 0:
-            raise ValueError("startup_sample_count must be positive")
         if self.max_command_value < 0.0:
             raise ValueError("max_command_value must be non-negative")
         if self.action_delay_steps < 0:
@@ -295,7 +292,6 @@ class ThorStartupThenPolicyRunner:
         # No joint-limit validation here: the ramp starts from the real motor
         # positions which may be outside policy limits. Validation runs once the
         # robot reaches STANDING_HOLD.
-        self._joint_pos_targets = q_des.detach().clone()
         return ControlPacket(
             joint_names=self._joint_names,
             q_des=q_des.clone(),
@@ -310,7 +306,6 @@ class ThorStartupThenPolicyRunner:
         q_des = self._standing_q.unsqueeze(0).clone()
         self._check_for_nan(q_des, "q_des")
         self._validate_joint_targets(q_des)
-        self._joint_pos_targets = q_des.detach().clone()
         return ControlPacket(
             joint_names=self._joint_names,
             q_des=q_des,
@@ -425,44 +420,6 @@ class ThorStartupThenPolicyRunner:
         max_joint_velocity = torch.max(torch.abs(joint_vel)).item()
         return max_standing_error, max_joint_velocity
 
-    def _max_position_error_details(
-        self, q_actual: Tensor, q_des: Tensor
-    ) -> tuple[float, int, str, float, float]:
-        position_errors = torch.abs(q_actual - q_des)
-        flat_joint_index = int(torch.argmax(position_errors).item())
-        joint_index = flat_joint_index % len(self._joint_names)
-        return (
-            float(position_errors.flatten()[flat_joint_index].item()),
-            joint_index,
-            self._joint_names[joint_index],
-            float(q_actual.flatten()[flat_joint_index].item()),
-            float(q_des.flatten()[flat_joint_index].item()),
-        )
-
-    def _read_startup_pose(self) -> Tensor:
-        q_samples = []
-        for _ in range(self.cfg.startup_sample_count):
-            packet = self.hardware.read_observation_packet()
-            q_sample = packet.joint_pos.to(self.device, dtype=torch.float32).clone()
-            self._check_for_nan(q_sample, "q_actual")
-            q_samples.append(q_sample)
-            time.sleep(1.0 / self.cfg.loop_hz)
-
-        q_start = q_samples[-1]
-        if len(q_samples) > 1:
-            q_stack = torch.cat(q_samples, dim=0)
-            startup_drift = torch.max(torch.abs(q_stack - q_start), dim=0).values
-            worst_drift_value = float(torch.max(startup_drift).item())
-            worst_drift_joint_index = int(torch.argmax(startup_drift).item())
-            print(
-                "Startup q_start latched from fresh observation samples: "
-                f"samples={len(q_samples)}, max_sample_drift={worst_drift_value:.6f} rad "
-                f"at joint {self._joint_names[worst_drift_joint_index]}.",
-                flush=True,
-            )
-
-        return q_start
-
     def _request_hold(self) -> None:
         with self._request_lock:
             self._pending_hold = True
@@ -546,11 +503,11 @@ class ThorStartupThenPolicyRunner:
         if mode == "STARTUP_RAMP":
             kp_now = self._kp_startup
             kd_now = self._kd_startup
-            q_des_now = self._joint_pos_targets
+            q_des_now = self._q_start if self._q_start is not None else q_actual
         else:
             kp_now = self._kp_policy
             kd_now = self._kd_policy
-            q_des_now = self._joint_pos_targets
+            q_des_now = self._standing_q
 
         q_des_str   = " ".join(f"{v:+.3f}" for v in q_des_now.flatten().tolist())
         q_actual_str = " ".join(f"{v:+.3f}" for v in q_actual.flatten().tolist())
@@ -589,25 +546,34 @@ class ThorStartupThenPolicyRunner:
             packet = self._build_startup_control_packet(self._standing_q.unsqueeze(0).clone())
         self.hardware.write_control_packet(packet)
 
+    def _send_zero_torque_hold(self, q_actual: Tensor) -> None:
+        """Send a single zero-gain packet at current joint positions to make motors compliant."""
+        zero_kp = torch.zeros_like(self._kp_startup)
+        zero_kd = torch.zeros_like(self._kd_startup)
+        packet = ControlPacket(
+            joint_names=self._joint_names,
+            q_des=q_actual.clone(),
+            kp=zero_kp,
+            kd=zero_kd,
+            tau_ff=torch.zeros_like(self._tau_ff),
+            kp_gains=zero_kp.clone(),
+            kd_gains=zero_kd.clone(),
+        )
+        self.hardware.write_control_packet(packet)
+
     def run(self, stop_event: threading.Event | None = None) -> None:
         print("Thor startup + policy runner keyboard commands: Enter/p=start policy, h=hold, x=exit")
 
-        q_start = self._read_startup_pose()
+        startup_packet = self.hardware.read_observation_packet()
+        q_start = startup_packet.joint_pos.to(self.device, dtype=torch.float32).clone()
+        self._check_for_nan(q_start, "q_actual")
         self._q_start = q_start
-
-        initial_packet = self._build_startup_control_packet(q_start)
-        self.hardware.write_control_packet(initial_packet)
-        print(
-            "Startup q_des initialised from measured joint positions before ramp start: "
-            f"min={q_start.min().item():+.6f} rad, max={q_start.max().item():+.6f} rad.",
-            flush=True,
-        )
-
         self._ramp_start_time_s = time.monotonic()
 
         period_s = 1.0 / self.cfg.loop_hz
         next_t = time.monotonic()
         should_send_exit_pose = True
+        _abort_q_actual: Tensor | None = None
 
         try:
             while stop_event is None or not stop_event.is_set():
@@ -633,19 +599,12 @@ class ThorStartupThenPolicyRunner:
                     # starts from the real motor positions which may be outside
                     # policy limits. Validation is deferred to STANDING_HOLD.
 
-                    (
-                        max_position_error,
-                        worst_joint_index,
-                        worst_joint_name,
-                        worst_q_actual,
-                        worst_q_des,
-                    ) = self._max_position_error_details(q_actual, q_des)
+                    max_position_error = torch.max(torch.abs(q_actual - q_des)).item()
                     if max_position_error > self.cfg.max_position_error_rad:
+                        _abort_q_actual = q_actual.clone()
+                        self._send_zero_torque_hold(q_actual)
                         raise RuntimeError(
                             f"Startup aborted: max abs(q_actual - q_des)={max_position_error:.6f} rad "
-                            f"at joint {worst_joint_name} "
-                            f"(q_start={self._q_start[0, worst_joint_index].item():+.6f} rad, "
-                            f"q_actual={worst_q_actual:+.6f} rad, q_des={worst_q_des:+.6f} rad) "
                             f"exceeds threshold {self.cfg.max_position_error_rad:.6f} rad"
                         )
 
@@ -662,19 +621,12 @@ class ThorStartupThenPolicyRunner:
                     self._check_for_nan(q_des, "q_des")
                     self._validate_joint_targets(q_des)
 
-                    (
-                        max_position_error,
-                        worst_joint_index,
-                        worst_joint_name,
-                        worst_q_actual,
-                        worst_q_des,
-                    ) = self._max_position_error_details(q_actual, q_des)
+                    max_position_error = torch.max(torch.abs(q_actual - q_des)).item()
                     if max_position_error > self.cfg.max_position_error_rad:
+                        _abort_q_actual = q_actual.clone()
+                        self._send_zero_torque_hold(q_actual)
                         raise RuntimeError(
                             f"Startup hold aborted: max abs(q_actual - q_des)={max_position_error:.6f} rad "
-                            f"at joint {worst_joint_name} "
-                            f"(q_start={self._q_start[0, worst_joint_index].item():+.6f} rad, "
-                            f"q_actual={worst_q_actual:+.6f} rad, q_des={worst_q_des:+.6f} rad) "
                             f"exceeds threshold {self.cfg.max_position_error_rad:.6f} rad"
                         )
 
@@ -703,7 +655,12 @@ class ThorStartupThenPolicyRunner:
             self._mode = MODE_EXIT
         finally:
             if should_send_exit_pose and self.cfg.send_standing_pose_on_exit:
-                self.send_standing_pose_once()
+                if _abort_q_actual is not None:
+                    # Already sent zero-torque before the raise; send once more in case
+                    # the bridge flushed the TX queue during exception handling.
+                    self._send_zero_torque_hold(_abort_q_actual)
+                else:
+                    self.send_standing_pose_once()
 
 
 def parse_args() -> argparse.Namespace:
@@ -772,12 +729,6 @@ def parse_args() -> argparse.Namespace:
         help="Abort if max abs(q_actual - q_des) exceeds this threshold during startup or hold.",
     )
     parser.add_argument(
-        "--startup-sample-count",
-        type=int,
-        default=5,
-        help="Number of fresh observation samples to read before latching startup q_des.",
-    )
-    parser.add_argument(
         "--debug-print-every-n-steps",
         type=int,
         default=50,
@@ -816,7 +767,6 @@ def main() -> None:
         position_tolerance_rad=args.position_tolerance_rad,
         velocity_tolerance_rad_s=args.velocity_tolerance_rad_s,
         max_position_error_rad=args.max_position_error_rad,
-        startup_sample_count=args.startup_sample_count,
         debug_print_every_n_steps=args.debug_print_every_n_steps,
     )
 
