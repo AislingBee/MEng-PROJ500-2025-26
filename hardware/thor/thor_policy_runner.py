@@ -87,6 +87,26 @@ class ThorPolicyRunnerConfig:
             raise ValueError("debug_print_every_n_steps must be positive")
 
 
+class DeployableObsNormalizer:
+    def __init__(self, normalizer_path: str | Path, device: str | torch.device = "cpu"):
+        self.device = torch.device(device)
+        self.path = Path(normalizer_path).expanduser().resolve()
+        self.normalizer = torch.jit.load(str(self.path), map_location=self.device)
+        self.normalizer.eval()
+
+    @torch.inference_mode()
+    def normalize(self, obs: Tensor) -> Tensor:
+        normalized_obs = self.normalizer(obs)
+        normalized_obs = torch.as_tensor(normalized_obs, dtype=torch.float32, device=self.device)
+        if normalized_obs.shape != obs.shape:
+            raise RuntimeError(
+                f"Observation normalizer returned shape {tuple(normalized_obs.shape)}, expected {tuple(obs.shape)}"
+            )
+        if torch.isnan(normalized_obs).any():
+            raise RuntimeError("NaN detected in normalized observations")
+        return normalized_obs
+
+
 class DeployablePolicy:
     """Loads a deployable actor module for inference.
 
@@ -99,10 +119,17 @@ class DeployablePolicy:
     not a full training checkpoint.
     """
 
-    def __init__(self, policy_path: str | Path, device: str | torch.device = "cpu"):
+    def __init__(
+        self,
+        policy_path: str | Path,
+        device: str | torch.device = "cpu",
+        obs_normalizer: DeployableObsNormalizer | None = None,
+    ):
         self.device = torch.device(device)
-        self.policy = self._load(policy_path)
+        self.path = Path(policy_path).expanduser().resolve()
+        self.policy = self._load(self.path)
         self.policy.eval()
+        self.obs_normalizer = obs_normalizer
 
     def _load(self, policy_path: str | Path):
         policy_path = str(policy_path)
@@ -131,6 +158,9 @@ class DeployablePolicy:
 
     @torch.inference_mode()
     def act(self, obs: Tensor) -> Tensor:
+        if self.obs_normalizer is not None:
+            obs = self.obs_normalizer.normalize(obs)
+
         out = self.policy({"policy": obs})
 
         if isinstance(out, dict):
