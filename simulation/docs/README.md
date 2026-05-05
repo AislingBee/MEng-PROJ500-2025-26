@@ -11,8 +11,6 @@ The simulation environment is built using NVIDIA Isaac Sim and is used to:
 All detailed documentation is maintained in Notion to support rapid iteration and collaborative development.  
 This repository provides a stable and version-controlled entry point.
 
-## Notion Documentation
-
 
 ## Repository Structure
 - `isaac/` – Robot models, assets, environments, and simulation scripts
