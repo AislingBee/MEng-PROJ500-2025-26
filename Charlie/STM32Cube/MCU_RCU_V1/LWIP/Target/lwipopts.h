@@ -56,12 +56,7 @@
 /*----- Value in opt.h for MEM_ALIGNMENT: 1 -----*/
 #define MEM_ALIGNMENT 4
 /*----- Default Value for MEM_SIZE: 1600 ---*/
-/* Increased from 4096: each pbuf_alloc(PBUF_RAM) for a telem/motor-FB/IMU
- * packet uses ~250-400 bytes.  The fast loop sends 3 packets per 5 ms burst
- * plus ARP queuing (up to 3 pbufs held by lwIP during ARP resolution).
- * 8192 gives comfortable headroom and prevents pbuf_alloc returning NULL
- * during arm/disarm network transients. */
-#define MEM_SIZE 8192
+#define MEM_SIZE 4096
 /*----- Default Value for H7 devices: 0x30004000 -----*/
 #define LWIP_RAM_HEAP_POINTER 0x30004000
 /*----- Value supported for H7 devices: 1 -----*/
