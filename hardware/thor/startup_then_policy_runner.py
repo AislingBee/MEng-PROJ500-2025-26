@@ -6,6 +6,7 @@ import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 
 import torch
 
@@ -13,17 +14,19 @@ import torch
 # Use exactly one active import.
 # Standing and walking use the same hardware interface.
 # The selected contract defines the policy observation layout.
-from simulation.isaac.configuration.standing_s2r_policy_contract import (
+from simulation.isaac.configuration.walking_s2r_policy_contract import (
     CONTRACT,
     build_fixed_gains,
     build_standing_q,
 )
 
-# from simulation.isaac.configuration.walking_s2r_policy_contract import (
+# from simulation.isaac.configuration.stand_smooth_s2r_policy_contract import (
 #     CONTRACT,
 #     build_fixed_gains,
 #     build_standing_q,
 # )
+
+
 
 from simulation.isaac.rl.interface.hardware_interface import ControlPacket, ObservationPacket
 from simulation.isaac.rl.interface.robot_hardware_interface import (
@@ -32,6 +35,7 @@ from simulation.isaac.rl.interface.robot_hardware_interface import (
 )
 
 from hardware.thor.thor_policy_runner import (
+    DeployableObsNormalizer,
     DeployablePolicy,
     _shutdown_ros2_bridge,
     ros2_command_writer,
@@ -40,6 +44,12 @@ from hardware.thor.thor_policy_runner import (
 
 
 Tensor = torch.Tensor
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_POLICY_PATH = (
+    "hardware/policy/standing_policy.pt"
+    if CONTRACT.obs_dim == 55 and CONTRACT.default_command_value == 0.0
+    else "hardware/policy/walking_policy.pt"
+)
 
 MODE_STARTUP_RAMP = "STARTUP_RAMP"
 MODE_STANDING_HOLD = "STANDING_HOLD"
@@ -50,6 +60,7 @@ MODE_EXIT = "EXIT"
 @dataclass
 class ThorStartupThenPolicyRunnerConfig:
     policy_path: str
+    obs_normalizer_path: str | None = None
     joint_names: tuple[str, ...] = CONTRACT.joint_names
     joint_lower_rad: tuple[float, ...] = CONTRACT.joint_lower_limits_rad
     joint_upper_rad: tuple[float, ...] = CONTRACT.joint_upper_limits_rad
@@ -123,7 +134,15 @@ class ThorStartupThenPolicyRunner:
             command_writer=command_writer,
             device=self.device,
         )
-        self.policy = DeployablePolicy(runner_cfg.policy_path, device=self.device)
+        self._policy_has_embedded_obs_normalizer = self._policy_embeds_obs_normalizer(
+            runner_cfg.policy_path
+        )
+        self.obs_normalizer = self._load_obs_normalizer()
+        self.policy = DeployablePolicy(
+            runner_cfg.policy_path,
+            device=self.device,
+            obs_normalizer=self.obs_normalizer,
+        )
 
         self._joint_names = list(runner_cfg.joint_names)
         self._standing_q = build_standing_q(device=self.device)
@@ -179,9 +198,56 @@ class ThorStartupThenPolicyRunner:
         self._last_applied_actions_debug: Tensor | None = None
         self._last_action_saturation_pct: float = 0.0
 
+        self._print_startup_summary()
+
     def set_command_value(self, command_value: float) -> None:
         clamped_value = min(max(float(command_value), 0.0), self.cfg.max_command_value)
         self._commands[0, 0] = clamped_value
+
+    def _policy_embeds_obs_normalizer(self, policy_path: str) -> bool:
+        try:
+            policy = torch.jit.load(str(Path(policy_path).expanduser().resolve()), map_location="cpu")
+        except Exception:
+            return False
+        actor = getattr(policy, "actor", None)
+        return actor is not None and hasattr(actor, "obs_normalizer")
+
+    def _resolve_obs_normalizer_path(self) -> str:
+        if self.cfg.obs_normalizer_path is not None:
+            return self.cfg.obs_normalizer_path
+        normalizer_name = getattr(CONTRACT, "obs_normalizer_artifact_name", "obs_normalizer.pt")
+        return str(Path(self.cfg.policy_path).expanduser().resolve().with_name(normalizer_name))
+
+    def _load_obs_normalizer(self) -> DeployableObsNormalizer | None:
+        if not getattr(CONTRACT, "use_obs_normalization", False):
+            return None
+        if self._policy_has_embedded_obs_normalizer:
+            return None
+
+        normalizer_path = self._resolve_obs_normalizer_path()
+        if not Path(normalizer_path).is_file():
+            if getattr(CONTRACT, "obs_normalizer_required", False):
+                raise RuntimeError(
+                    "Selected policy contract requires observation normalization, "
+                    f"but normalizer artifact was not found at: {normalizer_path}"
+                )
+            return None
+        return DeployableObsNormalizer(normalizer_path, device=self.device)
+
+    def _print_startup_summary(self) -> None:
+        normalizer_path = "None"
+        if self._policy_has_embedded_obs_normalizer:
+            normalizer_path = "embedded-in-policy"
+        elif self.obs_normalizer is not None:
+            normalizer_path = str(self.obs_normalizer.path)
+        print(
+            "[THOR STARTUP+POLICY] "
+            f"policy_path={self.policy.path} | "
+            f"use_obs_normalization={getattr(CONTRACT, 'use_obs_normalization', False)} | "
+            f"normalizer_path={normalizer_path} | "
+            f"observation_dim={CONTRACT.obs_dim} | "
+            f"action_dim={CONTRACT.action_dim}"
+        )
 
     def set_stand_mode(self) -> None:
         self.set_command_value(0.0)
@@ -549,8 +615,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--policy-path",
         type=str,
-        default="hardware/policy/standing_policy_200.pt",
+        default=DEFAULT_POLICY_PATH,
         help="Path to the deployable policy module.",
+    )
+    parser.add_argument(
+        "--obs-normalizer",
+        type=str,
+        default=None,
+        help="Optional path to obs_normalizer.pt. Defaults to a sibling of --policy-path.",
     )
     parser.add_argument("--device", type=str, default="cpu", help="Torch device for tensor operations.")
     parser.add_argument(
@@ -610,12 +682,22 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _resolve_repo_path(path_value: str | None) -> str | None:
+    if path_value is None:
+        return None
+    path = Path(path_value).expanduser()
+    if not path.is_absolute():
+        path = REPO_ROOT / path
+    return str(path.resolve())
+
+
 def main() -> None:
     args = parse_args()
     joint_names = CONTRACT.joint_names
 
     runner_cfg = ThorStartupThenPolicyRunnerConfig(
-        policy_path=args.policy_path,
+        policy_path=_resolve_repo_path(args.policy_path),
+        obs_normalizer_path=_resolve_repo_path(args.obs_normalizer),
         joint_names=joint_names,
         joint_lower_rad=CONTRACT.joint_lower_limits_rad,
         joint_upper_rad=CONTRACT.joint_upper_limits_rad,
