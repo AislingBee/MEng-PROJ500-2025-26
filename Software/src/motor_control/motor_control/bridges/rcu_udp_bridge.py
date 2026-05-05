@@ -62,7 +62,10 @@ from motor_control import rcu_protocol as rp
 # ---------------------------------------------------------------------------
 # IMU conversion constants (from rcu_protocol.py)
 # ---------------------------------------------------------------------------
-ACCEL_M_S2  = rp.IMU_ACCEL_SCALE * 9.80665  # → m/s²
+# decode_imu_fast already applies IMU_ACCEL_SCALE → values are in g-units.
+# The policy expects a unit gravity vector ([-1, 1] range), so no further
+# conversion is applied here. ACCEL_M_S2 is intentionally not used.
+# ACCEL_M_S2 = 9.80665  ← removed: would produce m/s² which the policy does not expect
 GYRO_RAD_S  = rp.IMU_GYRO_SCALE  * (math.pi / 180.0)  # → rad/s
 
 # ---------------------------------------------------------------------------
@@ -682,9 +685,9 @@ class RcuUdpBridge(Node):
             msg = Imu()
             msg.header.stamp = stamp
             msg.header.frame_id = "imu_link"
-            msg.linear_acceleration.x = float(accel_g[0]) * ACCEL_M_S2
-            msg.linear_acceleration.y = float(accel_g[1]) * ACCEL_M_S2
-            msg.linear_acceleration.z = float(accel_g[2]) * ACCEL_M_S2
+            msg.linear_acceleration.x = float(accel_g[0])  # g-units
+            msg.linear_acceleration.y = float(accel_g[1])  # g-units
+            msg.linear_acceleration.z = float(accel_g[2])  # g-units
             msg.angular_velocity.x = float(gyro_dps[0]) * GYRO_RAD_S
             msg.angular_velocity.y = float(gyro_dps[1]) * GYRO_RAD_S
             msg.angular_velocity.z = float(gyro_dps[2]) * GYRO_RAD_S
