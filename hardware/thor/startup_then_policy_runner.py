@@ -686,12 +686,15 @@ class ThorStartupThenPolicyRunner:
             self._mode = MODE_EXIT
         finally:
             if should_send_exit_pose and self.cfg.send_standing_pose_on_exit:
-                if _abort_q_actual is not None:
-                    # Already sent zero-torque before the raise; send once more in case
-                    # the bridge flushed the TX queue during exception handling.
-                    self._send_zero_torque_hold(_abort_q_actual)
-                else:
-                    self.send_standing_pose_once()
+                try:
+                    if _abort_q_actual is not None:
+                        # Already sent zero-torque before the raise; send once more in case
+                        # the bridge flushed the TX queue during exception handling.
+                        self._send_zero_torque_hold(_abort_q_actual)
+                    else:
+                        self.send_standing_pose_once()
+                except Exception as exc:
+                    print(f"[THOR] Warning: could not send exit pose (ROS2 context may be gone): {exc}")
 
 
 def parse_args() -> argparse.Namespace:
