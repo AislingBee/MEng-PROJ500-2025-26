@@ -12,8 +12,8 @@ STANDING_TARGETS_DEG = {
     "r_hip_pitch_link_r_roll_joint": 0.0,
     "l_thigh_link_l_knee_joint": 25.0,
     "r_thigh_link_r_knee_joint": 25.0,
-    "l_shank_link_l_ankle_joint": 0.0,
-    "r_shank_link_r_ankle_joint": 0.0,
+    "l_shank_link_l_ankle_joint": 90.0,
+    "r_shank_link_r_ankle_joint": 90.0,
     "l_ankle_link_l_foot_joint": 0.0,
     "r_ankle_link_r_foot_joint": 0.0,
 }
