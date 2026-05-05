@@ -62,7 +62,10 @@ from motor_control import rcu_protocol as rp
 # ---------------------------------------------------------------------------
 # IMU conversion constants (from rcu_protocol.py)
 # ---------------------------------------------------------------------------
-ACCEL_M_S2  = rp.IMU_ACCEL_SCALE * 9.80665  # → m/s²
+# decode_imu_fast already applies IMU_ACCEL_SCALE → values are in g-units.
+# The policy expects a unit gravity vector ([-1, 1] range), so no further
+# conversion is applied here. ACCEL_M_S2 is intentionally not used.
+# ACCEL_M_S2 = 9.80665  ← removed: would produce m/s² which the policy does not expect
 GYRO_RAD_S  = rp.IMU_GYRO_SCALE  * (math.pi / 180.0)  # → rad/s
 
 # ---------------------------------------------------------------------------
@@ -468,6 +471,10 @@ class RcuUdpBridge(Node):
                 bus=self._motor_bus_map[mid], motor_id=mid,
                 enable=True, clear_fault=True)
 
+        # Clear command cache so the first TX tick after enable is always
+        # zero torque/gains — prevents stale commands from jogging motors.
+        self._clear_command_state()
+
     def _send_disable_all(self):
         """Disable active motors without asserting PDU fault (limp mode)."""
         self._send_motor_bus_ctrl_for_active_ids()
@@ -497,7 +504,8 @@ class RcuUdpBridge(Node):
             retries=3,
             delay_s=0.005,
         )
-        self.get_logger().warn("FULL E-STOP: motors disabled + PDU fault asserted")
+        self._clear_command_state()
+        self.get_logger().warn("FULL E-STOP: motors disabled + PDU fault asserted + command state cleared")
 
     # -----------------------------------------------------------------------
     # Services
@@ -670,6 +678,15 @@ class RcuUdpBridge(Node):
                 "Startup gate released: all expected motor IDs online "
                 f"{self._expected_online_motor_ids}"
             )
+            # Immediately send a zero-torque packet so the first TX tick after
+            # gate release is always kp=0/kd=0/tau=0, regardless of what is
+            # already in the command cache.
+            with self._cmd_lock:
+                for mid in self._active_motor_ids:
+                    self._cmd_state[mid]["vel_rads"]  = 0.0
+                    self._cmd_state[mid]["torque_nm"] = 0.0
+                    self._cmd_state[mid]["kp"]        = 0.0
+                    self._cmd_state[mid]["kd"]        = 0.0
 
     def _publish_imu_fast(self, d: dict):
         """Publish decoded fast IMU data on /imu0 and /imu1."""
@@ -681,9 +698,9 @@ class RcuUdpBridge(Node):
             msg = Imu()
             msg.header.stamp = stamp
             msg.header.frame_id = "imu_link"
-            msg.linear_acceleration.x = float(accel_g[0]) * ACCEL_M_S2
-            msg.linear_acceleration.y = float(accel_g[1]) * ACCEL_M_S2
-            msg.linear_acceleration.z = float(accel_g[2]) * ACCEL_M_S2
+            msg.linear_acceleration.x = float(accel_g[0])  # g-units
+            msg.linear_acceleration.y = float(accel_g[1])  # g-units
+            msg.linear_acceleration.z = float(accel_g[2])  # g-units
             msg.angular_velocity.x = float(gyro_dps[0]) * GYRO_RAD_S
             msg.angular_velocity.y = float(gyro_dps[1]) * GYRO_RAD_S
             msg.angular_velocity.z = float(gyro_dps[2]) * GYRO_RAD_S
@@ -724,6 +741,15 @@ class RcuUdpBridge(Node):
         self._csv_file.flush()
 
     # -----------------------------------------------------------------------
+    def _clear_command_state(self):
+        """Zero all gains and torques in the command state cache."""
+        with self._cmd_lock:
+            for mid in self._cmd_state:
+                self._cmd_state[mid]["vel_rads"] = 0.0
+                self._cmd_state[mid]["torque_nm"] = 0.0
+                self._cmd_state[mid]["kp"] = 0.0
+                self._cmd_state[mid]["kd"] = 0.0
+
     # Shutdown
     # -----------------------------------------------------------------------
     def destroy_node(self):
@@ -734,6 +760,7 @@ class RcuUdpBridge(Node):
             self._send_disable_all()
         except Exception:
             pass
+        self._clear_command_state()
         try:
             self._csv_file.close()
         except Exception:

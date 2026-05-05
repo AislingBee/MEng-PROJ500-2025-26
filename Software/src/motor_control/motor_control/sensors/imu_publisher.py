@@ -13,25 +13,28 @@ def imu_to_policy_frame(v_imu):
     """
     Convert IMU-frame vector into policy/root frame.
 
-    IMU frame (from CAD/datasheet):
-        +X = robot +X
-        +Y = robot +Z
-        +Z = robot -Y
+    Observed hardware orientation (verified from live data, upright stationary robot):
+        IMU +Z points up (robot +Z).  Gravity reaction appears on IMU +Z ≈ +1.0 g.
+        IMU +X and +Y are forward/left — not yet verified by axis-tilt test.
 
-    Mapping:
-        policy_x = -imu_z
-        policy_y =  imu_x
-        policy_z = -imu_y
+    Mapping (z confirmed, x/y pending physical tilt verification):
+        policy_x =  imu_x
+        policy_y =  imu_y
+        policy_z = -imu_z
 
     Validation (upright, stationary robot):
-        gravity_b  ≈ [0, 0, -1]
-        gyro_b     ≈ [0, 0,  0]
+        linear_acceleration ≈ [0, 0, -1]  (g-units)
+        angular_velocity    ≈ [0, 0,  0]  (rad/s)
+
+    NOTE: The original CAD spec (IMU +Y = robot +Z) was incorrect. Live data
+    confirmed IMU +Z is the up axis. If x/y axes are found to be swapped or
+    inverted during tilt testing, update the x/y terms here.
     """
     x, y, z = float(v_imu[0]), float(v_imu[1]), float(v_imu[2])
     return (
-        -z,
          x,
-        -y,
+         y,
+        -z,
     )
 
 
@@ -53,12 +56,24 @@ class ImuPublisher(Node):
         self.imu_topic = self.get_parameter('imu_topic').value
         self.frame_id  = self.get_parameter('frame_id').value
 
+        self.declare_parameter('print_hz', 4.0)
+        print_hz = float(self.get_parameter('print_hz').value)
+
         self.publisher  = self.create_publisher(Imu, self.imu_topic, 10)
         self.subscriber = self.create_subscription(
             Imu, rcu_imu_topic, self._imu_callback, 10)
 
+        self._last_accel = (0.0, 0.0, 0.0)
+        self._last_gyro  = (0.0, 0.0, 0.0)
+        if print_hz > 0.0:
+            self.create_timer(1.0 / print_hz, self._print_tick)
+
         self.get_logger().info(
             f'ImuPublisher ready: {rcu_imu_topic} → remap → {self.imu_topic}'
+        )
+        self.get_logger().info(
+            'Printing remapped IMU at %.1f Hz  '
+            '(upright target: accel=[0.00, 0.00, -1.00]  gyro=[0.00, 0.00, 0.00])' % print_hz
         )
 
     # ------------------------------------------------------------------
@@ -95,7 +110,19 @@ class ImuPublisher(Node):
         msg.angular_velocity_covariance    = raw.angular_velocity_covariance
         msg.linear_acceleration_covariance = raw.linear_acceleration_covariance
 
+        self._last_accel = (ax, ay, az)
+        self._last_gyro  = (gx, gy, gz)
         self.publisher.publish(msg)
+
+    # ------------------------------------------------------------------
+    def _print_tick(self) -> None:
+        ax, ay, az = self._last_accel
+        gx, gy, gz = self._last_gyro
+        print(
+            f'  accel [g]   x: {ax:+7.3f}  y: {ay:+7.3f}  z: {az:+7.3f}'
+            f'     gyro [r/s]  x: {gx:+7.3f}  y: {gy:+7.3f}  z: {gz:+7.3f}',
+            flush=True,
+        )
 
 
 def main(args=None):

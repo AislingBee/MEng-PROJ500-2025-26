@@ -64,6 +64,7 @@ def generate_launch_description():
     names_file = LaunchConfiguration("names_file", default="joint_limits_config.json")
     feedback_all_logging_info = LaunchConfiguration("feedback_all_logging_info", default="False")
     imu_topic = LaunchConfiguration("imu_topic", default="imu0_remapped")
+    imu_print_hz = LaunchConfiguration("imu_print_hz", default="4.0")
     observation_topic = LaunchConfiguration("observation_topic", default="robot_observation")
     observation_all_logging_info = LaunchConfiguration("observation_all_logging_info", default="False")
     observation_log_hz = LaunchConfiguration("observation_log_hz", default="2.0")
@@ -124,6 +125,9 @@ def generate_launch_description():
         DeclareLaunchArgument("imu_topic",
             default_value="imu0_remapped",
             description="IMU topic consumed by robot_observation_bridge"),
+        DeclareLaunchArgument("imu_print_hz",
+            default_value="4.0",
+            description="Rate at which imu_publisher prints live accel/gyro to terminal (0 to disable)"),
         DeclareLaunchArgument("observation_topic",
             default_value="robot_observation",
             description="Output topic for RobotObservation messages"),
@@ -187,6 +191,7 @@ def generate_launch_description():
                 "rcu_imu_topic": "imu0",
                 "imu_topic":     imu_topic,
                 "frame_id":      "imu_link",
+                "print_hz":      imu_print_hz,
             }],
         ),
 
