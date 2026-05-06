@@ -1,0 +1,217 @@
+PAD Specification File
+***************************
+
+PART TYPE:        LCMXO2-640HC
+Performance Grade:      5
+PACKAGE:          QFN48
+Package Status:                     Final          Version 1.39
+
+Wed May 06 21:42:33 2026
+
+Pinout by Port Name:
++------------------+----------+---------------+-------+-----------+-----------+----------------------------------------------------+
+| Port Name        | Pin/Bank | Buffer Type   | Site  | PG Enable | BC Enable | Properties                                         |
++------------------+----------+---------------+-------+-----------+-----------+----------------------------------------------------+
+| ARM_PERMIT       | 3/3      | LVCMOS33_OUT  | PL2B  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| COMPUTE_EN       | 18/2     | LVCMOS33_OUT  | PB6C  |           |           | DRIVE:8mA SLEW:SLOW                                |
+| DUMP_EN          | 5/3      | LVCMOS33_OUT  | PL2D  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| ESTOP_OK         | 31/1     | LVCMOS33_IN   | PR6D  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| FAULT_CODE[0]    | 7/3      | LVCMOS33_OUT  | PL3A  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| FAULT_CODE[1]    | 8/3      | LVCMOS33_OUT  | PL3B  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| FAULT_CODE[2]    | 9/3      | LVCMOS33_OUT  | PL5A  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| FAULT_CODE[3]    | 10/3     | LVCMOS33_OUT  | PL5B  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| FAULT_LATCH      | 21/2     | LVCMOS33_OUT  | PB10D |           |           | DRIVE:4mA SLEW:SLOW                                |
+| FB_CLOSED        | 32/1     | LVCMOS33_IN   | PR6C  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| K_EN             | 16/2     | LVCMOS33_OUT  | PB6A  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| K_SEL            | 17/2     | LVCMOS33_OUT  | PB6B  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| MCU_ALIVE        | 40/0     | LVCMOS33_IN   | PT10D |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| MCU_CMD_ARM      | 38/0     | LVCMOS33_IN   | PT11C |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| MCU_CMD_FAULT    | 37/0     | LVCMOS33_IN   | PT11D |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| MOTOR_EN         | 19/2     | LVCMOS33_OUT  | PB6D  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| OV               | 33/1     | LVCMOS33_IN   | PR5D  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| OVUV_OK          | 2/3      | LVCMOS33_OUT  | PL2A  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| PRECHARGE_LATCH  | 20/2     | LVCMOS33_OUT  | PB10C |           |           | DRIVE:4mA SLEW:SLOW                                |
+| PRECHARGE_OK     | 36/1     | LVCMOS33_IN   | PR3C  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| PRECHARGE_REQ    | 4/3      | LVCMOS33_OUT  | PL2C  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| SPARE_OUT_0      | 14/2     | LVCMOS33_OUT  | PB4A  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| SPARE_OUT_1      | 15/2     | LVCMOS33_OUT  | PB4B  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| STATE_CODE[0]    | 11/3     | LVCMOS33_OUT  | PL6A  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| STATE_CODE[1]    | 12/3     | LVCMOS33_OUT  | PL6B  |           |           | DRIVE:4mA SLEW:SLOW                                |
+| SW_ARM           | 27/1     | LVCMOS33_IN   | PR7C  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| SW_COMPUTE       | 29/1     | LVCMOS33_IN   | PR7A  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| SW_REMOTE_ARM    | 26/1     | LVCMOS33_IN   | PR7D  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| SW_REMOTE_DISARM | 24/2     | LVCMOS33_IN   | PB14D |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| SW_RST_FAULT     | 28/1     | LVCMOS33_IN   | PR7B  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| UV               | 34/1     | LVCMOS33_IN   | PR5C  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| VBUS_OV          | 35/1     | LVCMOS33_IN   | PR3D  |           |           | CLAMP:ON HYSTERESIS:SMALL                          |
+| i2c1_scl         | 43/0     | LVCMOS33_BIDI | PT9C  |           |           | DRIVE:8mA HYSTERESIS:SMALL OPENDRAIN:ON SLEW:SLOW  |
+| i2c1_sda         | 42/0     | LVCMOS33_BIDI | PT9D  |           |           | DRIVE:8mA HYSTERESIS:SMALL OPENDRAIN:ON SLEW:SLOW  |
++------------------+----------+---------------+-------+-----------+-----------+----------------------------------------------------+
+
+Vccio by Bank:
++------+-------+
+| Bank | Vccio |
++------+-------+
+| 0    | 3.3V  |
+| 1    | 3.3V  |
+| 2    | 3.3V  |
+| 3    | 3.3V  |
++------+-------+
+
+Vref by Bank:
++------+-----+-----------------+---------+
+| Vref | Pin | Bank # / Vref # | Load(s) |
++------+-----+-----------------+---------+
++------+-----+-----------------+---------+
+
+Pinout by Pin Number:
++----------+-----------------------+------------+---------------+-------+---------------+-----------+-----------+
+| Pin/Bank | Pin Info              | Preference | Buffer Type   | Site  | Dual Function | PG Enable | BC Enable |
++----------+-----------------------+------------+---------------+-------+---------------+-----------+-----------+
+| 2/3      | OVUV_OK               | LOCATED    | LVCMOS33_OUT  | PL2A  |               |           |           |
+| 3/3      | ARM_PERMIT            | LOCATED    | LVCMOS33_OUT  | PL2B  |               |           |           |
+| 4/3      | PRECHARGE_REQ         | LOCATED    | LVCMOS33_OUT  | PL2C  | PCLKT3_2      |           |           |
+| 5/3      | DUMP_EN               | LOCATED    | LVCMOS33_OUT  | PL2D  | PCLKC3_2      |           |           |
+| 7/3      | FAULT_CODE[0]         | LOCATED    | LVCMOS33_OUT  | PL3A  |               |           |           |
+| 8/3      | FAULT_CODE[1]         | LOCATED    | LVCMOS33_OUT  | PL3B  |               |           |           |
+| 9/3      | FAULT_CODE[2]         | LOCATED    | LVCMOS33_OUT  | PL5A  | PCLKT3_1      |           |           |
+| 10/3     | FAULT_CODE[3]         | LOCATED    | LVCMOS33_OUT  | PL5B  | PCLKC3_1      |           |           |
+| 11/3     | STATE_CODE[0]         | LOCATED    | LVCMOS33_OUT  | PL6A  |               |           |           |
+| 12/3     | STATE_CODE[1]         | LOCATED    | LVCMOS33_OUT  | PL6B  |               |           |           |
+| 14/2     | SPARE_OUT_0           | LOCATED    | LVCMOS33_OUT  | PB4A  | CSSPIN        |           |           |
+| 15/2     | SPARE_OUT_1           | LOCATED    | LVCMOS33_OUT  | PB4B  |               |           |           |
+| 16/2     | K_EN                  | LOCATED    | LVCMOS33_OUT  | PB6A  | MCLK/CCLK     |           |           |
+| 17/2     | K_SEL                 | LOCATED    | LVCMOS33_OUT  | PB6B  | SO/SPISO      |           |           |
+| 18/2     | COMPUTE_EN            | LOCATED    | LVCMOS33_OUT  | PB6C  | PCLKT2_0      |           |           |
+| 19/2     | MOTOR_EN              | LOCATED    | LVCMOS33_OUT  | PB6D  | PCLKC2_0      |           |           |
+| 20/2     | PRECHARGE_LATCH       | LOCATED    | LVCMOS33_OUT  | PB10C | PCLKT2_1      |           |           |
+| 21/2     | FAULT_LATCH           | LOCATED    | LVCMOS33_OUT  | PB10D | PCLKC2_1      |           |           |
+| 23/2     |     unused, PULL:DOWN |            |               | PB14C | SN            |           |           |
+| 24/2     | SW_REMOTE_DISARM      | LOCATED    | LVCMOS33_IN   | PB14D | SI/SISPI      |           |           |
+| 26/1     | SW_REMOTE_ARM         | LOCATED    | LVCMOS33_IN   | PR7D  |               |           |           |
+| 27/1     | SW_ARM                | LOCATED    | LVCMOS33_IN   | PR7C  |               |           |           |
+| 28/1     | SW_RST_FAULT          | LOCATED    | LVCMOS33_IN   | PR7B  |               |           |           |
+| 29/1     | SW_COMPUTE            | LOCATED    | LVCMOS33_IN   | PR7A  |               |           |           |
+| 31/1     | ESTOP_OK              | LOCATED    | LVCMOS33_IN   | PR6D  |               |           |           |
+| 32/1     | FB_CLOSED             | LOCATED    | LVCMOS33_IN   | PR6C  |               |           |           |
+| 33/1     | OV                    | LOCATED    | LVCMOS33_IN   | PR5D  | PCLKC1_0      |           |           |
+| 34/1     | UV                    | LOCATED    | LVCMOS33_IN   | PR5C  | PCLKT1_0      |           |           |
+| 35/1     | VBUS_OV               | LOCATED    | LVCMOS33_IN   | PR3D  |               |           |           |
+| 36/1     | PRECHARGE_OK          | LOCATED    | LVCMOS33_IN   | PR3C  |               |           |           |
+| 37/0     | MCU_CMD_FAULT         | LOCATED    | LVCMOS33_IN   | PT11D | DONE          |           |           |
+| 38/0     | MCU_CMD_ARM           | LOCATED    | LVCMOS33_IN   | PT11C | INITN         |           |           |
+| 40/0     | MCU_ALIVE             | LOCATED    | LVCMOS33_IN   | PT10D | PROGRAMN      |           |           |
+| 41/0     |     unused, PULL:DOWN |            |               | PT10C | JTAGENB       |           |           |
+| 42/0     | i2c1_sda              |            | LVCMOS33_BIDI | PT9D  | SDA/PCLKC0_0  |           |           |
+| 43/0     | i2c1_scl              |            | LVCMOS33_BIDI | PT9C  | SCL/PCLKT0_0  |           |           |
+| 44/0     | Reserved: sysCONFIG   |            |               | PT7D  | TMS           |           |           |
+| 45/0     | Reserved: sysCONFIG   |            |               | PT7C  | TCK           |           |           |
+| 47/0     | Reserved: sysCONFIG   |            |               | PT7B  | TDI           |           |           |
+| 48/0     | Reserved: sysCONFIG   |            |               | PT7A  | TDO           |           |           |
+| PB4C/2   |     unused, PULL:DOWN |            |               | PB4C  |               |           |           |
+| PB4D/2   |     unused, PULL:DOWN |            |               | PB4D  |               |           |           |
+| PB10A/2  |     unused, PULL:DOWN |            |               | PB10A |               |           |           |
+| PB10B/2  |     unused, PULL:DOWN |            |               | PB10B |               |           |           |
+| PB12A/2  |     unused, PULL:DOWN |            |               | PB12A |               |           |           |
+| PB12B/2  |     unused, PULL:DOWN |            |               | PB12B |               |           |           |
+| PB12C/2  |     unused, PULL:DOWN |            |               | PB12C |               |           |           |
+| PB12D/2  |     unused, PULL:DOWN |            |               | PB12D |               |           |           |
+| PB14A/2  |     unused, PULL:DOWN |            |               | PB14A |               |           |           |
+| PB14B/2  |     unused, PULL:DOWN |            |               | PB14B |               |           |           |
+| PL3C/3   |     unused, PULL:DOWN |            |               | PL3C  |               |           |           |
+| PL3D/3   |     unused, PULL:DOWN |            |               | PL3D  |               |           |           |
+| PL5C/3   |     unused, PULL:DOWN |            |               | PL5C  |               |           |           |
+| PL5D/3   |     unused, PULL:DOWN |            |               | PL5D  |               |           |           |
+| PL6C/3   |     unused, PULL:DOWN |            |               | PL6C  |               |           |           |
+| PL6D/3   |     unused, PULL:DOWN |            |               | PL6D  |               |           |           |
+| PL7A/3   |     unused, PULL:DOWN |            |               | PL7A  | PCLKT3_0      |           |           |
+| PL7B/3   |     unused, PULL:DOWN |            |               | PL7B  | PCLKC3_0      |           |           |
+| PL7C/3   |     unused, PULL:DOWN |            |               | PL7C  |               |           |           |
+| PL7D/3   |     unused, PULL:DOWN |            |               | PL7D  |               |           |           |
+| PR2A/1   |     unused, PULL:DOWN |            |               | PR2A  |               |           |           |
+| PR2B/1   |     unused, PULL:DOWN |            |               | PR2B  |               |           |           |
+| PR2C/1   |     unused, PULL:DOWN |            |               | PR2C  |               |           |           |
+| PR2D/1   |     unused, PULL:DOWN |            |               | PR2D  |               |           |           |
+| PR3A/1   |     unused, PULL:DOWN |            |               | PR3A  |               |           |           |
+| PR3B/1   |     unused, PULL:DOWN |            |               | PR3B  |               |           |           |
+| PR5A/1   |     unused, PULL:DOWN |            |               | PR5A  |               |           |           |
+| PR5B/1   |     unused, PULL:DOWN |            |               | PR5B  |               |           |           |
+| PR6A/1   |     unused, PULL:DOWN |            |               | PR6A  |               |           |           |
+| PR6B/1   |     unused, PULL:DOWN |            |               | PR6B  |               |           |           |
+| PT6A/0   |     unused, PULL:DOWN |            |               | PT6A  |               |           |           |
+| PT6B/0   |     unused, PULL:DOWN |            |               | PT6B  |               |           |           |
+| PT6C/0   |     unused, PULL:DOWN |            |               | PT6C  |               |           |           |
+| PT6D/0   |     unused, PULL:DOWN |            |               | PT6D  |               |           |           |
+| PT9A/0   |     unused, PULL:DOWN |            |               | PT9A  | PCLKT0_1      |           |           |
+| PT9B/0   |     unused, PULL:DOWN |            |               | PT9B  | PCLKC0_1      |           |           |
+| PT10A/0  |     unused, PULL:DOWN |            |               | PT10A |               |           |           |
+| PT10B/0  |     unused, PULL:DOWN |            |               | PT10B |               |           |           |
+| PT11A/0  |     unused, PULL:DOWN |            |               | PT11A |               |           |           |
+| PT11B/0  |     unused, PULL:DOWN |            |               | PT11B |               |           |           |
++----------+-----------------------+------------+---------------+-------+---------------+-----------+-----------+
+
+sysCONFIG Pins:
++----------+-------------------------------------+--------------------+----------+---------------+-------------------+
+| Pad Name | sysCONFIG Pin Name                  | sysCONFIG Settings | Pin/Bank | Buffer Type   | Config Pull Mode  |
++----------+-------------------------------------+--------------------+----------+---------------+-------------------+
+| PT9D     | SDA/IO3/MD3/ATB_FORCE/PCLKC0_0/TDOT | I2C_PORT=ENABLE    | 42/0     | LVCMOS33_BIDI | NO pull up/down   |
+| PT9C     | SCL/IO2/MD2/ATB_SENSE/PCLKT0_0      | I2C_PORT=ENABLE    | 43/0     | LVCMOS33_BIDI | NO pull up/down   |
+| PT7D     | TMS                                 | JTAG_PORT=ENABLE   | 44/0     |               | PULLUP            |
+| PT7C     | TCK/TEST_CLK                        | JTAG_PORT=ENABLE   | 45/0     |               | NO pull up/down   |
+| PT7B     | TDI/MD7                             | JTAG_PORT=ENABLE   | 47/0     |               | PULLUP            |
+| PT7A     | TDO                                 | JTAG_PORT=ENABLE   | 48/0     |               | PULLUP            |
++----------+-------------------------------------+--------------------+----------+---------------+-------------------+
+
+Dedicated sysCONFIG Pins:
+
+
+List of All Pins' Locate Preferences Based on Final Placement After PAR 
+to Help Users Lock Down ALL the Pins Easily (by Simply Copy & Paste): 
+
+LOCATE  COMP  "ARM_PERMIT"  SITE  "3";
+LOCATE  COMP  "COMPUTE_EN"  SITE  "18";
+LOCATE  COMP  "DUMP_EN"  SITE  "5";
+LOCATE  COMP  "ESTOP_OK"  SITE  "31";
+LOCATE  COMP  "FAULT_CODE[0]"  SITE  "7";
+LOCATE  COMP  "FAULT_CODE[1]"  SITE  "8";
+LOCATE  COMP  "FAULT_CODE[2]"  SITE  "9";
+LOCATE  COMP  "FAULT_CODE[3]"  SITE  "10";
+LOCATE  COMP  "FAULT_LATCH"  SITE  "21";
+LOCATE  COMP  "FB_CLOSED"  SITE  "32";
+LOCATE  COMP  "K_EN"  SITE  "16";
+LOCATE  COMP  "K_SEL"  SITE  "17";
+LOCATE  COMP  "MCU_ALIVE"  SITE  "40";
+LOCATE  COMP  "MCU_CMD_ARM"  SITE  "38";
+LOCATE  COMP  "MCU_CMD_FAULT"  SITE  "37";
+LOCATE  COMP  "MOTOR_EN"  SITE  "19";
+LOCATE  COMP  "OV"  SITE  "33";
+LOCATE  COMP  "OVUV_OK"  SITE  "2";
+LOCATE  COMP  "PRECHARGE_LATCH"  SITE  "20";
+LOCATE  COMP  "PRECHARGE_OK"  SITE  "36";
+LOCATE  COMP  "PRECHARGE_REQ"  SITE  "4";
+LOCATE  COMP  "SPARE_OUT_0"  SITE  "14";
+LOCATE  COMP  "SPARE_OUT_1"  SITE  "15";
+LOCATE  COMP  "STATE_CODE[0]"  SITE  "11";
+LOCATE  COMP  "STATE_CODE[1]"  SITE  "12";
+LOCATE  COMP  "SW_ARM"  SITE  "27";
+LOCATE  COMP  "SW_COMPUTE"  SITE  "29";
+LOCATE  COMP  "SW_REMOTE_ARM"  SITE  "26";
+LOCATE  COMP  "SW_REMOTE_DISARM"  SITE  "24";
+LOCATE  COMP  "SW_RST_FAULT"  SITE  "28";
+LOCATE  COMP  "UV"  SITE  "34";
+LOCATE  COMP  "VBUS_OV"  SITE  "35";
+LOCATE  COMP  "i2c1_scl"  SITE  "43";
+LOCATE  COMP  "i2c1_sda"  SITE  "42";
+
+
+
+
+
+PAR: Place And Route Diamond (64-bit) 3.14.0.75.2.
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+Wed May 06 21:42:33 2026
+

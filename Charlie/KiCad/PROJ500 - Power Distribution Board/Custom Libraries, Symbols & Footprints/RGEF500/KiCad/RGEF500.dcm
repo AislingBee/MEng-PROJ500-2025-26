@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP RGEF500
+D Littelfuse 5A Radial Leaded PCB Mount Resettable Fuse, 16V
+K
+F https://www.littelfuse.com/~/media/electronics/product_specifications/resettable_ptcs/littelfuse_ptc_rgef500_product_specification.pdf.pdf
+$ENDCMP
+#
+#End Doc Library

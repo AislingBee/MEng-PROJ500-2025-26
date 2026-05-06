@@ -1,0 +1,10 @@
+(unit MM)
+
+(package "FUSC5141X160N"
+    (type UNDEF)
+    (uver 2)
+    (mountForm default
+        (footprintRef "FUSC5141X160N")
+        (spec "default")
+    )
+)

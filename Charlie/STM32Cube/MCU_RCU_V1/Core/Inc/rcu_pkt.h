@@ -55,7 +55,6 @@ extern "C" {
 #define RCU_DBGCMD_MOTOR_BUS_CTRL    0x0AU /* payload[1]: bit0=L_STB, bit1=R_STB */
 #define RCU_DBGCMD_REQUEST_SUPV_DUMP 0x0BU /* no extra payload */
 #define RCU_DBGCMD_MOTOR_ENABLE      0x0CU /* payload: bus(u8), motor_id(u8), enable(u8), clr_fault(u8) */
-#define RCU_DBGCMD_MOTOR_SET_ZERO    0x0DU /* payload: bus(u8), motor_id(u8) — set current pos as zero */
 /* -----------------------------------------------------------------------
  * Header struct (packed)
  * ----------------------------------------------------------------------- */
@@ -197,8 +196,8 @@ typedef struct {
     uint16_t pos_u16;
     uint16_t vel_u16;
     uint16_t trq_u16;
-    uint16_t kp_u16;   /* 0..65535 → 0..RS04_KP_MAX */
-    uint16_t kd_u16;   /* 0..65535 → 0..RS04_KD_MAX */
+    uint8_t  kp_u8;
+    uint8_t  kd_u8;
 } rcu_motor_cmd_entry_t;
 
 /* -----------------------------------------------------------------------

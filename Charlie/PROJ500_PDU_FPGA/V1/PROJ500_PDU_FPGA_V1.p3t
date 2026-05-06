@@ -1,0 +1,5 @@
+-rem
+-distrce
+-log "PROJ500_PDU_FPGA_V1.log"
+-o "PROJ500_PDU_FPGA_V1.csv"
+-pr "PROJ500_PDU_FPGA_V1.prf"

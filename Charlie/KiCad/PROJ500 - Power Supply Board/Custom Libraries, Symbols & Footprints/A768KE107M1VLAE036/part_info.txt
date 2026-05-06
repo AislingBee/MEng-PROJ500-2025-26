@@ -1,0 +1,9 @@
+Manufacturer=YAGEO
+PartNumber=A768KE107M1VLAE036
+PartCategory=Capacitor Polarised
+PackageCategory=Capacitor Al Electrolytic
+PinCount=2
+Version=3.1
+Released=2024-08-23 04:31:37
+Downloaded=2026-02-22 01:58:17
+3D=Y

@@ -1,0 +1,9 @@
+Manufacturer=onsemi
+PartNumber=NTMFS5C673NLT1G
+PartCategory=MOSFET (N-Channel)
+PackageCategory=Other
+PinCount=5
+Version=2.2
+Released=2019-06-06 11:59:41
+Downloaded=2026-02-15 21:00:16
+3D=Y

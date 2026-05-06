@@ -1,15 +1,5 @@
-2026-05-05 19:21:58,336 [INFO] Activator:176 - 
+2026-05-06 19:57:55,779 [INFO] Activator:176 - 
 
 
-2026-05-05 19:21:58,364 [INFO] Activator:177 - !SESSION log4j initialized
-2026-05-05 19:22:08,492 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] 
-2026-05-05 19:38:03,287 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
-2026-05-05 19:38:03,288 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
-2026-05-05 19:38:03,289 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
-2026-05-05 19:38:03,290 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
-2026-05-05 19:38:03,290 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
-2026-05-05 19:38:04,157 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
-2026-05-05 19:38:04,158 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
-2026-05-05 19:38:04,158 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
-2026-05-05 19:38:04,159 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
-2026-05-05 19:38:04,159 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.UnknownHostException: stmicroelectronics.d3.sc.omtrdc.net
+2026-05-06 19:57:55,786 [INFO] Activator:177 - !SESSION log4j initialized
+2026-05-06 19:57:58,820 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] 

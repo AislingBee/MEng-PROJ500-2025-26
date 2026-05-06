@@ -1,0 +1,16 @@
+.AP2114HA-3.3TRG1 :1 ;Linear Voltage Regulator IC Positive Fixed 1 Output 1A SOT-223-3
+SOT230P700X180-4N
+*STM IC
+*NGS
+*PLB 1="VIN" 2="GND_1" 3="VOUT" 4="GND_2"
+*MXP 4
+*DFN AP2114HA-3.3TRG1
+~!Mouser Part Number (621-AP2114HA-3.3TRG1)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Diodes-Incorporated/AP2114HA-3.3TRG1?qs=M%2FOdCRO8QQ3KWhA9Gt6VoQ%3D%3D)
+~!Manufacturer_Name (Diodes Incorporated)
+~!Manufacturer_Part_Number (AP2114HA-3.3TRG1)
+~!Link Datasheet (https://www.diodes.com//assets/Datasheets/AP2114.pdf)
+~!Height (1.8mm)
+~!3D_Model (AP2114HA-3.3TRG1)
+AP2114HA-3.3TRG1
+1.1!U 2.1!U 3.1!U 4.1!U 

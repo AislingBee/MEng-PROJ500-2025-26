@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP 74LVC3G17GT,115
+D 74LVC3G17 - Triple non-inverting Schmitt trigger with 5 V tolerant input@en-us
+K
+F https://assets.nexperia.com/documents/data-sheet/74LVC3G17.pdf
+$ENDCMP
+#
+#End Doc Library

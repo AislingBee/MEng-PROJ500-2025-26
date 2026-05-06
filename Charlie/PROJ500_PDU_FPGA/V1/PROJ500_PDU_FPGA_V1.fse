@@ -1,0 +1,26 @@
+
+fsm_encoding {61036410362} onehot
+
+fsm_state_encoding {61036410362} I2C_IDLE {0000001}
+
+fsm_state_encoding {61036410362} I2C_RD_SR {0000010}
+
+fsm_state_encoding {61036410362} I2C_WAIT_SR {0000100}
+
+fsm_state_encoding {61036410362} I2C_RD_RX {0001000}
+
+fsm_state_encoding {61036410362} I2C_WAIT_RX {0010000}
+
+fsm_state_encoding {61036410362} I2C_WR_TX {0100000}
+
+fsm_state_encoding {61036410362} I2C_WAIT_TX {1000000}
+
+fsm_registers {61036410362} {i2c_state[6]}  {i2c_state[5]}  {i2c_state[4]}  {i2c_state[3]}  {i2c_state[2]}  {i2c_state[1]}  {i2c_state[0]} 
+
+fsm_encoding {696049601} sequential
+
+fsm_state_encoding {696049601} WB_IDLE {0}
+
+fsm_state_encoding {696049601} WB_WAIT {1}
+
+fsm_registers {696049601} {wb_state[0]} 

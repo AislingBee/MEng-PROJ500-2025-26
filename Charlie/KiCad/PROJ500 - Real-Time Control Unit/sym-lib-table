@@ -1,0 +1,10 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "TCAN3414DRBR")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/TCAN3414DRBR/KiCad/TCAN3414DRBR.kicad_sym")(options "")(descr ""))
+  (lib (name "ESDCAN03")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/ul_ESDCAN03-2BWY/KiCADv6/2026-02-15_22-03-43.kicad_sym")(options "")(descr ""))
+  (lib (name "ESP32-C3-MINI-1U-H4X")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/ESP32-C3-MINI-1U-H4X/KiCad/ESP32-C3-MINI-1U-H4X.kicad_sym")(options "")(descr ""))
+  (lib (name "STM32H723VGT6")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/CAD_models_STM32H723VGT6/KiCad/STM32H723VGT6.kicad_sym")(options "")(descr ""))
+  (lib (name "AP2114HA-3_3TRG1")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/AP2114HA-3.3TRG1/KiCad/AP2114HA-3_3TRG1.kicad_sym")(options "")(descr ""))
+  (lib (name "ECS-_327-6-13X")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/ECS-.327-6-13X/KiCad/ECS-_327-6-13X.kicad_sym")(options "")(descr ""))
+  (lib (name "MCP1316MT-31LE-OT")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/ul_MCP1316MT-31LE-OT/KiCADv6/2026-03-07_02-54-13.kicad_sym")(options "")(descr ""))
+)

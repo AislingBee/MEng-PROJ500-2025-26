@@ -1,0 +1,5 @@
+#List of actual used RTLs.
+
+File                                                                                                                  Type     IN_PROJECT/INCLUDED/LIBRARY
+
+"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv"     verilog                      IN PROJECT

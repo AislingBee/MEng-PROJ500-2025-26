@@ -1,0 +1,174 @@
+<HTML>
+<HEAD><TITLE>Lattice Map TRACE Report</TITLE>
+<STYLE TYPE="text/css">
+<!--
+ body,pre{    font-family:'Courier New', monospace;    color: #000000;    font-size:88%;    background-color: #ffffff;}h1 {    font-weight: bold;    margin-top: 24px;    margin-bottom: 10px;    border-bottom: 3px solid #000;    font-size: 1em;}h2 {    font-weight: bold;    margin-top: 18px;    margin-bottom: 5px;    font-size: 0.90em;}h3 {    font-weight: bold;    margin-top: 12px;    margin-bottom: 5px;    font-size: 0.80em;}p {    font-size:78%;}P.Table {    margin-top: 4px;    margin-bottom: 4px;    margin-right: 4px;    margin-left: 4px;}table{    border-width: 1px 1px 1px 1px;    border-style: solid solid solid solid;    border-color: black black black black;    border-collapse: collapse;}th {    font-weight:bold;    padding: 4px;    border-width: 1px 1px 1px 1px;    border-style: solid solid solid solid;    border-color: black black black black;    vertical-align:top;    text-align:left;    font-size:78%;}td {    padding: 4px;    border-width: 1px 1px 1px 1px;    border-style: solid solid solid solid;    border-color: black black black black;    vertical-align:top;    font-size:78%;}a {    color:#013C9A;    text-decoration:none;}a:visited {    color:#013C9A;}a:hover, a:active {    text-decoration:underline;    color:#5BAFD4;}.pass{background-color: #00ff00;}.fail{background-color: #ff0000;}.comment{    font-size: 90%;    font-style: italic;}
+-->
+</STYLE>
+</HEAD>
+<PRE><A name="Map_Twr"></A><B><U><big>Map TRACE Report</big></U></B>
+
+Loading design for application trce from file proj500_pdu_fpga_selftest_map.ncd.
+Design name: pdu_selftest_mxo2
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application trce from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+Setup and Hold Report
+
+--------------------------------------------------------------------------------
+<A name="Map_Twr_setup"></A><B><U><big>Lattice TRACE Report - Setup, Version Diamond (64-bit) 3.14.0.75.2</big></U></B>
+Mon Apr 20 18:52:02 2026
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+<A name="mtw1_set_ri"></A><B><U><big>Report Information</big></U></B>
+------------------
+Command line:    trce -v 1 -gt -mapchkpnt 0 -sethld -o PROJ500_PDU_FPGA_SELFTEST.tw1 -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_SELFTEST_map.ncd PROJ500_PDU_FPGA_SELFTEST.prf 
+Design file:     proj500_pdu_fpga_selftest_map.ncd
+Preference file: proj500_pdu_fpga_selftest.prf
+Device,speed:    LCMXO2-640HC,5
+Report level:    verbose report, limited to 1 item per preference
+--------------------------------------------------------------------------------
+
+<A name="mtw1_set_ps"></A><B><U><big>Preference Summary</big></U></B>
+
+<LI><A href='#map_twr_pref_0_0' Target='right'>Default path enumeration(0 errors)</A></LI>            14 items scored, 0 timing errors detected.
+
+<LI><A href='#map_twr_pref_0_1' Target='right'>Default net enumeration(0 errors)</A></LI>            20 items scored, 0 timing errors detected.
+
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+--------------------------------------------------------------------------------
+
+
+
+================================================================================
+<A name="map_twr_pref_0_0"></A>Preference: Default path enumeration
+            14 items scored, 0 timing errors detected.
+--------------------------------------------------------------------------------
+
+Report:    8.262ns delay ESTOP_OK to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         31.PAD to       31.PADDI ESTOP_OK
+ROUTE         1   e 1.030       31.PADDI to     SLICE_2.A0 ESTOP_OK_c
+CTOF_DEL    ---     0.452     SLICE_2.A0 to     SLICE_2.F0 SLICE_2
+ROUTE         1   e 1.030     SLICE_2.F0 to     SLICE_0.B1 SPARE_OUT_1_7
+CTOF_DEL    ---     0.452     SLICE_0.B1 to     SLICE_0.F1 SLICE_0
+ROUTE         1   e 1.030     SLICE_0.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                    8.262   (62.6% logic, 37.4% route), 4 logic levels.
+
+Report:    8.262ns is the maximum delay for this preference.
+
+
+================================================================================
+<A name="map_twr_pref_0_1"></A>Preference: Default net enumeration
+            20 items scored, 0 timing errors detected.
+--------------------------------------------------------------------------------
+
+Report:    1.030ns maximum delay on SPARE_OUT_1_9
+
+           Delays             Connection(s)
+         e 1.030ns       SLICE_1.F0 to SLICE_0.D1      
+
+Report:    1.030ns is the maximum delay for this preference.
+
+<A name="mtw1_set_rs"></A><B><U><big>Report Summary</big></U></B>
+--------------
+----------------------------------------------------------------------------
+Preference                              |   Constraint|       Actual|Levels
+----------------------------------------------------------------------------
+                                        |             |             |
+Default path enumeration                |     0.000 ns|     8.262 ns|   0  
+                                        |             |             |
+Default net enumeration                 |     0.000 ns|     1.030 ns|   0  
+                                        |             |             |
+----------------------------------------------------------------------------
+
+
+All preferences were met.
+
+
+<A name="mtw1_set_clkda"></A><B><U><big>Clock Domains Analysis</big></U></B>
+------------------------
+
+Found 0 clocks:
+
+
+<A name="mtw1_set_ts"></A><B><U><big>Timing summary (Setup):</big></U></B>
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 14 paths, 20 nets, and 36 connections (100.00% coverage)
+
+--------------------------------------------------------------------------------
+
+
+
+
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+</PRE></FONT>
+</BODY>
+</HTML>

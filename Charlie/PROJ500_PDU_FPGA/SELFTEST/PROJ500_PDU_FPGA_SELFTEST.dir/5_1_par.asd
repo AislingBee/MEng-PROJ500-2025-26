@@ -1,0 +1,23 @@
+[ActiveSupport PAR]
+; # of global secondary clocks
+GLOBAL_SECONDARY_USED = 0;
+; I/O Bank 0 Usage
+BANK_0_USED = 3;
+BANK_0_AVAIL = 10;
+BANK_0_VCCIO = 3.3V;
+BANK_0_VREF1 = NA;
+; I/O Bank 1 Usage
+BANK_1_USED = 10;
+BANK_1_AVAIL = 10;
+BANK_1_VCCIO = 3.3V;
+BANK_1_VREF1 = NA;
+; I/O Bank 2 Usage
+BANK_2_USED = 9;
+BANK_2_AVAIL = 10;
+BANK_2_VCCIO = 3.3V;
+BANK_2_VREF1 = NA;
+; I/O Bank 3 Usage
+BANK_3_USED = 10;
+BANK_3_AVAIL = 10;
+BANK_3_VCCIO = 3.3V;
+BANK_3_VREF1 = NA;

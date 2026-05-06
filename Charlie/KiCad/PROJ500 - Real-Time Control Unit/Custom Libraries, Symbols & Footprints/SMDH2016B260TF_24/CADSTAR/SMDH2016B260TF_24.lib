@@ -1,0 +1,16 @@
+.SMDH2016B260TF_24 :1 ;Resettable Fuses - PPTC 2016 24V 2.60A 1.5W SMD AEC-Q200 High Temp
+FUSC5141X160N
+*STM F
+*NGS
+*PLB 1="1" 2="2"
+*MXP 2
+*DFN SMDH2016B260TF_24
+~!Mouser Part Number (-)
+~!Mouser Price/Stock (-)
+~!Manufacturer_Name (Yageo Group)
+~!Manufacturer_Part_Number (SMDH2016B260TF/24)
+~!Link Datasheet (https://www.yageogroup.com/content/datasheet/asset/file/SMDH2016_1)
+~!Height (1.6mm)
+~!3D_Model (SMDH2016B260TF_24)
+SMDH2016B260TF_24
+1.1!U 2.1!U 

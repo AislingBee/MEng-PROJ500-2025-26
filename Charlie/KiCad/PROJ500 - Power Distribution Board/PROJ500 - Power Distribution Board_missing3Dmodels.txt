@@ -1,0 +1,52 @@
+### Missing 3D models - created on 2026-03-18 20:50
+### Printed by checking_3D_models plugin
+Board file: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\KiCad\PROJ500 - Power Distribution Board\PROJ500 - Power Distribution Board.kicad_pcb
+3D missing models written to:
+C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\KiCad\PROJ500 - Power Distribution Board\PROJ500 - Power Distribution Board_missing3Dmodels.txt
+-------
+('Q2', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\DMP3014SFDE-13.stp')
+('J1', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\TBP02R1-381-02BE.stp')
+('J20', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0600_2x03_P3.00mm_Horizontal.step')
+('F3', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\SMDH2016B260TF_24.stp')
+('F5', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\SMDH2016B260TF_24.stp')
+('Q14', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\DMP6023LFG-7.stp')
+('F1', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\SMDH2016B260TF_24.stp')
+('U9', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\LCMXO2-640HC-5SG48I.stp')
+('U12', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\74LVC3G17GT,115.stp')
+('Y1', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\ECS-.327-6-13X.stp')
+('RV2', '${KICAD6_3DMODEL_DIR}/Potentiometer_THT.3dshapes/Potentiometer_Bourns_3296X_Horizontal.wrl')
+('K1', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\G5LE-1A4-DC12.stp')
+('Q8', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\DMP3014SFDE-13.stp')
+('Y2', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\ABLS-8.000MHZ-20-D-3-H-T.stp')
+('J8', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0800_2x04_P3.00mm_Horizontal.step')
+('RV4', '${KICAD6_3DMODEL_DIR}/Potentiometer_THT.3dshapes/Potentiometer_Bourns_3296X_Horizontal.wrl')
+('J5', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\TBP02R1-381-02BE.stp')
+('U11', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\74LVC3G17GT,115.stp')
+('U3', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Package_SON.3dshapes\\VSON-8-1EP_3x3mm_P0.65mm_EP1.6x2.4mm.step')
+('F2', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\RGEF500.stp')
+('J7', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0800_2x04_P3.00mm_Horizontal.step')
+('F4', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\SMDH2016B260TF_24.stp')
+('J19', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0600_2x03_P3.00mm_Horizontal.step')
+('J11', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0200_2x01_P3.00mm_Horizontal.step')
+('J12', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0400_2x02_P3.00mm_Horizontal.step')
+('J21', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0400_2x02_P3.00mm_Horizontal.step')
+('J4', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\TBP02R1-381-02BE.stp')
+('K2', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\G5LE-14-ASI_DC12.stp')
+('J18', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0200_2x01_P3.00mm_Horizontal.step')
+('Q3', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\DMP3014SFDE-13.stp')
+('J17', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0400_2x02_P3.00mm_Horizontal.step')
+('J3', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\TBP02R1-381-02BE.stp')
+('J16', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0200_2x01_P3.00mm_Horizontal.step')
+('J15', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0200_2x01_P3.00mm_Horizontal.step')
+('Q9', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\DMP3014SFDE-13.stp')
+('J14', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0400_2x02_P3.00mm_Horizontal.step')
+('J2', 'C:\\Users\\charl\\Documents\\TEMP BACKUPS\\17.03.26\\PROJ500 (Humanoid)\\KiCad\\PROJ500 - Power Distribution Board\\TBP02R1-381-02BE.stp')
+('RV3', '${KICAD6_3DMODEL_DIR}/Potentiometer_THT.3dshapes/Potentiometer_Bourns_3296X_Horizontal.wrl')
+('J13', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0200_2x01_P3.00mm_Horizontal.step')
+('Q12', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Package_SO.3dshapes\\ONSemi_SO-8FL_488AA.step')
+('J6', 'C:\\Program Files\\KiCad\\9.0\\share\\kicad\\3dmodels\\Connector_Molex.3dshapes\\Molex_Micro-Fit_3.0_43045-0800_2x04_P3.00mm_Horizontal.step')
+('U15', '${KISYS3DMOD}/Package_SO.3dshapes/TSSOP-14_4.4x5mm_P0.65mm.wrl')
+('RV1', '${KICAD6_3DMODEL_DIR}/Potentiometer_THT.3dshapes/Potentiometer_Bourns_3296X_Horizontal.wrl')
+-------
+NUM of 3D missing models:43
+checked extensions ['.stp', '.step', '.stpZ']

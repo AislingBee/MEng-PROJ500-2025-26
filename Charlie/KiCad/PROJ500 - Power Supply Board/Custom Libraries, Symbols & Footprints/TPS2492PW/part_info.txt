@@ -1,0 +1,9 @@
+Manufacturer=Texas Instruments
+PartNumber=TPS2492PW
+PartCategory=Integrated Circuit
+PackageCategory=Small Outline Packages
+PinCount=14
+Version=2.1
+Released=2017-01-12 12:59:53
+Downloaded=2026-02-15 21:16:33
+3D=Y

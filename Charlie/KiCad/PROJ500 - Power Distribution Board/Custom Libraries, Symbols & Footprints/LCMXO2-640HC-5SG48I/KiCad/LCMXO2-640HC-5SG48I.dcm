@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP LCMXO2-640HC-5SG48I
+D MachXO2 Field Programmable Gate Array (FPGA) IC 48-VFQFN Exposed Pad
+K
+F https://www.latticesemi.com/Products/FPGAandCPLD/MachXO2
+$ENDCMP
+#
+#End Doc Library

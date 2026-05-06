@@ -1,0 +1,1 @@
+run_tcl -fg PROJ500_PDU_FPGA_SELFTEST_synplify.tcl

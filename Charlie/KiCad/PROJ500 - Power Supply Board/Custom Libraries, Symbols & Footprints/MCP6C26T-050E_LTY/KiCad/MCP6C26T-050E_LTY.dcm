@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP MCP6C26T-050E_LTY
+D Current Sense Amplifiers Zero-Drift, Current Sense Amplifier, Gain = 50V/V
+K
+F https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP6C26-Data-Sheet-DS20006928.pdf
+$ENDCMP
+#
+#End Doc Library

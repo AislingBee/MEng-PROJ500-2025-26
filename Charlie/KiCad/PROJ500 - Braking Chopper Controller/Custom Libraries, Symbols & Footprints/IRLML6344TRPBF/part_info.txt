@@ -1,0 +1,9 @@
+Manufacturer=Infineon
+PartNumber=IRLML6344TRPBF
+PartCategory=MOSFET (N-Channel)
+PackageCategory=SOT23 (3-Pin)
+PinCount=3
+Version=2.1
+Released=2016-06-16 06:48:03
+Downloaded=2026-01-25 01:07:34
+3D=Y

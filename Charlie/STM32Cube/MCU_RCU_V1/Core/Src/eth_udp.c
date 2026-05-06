@@ -42,7 +42,7 @@ extern TIM_HandleTypeDef htim1;
 #define THOR_IP_A  192U
 #define THOR_IP_B  168U
 #define THOR_IP_C  100U
-#define THOR_IP_D   20U   /* placeholder — update when confirmed */
+#define THOR_IP_D   20U   /* Thor static IP last octet — 192.168.100.20 */
 
 #define PORT_TELEM_OUT    7700U
 #define PORT_CMD_IN       7701U
@@ -264,7 +264,7 @@ static void handle_debug_cmd(const uint8_t *payload, uint16_t len)
 
     case RCU_DBGCMD_SOFT_RESET:
         st_dbg_printf("[DBG] SOFT_RESET\r\n");
-        /* if (len >= 2U && payload[1]) { TODO: PDU reset via CAN } */
+        /* PDU soft reset via CAN is not implemented; this command resets the RCU only. */
         send_debug_reply();
         HAL_Delay(10U);
         NVIC_SystemReset();
@@ -316,17 +316,6 @@ static void handle_debug_cmd(const uint8_t *payload, uint16_t len)
             } else {
                 motor_bus_send_enable(en_bus, en_mid, false, en_clr);
             }
-        }
-        send_debug_reply();
-        break;
-
-    case RCU_DBGCMD_MOTOR_SET_ZERO:
-        if (len >= 3U) {
-            uint8_t sz_bus = payload[1];
-            uint8_t sz_mid = payload[2];
-            st_dbg_printf("[DBG] MOTOR_SET_ZERO bus=%u id=%u\r\n",
-                          (unsigned)sz_bus, (unsigned)sz_mid);
-            motor_bus_send_set_zero(sz_bus, sz_mid);
         }
         send_debug_reply();
         break;

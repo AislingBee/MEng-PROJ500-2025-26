@@ -1,0 +1,25 @@
+@N|Running in 64-bit mode
+@N|Running in 64-bit mode
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1793:7:1793:10|Synthesizing module OSCH in library work.
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1120:7:1120:9|Synthesizing module VHI in library work.
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1124:7:1124:9|Synthesizing module VLO in library work.
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":82:7:82:8|Synthesizing module BB in library work.
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1800:7:1800:9|Synthesizing module EFB in library work.
+@N: CG364 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\PDU_EFB_I2C.v":8:7:8:17|Synthesizing module PDU_EFB_I2C in library work.
+@N: CG364 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":189:7:189:14|Synthesizing module pdu_glue in library work.
+@N: CG179 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":518:104:518:112|Removing redundant assignment.
+@N: CG179 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":520:104:520:115|Removing redundant assignment.
+@N: CG179 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":545:95:545:102|Removing redundant assignment.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[2] is always 1.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[3] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[4] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[5] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[6] is always 1.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[7] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Register bit fault_code_r[3] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":864:4:864:12|Register bit FAULT_CODE[3] is always 0.
+@N: CL201 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Trying to extract state machine for register state.
+@N: CL201 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Trying to extract state machine for register wb_state.
+@N: CL201 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":1036:4:1036:12|Trying to extract state machine for register i2c_state.
+@N|Running in 64-bit mode
+

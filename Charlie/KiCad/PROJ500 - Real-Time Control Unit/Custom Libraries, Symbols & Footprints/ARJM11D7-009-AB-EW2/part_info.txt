@@ -1,0 +1,9 @@
+Manufacturer=ABRACON
+PartNumber=ARJM11D7-009-AB-EW2
+PartCategory=Connector
+PackageCategory=Other
+PinCount=14
+Version=3.18
+Released=2020-03-12 10:56:36
+Downloaded=2026-04-02 02:35:18
+3D=Y

@@ -1,0 +1,209 @@
+# Wed May  6 21:41:47 2026
+
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys Lattice Technology Pre-mapping, Version map202309lat, Build 191R, Built Sep 17 2024 10:38:50, @
+
+
+Mapper Startup Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 184MB peak: 184MB)
+
+
+Done reading skeleton netlist (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 188MB peak: 199MB)
+
+Reading constraint file: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_synth.sdc
+@L: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\PROJ500_PDU_FPGA_V1_scck.rpt 
+See clock summary report "C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\PROJ500_PDU_FPGA_V1_scck.rpt"
+@N: MF916 |Option synthesis_strategy=base is enabled. 
+@N: MF248 |Running in 64-bit mode.
+@N: MF666 |Clock conversion enabled. (Command "set_option -fix_gated_and_generated_clocks 1" in the project file.)
+
+Design Input Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 191MB peak: 199MB)
+
+
+Mapper Initialization Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 191MB peak: 199MB)
+
+
+Start loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 205MB peak: 205MB)
+
+
+Finished loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 205MB peak: 207MB)
+
+NConnInternalConnection caching is on
+@N: FX493 |Applying initial value "00" on instance estop_ff[1:0].
+@W: FX474 |User-specified initial value defined for some sequential elements which can prevent optimum synthesis results from being achieved. 
+@N: FX493 |Applying initial value "00" on instance fb_closed_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance mcu_alive_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance mcu_arm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance mcu_fault_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance ov_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance pchgok_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_arm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_compute_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_rarm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_rdisarm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_rst_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance uv_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance vbusov_ff[1:0].
+@N: FX493 |Applying initial value "0" on instance rarm_qual.
+@N: FX493 |Applying initial value "0" on instance rdisarm_qual.
+@N: FX493 |Applying initial value "0" on instance rst_qual.
+@N: FX493 |Applying initial value "0" on instance tick_1ms.
+@N: FX493 |Applying initial value "0" on instance spare_heartbeat.
+@N: FX493 |Applying initial value "0" on instance rarm_prev.
+@N: FX493 |Applying initial value "0" on instance rdisarm_prev.
+@N: FX493 |Applying initial value "0" on instance rst_prev.
+@N: FX493 |Applying initial value "0" on instance mcu_fault_prev.
+@N: FX493 |Applying initial value "0" on instance ov_filt.
+@N: FX493 |Applying initial value "0" on instance pchgok_filt.
+@N: FX493 |Applying initial value "0" on instance uv_filt.
+@N: FX493 |Applying initial value "0" on instance vbusov_filt.
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":928:4:928:12|Initial value on register wb_rst_ms[2:0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "101" on instance wb_rst_ms[2:0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":692:4:692:12|Initial value on register t_ksel_blank[4:0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "00000" on instance t_ksel_blank[4:0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":692:4:692:12|Initial value on register t_prechg_abort[8:0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "000000000" on instance t_prechg_abort[8:0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":692:4:692:12|Initial value on register t_prechg_abort_min[6:0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0000000" on instance t_prechg_abort_min[6:0].
+@N: FX493 |Applying initial value "000" on instance fault_code_r[2:0].
+@N: FX493 |Applying initial value "0" on instance pchg_abort_was_fault.
+@N: FX493 |Applying initial value "0" on instance fault_latch_r.
+@N: FX493 |Applying initial value "0" on instance remote_arm_latch.
+@N: FX493 |Applying initial value "0" on instance precharge_latch_r.
+@N: FX493 |Applying initial value "000" on instance state[2:0].
+@W: BN132 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":960:4:960:12|Removing sequential instance wb_stb_i because it is equivalent to instance wb_cyc_i. To keep the instance, apply constraint syn_preserve=1 on the instance.
+
+Starting HSTDM IP insertion (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 256MB peak: 257MB)
+
+
+Finished HSTDM IP insertion (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 256MB peak: 257MB)
+
+
+Started DisTri Cleanup (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 256MB peak: 257MB)
+
+
+Finished DisTri Cleanup (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 256MB peak: 257MB)
+
+Encoding state machine i2c_state[6:0] (in view: work.pdu_glue(verilog))
+original code -> new code
+   000 -> 0000001
+   001 -> 0000010
+   010 -> 0000100
+   011 -> 0001000
+   100 -> 0010000
+   101 -> 0100000
+   110 -> 1000000
+@N: FX493 |Applying initial value "1" on instance i2c_state[0].
+@N: FX493 |Applying initial value "0" on instance i2c_state[1].
+@N: FX493 |Applying initial value "0" on instance i2c_state[2].
+@N: FX493 |Applying initial value "0" on instance i2c_state[3].
+@N: FX493 |Applying initial value "0" on instance i2c_state[4].
+@N: FX493 |Applying initial value "0" on instance i2c_state[5].
+@N: FX493 |Applying initial value "0" on instance i2c_state[6].
+Encoding state machine wb_state[1:0] (in view: work.pdu_glue(verilog))
+original code -> new code
+   00 -> 0
+   01 -> 1
+@N: MO225 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":960:4:960:12|There are no possible illegal states for state machine wb_state[1:0] (in view: work.pdu_glue(verilog)); safe FSM implementation is not required.
+
+Starting clock optimization phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 259MB peak: 259MB)
+
+
+mixed edge conversion for GCC is OFF
+
+Finished clock optimization phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 260MB peak: 260MB)
+
+
+Starting clock optimization report phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 260MB peak: 261MB)
+
+
+Finished clock optimization report phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 260MB peak: 261MB)
+
+@N: FX1184 |Applying syn_allowed_resources blockrams=2 on top level netlist pdu_glue 
+
+Finished netlist restructuring (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 260MB peak: 261MB)
+
+
+
+Clock Summary
+******************
+
+          Start       Requested     Requested     Clock        Clock                Clock
+Level     Clock       Frequency     Period        Type         Group                Load 
+-----------------------------------------------------------------------------------------
+0 -       clk_osc     2.1 MHz       480.770       declared     default_clkgroup     170  
+                                                                                         
+0 -       System      100.0 MHz     10.000        system       system_clkgroup      0    
+=========================================================================================
+
+
+
+Clock Load Summary
+***********************
+
+            Clock     Source               Clock Pin           Non-clock Pin     Non-clock Pin
+Clock       Load      Pin                  Seq Example         Seq Example       Comb Example 
+----------------------------------------------------------------------------------------------
+clk_osc     170       u_osch.OSC(OSCH)     wb_resp_valid.C     -                 -            
+                                                                                              
+System      0         -                    -                   -                 -            
+==============================================================================================
+
+ICG Latch Removal Summary:
+Number of ICG latches removed: 0
+Number of ICG latches not removed:	0
+
+
+@S |Clock Optimization Summary
+
+
+
+#### START OF PREMAP CLOCK OPTIMIZATION REPORT #####[
+
+1 non-gated/non-generated clock tree(s) driving 170 clock pin(s) of sequential element(s)
+0 gated/generated clock tree(s) driving 0 clock pin(s) of sequential element(s)
+0 instances converted, 0 sequential instances remain driven by gated/generated clocks
+
+=========================== Non-Gated/Non-Generated Clocks ============================
+Clock Tree ID     Driving Element     Drive Element Type     Fanout     Sample Instance
+---------------------------------------------------------------------------------------
+@KP:ckid0_0       u_osch.OSC          OSCH                   170        wb_state[0]    
+=======================================================================================
+
+
+##### END OF CLOCK OPTIMIZATION REPORT ######
+
+
+Summary of user generated gated clocks:
+0 user generated gated/generated clock tree(s) driving 0 clock pin(s) of sequential element(s)
+
+@N: FX1143 |Skipping assigning INTERNAL_VREF to iobanks, because the table of mapping from pin to iobank is not initialized.
+Finished Pre Mapping Phase.
+
+Starting constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 261MB peak: 261MB)
+
+
+Finished constraint checker preprocessing (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 261MB peak: 262MB)
+
+
+Finished constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 262MB peak: 262MB)
+
+Pre-mapping successful!
+
+At Mapper Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 176MB peak: 262MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+# Wed May  6 21:41:49 2026
+
+###########################################################]

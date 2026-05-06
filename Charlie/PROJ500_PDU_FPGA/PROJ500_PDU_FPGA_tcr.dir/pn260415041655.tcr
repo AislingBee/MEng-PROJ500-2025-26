@@ -1,0 +1,23 @@
+#Start recording tcl command: 4/15/2026 01:44:00
+#Project Location: C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA; Project name: PROJ500_PDU_FPGA
+prj_project open "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PROJ500_PDU_FPGA.ldf"
+prj_run Synthesis -impl V1
+prj_run Translate -impl V1
+prj_run Map -impl V1
+prj_run Map -impl V1 -task MapTrace
+prj_run Map -impl V1 -task MapVerilogSimFile
+prj_run Map -impl V1 -task MapVHDLSimFile
+prj_run Translate -impl V1
+prj_run Map -impl V1
+prj_run PAR -impl V1
+prj_run Export -impl V1
+prj_src add -exclude "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/V1/V1.xcf"
+prj_src enable "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/V1/V1.xcf"
+prj_run Export -impl V1
+pgr_project close
+pgr_project open "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/V1/V1.xcf"
+prj_run Export -impl V1
+pgr_project close
+pgr_project open "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/V1/V1.xcf"
+pgr_project close
+#Stop recording: 4/15/2026 04:16:55

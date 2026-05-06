@@ -1,0 +1,282 @@
+# vsim -batch -voptargs="+acc" tb_pdu_glue -do "sim_do.do" 
+# Start time: 21:37:58 on May 06,2026
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Warning: (vopt-10587) Some optimizations are turned off because the +acc switch is in effect. This will cause your simulation to run slowly. Please use -access/-debug to maintain needed visibility. The +acc switch would be deprecated in a future release.
+# ** Note: (vopt-143) Recognized 3 FSMs in module "pdu_glue(fast)".
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=1.
+# //  Questa Lattice OEM Edition-64
+# //  Version 2024.2 win64 May 20 2024
+# //
+# // Unpublished work. Copyright 2024 Siemens
+# //
+# // This material contains trade secrets or otherwise confidential information
+# // owned by Siemens Industry Software Inc. or its affiliates (collectively,
+# // "SISW"), or its licensors. Access to and use of this information is strictly
+# // limited as set forth in the Customer's applicable agreements with SISW.
+# //
+# // This material may not be copied, distributed, or otherwise disclosed outside
+# // of the Customer's facilities without the express written permission of SISW,
+# // and may not be used in any way not expressly authorized by SISW.
+# //
+# Loading sv_std.std
+# Loading work.tb_pdu_glue(fast)
+# Loading work.pdu_glue(fast)
+# Loading work.PDU_EFB_I2C(fast)
+# 
+# do sim_do.do
+# === tb_pdu_glue starting ===
+# 
+# --- T01: Power-on defaults ---
+#   PASS  T01 FAULT_LATCH=0
+#   PASS  T01 MOTOR_EN=0
+#   PASS  T01 K_EN=0
+#   PASS  T01 COMPUTE_EN=0
+#   PASS  T01 DUMP_EN=0
+#   PASS  T01 PRECHARGE_REQ=0
+#   PASS  T01 OVUV_OK=1
+# 
+# --- T02: COMPUTE_EN tracks SW_COMPUTE ---
+#   PASS  T02 COMPUTE_EN=1 when SW_COMPUTE=1
+#   PASS  T02 COMPUTE_EN=0 when SW_COMPUTE=0
+# 
+# --- T03: arm_ok inhibit (missing MCU_CMD_ARM) ---
+#   PASS  T03 PRECHARGE_REQ=0 (no MCU_CMD_ARM)
+#   PASS  T03 MOTOR_EN=0
+#   PASS  T03 PRECHARGE_REQ=0 (no ESTOP)
+# 
+# --- T04: Normal precharge -> armed path ---
+#   PASS  T04 PRECHARGE_REQ=1
+#   PASS  T04 K_SEL=0 (NC=pchg)
+#   PASS  T04 MOTOR_EN=0
+#   PASS  T04 K_EN=1 after blank
+#   PASS  T04 MOTOR_EN=1 (ARMED)
+#   PASS  T04 PRECHARGE_REQ=0
+#   PASS  T04 K_EN=0 (contactor drives bus)
+#   PASS  T04 FAULT_LATCH=0 (close verify passed)
+# 
+# --- T05: Precharge timeout -> PRECHARGE_ABORT -> FAULT ---
+#   PASS  T05 in PRECHARGE
+#   PASS  T05 FAULT_LATCH=1 (latched on abort entry)
+#   PASS  T05 FAULT_CODE=5
+#   PASS  T05 PRECHARGE_REQ=1 (relay still active)
+#   PASS  T05 K_EN=1 (relay held during hold)
+#   PASS  T05 PRECHARGE_REQ=0 (exited to FAULT)
+#   PASS  T05 K_EN=0 (relay off in FAULT)
+#   PASS  T05 FAULT_LATCH=1 (still faulted)
+# 
+# --- T06: ENABLE_FB_CLOSED=0: no close-verify fault ---
+#   PASS  T06 MOTOR_EN=1 (ARMED)
+#   PASS  T06 FAULT_LATCH=0 (no close-verify fault)
+#   PASS  T06 MOTOR_EN=1 (still ARMED)
+# 
+# --- T07: ENABLE_FB_CLOSED=0: no weld-detection fault ---
+#   PASS  T07 FAULT_LATCH=0 (weld detection disabled)
+# 
+# --- T08: ESTOP fault from ARMED -> FAULT(1) ---
+#   PASS  T08 MOTOR_EN=1 pre-fault
+#   PASS  T08 FAULT_LATCH=1
+#   PASS  T08 FAULT_CODE=1
+#   PASS  T08 MOTOR_EN=0
+#   PASS  T08 K_EN=0
+# 
+# --- T09: MCU_CMD_FAULT injection -> FAULT(6) ---
+#   PASS  T09 FAULT_LATCH=1
+#   PASS  T09 FAULT_CODE=6
+#   PASS  T09 COMPUTE_EN=1
+# 
+# --- T10: VBUS_OV dump (orthogonal) ---
+#   PASS  T10 K_SEL=0 pre-OV
+#   PASS  T10 K_EN=0 pre-OV
+#   PASS  T10 K_SEL=1 on dump
+#   PASS  T10 K_EN=0 (blanking)
+#   PASS  T10 K_EN=1 after blank
+#   PASS  T10 DUMP_EN=1
+#   PASS  T10 FAULT_LATCH=0 (no fault)
+#   PASS  T10 K_SEL=0 after OV clears
+#   PASS  T10 K_EN=0 after blank
+# 
+# --- T11: ESTOP fault from COMPUTE -> FAULT(1) ---
+#   PASS  T11 FAULT_LATCH=1
+#   PASS  T11 FAULT_CODE=1
+# 
+# --- T12: Soft de-arm (MCU_CMD_ARM drops) ---
+#   PASS  T12 MOTOR_EN=1 (ARMED)
+#   PASS  T12 MOTOR_EN=0 (de-armed)
+#   PASS  T12 FAULT_LATCH=0
+#   PASS  T12 COMPUTE_EN=1
+# 
+# --- T13: Fault reset succeeds with SW_ARM held ---
+#   PASS  T13 FAULT_LATCH=1
+#   PASS  T13 FAULT_LATCH=0 (reset with SW_ARM held)
+# 
+# --- T14: Remote arm/disarm latch ---
+#   PASS  T14 ARM_PERMIT=0 before remote arm
+#   PASS  T14 ARM_PERMIT=1 after remote arm + sw_arm + mcu_arm
+#   PASS  T14 ARM_PERMIT=0 after remote disarm
+# 
+# --- T15: Dump timing: vbusov_filt + ksel_blank ---
+#   PASS  T15 K_SEL=1 (dump path)
+#   PASS  T15 K_EN=0 (ksel_blank active)
+#   PASS  T15 K_EN=1 after blank
+#   PASS  T15 DUMP_EN=1
+#   PASS  T15 FAULT_LATCH=0 (no fault)
+#   PASS  T15 K_SEL=0 (dump cleared)
+#   PASS  T15 K_EN=0 after blank
+#   PASS  T15 DUMP_EN=0
+# 
+# --- T16: OV fault -> FAULT(2), UV fault -> FAULT(3) ---
+#   PASS  T16 FAULT_LATCH=1 on OV
+#   PASS  T16 FAULT_CODE=2 on OV
+#   PASS  T16 OVUV_OK=0 on OV
+#   PASS  T16 FAULT_LATCH=1 on UV
+#   PASS  T16 FAULT_CODE=3 on UV
+#   PASS  T16 OVUV_OK=0 on UV
+# 
+# --- T17: VBUS_OV coexists with ARMED (no de-arm) ---
+#   PASS  T17 MOTOR_EN=1 (ARMED before OV)
+#   PASS  T17 FAULT_LATCH=0 (no fault yet)
+#   PASS  T17 MOTOR_EN=1 (still ARMED)
+#   PASS  T17 FAULT_LATCH=0 (no fault)
+#   PASS  T17 K_SEL=1 (dump path)
+#   PASS  T17 DUMP_EN=1
+#   PASS  T17 MOTOR_EN=1 (ARMED after OV)
+#   PASS  T17 DUMP_EN=0 after OV clears
+#   PASS  T17 FAULT_LATCH=0 throughout
+# 
+# --- T18: Soft abort-hold then clean re-arm ---
+#   PASS  T18 in PRECHARGE
+#   PASS  T18 K_EN=1 (relay)
+#   PASS  T18 PRECHARGE_REQ=1 (abort-hold)
+#   PASS  T18 K_EN=1 (relay held)
+#   PASS  T18 FAULT_LATCH=0 (soft abort)
+#   PASS  T18 PRECHARGE_REQ=0 (exited hold)
+#   PASS  T18 FAULT_LATCH=0 (no fault)
+#   PASS  T18 K_EN=0 (relay off in COMPUTE)
+#   PASS  T18 MOTOR_EN=1 (re-armed after abort-hold)
+# 
+# --- T19: Fault reset blocked while ESTOP active; works after release ---
+#   PASS  T19 FAULT_LATCH=1 (ESTOP fault)
+#   PASS  T19 FAULT_LATCH still 1 (ESTOP still held)
+#   PASS  T19 FAULT_LATCH=0 after ESTOP cleared + RST
+# 
+# --- T20: SW_ARM toggling in FAULT does not clear fault ---
+#   PASS  T20 FAULT_LATCH=1 (in fault)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM held)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM released)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM held)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM released)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM held)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM released)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM held)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM released)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM held)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM released)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM held)
+#   PASS  T20 FAULT_LATCH=1 (SW_ARM released)
+#   PASS  T20 FAULT_LATCH=0 only after RST
+# 
+# --- T21: Fault-abort + pchgok → ST_FAULT ---
+#   PASS  T21 in PRECHARGE
+#   PASS  T21 FAULT_LATCH=1 (fault on abort entry)
+#   PASS  T21 PRECHARGE_REQ=1 (abort-hold active)
+#   PASS  T21 PRECHARGE_REQ=0 (exited to FAULT)
+#   PASS  T21 FAULT_LATCH=1 (in ST_FAULT)
+#   PASS  T21 MOTOR_EN=0
+# 
+# --- T22: Soft-abort + pchgok → ST_COMPUTE, no fault ---
+#   PASS  T22 in PRECHARGE
+#   PASS  T22 FAULT_LATCH=0 (no fault)
+#   PASS  T22 PRECHARGE_REQ=0 (in COMPUTE)
+#   PASS  T22 COMPUTE_EN=1 (in ST_COMPUTE)
+# 
+# --- T23: Soft-abort hard timeout → ST_COMPUTE, no fault ---
+#   PASS  T23 in PRECHARGE
+#   PASS  T23 FAULT_LATCH=0 (no fault)
+#   PASS  T23 PRECHARGE_REQ=0 (exited hold)
+# 
+# --- T24: VBUS_OV during abort-hold: dump gated off ---
+#   PASS  T24 in PRECHARGE
+#   PASS  T24 PRECHARGE_REQ=1 (abort-hold)
+#   PASS  T24 K_SEL=0 (dump gated by precharge_active)
+#   PASS  T24 K_EN=1 (relay held by precharge_active)
+#   PASS  T24 DUMP_EN=0 (no dump while precharge_active)
+#   PASS  T24 PRECHARGE_REQ=0 (exited hold)
+#   PASS  T24 FAULT_LATCH=0
+# 
+# --- T25: Simultaneous fault+pchgok in PRECHARGE -> fault wins ---
+#   PASS  T25 in PRECHARGE
+#   PASS  T25 FAULT_LATCH=1 (fault latched)
+#   PASS  T25 FAULT_CODE=2
+#   PASS  T25 PRECHARGE_REQ=1 (abort-hold)
+#   PASS  T25 PRECHARGE_REQ=0 (exited to FAULT)
+#   PASS  T25 FAULT_LATCH=1 (in ST_FAULT)
+# 
+# --- T26A: OV fault during PRECHARGE -> PRECHARGE_ABORT -> FAULT ---
+#   PASS  T26A FAULT_LATCH=1
+#   PASS  T26A FAULT_CODE=2
+#   PASS  T26A PRECHARGE_REQ=1 (abort-hold)
+#   PASS  T26A PRECHARGE_REQ=0 (in FAULT)
+#   PASS  T26A FAULT_LATCH=1
+# 
+# --- T26B: OV fault during ARMED -> FAULT ---
+#   PASS  T26B MOTOR_EN=1 (ARMED)
+#   PASS  T26B FAULT_LATCH=1
+#   PASS  T26B FAULT_CODE=2
+#   PASS  T26B MOTOR_EN=0
+# 
+# --- T27: PRECHARGE_LATCH set/clear ---
+#   PASS  T27 PRECHARGE_LATCH=1 (in PRECHARGE)
+#   PASS  T27 PRECHARGE_REQ=1
+#   PASS  T27 PRECHARGE_LATCH=0 (exited to ARMED)
+#   PASS  T27 MOTOR_EN=1 (ARMED)
+# 
+# --- T28: Fault from ST_IDLE ---
+#   PASS  T28 FAULT_LATCH=1 (faulted from IDLE)
+#   PASS  T28 FAULT_CODE=1
+# 
+# --- T29: Fault reset -> ST_IDLE when SW_COMPUTE=0 ---
+#   PASS  T29 FAULT_LATCH=1
+#   PASS  T29 FAULT_LATCH=0 (reset)
+#   PASS  T29 COMPUTE_EN=0 (in ST_IDLE)
+# 
+# --- T30: OV fault from ST_COMPUTE -> FAULT(2) ---
+#   PASS  T30 FAULT_LATCH=1
+#   PASS  T30 FAULT_CODE=2
+#   PASS  T30 OVUV_OK=0
+# 
+# --- T31: Soft de-arm with SW_COMPUTE=0 -> ST_IDLE, no fault ---
+#   PASS  T31 MOTOR_EN=1 (ARMED)
+#   PASS  T31 MOTOR_EN=0 (de-armed)
+#   PASS  T31 COMPUTE_EN=0 (in ST_IDLE)
+#   PASS  T31 FAULT_LATCH=0 (no fault)
+# 
+# --- T32: STATE_CODE values ---
+#   PASS  T32 STATE_CODE=0 (IDLE)
+#   PASS  T32 STATE_CODE=3 (COMPUTE)
+#   PASS  T32 STATE_CODE=1 (PRECHARGE)
+#   PASS  T32 STATE_CODE=1 (PRECHARGE_ABORT)
+#   PASS  T32 STATE_CODE=3 (back in COMPUTE)
+#   PASS  T32 STATE_CODE=2 (ARMED)
+#   PASS  T32 STATE_CODE=0 (FAULT)
+#   PASS  T32 FAULT_LATCH=1
+# 
+# --- T33: Soft-abort exit with SW_COMPUTE=0 -> ST_IDLE ---
+#   PASS  T33 in PRECHARGE
+#   PASS  T33 FAULT_LATCH=0 (soft abort)
+#   PASS  T33 PRECHARGE_REQ=0 (exited hold)
+#   PASS  T33 COMPUTE_EN=0 (in ST_IDLE)
+# 
+# --- T34: Remote arm pulse during abort-hold silently dropped ---
+#   PASS  T34 in PRECHARGE
+#   PASS  T34 PRECHARGE_REQ=0 (exited hold)
+#   PASS  T34 ARM_PERMIT=0 (arm pulse dropped)
+#   PASS  T34 FAULT_LATCH=0 (soft abort)
+# 
+# === SUMMARY: 176 passed, 0 failed ===
+# ALL TESTS PASSED
+# ** Note: $stop    : tb_pdu_glue.sv(1154)
+#    Time: 21832229883435 ps  Iteration: 0  Instance: /tb_pdu_glue
+# Break in Module tb_pdu_glue at tb_pdu_glue.sv line 1154
+# Stopped at tb_pdu_glue.sv line 1154
+# End time: 21:38:42 on May 06,2026, Elapsed time: 0:00:44
+# Errors: 0, Warnings: 1

@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP SIA469DJ-T1-GE3
+D Trans MOSFET P-CH 30V 12A 6-Pin PowerPAK SC-70 EP T/R
+K
+F https://www.vishay.com/docs/75354/sia469dj.pdf
+$ENDCMP
+#
+#End Doc Library

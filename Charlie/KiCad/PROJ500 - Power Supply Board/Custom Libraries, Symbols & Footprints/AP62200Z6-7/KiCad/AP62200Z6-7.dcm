@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP AP62200Z6-7
+D 4.2V TO 18V INPUT, 2A LOW IQ SYNCHRONOUS BUCK CONVERTER
+K
+F https://www.diodes.com//assets/Datasheets/AP62200_AP62201_AP62200T.pdf
+$ENDCMP
+#
+#End Doc Library

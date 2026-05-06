@@ -1,0 +1,7 @@
+#Start recording tcl command: 4/14/2026 19:43:10
+#Project Location: C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA; Project name: PROJ500_PDU_FPGA
+prj_project open "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PROJ500_PDU_FPGA.ldf"
+prj_run Translate -impl V1
+prj_run Synthesis -impl V1 -task Synplify_Synthesis
+prj_run Synthesis -impl V1
+#Stop recording: 4/15/2026 01:33:31

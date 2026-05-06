@@ -1,5 +1,0 @@
-../Core/Src/fpga_mon.c:57:13:i2c4_recover	1
-../Core/Src/fpga_mon.c:74:13:fpga_read_regs	2
-../Core/Src/fpga_mon.c:91:6:fpga_mon_init	1
-../Core/Src/fpga_mon.c:97:6:fpga_mon_tick	9
-../Core/Src/fpga_mon.c:158:24:fpga_mon_get	1

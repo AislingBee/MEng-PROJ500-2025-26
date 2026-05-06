@@ -1,0 +1,29 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#SamacSys ECAD Model 74LVC3G17GT,115
+#/695128/1152530/2.50/8/2/Integrated Circuit
+DEF 74LVC3G17GT,115 IC 0 30 Y Y 1 F N
+F0 "IC" 850 300 50 H V L CNN
+F1 "74LVC3G17GT,115" 850 200 50 H V L CNN
+F2 "XC7WT14GT115" 850 100 50 H I L CNN
+F3 "https://assets.nexperia.com/documents/data-sheet/74LVC3G17.pdf" 850 0 50 H I L CNN
+F4 "74LVC3G17 - Triple non-inverting Schmitt trigger with 5 V tolerant input@en-us" 850 -100 50 H I L CNN "Description"
+F5 "0.5" 850 -200 50 H I L CNN "Height"
+F6 "771-LVC3G17GT115" 850 -300 50 H I L CNN "Mouser Part Number"
+F7 "https://www.mouser.co.uk/ProductDetail/Nexperia/74LVC3G17GT115?qs=me8TqzrmIYVPZysg6L5QsA%3D%3D" 850 -400 50 H I L CNN "Mouser Price/Stock"
+F8 "Nexperia" 850 -500 50 H I L CNN "Manufacturer_Name"
+F9 "74LVC3G17GT,115" 850 -600 50 H I L CNN "Manufacturer_Part_Number"
+DRAW
+X 1A 1 0 0 200 R 50 50 0 0 P
+X 3Y 2 0 -100 200 R 50 50 0 0 P
+X 2A 3 0 -200 200 R 50 50 0 0 P
+X GND 4 0 -300 200 R 50 50 0 0 P
+X 2Y 5 1000 -300 200 L 50 50 0 0 P
+X 3A 6 1000 -200 200 L 50 50 0 0 P
+X 1Y 7 1000 -100 200 L 50 50 0 0 P
+X VCC 8 1000 0 200 L 50 50 0 0 P
+P 5 0 1 6 200 100 800 100 800 -400 200 -400 200 100 N
+ENDDRAW
+ENDDEF
+#
+#End Library

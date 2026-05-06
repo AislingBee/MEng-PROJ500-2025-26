@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "SMD1812B110TF_33"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2026-01-26-13:06:25)
+    (mountForm default
+        (footprintRef "FUSC4632X200N")
+        (spec "System")
+    )
+)

@@ -1,0 +1,15 @@
+{C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_selftest_mxo2.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_selftest_mxo2.sv}
+Questa Lattice OEM Edition-64 vlog 2024.2 Compiler 2024.05 May 20 2024
+-- Compiling module tb_pdu_selftest_mxo2
+
+Top level modules:
+	tb_pdu_selftest_mxo2
+
+} {} {}} {C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_selftest_mxo2.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_selftest_mxo2.sv}
+Questa Lattice OEM Edition-64 vlog 2024.2 Compiler 2024.05 May 20 2024
+-- Compiling module pdu_selftest_mxo2
+
+Top level modules:
+	pdu_selftest_mxo2
+
+} {} {}}

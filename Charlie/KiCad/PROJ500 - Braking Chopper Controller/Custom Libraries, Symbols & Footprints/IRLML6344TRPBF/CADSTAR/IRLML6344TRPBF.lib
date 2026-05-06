@@ -1,0 +1,16 @@
+.IRLML6344TRPBF :1 ;IRLML6344TRPBF N-channel MOSFET Transistor, 5 A, 30 V, 3-Pin SOT-23
+SOT95P237X112-3N
+*STM Q
+*NGS
+*PLB 1="G" 2="S" 3="D"
+*MXP 3
+*DFN IRLML6344TRPBF
+~!Mouser Part Number (942-IRLML6344TRPBF)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Infineon-Technologies/IRLML6344TRPBF?qs=9%252BKlkBgLFf2w4qS48UOXVw%3D%3D)
+~!Manufacturer_Name (Infineon)
+~!Manufacturer_Part_Number (IRLML6344TRPBF)
+~!Link Datasheet (https://www.infineon.com/dgdl/irlml6344pbf.pdf?fileId=5546d462533600a4015356689c44262c)
+~!Height (1.12mm)
+~!3D_Model (IRLML6344TRPBF)
+IRLML6344TRPBF
+1.1!U 2.1!U 3.1!U 

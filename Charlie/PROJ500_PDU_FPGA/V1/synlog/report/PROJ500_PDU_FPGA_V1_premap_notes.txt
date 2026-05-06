@@ -1,0 +1,50 @@
+@N: MF916 |Option synthesis_strategy=base is enabled. 
+@N: MF248 |Running in 64-bit mode.
+@N: MF666 |Clock conversion enabled. (Command "set_option -fix_gated_and_generated_clocks 1" in the project file.)
+@N: FX493 |Applying initial value "00" on instance estop_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance fb_closed_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance mcu_alive_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance mcu_arm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance mcu_fault_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance ov_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance pchgok_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_arm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_compute_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_rarm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_rdisarm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_rst_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance uv_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance vbusov_ff[1:0].
+@N: FX493 |Applying initial value "0" on instance rarm_qual.
+@N: FX493 |Applying initial value "0" on instance rdisarm_qual.
+@N: FX493 |Applying initial value "0" on instance rst_qual.
+@N: FX493 |Applying initial value "0" on instance tick_1ms.
+@N: FX493 |Applying initial value "0" on instance spare_heartbeat.
+@N: FX493 |Applying initial value "0" on instance rarm_prev.
+@N: FX493 |Applying initial value "0" on instance rdisarm_prev.
+@N: FX493 |Applying initial value "0" on instance rst_prev.
+@N: FX493 |Applying initial value "0" on instance mcu_fault_prev.
+@N: FX493 |Applying initial value "0" on instance ov_filt.
+@N: FX493 |Applying initial value "0" on instance pchgok_filt.
+@N: FX493 |Applying initial value "0" on instance uv_filt.
+@N: FX493 |Applying initial value "0" on instance vbusov_filt.
+@N: FX493 |Applying initial value "101" on instance wb_rst_ms[2:0].
+@N: FX493 |Applying initial value "00000" on instance t_ksel_blank[4:0].
+@N: FX493 |Applying initial value "000000000" on instance t_prechg_abort[8:0].
+@N: FX493 |Applying initial value "0000000" on instance t_prechg_abort_min[6:0].
+@N: FX493 |Applying initial value "000" on instance fault_code_r[2:0].
+@N: FX493 |Applying initial value "0" on instance pchg_abort_was_fault.
+@N: FX493 |Applying initial value "0" on instance fault_latch_r.
+@N: FX493 |Applying initial value "0" on instance remote_arm_latch.
+@N: FX493 |Applying initial value "0" on instance precharge_latch_r.
+@N: FX493 |Applying initial value "000" on instance state[2:0].
+@N: FX493 |Applying initial value "1" on instance i2c_state[0].
+@N: FX493 |Applying initial value "0" on instance i2c_state[1].
+@N: FX493 |Applying initial value "0" on instance i2c_state[2].
+@N: FX493 |Applying initial value "0" on instance i2c_state[3].
+@N: FX493 |Applying initial value "0" on instance i2c_state[4].
+@N: FX493 |Applying initial value "0" on instance i2c_state[5].
+@N: FX493 |Applying initial value "0" on instance i2c_state[6].
+@N: MO225 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":960:4:960:12|There are no possible illegal states for state machine wb_state[1:0] (in view: work.pdu_glue(verilog)); safe FSM implementation is not required.
+@N: FX1184 |Applying syn_allowed_resources blockrams=2 on top level netlist pdu_glue 
+@N: FX1143 |Skipping assigning INTERNAL_VREF to iobanks, because the table of mapping from pin to iobank is not initialized.

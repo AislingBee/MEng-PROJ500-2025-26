@@ -1,0 +1,20 @@
+if {![file exists "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PROJ500_PDU_FPGA_SIM/PROJ500_PDU_FPGA_SIM.mpf"]} { 
+	project new "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PROJ500_PDU_FPGA_SIM" PROJ500_PDU_FPGA_SIM
+	project addfile "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_selftest_mxo2.sv"
+	project addfile "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_selftest_mxo2.sv"
+	vlib  work
+	vdel -lib work -all 
+	vlib work
+	vlog -sv -mfcu \
+	+incdir+C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA \
+ -work work \
+	"C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_selftest_mxo2.sv" \
+	"C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_selftest_mxo2.sv"
+} else {
+	project open "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PROJ500_PDU_FPGA_SIM/PROJ500_PDU_FPGA_SIM"
+	project compileoutofdate
+}
+vsim -voptargs=+acc -L work -L pmi_work -L ovi_machxo2  tb_pdu_selftest_mxo2
+view wave
+add wave /*
+run 1000ns

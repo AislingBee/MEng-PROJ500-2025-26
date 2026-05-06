@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'SMD1812B110TF_33'
+CLASS = DISCRETE
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Yageo Group", "SMD1812B110TF/33" (!) = "", "FUSC4632X200N", "Fuses Chip", "603-SMD1812B110TF/33", "https://www.mouser.co.uk/ProductDetail/YAGEO/SMD1812B110TF-33?qs=PzGy0jfpSMuML01qySW0Yw%3D%3D", "Resettable Fuses - PPTC PPTC SMD 1812, 33V 1.1A, Reel 7"", "https://www.mouser.cn/datasheet/2/447/SMD1812_1-1955023.pdf", "2 mm"
+END_PART
+
+END.

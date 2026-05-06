@@ -1,0 +1,9 @@
+Manufacturer=Diodes Incorporated
+PartNumber=DMP3014SFDE-13
+PartCategory=MOSFET (P-Channel)
+PackageCategory=Other
+PinCount=8
+Version=1.3
+Released=2025-06-13 13:23:07
+Downloaded=2026-03-15 02:23:39
+3D=Y

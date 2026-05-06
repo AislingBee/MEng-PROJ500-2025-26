@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'ECS_.327_6_13X'
+CLASS = DISCRETE
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "ECS", "ECS-.327-6-13X" (!) = "", "ECS327613X", "Other", "520-ECS327-6-13-X", "https://www.mouser.co.uk/ProductDetail/ECS/ECS-.327-6-13X?qs=aGohqJksTCIxgMwEoE0VEw%3D%3D", "32.768 kHz +/-20ppm Crystal 6pF 35 kOhms Cylindrical Can, Radial", "https://ecsxtal.com/store/pdf/ECS-3x8X%25202x6X%25201X5X.pdf", "6.2 mm"
+END_PART
+
+END.

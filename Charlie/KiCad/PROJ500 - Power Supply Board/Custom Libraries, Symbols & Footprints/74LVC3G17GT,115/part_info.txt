@@ -1,0 +1,9 @@
+Manufacturer=Nexperia
+PartNumber=74LVC3G17GT,115
+PartCategory=Integrated Circuit
+PackageCategory=Other
+PinCount=8
+Version=10.3
+Released=2019-11-12 07:41:52
+Downloaded=2026-03-05 22:55:59
+3D=Y

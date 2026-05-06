@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP DMP3014SFDE-13
+D P-Channel 30 V 11.4A (Ta) 800mW (Ta) Surface Mount U-DFN2020-6 (Type E)
+K
+F https://www.diodes.com/datasheet/download/DMP3014SFDE.pdf
+$ENDCMP
+#
+#End Doc Library

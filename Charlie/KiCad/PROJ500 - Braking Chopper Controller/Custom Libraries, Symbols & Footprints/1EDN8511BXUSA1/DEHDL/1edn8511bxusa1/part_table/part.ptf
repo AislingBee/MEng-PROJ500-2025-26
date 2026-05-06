@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART '1EDN8511BXUSA1'
+CLASS = IC
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Infineon", "1EDN8511BXUSA1" (!) = "", "SOT95P280X145-6N", "SOT23 (6-Pin)", "726-1EDN8511BXUSA1", "https://www.mouser.co.uk/ProductDetail/Infineon-Technologies/1EDN8511BXUSA1?qs=W0yvOO0ixfGKnnVISnHd5g%3D%3D", "INFINEON - 1EDN8511BXUSA1 - MOSFET DRIVER, -40 TO 150DEG C", "https://www.infineon.com/cms/en/product/power/gate-driver-ics/?", "1.45 mm"
+END_PART
+
+END.

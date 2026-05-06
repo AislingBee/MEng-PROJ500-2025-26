@@ -140,10 +140,11 @@ int main(void)
   MX_RTC_Init();
   MX_SPI3_Init();
   MX_USART2_UART_Init();
-  MX_LWIP_Init();
-  /* USER CODE BEGIN 2 */
-  /* Boot diagnostic: print RSR so reset cause is visible after all inits.
-   * PINRSTF = external NRST; SFTRSTF = NVIC_SystemReset() (fault/sw). */
+
+  /* Boot diagnostic: print RSR BEFORE MX_LWIP_Init so we see the cause
+   * even if LWIP init hangs or crashes before RCU_App_Init() runs.
+   * PINRSTF = external NRST event (EMI? button?)
+   * SFTRSTF = NVIC_SystemReset() from fault_indicate() or Error_Handler */
   {
     uint32_t rsr = RCC->RSR;
     st_dbg_printf("\r\n[BOOT] RSR=0x%08lX", (unsigned long)rsr);
@@ -155,8 +156,12 @@ int main(void)
     if (rsr & RCC_RSR_D1RSTF)    st_dbg_printf(" D1PWR");
     if (rsr & RCC_RSR_D2RSTF)    st_dbg_printf(" D2PWR");
     st_dbg_printf("\r\n");
+    st_dbg_printf("[BOOT] MX_LWIP_Init starting...\r\n");
   }
-  st_dbg_printf("[BOOT] LwIP init done.\r\n");
+
+  MX_LWIP_Init();
+  /* USER CODE BEGIN 2 */
+  st_dbg_printf("[BOOT] MX_LWIP_Init done.\r\n");
 #if defined(RCU_BUILD_MODE_SELFTEST)
 	RCU_SelfTest_Init();
 #elif defined(RCU_BUILD_MODE_RUNTIME)
@@ -348,7 +353,7 @@ static void MX_FDCAN1_Init(void)
   hfdcan1.Init.RxBufferSize = FDCAN_DATA_BYTES_8;
   hfdcan1.Init.TxEventsNbr = 0;
   hfdcan1.Init.TxBuffersNbr = 0;
-  hfdcan1.Init.TxFifoQueueElmtsNbr = 8;
+  hfdcan1.Init.TxFifoQueueElmtsNbr = 4;
   hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
   hfdcan1.Init.TxElmtSize = FDCAN_DATA_BYTES_8;
   if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
@@ -390,7 +395,7 @@ static void MX_FDCAN2_Init(void)
   hfdcan2.Init.DataSyncJumpWidth = 5;
   hfdcan2.Init.DataTimeSeg1 = 19;
   hfdcan2.Init.DataTimeSeg2 = 5;
-  hfdcan2.Init.MessageRAMOffset = 67;
+  hfdcan2.Init.MessageRAMOffset = 32;
   hfdcan2.Init.StdFiltersNbr = 1;
   hfdcan2.Init.ExtFiltersNbr = 0;
   hfdcan2.Init.RxFifo0ElmtsNbr = 1;
@@ -443,7 +448,7 @@ static void MX_FDCAN3_Init(void)
   hfdcan3.Init.DataSyncJumpWidth = 1;
   hfdcan3.Init.DataTimeSeg1 = 1;
   hfdcan3.Init.DataTimeSeg2 = 1;
-  hfdcan3.Init.MessageRAMOffset = 76;
+  hfdcan3.Init.MessageRAMOffset = 64;
   hfdcan3.Init.StdFiltersNbr = 1;
   hfdcan3.Init.ExtFiltersNbr = 1;
   hfdcan3.Init.RxFifo0ElmtsNbr = 8;
@@ -454,7 +459,7 @@ static void MX_FDCAN3_Init(void)
   hfdcan3.Init.RxBufferSize = FDCAN_DATA_BYTES_8;
   hfdcan3.Init.TxEventsNbr = 0;
   hfdcan3.Init.TxBuffersNbr = 0;
-  hfdcan3.Init.TxFifoQueueElmtsNbr = 8;
+  hfdcan3.Init.TxFifoQueueElmtsNbr = 4;
   hfdcan3.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
   hfdcan3.Init.TxElmtSize = FDCAN_DATA_BYTES_8;
   if (HAL_FDCAN_Init(&hfdcan3) != HAL_OK)
@@ -1019,12 +1024,14 @@ void MPU_Config(void)
   */
   MPU_InitStruct.Number = MPU_REGION_NUMBER1;
   MPU_InitStruct.BaseAddress = 0x30000000;
-  MPU_InitStruct.Size = MPU_REGION_SIZE_32KB;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_32KB;  /* covers DMA descriptors + RX pool (fits in 32KB SRAM1+SRAM2) */
   MPU_InitStruct.SubRegionDisable = 0x0;
   MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
   MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
   MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;   /* ETH DMA region: no D-cache */
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE; /* no write buffer either */
 
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
   /* Enables the MPU */

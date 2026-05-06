@@ -1,0 +1,9 @@
+Manufacturer=Diodes Incorporated
+PartNumber=DMP6023LFG-7
+PartCategory=MOSFET (P-Channel)
+PackageCategory=Other
+PinCount=9
+Version=2.1
+Released=2024-11-19 11:57:42
+Downloaded=2026-02-15 21:06:56
+3D=Y

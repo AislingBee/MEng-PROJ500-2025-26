@@ -1,0 +1,9 @@
+Manufacturer=Espressif Systems
+PartNumber=ESP32-C3-MINI-1U-H4X
+PartCategory=Integrated Circuit
+PackageCategory=Other
+PinCount=61
+Version=1.4
+Released=2025-10-17 07:49:14
+Downloaded=2026-04-02 03:12:52
+3D=Y

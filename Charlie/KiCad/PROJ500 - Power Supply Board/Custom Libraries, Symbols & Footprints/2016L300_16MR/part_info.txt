@@ -1,0 +1,9 @@
+Manufacturer=LITTELFUSE
+PartNumber=2016L300/16MR
+PartCategory=Fuse
+PackageCategory=Fuses Chip
+PinCount=2
+Version=1.1
+Released=2020-04-18 03:18:17
+Downloaded=2026-02-27 22:58:32
+3D=Y

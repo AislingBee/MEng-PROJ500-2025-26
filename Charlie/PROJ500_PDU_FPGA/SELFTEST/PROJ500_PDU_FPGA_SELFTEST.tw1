@@ -1,0 +1,103 @@
+
+Loading design for application trce from file proj500_pdu_fpga_selftest_map.ncd.
+Design name: pdu_selftest_mxo2
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application trce from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+Setup and Hold Report
+
+--------------------------------------------------------------------------------
+Lattice TRACE Report - Setup, Version Diamond (64-bit) 3.14.0.75.2
+Mon Apr 20 18:52:02 2026
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Report Information
+------------------
+Command line:    trce -v 1 -gt -mapchkpnt 0 -sethld -o PROJ500_PDU_FPGA_SELFTEST.tw1 -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_SELFTEST_map.ncd PROJ500_PDU_FPGA_SELFTEST.prf 
+Design file:     proj500_pdu_fpga_selftest_map.ncd
+Preference file: proj500_pdu_fpga_selftest.prf
+Device,speed:    LCMXO2-640HC,5
+Report level:    verbose report, limited to 1 item per preference
+--------------------------------------------------------------------------------
+
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+--------------------------------------------------------------------------------
+
+
+
+================================================================================
+Preference: Default path enumeration
+            14 items scored, 0 timing errors detected.
+--------------------------------------------------------------------------------
+
+Report:    8.262ns delay ESTOP_OK to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         31.PAD to       31.PADDI ESTOP_OK
+ROUTE         1   e 1.030       31.PADDI to     SLICE_2.A0 ESTOP_OK_c
+CTOF_DEL    ---     0.452     SLICE_2.A0 to     SLICE_2.F0 SLICE_2
+ROUTE         1   e 1.030     SLICE_2.F0 to     SLICE_0.B1 SPARE_OUT_1_7
+CTOF_DEL    ---     0.452     SLICE_0.B1 to     SLICE_0.F1 SLICE_0
+ROUTE         1   e 1.030     SLICE_0.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                    8.262   (62.6% logic, 37.4% route), 4 logic levels.
+
+Report:    8.262ns is the maximum delay for this preference.
+
+
+================================================================================
+Preference: Default net enumeration
+            20 items scored, 0 timing errors detected.
+--------------------------------------------------------------------------------
+
+Report:    1.030ns maximum delay on SPARE_OUT_1_9
+
+           Delays             Connection(s)
+         e 1.030ns       SLICE_1.F0 to SLICE_0.D1      
+
+Report:    1.030ns is the maximum delay for this preference.
+
+Report Summary
+--------------
+----------------------------------------------------------------------------
+Preference                              |   Constraint|       Actual|Levels
+----------------------------------------------------------------------------
+                                        |             |             |
+Default path enumeration                |     0.000 ns|     8.262 ns|   0  
+                                        |             |             |
+Default net enumeration                 |     0.000 ns|     1.030 ns|   0  
+                                        |             |             |
+----------------------------------------------------------------------------
+
+
+All preferences were met.
+
+
+Clock Domains Analysis
+------------------------
+
+Found 0 clocks:
+
+
+Timing summary (Setup):
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 14 paths, 20 nets, and 36 connections (100.00% coverage)
+
+--------------------------------------------------------------------------------
+

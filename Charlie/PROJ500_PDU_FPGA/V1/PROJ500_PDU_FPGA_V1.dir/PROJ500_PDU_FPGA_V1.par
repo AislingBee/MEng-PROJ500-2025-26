@@ -1,0 +1,28 @@
+PAR: Place And Route Diamond (64-bit) 3.14.0.75.2.
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+Wed May 06 21:42:31 2026
+
+C:/Programs/Lattice Diamond/ispfpga\bin\nt64\par -f PROJ500_PDU_FPGA_V1.p2t
+PROJ500_PDU_FPGA_V1_map.ncd PROJ500_PDU_FPGA_V1.dir PROJ500_PDU_FPGA_V1.prf
+-gui -msgset
+C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml
+
+
+Preference file: PROJ500_PDU_FPGA_V1.prf.
+
+Level/       Number       Worst        Timing       Worst        Timing       Run          NCD
+Cost [ncd]   Unrouted     Slack        Score        Slack(hold)  Score(hold)  Time         Status
+----------   --------     -----        ------       -----------  -----------  ----         ------
+5_1   *      0            467.799      0            0.306        0            03           Completed
+
+* : Design saved.
+
+Total (real) run time for 1-seed: 3 secs 
+
+par done!
+
+Note: user must run 'Trace' for timing closure signoff.

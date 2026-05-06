@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP ASPI-4030S-4R7M-T
+D 4.7 H Shielded Drum Core, Wirewound Inductor 2 A 60mOhm Nonstandard
+K
+F https://abracon.com/Magnetics/power/ASPI-4030S.pdf
+$ENDCMP
+#
+#End Doc Library

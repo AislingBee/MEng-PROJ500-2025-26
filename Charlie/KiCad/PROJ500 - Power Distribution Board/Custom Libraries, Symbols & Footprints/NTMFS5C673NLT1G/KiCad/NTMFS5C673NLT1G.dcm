@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP NTMFS5C673NLT1G
+D Low RDS(on); Low input capacitance; Maximum junction temperature of 175C; RoHS Compliant
+K
+F https://www.onsemi.com/pub/Collateral/NTMFS5C673NL-D.PDF
+$ENDCMP
+#
+#End Doc Library

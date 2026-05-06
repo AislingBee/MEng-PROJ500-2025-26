@@ -1,0 +1,9 @@
+Manufacturer=ECS
+PartNumber=ECS-.327-6-13X
+PartCategory=Crystal or Oscillator
+PackageCategory=Other
+PinCount=2
+Version=1.8
+Released=2024-02-19 03:56:58
+Downloaded=2026-02-15 22:10:47
+3D=Y

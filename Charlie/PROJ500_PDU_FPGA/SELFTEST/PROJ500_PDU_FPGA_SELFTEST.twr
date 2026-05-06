@@ -1,0 +1,281 @@
+
+Loading design for application trce from file proj500_pdu_fpga_selftest.ncd.
+Design name: pdu_selftest_mxo2
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application trce from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+Setup and Hold Report
+
+--------------------------------------------------------------------------------
+Lattice TRACE Report - Setup, Version Diamond (64-bit) 3.14.0.75.2
+Mon Apr 20 18:52:07 2026
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Report Information
+------------------
+Command line:    trce -v 10 -gt -sethld -sp 5 -sphld m -o PROJ500_PDU_FPGA_SELFTEST.twr -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_SELFTEST.ncd PROJ500_PDU_FPGA_SELFTEST.prf 
+Design file:     proj500_pdu_fpga_selftest.ncd
+Preference file: proj500_pdu_fpga_selftest.prf
+Device,speed:    LCMXO2-640HC,5
+Report level:    verbose report, limited to 10 items per preference
+--------------------------------------------------------------------------------
+
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+--------------------------------------------------------------------------------
+
+
+
+================================================================================
+Preference: Default path enumeration
+            14 items scored, 0 timing errors detected.
+--------------------------------------------------------------------------------
+
+Report:   11.014ns delay FB_CLOSED to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         32.PAD to       32.PADDI FB_CLOSED
+ROUTE         1     2.219       32.PADDI to      R6C11A.A0 FB_CLOSED_c
+CTOF_DEL    ---     0.452      R6C11A.A0 to      R6C11A.F0 SLICE_2
+ROUTE         1     1.622      R6C11A.F0 to      R6C17D.B1 SPARE_OUT_1_7
+CTOF_DEL    ---     0.452      R6C17D.B1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                   11.014   (47.0% logic, 53.0% route), 4 logic levels.
+
+Report:   10.695ns delay ESTOP_OK to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         31.PAD to       31.PADDI ESTOP_OK
+ROUTE         1     1.900       31.PADDI to      R6C11A.B0 ESTOP_OK_c
+CTOF_DEL    ---     0.452      R6C11A.B0 to      R6C11A.F0 SLICE_2
+ROUTE         1     1.622      R6C11A.F0 to      R6C17D.B1 SPARE_OUT_1_7
+CTOF_DEL    ---     0.452      R6C17D.B1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                   10.695   (48.4% logic, 51.6% route), 4 logic levels.
+
+Report:   10.655ns delay MCU_ALIVE to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         40.PAD to       40.PADDI MCU_ALIVE
+ROUTE         1     1.860       40.PADDI to      R6C11A.C0 MCU_ALIVE_c
+CTOF_DEL    ---     0.452      R6C11A.C0 to      R6C11A.F0 SLICE_2
+ROUTE         1     1.622      R6C11A.F0 to      R6C17D.B1 SPARE_OUT_1_7
+CTOF_DEL    ---     0.452      R6C17D.B1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                   10.655   (48.5% logic, 51.5% route), 4 logic levels.
+
+Report:   10.624ns delay MCU_CMD_FAULT to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         37.PAD to       37.PADDI MCU_CMD_FAULT
+ROUTE         1     2.907       37.PADDI to      R6C17B.B1 MCU_CMD_FAULT_c
+CTOF_DEL    ---     0.452      R6C17B.B1 to      R6C17B.F1 SLICE_1
+ROUTE         1     0.544      R6C17B.F1 to      R6C17D.D1 SPARE_OUT_1_8
+CTOF_DEL    ---     0.452      R6C17D.D1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                   10.624   (48.7% logic, 51.3% route), 4 logic levels.
+
+Report:   10.540ns delay MCU_CMD_ARM to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         38.PAD to       38.PADDI MCU_CMD_ARM
+ROUTE         1     1.745       38.PADDI to      R6C11A.D0 MCU_CMD_ARM_c
+CTOF_DEL    ---     0.452      R6C11A.D0 to      R6C11A.F0 SLICE_2
+ROUTE         1     1.622      R6C11A.F0 to      R6C17D.B1 SPARE_OUT_1_7
+CTOF_DEL    ---     0.452      R6C17D.B1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                   10.540   (49.1% logic, 50.9% route), 4 logic levels.
+
+Report:   10.267ns delay VBUS_OV to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         35.PAD to       35.PADDI VBUS_OV
+ROUTE         1     2.240       35.PADDI to      R6C17D.A0 VBUS_OV_c
+CTOF_DEL    ---     0.452      R6C17D.A0 to      R6C17D.F0 SLICE_0
+ROUTE         1     0.854      R6C17D.F0 to      R6C17D.A1 SPARE_OUT_1_6
+CTOF_DEL    ---     0.452      R6C17D.A1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                   10.267   (50.4% logic, 49.6% route), 4 logic levels.
+
+Report:   10.055ns delay SW_REMOTE_DISARM to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         24.PAD to       24.PADDI SW_REMOTE_DISARM
+ROUTE         1     2.223       24.PADDI to      R6C17B.A0 SW_REMOTE_DISARM_c
+CTOF_DEL    ---     0.452      R6C17B.A0 to      R6C17B.F0 SLICE_1
+ROUTE         1     0.659      R6C17B.F0 to      R6C17D.C1 SPARE_OUT_1_9
+CTOF_DEL    ---     0.452      R6C17D.C1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                   10.055   (51.4% logic, 48.6% route), 4 logic levels.
+
+Report:    9.855ns delay UV to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         34.PAD to       34.PADDI UV
+ROUTE         1     1.828       34.PADDI to      R6C17D.B0 UV_c
+CTOF_DEL    ---     0.452      R6C17D.B0 to      R6C17D.F0 SLICE_0
+ROUTE         1     0.854      R6C17D.F0 to      R6C17D.A1 SPARE_OUT_1_6
+CTOF_DEL    ---     0.452      R6C17D.A1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                    9.855   (52.5% logic, 47.5% route), 4 logic levels.
+
+Report:    9.557ns delay SW_RST_FAULT to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         28.PAD to       28.PADDI SW_RST_FAULT
+ROUTE         1     1.725       28.PADDI to      R6C17B.B0 SW_RST_FAULT_c
+CTOF_DEL    ---     0.452      R6C17B.B0 to      R6C17B.F0 SLICE_1
+ROUTE         1     0.659      R6C17B.F0 to      R6C17D.C1 SPARE_OUT_1_9
+CTOF_DEL    ---     0.452      R6C17D.C1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                    9.557   (54.1% logic, 45.9% route), 4 logic levels.
+
+Report:    9.481ns delay PRECHARGE_OK to SPARE_OUT_1
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.132         36.PAD to       36.PADDI PRECHARGE_OK
+ROUTE         1     1.764       36.PADDI to      R6C17B.C1 PRECHARGE_OK_c
+CTOF_DEL    ---     0.452      R6C17B.C1 to      R6C17B.F1 SLICE_1
+ROUTE         1     0.544      R6C17B.F1 to      R6C17D.D1 SPARE_OUT_1_8
+CTOF_DEL    ---     0.452      R6C17D.D1 to      R6C17D.F1 SLICE_0
+ROUTE         1     2.001      R6C17D.F1 to       15.PADDO SPARE_OUT_1_c
+DOPAD_DEL   ---     3.136       15.PADDO to         15.PAD SPARE_OUT_1
+                  --------
+                    9.481   (54.6% logic, 45.4% route), 4 logic levels.
+
+Report:   11.014ns is the maximum delay for this preference.
+
+
+================================================================================
+Preference: Default net enumeration
+            20 items scored, 0 timing errors detected.
+--------------------------------------------------------------------------------
+
+Report:    3.975ns maximum delay on VCC
+
+           Delays             Connection(s)
+           1.026ns        R6C11A.F1 to 20.PADDO        
+           2.379ns        R6C11A.F1 to 19.PADDO        
+           2.379ns        R6C11A.F1 to 18.PADDO        
+           2.379ns        R6C11A.F1 to 17.PADDO        
+           2.379ns        R6C11A.F1 to 16.PADDO        
+           2.463ns        R6C11A.F1 to 7.PADDO         
+           2.463ns        R6C11A.F1 to 8.PADDO         
+           3.975ns        R6C11A.F1 to 9.PADDO         
+           3.975ns        R6C11A.F1 to 10.PADDO        
+           3.210ns        R6C11A.F1 to 11.PADDO        
+           3.210ns        R6C11A.F1 to 12.PADDO        
+           2.463ns        R6C11A.F1 to 2.PADDO         
+           2.463ns        R6C11A.F1 to 3.PADDO         
+           2.445ns        R6C11A.F1 to 4.PADDO         
+           2.445ns        R6C11A.F1 to 5.PADDO         
+           2.758ns        R6C11A.F1 to 14.PADDO        
+           1.026ns        R6C11A.F1 to 21.PADDO        
+
+Report:    2.907ns maximum delay on MCU_CMD_FAULT_c
+
+           Delays             Connection(s)
+           2.907ns         37.PADDI to R6C17B.B1       
+
+Report:    2.240ns maximum delay on VBUS_OV_c
+
+           Delays             Connection(s)
+           2.240ns         35.PADDI to R6C17D.A0       
+
+Report:    2.223ns maximum delay on SW_REMOTE_DISARM_c
+
+           Delays             Connection(s)
+           2.223ns         24.PADDI to R6C17B.A0       
+
+Report:    2.219ns maximum delay on FB_CLOSED_c
+
+           Delays             Connection(s)
+           2.219ns         32.PADDI to R6C11A.A0       
+
+Report:    2.001ns maximum delay on SPARE_OUT_1_c
+
+           Delays             Connection(s)
+           2.001ns        R6C17D.F1 to 15.PADDO        
+
+Report:    1.900ns maximum delay on ESTOP_OK_c
+
+           Delays             Connection(s)
+           1.900ns         31.PADDI to R6C11A.B0       
+
+Report:    1.860ns maximum delay on MCU_ALIVE_c
+
+           Delays             Connection(s)
+           1.860ns         40.PADDI to R6C11A.C0       
+
+Report:    1.828ns maximum delay on UV_c
+
+           Delays             Connection(s)
+           1.828ns         34.PADDI to R6C17D.B0       
+
+Report:    1.764ns maximum delay on PRECHARGE_OK_c
+
+           Delays             Connection(s)
+           1.764ns         36.PADDI to R6C17B.C1       
+
+Report:    3.975ns is the maximum delay for this preference.
+
+Report Summary
+--------------
+----------------------------------------------------------------------------
+Preference                              |   Constraint|       Actual|Levels
+----------------------------------------------------------------------------
+                                        |             |             |
+Default path enumeration                |     0.000 ns|    11.014 ns|   0  
+                                        |             |             |
+Default net enumeration                 |     0.000 ns|     3.975 ns|   0  
+                                        |             |             |
+----------------------------------------------------------------------------
+
+
+All preferences were met.
+
+
+Clock Domains Analysis
+------------------------
+
+Found 0 clocks:
+
+
+Timing summary (Setup):
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 14 paths, 20 nets, and 36 connections (100.00% coverage)
+
+--------------------------------------------------------------------------------
+

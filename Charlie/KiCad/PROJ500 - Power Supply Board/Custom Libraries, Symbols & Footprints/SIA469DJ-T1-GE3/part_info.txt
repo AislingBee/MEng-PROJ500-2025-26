@@ -1,0 +1,9 @@
+Manufacturer=Vishay
+PartNumber=SIA469DJ-T1-GE3
+PartCategory=MOSFET (P-Channel)
+PackageCategory=Other
+PinCount=8
+Version=1.2
+Released=2021-06-22 09:35:50
+Downloaded=2026-03-26 23:54:22
+3D=Y

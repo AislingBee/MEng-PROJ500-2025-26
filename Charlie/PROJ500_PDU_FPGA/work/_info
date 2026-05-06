@@ -1,0 +1,221 @@
+m255
+K4
+z2
+Z0 !s12c _opt
+Z1 !s99 nomlopt
+R0
+R1
+R0
+R1
+Z2 !s12c _opt1
+R1
+R0
+R1
+R0
+R1
+Z3 !s12c _opt2
+R1
+R3
+R1
+R3
+R1
+R3
+R1
+R3
+R1
+R3
+R1
+R3
+R1
+R3
+R1
+R2
+R1
+R0
+R1
+R0
+R1
+!s11f vlog 2024.2 2024.05, May 20 2024
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z4 dC:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA
+T_opt
+!s110 1778099879
+VXU[jXlCn_:ZlR[g;^>5zl3
+Z5 04 11 4 work tb_pdu_glue fast 0
+=1-d8b32fc3b4e3-69fba6a6-35f-df5c
+R1
+Z6 !s12f OEM25U3 
+Z7 !s12b OEM100
+Z8 !s124 OEM100
+Z9 !s135 nogc
+Z10 o-quiet -auto_acc_if_foreign -work work +acc
+Z11 tCvgOpt 0
+n@_opt
+Z12 OL;O;2024.2;79
+R4
+T_opt1
+!s110 1777675548
+V0IYXRYMM2U0XX84lUH:@M0
+R5
+=1-d8b32fc3b4e3-69f52d1c-151-47bc
+R1
+R6
+R7
+R8
+R9
+R10
+R11
+n@_opt1
+R12
+R4
+T_opt2
+!s110 1776832383
+V:FEI4J4NE>S[CWlP`JA972
+R5
+=1-d8b32fc3b4e3-69e84f7f-3d-777c
+R1
+R6
+R7
+R8
+R9
+o-quiet -auto_acc_if_foreign -work work -L work +acc
+R11
+n@_opt2
+R12
+R4
+vPDU_EFB_I2C
+2C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PDU_EFB_I2C_sim.v|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_glue_mxo2.sv|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_glue.sv
+Z13 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
+!s110 1776832378
+!i10b 1
+!s100 885dP2z`eABQU_;JGm<Ef0
+I[WX3JC2GSK8QY]XEIBFYm3
+S1
+R4
+w1776811917
+8C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PDU_EFB_I2C_sim.v
+FC:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PDU_EFB_I2C_sim.v
+!i122 15
+L0 11 29
+Z14 VDg1SIo80bB@j0V0VzS_@n1
+Z15 OL;L;2024.2;79
+r1
+!s85 0
+31
+!s108 1776832378.000000
+!s107 C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_glue.sv|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_glue_mxo2.sv|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PDU_EFB_I2C_sim.v|
+!s90 -reportprogress|300|-sv|-mfcu|+define+SIM|+incdir+C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA|-work|work|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PDU_EFB_I2C_sim.v|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_glue_mxo2.sv|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_glue.sv|
+!i113 0
+Z16 o-sv -mfcu -work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+!s92 -sv -mfcu +define+SIM {+incdir+C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA} -work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R11
+n@p@d@u_@e@f@b_@i2@c
+vpdu_glue
+Z17 2pdu_glue_mxo2.sv|tb_pdu_glue.sv
+R13
+Z18 !s110 1778100170
+!i10b 1
+!s100 BB`YLDhjz2NJ3?=>nk]Ye1
+I`AS37Ob0DnFhj][6zzc:b3
+S1
+R4
+w1778098315
+8pdu_glue_mxo2.sv
+Fpdu_glue_mxo2.sv
+!i122 25
+L0 189 871
+R14
+R15
+r1
+!s85 0
+31
+Z19 !s108 1778100170.000000
+!s107 tb_pdu_glue.sv|pdu_glue_mxo2.sv|
+Z20 !s90 -reportprogress|300|-sv|-mfcu|+define+SIM|-work|work|pdu_glue_mxo2.sv|tb_pdu_glue.sv|
+!i113 0
+R16
+Z21 !s92 -sv -mfcu +define+SIM -work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R11
+vpdu_selftest_mxo2
+Z22 2C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_selftest_mxo2.sv|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_selftest_mxo2.sv
+R13
+Z23 !s110 1776237535
+!i10b 1
+!s100 JiV5biz`2BkmmChZ^O@?H1
+I5PGH8nQz5NC3R^?QZN7@f0
+S1
+R4
+w1776236869
+8C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_selftest_mxo2.sv
+FC:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_selftest_mxo2.sv
+!i122 1
+L0 20 240
+R14
+R15
+r1
+!s85 0
+31
+Z24 !s108 1776237535.000000
+Z25 !s107 C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_selftest_mxo2.sv|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_selftest_mxo2.sv|
+Z26 !s90 -reportprogress|300|-sv|+define+SIM|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/pdu_selftest_mxo2.sv|C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_selftest_mxo2.sv|
+!i113 0
+Z27 o-sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z28 !s92 -sv +define+SIM -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R11
+vtb_pdu_glue
+R17
+R13
+R18
+!i10b 1
+!s100 ALDDi[R_KJk4NIOCn6mU<2
+Ijnf[M56Fl^kZPSE]@[jPk0
+S1
+R4
+w1778099861
+8tb_pdu_glue.sv
+Ftb_pdu_glue.sv
+!i122 25
+L0 49 1109
+R14
+R15
+r1
+!s85 0
+31
+R19
+Z29 !s107 tb_pdu_glue.sv|pdu_glue_mxo2.sv|
+R20
+!i113 0
+R16
+R21
+R11
+vtb_pdu_selftest_mxo2
+R22
+R13
+R23
+!i10b 1
+!s100 kl1?hlmXZ<l5[d[YefBB_1
+Ibg8`kRzfLM1;fzMnDRX>G0
+S1
+R4
+w1776235671
+8C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_selftest_mxo2.sv
+FC:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/tb_pdu_selftest_mxo2.sv
+!i122 1
+L0 4 83
+R14
+R15
+r1
+!s85 0
+31
+R24
+R25
+R26
+!i113 0
+R27
+R28
+R11

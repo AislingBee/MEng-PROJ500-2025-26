@@ -1,0 +1,9 @@
+Manufacturer=Bourns
+PartNumber=SRP1265A-6R8M
+PartCategory=Inductor
+PackageCategory=Inductors Precision Moulded
+PinCount=2
+Version=2.1
+Released=2018-12-01 12:43:01
+Downloaded=2026-02-23 01:22:55
+3D=Y

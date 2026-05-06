@@ -1,0 +1,270 @@
+
+      Lattice Mapping Report File for Design Module 'pdu_selftest_mxo2'
+
+
+Design Information
+------------------
+
+Command line:   map -a MachXO2 -p LCMXO2-640HC -t QFN48 -s 5 -oc Commercial
+     PROJ500_PDU_FPGA_SELFTEST.ngd -o PROJ500_PDU_FPGA_SELFTEST_map.ncd -pr
+     PROJ500_PDU_FPGA_SELFTEST.prf -mp PROJ500_PDU_FPGA_SELFTEST.mrp -lpf
+     C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ
+     500_PDU_FPGA/SELFTEST/PROJ500_PDU_FPGA_SELFTEST_synplify.lpf -lpf
+     C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500
+     (Humanoid)/FPGA/PROJ500_PDU_FPGA/SELFTEST/source/PROJ500_PDU_FPGA.lpf -c 0
+     -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500
+     (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml 
+Target Vendor:  LATTICE
+Target Device:  LCMXO2-640HCQFN48
+Target Performance:   5
+Mapper:  xo2c00,  version:  Diamond (64-bit) 3.14.0.75.2
+Mapped on:  04/20/26  18:52:02
+
+Design Summary
+--------------
+
+   Number of registers:      0 out of   760 (0%)
+      PFU registers:            0 out of   640 (0%)
+      PIO registers:            0 out of   120 (0%)
+   Number of SLICEs:         3 out of   320 (1%)
+      SLICEs as Logic/ROM:      3 out of   320 (1%)
+      SLICEs as RAM:            0 out of   240 (0%)
+      SLICEs as Carry:          0 out of   320 (0%)
+   Number of LUT4s:          6 out of   640 (1%)
+      Number used as logic LUTs:          6
+      Number used as distributed RAM:     0
+      Number used as ripple logic:        0
+      Number used as shift registers:     0
+   Number of PIO sites used: 32 + 4(JTAG) out of 40 (90%)
+   Number of block RAMs:  0 out of 2 (0%)
+   Number of GSRs:        0 out of 1 (0%)
+   EFB used :        No
+   JTAG used :       No
+   Readback used :   No
+   Oscillator used : No
+   Startup used :    No
+   POR :             On
+   Bandgap :         On
+   Number of Power Controller:  0 out of 1 (0%)
+   Number of Dynamic Bank Controller (BCINRD):  0 out of 4 (0%)
+   Number of DCCA:  0 out of 8 (0%)
+   Number of DCMA:  0 out of 2 (0%)
+   Notes:-
+      1. Total number of LUT4s = (Number of logic LUT4s) + 2*(Number of
+     distributed RAMs) + 2*(Number of ripple logic)
+      2. Number of logic LUT4s does not include count of distributed RAM and
+     ripple logic.
+   Number of clocks:  0
+   Number of Clock Enables:  0
+   Number of LSRs:  0
+   Number of nets driven by tri-state buffers:  0
+   Top 10 highest fanout non-clock nets:
+     Net VCC: 17 loads
+
+                                    Page 1
+
+
+
+
+Design:  pdu_selftest_mxo2                             Date:  04/20/26  18:52:02
+
+Design Summary (cont)
+---------------------
+     Net FB_CLOSED_c: 1 loads
+     Net MCU_CMD_FAULT_c: 1 loads
+     Net PRECHARGE_OK_c: 1 loads
+     Net SPARE_OUT_1_6: 1 loads
+     Net SPARE_OUT_1_c: 1 loads
+     Net SW_COMPUTE_c: 1 loads
+     Net SW_REMOTE_DISARM_c: 1 loads
+     Net UV_c: 1 loads
+     Net VBUS_OV_c: 1 loads
+
+
+
+
+   Number of warnings:  4
+   Number of errors:    0
+     
+
+Design Errors/Warnings
+----------------------
+
+WARNING - map: C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500
+     (Humanoid)/FPGA/PROJ500_PDU_FPGA/SELFTEST/source/PROJ500_PDU_FPGA.lpf(32):
+     Semantic error in "IOBUF PORT "i2c1_scl" IO_TYPE=LVCMOS33 PULLMODE=NONE
+     OPENDRAIN=ON ;": Port "i2c1_scl" does not exist in the design. This
+     preference has been disabled.
+WARNING - map: C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500
+     (Humanoid)/FPGA/PROJ500_PDU_FPGA/SELFTEST/source/PROJ500_PDU_FPGA.lpf(33):
+     Semantic error in "IOBUF PORT "i2c1_sda" IO_TYPE=LVCMOS33 PULLMODE=NONE
+     OPENDRAIN=ON ;": Port "i2c1_sda" does not exist in the design. This
+     preference has been disabled.
+WARNING - map: IO buffer missing for top level port i2c1_scl...logic will be
+     discarded.
+WARNING - map: IO buffer missing for top level port i2c1_sda...logic will be
+     discarded.
+
+IO (PIO) Attributes
+-------------------
+
++---------------------+-----------+-----------+------------+
+| IO Name             | Direction | Levelmode | IO         |
+|                     |           |  IO_TYPE  | Register   |
++---------------------+-----------+-----------+------------+
+| FAULT_LATCH         | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| SW_COMPUTE          | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| SPARE_OUT_1         | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| SPARE_OUT_0         | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| DUMP_EN             | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| PRECHARGE_REQ       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| ARM_PERMIT          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+
+                                    Page 2
+
+
+
+
+Design:  pdu_selftest_mxo2                             Date:  04/20/26  18:52:02
+
+IO (PIO) Attributes (cont)
+--------------------------
+| OVUV_OK             | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| STATE_CODE[1]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| STATE_CODE[0]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| FAULT_CODE[3]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| FAULT_CODE[2]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| FAULT_CODE[1]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| FAULT_CODE[0]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| K_EN                | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| K_SEL               | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| COMPUTE_EN          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| MOTOR_EN            | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| PRECHARGE_LATCH     | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| SW_REMOTE_DISARM    | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| FB_CLOSED           | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| PRECHARGE_OK        | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| MCU_CMD_FAULT       | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| MCU_CMD_ARM         | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| MCU_ALIVE           | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| VBUS_OV             | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| UV                  | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| OV                  | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| ESTOP_OK            | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| SW_REMOTE_ARM       | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| SW_RST_FAULT        | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| SW_ARM              | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+
+Removed logic
+-------------
+
+Block GSR_INST undriven or does not drive anything - clipped.
+Block GND undriven or does not drive anything - clipped.
+
+                                    Page 3
+
+
+
+
+Design:  pdu_selftest_mxo2                             Date:  04/20/26  18:52:02
+
+Removed logic (cont)
+--------------------
+
+     
+
+Run Time and Memory Usage
+-------------------------
+
+   Total CPU Time: 0 secs  
+   Total REAL Time: 0 secs  
+   Peak Memory Usage: 38 MB
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                    Page 4
+
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+     Copyright (c) 1995 AT&T Corp.   All rights reserved.
+     Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+     Copyright (c) 2001 Agere Systems   All rights reserved.
+     Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights
+     reserved.

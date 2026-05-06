@@ -1,0 +1,9 @@
+Manufacturer=ABRACON
+PartNumber=ABLS-8.000MHZ-20-D-3-H-T
+PartCategory=Crystal or Oscillator
+PackageCategory=Other
+PinCount=2
+Version=7.3
+Released=2021-11-12 04:20:39
+Downloaded=2026-02-15 22:09:59
+3D=Y
