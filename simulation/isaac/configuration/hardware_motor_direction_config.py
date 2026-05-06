@@ -19,8 +19,8 @@ MOTOR_DIRECTION_SIGNS: dict[str, float] = {
     "l_thigh_link_l_knee_joint":        -1.0, # CAN ID 7  - Left knee       URDF + = anticlock
     "r_thigh_link_r_knee_joint":        +1.0, # CAN ID 8  - Right knee      URDF + = clock
 
-    "l_shank_link_l_ankle_joint":       +1.0, # CAN ID 9  - Left ankle      URDF + = anticlock
-    "r_shank_link_r_ankle_joint":       -1.0, # CAN ID 10 - Right ankle     URDF + = clock
+    "l_shank_link_l_ankle_joint":       -1.0, # CAN ID 9  - Left ankle      URDF + = anticlock
+    "r_shank_link_r_ankle_joint":       +1.0, # CAN ID 10 - Right ankle     URDF + = clock
 
     "l_ankle_link_l_foot_joint":        -1.0, # CAN ID 11 - Left foot roll  URDF + = anticlock
     "r_ankle_link_r_foot_joint":        +1.0, # CAN ID 12 - Right foot roll URDF + = clock
