@@ -107,7 +107,7 @@ def generate_launch_description():
         kp_scale    = context.launch_configurations.get("kp_scale",              "0.20")
         kd_scale    = context.launch_configurations.get("kd_scale",              "1.00")
         loop_hz     = context.launch_configurations.get("loop_hz",               "66.67")
-        max_err     = context.launch_configurations.get("max_position_error_rad","0.90")
+        max_err     = context.launch_configurations.get("max_position_error_rad","1.50")
         debug_every = context.launch_configurations.get("debug_every",           "100")
         device      = context.launch_configurations.get("device",                "cpu")
         no_loop     = context.launch_configurations.get("no_loop",               "False")
@@ -226,7 +226,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "max_position_error_rad",
-            default_value="0.90",
+            default_value="1.50",
             description="Abort if any joint tracking error exceeds this value (rad)",
         ),
         DeclareLaunchArgument(

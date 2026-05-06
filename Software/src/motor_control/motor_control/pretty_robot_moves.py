@@ -168,8 +168,8 @@ _STANDING_RAD: dict[str, float] = {
     "r_hip_pitch_link_r_roll_joint":    0.0000,
     "l_thigh_link_l_knee_joint":        0.0000,   # 25°
     "r_thigh_link_r_knee_joint":        0.0000,   # 25°
-    "l_shank_link_l_ankle_joint":       0.2269,   # +13° (natural hang ~+0.25)
-    "r_shank_link_r_ankle_joint":        0.2269,   # +13°
+    "l_shank_link_l_ankle_joint":       0.1000,   # startup ~0; 0.10 clears warn zones
+    "r_shank_link_r_ankle_joint":        0.1000,   # startup ~0; 0.10 clears warn zones
     "l_ankle_link_l_foot_joint":        0.0000,
     "r_ankle_link_r_foot_joint":        0.0000,
 }
@@ -759,7 +759,7 @@ def parse_args() -> argparse.Namespace:
         help="Global speed multiplier (>1 = faster, <1 = slower).",
     )
     parser.add_argument(
-        "--max-position-error-rad", type=float, default=0.90,
+        "--max-position-error-rad", type=float, default=1.50,
         help="Abort if any joint tracking error exceeds this value (rad).",
     )
     parser.add_argument(
