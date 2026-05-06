@@ -151,7 +151,7 @@ class _PrettyMovesLimits:
 #   hip_roll_r        : -0.10 → +0.40
 #   knee_l            : -0.70 → +0.60
 #   knee_r            : -0.70 → +0.50
-#   ankle_pitch_l     : -1.60 → +0.05  (negative convention, full flex = -1.60)
+#   ankle_pitch_l     : -0.05 → +1.60  (positive convention, full flex = +1.60)
 #   ankle_pitch_r     :  0.00 → +1.50  (full flex = +1.50)
 #   ankle_roll_l      : -0.10 → +0.40
 #   ankle_roll_r      : -0.30 → +0.20
@@ -168,7 +168,7 @@ _STANDING_RAD: dict[str, float] = {
     "r_hip_pitch_link_r_roll_joint":    0.0000,
     "l_thigh_link_l_knee_joint":        0.0000,   # 25°
     "r_thigh_link_r_knee_joint":        0.0000,   # 25°
-    "l_shank_link_l_ankle_joint":      -0.2269,   # -13° (negative convention, natural hang ~-0.25)
+    "l_shank_link_l_ankle_joint":       0.2269,   # +13° (natural hang ~+0.25)
     "r_shank_link_r_ankle_joint":        0.2269,   # +13°
     "l_ankle_link_l_foot_joint":        0.0000,
     "r_ankle_link_r_foot_joint":        0.0000,
@@ -197,7 +197,7 @@ NAMED_POSES: dict[str, dict[str, float]] = {
         "r_hip_yaw_link_r_pitch_joint":  0.00,
         "l_thigh_link_l_knee_joint":     0.00,
         "r_thigh_link_r_knee_joint":     0.00,
-        "l_shank_link_l_ankle_joint":   -0.10,   # slight toe point (safe zone)
+        "l_shank_link_l_ankle_joint":    0.10,   # slight toe point (safe zone)
         "r_shank_link_r_ankle_joint":    0.10,   # slight toe point (safe zone)
     },
 
@@ -209,7 +209,7 @@ NAMED_POSES: dict[str, dict[str, float]] = {
         "r_hip_yaw_link_r_pitch_joint":  0.00,   # right leg neutral
         "l_thigh_link_l_knee_joint":    -0.55,   # extend knee    (limit -0.70)
         "r_thigh_link_r_knee_joint":     0.00,
-        "l_shank_link_l_ankle_joint":   -1.60,   # point left toe (limit -1.60)
+        "l_shank_link_l_ankle_joint":    1.60,   # point left toe (limit +1.60)
         "r_shank_link_r_ankle_joint":    0.10,
     },
 
@@ -221,7 +221,7 @@ NAMED_POSES: dict[str, dict[str, float]] = {
         "r_hip_yaw_link_r_pitch_joint":  0.45,   # swing forward  (limit  0.50)
         "l_thigh_link_l_knee_joint":     0.00,
         "r_thigh_link_r_knee_joint":    -0.55,   # extend knee    (limit -0.70)
-        "l_shank_link_l_ankle_joint":   -0.10,
+        "l_shank_link_l_ankle_joint":    0.10,
         "r_shank_link_r_ankle_joint":    1.50,   # point right toe (limit 1.50)
     },
 
@@ -233,7 +233,7 @@ NAMED_POSES: dict[str, dict[str, float]] = {
         "r_hip_yaw_link_r_pitch_joint":  0.45,   # forward        (limit  0.50)
         "l_thigh_link_l_knee_joint":     0.55,   # bent up        (limit  0.60)
         "r_thigh_link_r_knee_joint":     0.46,   # bent up        (limit  0.50)
-        "l_shank_link_l_ankle_joint":   -1.60,   # toes fully pointed
+        "l_shank_link_l_ankle_joint":    1.60,   # toes fully pointed
         "r_shank_link_r_ankle_joint":    1.50,
     },
 
@@ -245,7 +245,7 @@ NAMED_POSES: dict[str, dict[str, float]] = {
         "r_hip_yaw_link_r_pitch_joint": -0.35,   # sweep back     (limit -0.40)
         "l_thigh_link_l_knee_joint":     0.45,   # fold back
         "r_thigh_link_r_knee_joint":     0.40,
-        "l_shank_link_l_ankle_joint":   -0.10,
+        "l_shank_link_l_ankle_joint":    0.10,
         "r_shank_link_r_ankle_joint":    0.10,
     },
 
@@ -255,11 +255,11 @@ NAMED_POSES: dict[str, dict[str, float]] = {
     # Used in a rapid alternating sequence below.
     # ------------------------------------------------------------------
     "FOOT_TAP_L": {
-        "l_shank_link_l_ankle_joint": -1.60,   # left toe fully pointed  (limit -1.60)
+        "l_shank_link_l_ankle_joint":  1.60,   # left toe fully pointed  (limit +1.60)
         "r_shank_link_r_ankle_joint":  0.10,   # right ankle neutral
     },
     "FOOT_TAP_R": {
-        "l_shank_link_l_ankle_joint": -0.10,   # left ankle neutral
+        "l_shank_link_l_ankle_joint":  0.10,   # left ankle neutral
         "r_shank_link_r_ankle_joint":  1.50,   # right toe fully pointed (limit  1.50)
     },
 
