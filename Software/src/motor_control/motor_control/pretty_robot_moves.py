@@ -151,8 +151,8 @@ class _PrettyMovesLimits:
 #   hip_roll_r        : -0.10 → +0.40
 #   knee_l            : -0.70 → +0.60
 #   knee_r            : -0.70 → +0.50
-#   ankle_pitch_l     : -1.50 →  0.00  (negative convention)
-#   ankle_pitch_r     :  0.00 → +1.50
+#   ankle_pitch_l     : -1.60 → +0.05  (negative convention, full flex = -1.60)
+#   ankle_pitch_r     :  0.00 → +1.50  (full flex = +1.50)
 #   ankle_roll_l      : -0.10 → +0.40
 #   ankle_roll_r      : -0.30 → +0.20
 
@@ -168,8 +168,8 @@ _STANDING_RAD: dict[str, float] = {
     "r_hip_pitch_link_r_roll_joint":    0.0000,
     "l_thigh_link_l_knee_joint":        0.0000,   # 25°
     "r_thigh_link_r_knee_joint":        0.0000,   # 25°
-    "l_shank_link_l_ankle_joint":      -0.2000,   # -13° (negative convention for left ankle)
-    "r_shank_link_r_ankle_joint":       0.2000,   # +13°
+    "l_shank_link_l_ankle_joint":      -0.2269,   # -13° (negative convention, natural hang ~-0.25)
+    "r_shank_link_r_ankle_joint":        0.2269,   # +13°
     "l_ankle_link_l_foot_joint":        0.0000,
     "r_ankle_link_r_foot_joint":        0.0000,
 }
@@ -318,7 +318,7 @@ SEQUENCES: dict[str, list[MoveStep]] = {
 
 }
 
-DEFAULT_SEQUENCE = "kicks"
+DEFAULT_SEQUENCE = "taps"
 
 
 # ===========================================================================
@@ -780,6 +780,8 @@ def main() -> None:
 
     sequence = SEQUENCES[args.sequence]
     print(f"[PRETTY MOVES] Using sequence: '{args.sequence}' ({len(sequence)} steps)")
+
+    joint_names = CONTRACT.joint_names
     cfg = PrettyMovesConfig(
         loop=not args.no_loop,
         loop_hz=args.loop_hz,

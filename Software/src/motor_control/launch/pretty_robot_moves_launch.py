@@ -103,7 +103,7 @@ def generate_launch_description():
     def _make_runner(context, *args, **kwargs):
         """Resolved at launch time; reads all LaunchConfigurations."""
         script      = context.launch_configurations.get("pretty_moves_script", pretty_moves_script_default)
-        speed       = context.launch_configurations.get("speed",                 "1.0")
+        speed       = context.launch_configurations.get("speed",                 "0.3")
         kp_scale    = context.launch_configurations.get("kp_scale",              "0.20")
         kd_scale    = context.launch_configurations.get("kd_scale",              "1.00")
         loop_hz     = context.launch_configurations.get("loop_hz",               "66.67")
@@ -111,6 +111,7 @@ def generate_launch_description():
         debug_every = context.launch_configurations.get("debug_every",           "100")
         device      = context.launch_configurations.get("device",                "cpu")
         no_loop     = context.launch_configurations.get("no_loop",               "False")
+        sequence    = context.launch_configurations.get("sequence",              "taps")
 
         cmd = [
             "python3", script,
@@ -121,6 +122,7 @@ def generate_launch_description():
             "--max-position-error-rad", max_err,
             "--debug-every",            debug_every,
             "--device",                 device,
+            "--sequence",               sequence,
         ]
         if no_loop.strip().lower() in ("true", "1", "yes"):
             cmd.append("--no-loop")
@@ -193,8 +195,13 @@ def generate_launch_description():
 
         # -- pretty_robot_moves tuning ----------------------------------------
         DeclareLaunchArgument(
+            "sequence",
+            default_value="taps",
+            description="Which movement sequence to run: kicks, taps, shapes",
+        ),
+        DeclareLaunchArgument(
             "speed",
-            default_value="1.0",
+            default_value="0.3",
             description="Global speed multiplier (>1 faster, <1 slower)",
         ),
         DeclareLaunchArgument(
