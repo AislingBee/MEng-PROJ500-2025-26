@@ -81,9 +81,9 @@
         {
             "name": "l_shank_link_l_ankle_joint",
             "hard_lower": -1.6000, "hard_upper":  0.0500,
-            "soft_lower": -1.6000, "soft_upper":  0.0000,
-            "warn_lower": -1.5500, "warn_upper": -0.0500,
-            "_note": "joint 9  soft -1.6→0.0 rad  warn 0.05 rad inset"
+            "soft_lower": -1.6000, "soft_upper":  0.0500,
+            "warn_lower": -1.5500, "warn_upper":  0.0000,
+            "_note": "joint 9  soft -1.6->+0.05 rad  natural hang ~-0.25  warn 0.05 rad inset"
         },
         {
             "name": "r_shank_link_r_ankle_joint",
