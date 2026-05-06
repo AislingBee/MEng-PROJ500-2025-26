@@ -318,7 +318,7 @@ SEQUENCES: dict[str, list[MoveStep]] = {
 
 }
 
-DEFAULT_SEQUENCE = "kicks"
+DEFAULT_SEQUENCE = "taps"
 
 
 # ===========================================================================
@@ -780,6 +780,8 @@ def main() -> None:
 
     sequence = SEQUENCES[args.sequence]
     print(f"[PRETTY MOVES] Using sequence: '{args.sequence}' ({len(sequence)} steps)")
+
+    joint_names = CONTRACT.joint_names
     cfg = PrettyMovesConfig(
         loop=not args.no_loop,
         loop_hz=args.loop_hz,
