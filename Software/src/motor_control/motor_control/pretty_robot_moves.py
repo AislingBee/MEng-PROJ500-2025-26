@@ -162,14 +162,14 @@ class _PrettyMovesLimits:
 _STANDING_RAD: dict[str, float] = {
     "pelvis_link_l_yaw_joint":          0.0000,
     "pelvis_link_r_yaw_joint":          0.0000,
-    "l_hip_yaw_link_l_pitch_joint":     0.2269,   # 13°
-    "r_hip_yaw_link_r_pitch_joint":     0.2269,   # 13°
+    "l_hip_yaw_link_l_pitch_joint":     0.0000,   # 13°
+    "r_hip_yaw_link_r_pitch_joint":     0.0000,   # 13°
     "l_hip_pitch_link_l_roll_joint":    0.0000,
     "r_hip_pitch_link_r_roll_joint":    0.0000,
-    "l_thigh_link_l_knee_joint":        0.4363,   # 25°
-    "r_thigh_link_r_knee_joint":        0.4363,   # 25°
-    "l_shank_link_l_ankle_joint":      -0.2269,   # -13° (negative convention for left ankle)
-    "r_shank_link_r_ankle_joint":       0.2269,   # +13°
+    "l_thigh_link_l_knee_joint":        0.0000,   # 25°
+    "r_thigh_link_r_knee_joint":        0.0000,   # 25°
+    "l_shank_link_l_ankle_joint":      -0.2000,   # -13° (negative convention for left ankle)
+    "r_shank_link_r_ankle_joint":       0.2000,   # +13°
     "l_ankle_link_l_foot_joint":        0.0000,
     "r_ankle_link_r_foot_joint":        0.0000,
 }
