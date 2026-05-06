@@ -80,17 +80,17 @@
         },
         {
             "name": "l_shank_link_l_ankle_joint",
-            "hard_lower": -0.0500, "hard_upper":  1.6000,
-            "soft_lower": -0.0500, "soft_upper":  1.6000,
-            "warn_lower":  0.0000, "warn_upper":  1.5500,
-            "_note": "joint 9  soft -0.05->+1.6 rad  natural hang ~+0.25  warn 0.05 rad inset"
+            "hard_lower": -0.1500, "hard_upper":  1.6000,
+            "soft_lower": -0.1500, "soft_upper":  1.6000,
+            "warn_lower": -0.1000, "warn_upper":  1.5500,
+            "_note": "joint 9  soft -0.15->+1.6 rad  startup encoder offset ~-0.07  warn 0.05 rad inset"
         },
         {
             "name": "r_shank_link_r_ankle_joint",
-            "hard_lower": -0.0500, "hard_upper":  1.6000,
-            "soft_lower":  0.0000, "soft_upper":  1.5000,
-            "warn_lower":  0.0500, "warn_upper":  1.4500,
-            "_note": "joint 10  soft 0.0→1.5 rad  warn 0.05 rad inset"
+            "hard_lower": -0.1500, "hard_upper":  1.6000,
+            "soft_lower": -0.1500, "soft_upper":  1.5000,
+            "warn_lower": -0.1000, "warn_upper":  1.4500,
+            "_note": "joint 10  soft -0.15->+1.5 rad  startup encoder offset ~0  warn 0.05 rad inset"
         },
         {
             "name": "l_ankle_link_l_foot_joint",

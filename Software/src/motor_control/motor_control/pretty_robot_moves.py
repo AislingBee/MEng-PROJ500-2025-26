@@ -43,7 +43,6 @@ import torch
 
 from simulation.isaac.configuration.hardware_motor_direction_config import (
     joint_feedback_tuple,
-    motor_direction_tuple,
 )
 from simulation.isaac.configuration.standing_s2r_policy_contract import CONTRACT
 from simulation.isaac.configuration.walking_actuator_config import (
@@ -100,14 +99,14 @@ class _PrettyMovesLimits:
         self.warn_upper = torch.tensor(warn_upper, dtype=torch.float32, device=device)
         self._joint_names = list(joint_names)
 
-    def check(self, q: Tensor, label: str) -> None:
+    def check(self, q: Tensor, label: str, enforce: bool = True) -> None:
         """Raise RuntimeError on soft-limit violation; print a warning in the warn zone."""
         q_flat = q.squeeze(0) if q.dim() == 2 else q
 
         # Soft-limit abort
         lower_viol = q_flat < self.soft_lower
         upper_viol = q_flat > self.soft_upper
-        if lower_viol.any() or upper_viol.any():
+        if enforce and (lower_viol.any() or upper_viol.any()):
             msgs = []
             for i, name in enumerate(self._joint_names):
                 if lower_viol[i]:
@@ -336,6 +335,7 @@ class PrettyMovesConfig:
     speed_multiplier: float = 0.3
     debug_print_every_n_steps: int = 100
     device: str = "cpu"
+    enforce_limits: bool = True
 
 
 def _resolve_pose(partial_pose_rad: dict[str, float], joint_names: tuple[str, ...]) -> dict[str, float]:
@@ -506,7 +506,7 @@ class ThorPrettyMovesRunner:
             raise RuntimeError("NaN detected in q_des before sending")
         # Soft-limit check: abort + warn-zone proximity alert
         try:
-            self._limits.check(q_des, label or "send")
+            self._limits.check(q_des, label or "send", enforce=self.cfg.enforce_limits)
         except RuntimeError:
             self._send_zero_torque()
             raise
@@ -759,6 +759,10 @@ def parse_args() -> argparse.Namespace:
         help="Global speed multiplier (>1 = faster, <1 = slower).",
     )
     parser.add_argument(
+        "--no-limits", action="store_true",
+        help="Disable soft joint limit enforcement (warns only). Use for debugging.",
+    )
+    parser.add_argument(
         "--max-position-error-rad", type=float, default=1.50,
         help="Abort if any joint tracking error exceeds this value (rad).",
     )
@@ -776,12 +780,15 @@ def main() -> None:
     _startup_limits = _PrettyMovesLimits(
         _LIMITS_FILE, CONTRACT.joint_names, torch.device("cpu")
     )
-    _validate_poses(_startup_limits)
+    if not args.no_limits:
+        _validate_poses(_startup_limits)
 
     sequence = SEQUENCES[args.sequence]
     print(f"[PRETTY MOVES] Using sequence: '{args.sequence}' ({len(sequence)} steps)")
 
     joint_names = CONTRACT.joint_names
+    if args.no_limits:
+        print("[PRETTY MOVES] WARNING: soft joint limit enforcement DISABLED (--no-limits)")
     cfg = PrettyMovesConfig(
         loop=not args.no_loop,
         loop_hz=args.loop_hz,
@@ -791,13 +798,14 @@ def main() -> None:
         speed_multiplier=args.speed,
         debug_print_every_n_steps=args.debug_every,
         device=args.device,
+        enforce_limits=not args.no_limits,
     )
 
     hardware_cfg = RobotInterfaceConfig(
         joint_names=joint_names,
         encoder_offsets_rad=tuple(0.0 for _ in joint_names),
         joint_signs=joint_feedback_tuple(joint_names),
-        motor_direction_signs=motor_direction_tuple(joint_names),
+        # motor_direction_signs removed as per code cleanup
     )
 
     runner = ThorPrettyMovesRunner(
