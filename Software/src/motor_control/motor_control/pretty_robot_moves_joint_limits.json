@@ -1,0 +1,110 @@
+{
+    "_comment": [
+        "Joint limits for pretty_robot_moves.py only.",
+        "All values in RADIANS.",
+        "soft_lower / soft_upper: the motion planner will ABORT if any q_des crosses these.",
+        "warn_lower / warn_upper: a WARNING is printed when q_des enters the zone between",
+        "  warn and soft limits (proximity alert before the abort threshold).",
+        "These are intentionally conservative (inset ~0.05 rad from the URDF hard limits)."
+    ],
+    "joint_names": [
+        "pelvis_link_l_yaw_joint",
+        "pelvis_link_r_yaw_joint",
+        "l_hip_yaw_link_l_pitch_joint",
+        "r_hip_yaw_link_r_pitch_joint",
+        "l_hip_pitch_link_l_roll_joint",
+        "r_hip_pitch_link_r_roll_joint",
+        "l_thigh_link_l_knee_joint",
+        "r_thigh_link_r_knee_joint",
+        "l_shank_link_l_ankle_joint",
+        "r_shank_link_r_ankle_joint",
+        "l_ankle_link_l_foot_joint",
+        "r_ankle_link_r_foot_joint"
+    ],
+    "joints": [
+        {
+            "name": "pelvis_link_l_yaw_joint",
+            "hard_lower": -0.4500, "hard_upper":  0.5536,
+            "soft_lower": -0.4000, "soft_upper":  0.5000,
+            "warn_lower": -0.3500, "warn_upper":  0.4500,
+            "_note": "joint 1  soft -0.4→0.5 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "pelvis_link_r_yaw_joint",
+            "hard_lower": -0.2500, "hard_upper":  0.4500,
+            "soft_lower": -0.2000, "soft_upper":  0.4000,
+            "warn_lower": -0.1500, "warn_upper":  0.3500,
+            "_note": "joint 2  soft -0.2→0.4 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "l_hip_yaw_link_l_pitch_joint",
+            "hard_lower": -0.5500, "hard_upper":  0.5500,
+            "soft_lower": -0.5000, "soft_upper":  0.5000,
+            "warn_lower": -0.4500, "warn_upper":  0.4500,
+            "_note": "joint 3  soft ±0.5 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "r_hip_yaw_link_r_pitch_joint",
+            "hard_lower": -0.4500, "hard_upper":  0.5500,
+            "soft_lower": -0.4000, "soft_upper":  0.5000,
+            "warn_lower": -0.3500, "warn_upper":  0.4500,
+            "_note": "joint 4  soft -0.4→0.5 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "l_hip_pitch_link_l_roll_joint",
+            "hard_lower": -0.2000, "hard_upper":  0.2000,
+            "soft_lower": -0.1500, "soft_upper":  0.1500,
+            "warn_lower": -0.1000, "warn_upper":  0.1000,
+            "_note": "joint 5  soft ±0.15 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "r_hip_pitch_link_r_roll_joint",
+            "hard_lower": -0.1500, "hard_upper":  0.4500,
+            "soft_lower": -0.1000, "soft_upper":  0.4000,
+            "warn_lower": -0.0500, "warn_upper":  0.3500,
+            "_note": "joint 6  soft -0.1→0.4 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "l_thigh_link_l_knee_joint",
+            "hard_lower": -0.7500, "hard_upper":  0.6500,
+            "soft_lower": -0.7000, "soft_upper":  0.6000,
+            "warn_lower": -0.6500, "warn_upper":  0.5500,
+            "_note": "joint 7  soft -0.7→0.6 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "r_thigh_link_r_knee_joint",
+            "hard_lower": -0.7500, "hard_upper":  0.5500,
+            "soft_lower": -0.7000, "soft_upper":  0.5000,
+            "warn_lower": -0.6500, "warn_upper":  0.4500,
+            "_note": "joint 8  soft -0.7→0.5 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "l_shank_link_l_ankle_joint",
+            "hard_lower": -1.6000, "hard_upper":  0.0500,
+            "soft_lower": -1.6000, "soft_upper":  0.0000,
+            "warn_lower": -1.5500, "warn_upper": -0.0500,
+            "_note": "joint 9  soft -1.6→0.0 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "r_shank_link_r_ankle_joint",
+            "hard_lower": -0.0500, "hard_upper":  1.6000,
+            "soft_lower":  0.0000, "soft_upper":  1.5000,
+            "warn_lower":  0.0500, "warn_upper":  1.4500,
+            "_note": "joint 10  soft 0.0→1.5 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "l_ankle_link_l_foot_joint",
+            "hard_lower": -0.1500, "hard_upper":  0.4500,
+            "soft_lower": -0.1000, "soft_upper":  0.4000,
+            "warn_lower": -0.0500, "warn_upper":  0.3500,
+            "_note": "joint 11  soft -0.1→0.4 rad  warn 0.05 rad inset"
+        },
+        {
+            "name": "r_ankle_link_r_foot_joint",
+            "hard_lower": -0.3500, "hard_upper":  0.2500,
+            "soft_lower": -0.3000, "soft_upper":  0.2000,
+            "warn_lower": -0.2500, "warn_upper":  0.1500,
+            "_note": "joint 12  soft -0.3→0.2 rad  warn 0.05 rad inset"
+        }
+    ]
+}
