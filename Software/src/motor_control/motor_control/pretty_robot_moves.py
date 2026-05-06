@@ -267,38 +267,58 @@ NAMED_POSES: dict[str, dict[str, float]] = {
 
 # ---------------------------------------------------------------------------
 # ============================================================
-#   DEFINE THE MOVEMENT SEQUENCE HERE
-#   Each MoveStep plays in order; the whole list loops by default.
+#   NAMED SEQUENCES  –  pick one with  --sequence <name>
+#   Each is a short self-contained loop.
 # ============================================================
 # ---------------------------------------------------------------------------
 class MoveStep(NamedTuple):
-    pose: str          # key from NAMED_POSES
+    pose: str            # key from NAMED_POSES
     transition_s: float  # seconds to sweep from previous pose to this one
     hold_s: float        # seconds to hold this pose before the next step
 
 
-MOVE_SEQUENCE: list[MoveStep] = [
-    MoveStep("STANDING",      transition_s=4.0, hold_s=2.0),
-    MoveStep("LEGS_STRAIGHT", transition_s=3.0, hold_s=1.5),
-    MoveStep("KICK_LEFT",     transition_s=2.5, hold_s=2.0),
-    MoveStep("LEGS_STRAIGHT", transition_s=2.0, hold_s=0.5),
-    MoveStep("KICK_RIGHT",    transition_s=2.5, hold_s=2.0),
-    MoveStep("LEGS_STRAIGHT", transition_s=2.0, hold_s=0.5),
-    MoveStep("KNEES_UP",      transition_s=3.0, hold_s=2.0),
-    MoveStep("LEGS_BACK",     transition_s=3.5, hold_s=2.0),
-    # --- foot tap section (return to standing first, then rapid alternating taps) ---
-    MoveStep("STANDING",      transition_s=3.0, hold_s=0.5),
-    MoveStep("FOOT_TAP_L",    transition_s=0.35, hold_s=0.20),
-    MoveStep("FOOT_TAP_R",    transition_s=0.35, hold_s=0.20),
-    MoveStep("FOOT_TAP_L",    transition_s=0.35, hold_s=0.20),
-    MoveStep("FOOT_TAP_R",    transition_s=0.35, hold_s=0.20),
-    MoveStep("FOOT_TAP_L",    transition_s=0.35, hold_s=0.20),
-    MoveStep("FOOT_TAP_R",    transition_s=0.35, hold_s=0.20),
-    MoveStep("FOOT_TAP_L",    transition_s=0.35, hold_s=0.20),
-    MoveStep("FOOT_TAP_R",    transition_s=0.35, hold_s=0.20),
-    # --- settle back to standing before loop repeats ---
-    MoveStep("STANDING",      transition_s=2.0, hold_s=2.0),
-]
+SEQUENCES: dict[str, list[MoveStep]] = {
+
+    # ------------------------------------------------------------------
+    # kicks  –  left kick, right kick, back to neutral
+    # ------------------------------------------------------------------
+    "kicks": [
+        MoveStep("STANDING",      transition_s=4.0, hold_s=1.0),
+        MoveStep("LEGS_STRAIGHT", transition_s=3.0, hold_s=1.0),
+        MoveStep("KICK_LEFT",     transition_s=2.5, hold_s=2.0),
+        MoveStep("LEGS_STRAIGHT", transition_s=2.0, hold_s=0.5),
+        MoveStep("KICK_RIGHT",    transition_s=2.5, hold_s=2.0),
+        MoveStep("STANDING",      transition_s=3.0, hold_s=1.0),
+    ],
+
+    # ------------------------------------------------------------------
+    # taps  –  rapid alternating ankle-point taps
+    # ------------------------------------------------------------------
+    "taps": [
+        MoveStep("STANDING",   transition_s=3.0, hold_s=0.5),
+        MoveStep("FOOT_TAP_L", transition_s=0.35, hold_s=0.20),
+        MoveStep("FOOT_TAP_R", transition_s=0.35, hold_s=0.20),
+        MoveStep("FOOT_TAP_L", transition_s=0.35, hold_s=0.20),
+        MoveStep("FOOT_TAP_R", transition_s=0.35, hold_s=0.20),
+        MoveStep("FOOT_TAP_L", transition_s=0.35, hold_s=0.20),
+        MoveStep("FOOT_TAP_R", transition_s=0.35, hold_s=0.20),
+        MoveStep("STANDING",   transition_s=2.0, hold_s=1.0),
+    ],
+
+    # ------------------------------------------------------------------
+    # shapes  –  knees up and legs back
+    # ------------------------------------------------------------------
+    "shapes": [
+        MoveStep("STANDING",      transition_s=4.0, hold_s=1.0),
+        MoveStep("KNEES_UP",      transition_s=3.0, hold_s=2.5),
+        MoveStep("LEGS_STRAIGHT", transition_s=2.5, hold_s=1.0),
+        MoveStep("LEGS_BACK",     transition_s=3.5, hold_s=2.5),
+        MoveStep("STANDING",      transition_s=4.0, hold_s=1.0),
+    ],
+
+}
+
+DEFAULT_SEQUENCE = "kicks"
 
 
 # ===========================================================================
@@ -346,7 +366,7 @@ def _cosine_alpha(t: float, duration: float) -> float:
 
 
 def _validate_poses(limits: _PrettyMovesLimits) -> None:
-    """Fail fast at startup if any pose value violates soft joint limits."""
+    """Fail fast at startup if any pose or sequence reference is invalid."""
     for pose_name, partial_pose in NAMED_POSES.items():
         resolved = _resolve_pose(partial_pose, CONTRACT.joint_names)
         for i, joint_name in enumerate(CONTRACT.joint_names):
@@ -358,12 +378,13 @@ def _validate_poses(limits: _PrettyMovesLimits) -> None:
                     f"Pose '{pose_name}' joint '{joint_name}' = {val_rad:.4f} rad "
                     f"exceeds soft limits [{sl:.4f}, {su:.4f}] rad"
                 )
-    for step_index, step in enumerate(MOVE_SEQUENCE):
-        if step.pose not in NAMED_POSES:
-            raise ValueError(
-                f"MOVE_SEQUENCE[{step_index}] references unknown pose '{step.pose}'. "
-                f"Available poses: {list(NAMED_POSES.keys())}"
-            )
+    for seq_name, steps in SEQUENCES.items():
+        for step_index, step in enumerate(steps):
+            if step.pose not in NAMED_POSES:
+                raise ValueError(
+                    f"SEQUENCES['{seq_name}'][{step_index}] references unknown pose '{step.pose}'. "
+                    f"Available poses: {list(NAMED_POSES.keys())}"
+                )
 
 
 class ThorPrettyMovesRunner:
@@ -373,9 +394,11 @@ class ThorPrettyMovesRunner:
         hardware_cfg: RobotInterfaceConfig,
         state_reader,
         command_writer,
+        sequence: list[MoveStep],
     ) -> None:
         self.cfg = cfg
         self.device = torch.device(cfg.device)
+        self._sequence = sequence
 
         self.hardware = RobotHardwareInterface(
             cfg=hardware_cfg,
@@ -599,21 +622,21 @@ class ThorPrettyMovesRunner:
     def run(self) -> None:
         print("\n" + "=" * 70)
         print("  THOR PRETTY MOVES")
-        print(f"  Sequence: {[s.pose for s in MOVE_SEQUENCE]}")
+        print(f"  Sequence: {[s.pose for s in self._sequence]}")
         print(f"  Looping:  {self._loop}")
         print(f"  Speed:    ×{self._speed:.2f}")
         print("  Controls: [q] quit  [p] pause  [n] next  [l] loop  [+/-] speed")
         print("=" * 70 + "\n")
 
         # ------ Move from current hardware position to first pose ------
-        first_pose_name = MOVE_SEQUENCE[0].pose
+        first_pose_name = self._sequence[0].pose
         q_current = self._read_current_q()
         q_first = self._pose_tensors[first_pose_name]
 
         print(f"[PRETTY MOVES] Ramping to first pose '{first_pose_name}' ...")
         q_current = self._interpolate_to_pose(
             q_current, q_first,
-            duration_s=MOVE_SEQUENCE[0].transition_s,
+            duration_s=self._sequence[0].transition_s,
             label=f"→ {first_pose_name}",
         )
 
@@ -622,13 +645,13 @@ class ThorPrettyMovesRunner:
 
         try:
             while not self._stop_event.is_set():
-                step = MOVE_SEQUENCE[sequence_index]
+                step = self._sequence[sequence_index]
                 q_target = self._pose_tensors[step.pose]
 
                 if sequence_index != 0:
                     # Transition to this pose
                     print(
-                        f"[PRETTY MOVES] [{sequence_index + 1}/{len(MOVE_SEQUENCE)}] "
+                        f"[PRETTY MOVES] [{sequence_index + 1}/{len(self._sequence)}] "
                         f"'{step.pose}'  transition={step.transition_s:.1f}s  hold={step.hold_s:.1f}s"
                     )
                     q_current = self._interpolate_to_pose(
@@ -648,7 +671,7 @@ class ThorPrettyMovesRunner:
 
                 # Advance sequence
                 sequence_index += 1
-                if sequence_index >= len(MOVE_SEQUENCE):
+                if sequence_index >= len(self._sequence):
                     if self._loop:
                         sequence_index = 0
                         print("[PRETTY MOVES] Looping sequence from start.")
@@ -710,6 +733,13 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Thor Pretty Moves – choreograph smooth joint-space motion sequences."
     )
+    parser.add_argument(
+        "--sequence",
+        type=str,
+        default=DEFAULT_SEQUENCE,
+        choices=list(SEQUENCES.keys()),
+        help=f"Which movement sequence to run. Choices: {list(SEQUENCES.keys())}. Default: {DEFAULT_SEQUENCE}",
+    )
     parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument(
         "--loop-hz", type=float, default=CONTRACT.policy_loop_hz,
@@ -748,7 +778,8 @@ def main() -> None:
     )
     _validate_poses(_startup_limits)
 
-    joint_names = CONTRACT.joint_names
+    sequence = SEQUENCES[args.sequence]
+    print(f"[PRETTY MOVES] Using sequence: '{args.sequence}' ({len(sequence)} steps)")
     cfg = PrettyMovesConfig(
         loop=not args.no_loop,
         loop_hz=args.loop_hz,
@@ -772,6 +803,7 @@ def main() -> None:
         hardware_cfg=hardware_cfg,
         state_reader=ros2_state_reader,
         command_writer=ros2_command_writer,
+        sequence=sequence,
     )
 
     stop_event = threading.Event()
