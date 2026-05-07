@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "ECS-_327-6-13X"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2024-02-19-03:56:58)
+    (mountForm default
+        (footprintRef "ECS327613X")
+        (spec "System")
+    )
+)

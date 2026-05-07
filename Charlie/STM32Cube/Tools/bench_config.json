@@ -15,14 +15,7 @@
     "pdu_signals_checked": {
       "v_vraw_v": true,
       "v_12v_v": true,
-      "v_24v_v": true,
-      "i_vraw_sw_ma": true,
-      "i_12v_ma": true,
-      "i_24v_ma": true,
-      "em_i_ma": true,
-      "ladc_icoil_ma": true,
-      "therm1_c": true,
-      "therm2_c": true
+      "v_24v_v": true
     },
     "imu_signals_checked": {
       "imu0_ax_g": true,
@@ -85,7 +78,7 @@
     ]
   },
   "ui": {
-    "last_tab_index": 1,
-    "window_geometry": "AdnQywADAAAAAAAA////+QAABf8AAAMvAAAABwAAABoAAAUGAAADOQAAAAACAAAABgAAAAAAAAAAFwAABf8AAAMv"
+    "last_tab_index": 0,
+    "window_geometry": "AdnQywADAAAAAAIqAAAA+AAABykAAAQ2AAACKgAAARcAAAcpAAAENgAAAAAAAAAADXAAAAIqAAABFwAABykAAAQ2"
   }
 }

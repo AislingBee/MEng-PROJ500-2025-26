@@ -1,0 +1,23 @@
+---------------------------------------------------
+Report for cell pdu_glue
+   Instance path: pdu_glue
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     138.00        100.0
+                                 IOLGC	      16.00        100.0
+                                  LUT4	     208.00        100.0
+                                 IOREG	         16        100.0
+                                 IOBUF	         34        100.0
+                                PFUREG	        154        100.0
+                                RIPPLE	         31        100.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                           PDU_EFB_I2C	          1         0.6
+---------------------------------------------------
+Report for cell PDU_EFB_I2C
+   Instance path: pdu_glue/u_efb_i2c
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.83         0.6
+                                  LUT4	       2.00         1.0
+                                 IOBUF	          2         5.9

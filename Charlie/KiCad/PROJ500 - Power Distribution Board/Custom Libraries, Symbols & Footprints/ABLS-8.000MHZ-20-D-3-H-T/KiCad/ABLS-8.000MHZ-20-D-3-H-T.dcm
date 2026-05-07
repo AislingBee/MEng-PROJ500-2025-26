@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP ABLS-8.000MHZ-20-D-3-H-T
+D HC/49US (AT49) SMD LOW PROFILE CRYSTAL
+K
+F https://abracon.com/Resonators/abls.pdf
+$ENDCMP
+#
+#End Doc Library

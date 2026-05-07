@@ -1,0 +1,10 @@
+#Start recording tcl command: 4/20/2026 18:51:22
+#Project Location: C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA; Project name: PROJ500_PDU_FPGA
+prj_project open "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PROJ500_PDU_FPGA.ldf"
+prj_run Synthesis -impl SELFTEST
+prj_run Synthesis -impl SELFTEST -forceOne
+prj_run Translate -impl SELFTEST
+prj_run Map -impl SELFTEST
+prj_run PAR -impl SELFTEST
+prj_run Export -impl SELFTEST
+#Stop recording: 4/20/2026 20:11:13

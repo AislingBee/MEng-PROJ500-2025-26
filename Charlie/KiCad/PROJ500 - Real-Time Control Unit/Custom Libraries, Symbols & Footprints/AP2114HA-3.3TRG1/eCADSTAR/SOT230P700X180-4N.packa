@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "AP2114HA-3_3TRG1"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2024-04-05-01:58:28)
+    (mountForm default
+        (footprintRef "SOT230P700X180-4N")
+        (spec "System")
+    )
+)

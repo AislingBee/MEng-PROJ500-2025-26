@@ -1,0 +1,66 @@
+(Japanese_coding: sjis)
+(function "ECS_21185396"
+    (uver 1)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (ctime 2025-11-14-03:45:02)
+    (utime 2026-02-04-14:20:06)
+    (interface
+        (port "1" (symbPinId 1) (portType INOUT))
+        (port "2" (symbPinId 2) (portType INOUT))
+    )
+    (property "symbolName" "SMDH2016B260TF_24")
+)
+
+
+(pinAssign "ECS_21185396"
+    (uver 1)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (ctime 2025-11-14-03:45:02)
+    (utime 2026-02-04-14:20:06)
+    (interface
+        (port "1" (symbPinId 1) (portName "1") (portType INOUT))
+        (port "2" (symbPinId 2) (portName "2") (portType INOUT))
+    )
+    (internal
+        (funcInst (functionRef "ECS_21185396")
+                (port "1" (match "1"))
+                (port "2" (match "2"))
+        )
+    )
+    (property "usePowerBox" "No")
+    (property "symbolName" "SMDH2016B260TF_24")
+)
+
+
+(part "SMDH2016B260TF_24"
+    (uver 1)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (ctime 2025-11-14-03:45:02)
+    (utime 2026-02-04-14:20:06)
+    (packageRef "SMDH2016B260TF_24")
+    (pinAssignRef "ECS_21185396")
+    (interface
+        (port "1" (symbPinId 1) (portName "1") (portType INOUT))
+        (port "2" (symbPinId 2) (portName "2") (portType INOUT))
+    )
+    (partClass UNDEF)
+    (useInSchema Y)
+    (useInLayout Y)
+    (inPartsList Y)
+    (partType NORMAL)
+    (placeRestriction FREE)
+    (property "enetNonSeries" "YES")
+    (property "refDesPrefix" "F")
+    (property "description" "Resettable Fuses - PPTC 2016 24V 2.60A 1.5W SMD AEC-Q200 High Temp")
+    (property "Mouser_Part_Number" "")
+    (property "Mouser_Price/Stock" "")
+    (property "Manufacturer_Name" "Yageo Group")
+    (property "Manufacturer_Part_Number" "SMDH2016B260TF/24")
+    (property "Datasheet_Link" "https://www.yageogroup.com/content/datasheet/asset/file/SMDH2016_1")
+    (property "compAreaTopHeight" 1.6)
+)
+
+

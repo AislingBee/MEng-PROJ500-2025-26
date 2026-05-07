@@ -1,0 +1,6 @@
+@W: CL169 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Pruning unused register t_blank_open[8:0]. Make sure that there are no unused intermediate registers.
+@W: CL169 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Pruning unused register t_blank_close[8:0]. Make sure that there are no unused intermediate registers.
+@W: CL260 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Pruning register bit 3 of fault_code_r[3:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.
+@W: CL279 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Pruning register bits 7 to 2 of wb_adr_i[7:0]. If this is not the intended behavior, drive the inputs with valid values, or inputs from the top level.
+@W: CL260 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":864:4:864:12|Pruning register bit 3 of FAULT_CODE[3:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.
+

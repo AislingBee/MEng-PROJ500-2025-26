@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--/1425467/1152530/2.50/2/3/Crystal or Oscillator/-->
+<quadcept_library>
+  <setting unit="mil" />
+  <textstyle name="Default" height="47.244094488189" strokewidth="7.8740157480315" charwidth="47.244094488189" />
+  <textstyle name="Dimension" height="19.6850393700787" strokewidth="0" charwidth="19.6850393700787" />
+  <textstyle name="H127W0635TH00762" height="50" strokewidth="3" charwidth="25" />
+  <textstyle name="H15W15TH02" height="59.0551181102362" strokewidth="7.8740157480315" charwidth="59.0551181102362" />
+  <padstyle name="s60_h46" surface="False" plated="True" isvia="False" nopaste="True" nomask="True" complex="False" holesize="18.110236220472">
+    <padshape layer="TOP" shape="square" width="23.622047244094" height="23.622047244094" />
+    <padshape layer="TOP_SOLDER_MASK" shape="square" width="31.496062992126" height="31.496062992126" />
+    <padshape layer="INNER" shape="square" width="23.622047244094" height="23.622047244094" />
+    <padshape layer="BOTTOM" shape="square" width="23.622047244094" height="23.622047244094" />
+    <padshape layer="BOTTOM_SOLDER_MASK" shape="square" width="31.496062992126" height="31.496062992126" />
+  </padstyle>
+  <padstyle name="c60_h46" surface="False" plated="True" isvia="False" nopaste="True" nomask="True" complex="False" holesize="18.110236220472">
+    <padshape layer="TOP" shape="round" width="23.622047244094" height="23.622047244094" />
+    <padshape layer="TOP_SOLDER_MASK" shape="round" width="31.496062992126" height="31.496062992126" />
+    <padshape layer="INNER" shape="round" width="23.622047244094" height="23.622047244094" />
+    <padshape layer="BOTTOM" shape="round" width="23.622047244094" height="23.622047244094" />
+    <padshape layer="BOTTOM_SOLDER_MASK" shape="round" width="31.496062992126" height="31.496062992126" />
+  </padstyle>
+  <footprint name="ECS327613X" originx="0" originy="0" pickpointx="0" pickpointy="0">
+    <pcbpin number="1" name="1" style="s60_h46" originx="0" originy="0" rotation="90" />
+    <pcbpin number="2" name="2" style="c60_h46" originx="0" originy="27.55905511811" rotation="90" />
+    <line layer="TOP_PLACE_BOUND" originx="-80.708661417322" originy="94.488188976377" endx="80.708661417322" endy="94.488188976377" width="3.9370078740157" />
+    <line layer="TOP_PLACE_BOUND" originx="80.708661417322" originy="94.488188976377" endx="80.708661417322" endy="-66.929133858267" width="3.9370078740157" />
+    <line layer="TOP_PLACE_BOUND" originx="80.708661417322" originy="-66.929133858267" endx="-80.708661417322" endy="-66.929133858267" width="3.9370078740157" />
+    <line layer="TOP_PLACE_BOUND" originx="-80.708661417322" originy="-66.929133858267" endx="-80.708661417322" endy="94.488188976377" width="3.9370078740157" />
+    <line layer="TOP_ASSEMBLY" originx="-41.338582677165" originy="13.779527559055" endx="-41.338582677165" endy="13.779527559055" width="3.9370078740157" />
+    <arc layer="TOP_ASSEMBLY" originx="-8.7419135797255E-15" originy="13.779527559055" startangle="180.0" sweepangle="180.0" radius="41.338582677165" width="3.9370078740157" />
+    <line layer="TOP_ASSEMBLY" originx="41.338582677165" originy="13.779527559055" endx="41.338582677165" endy="13.779527559055" width="3.9370078740157" />
+    <arc layer="TOP_ASSEMBLY" originx="-8.7419135797255E-15" originy="13.779527559055" startangle=".0" sweepangle="180.0" radius="41.338582677165" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="-41.338582677165" originy="13.779527559055" endx="-41.338582677165" endy="13.779527559055" width="7.8740157480314" />
+    <arc layer="TOP_SILKSCREEN" originx="-8.7419135797255E-15" originy="13.779527559055" startangle="180.0" sweepangle="180.0" radius="41.338582677165" width="7.8740157480314" />
+    <line layer="TOP_SILKSCREEN" originx="41.338582677165" originy="13.779527559055" endx="41.338582677165" endy="13.779527559055" width="7.8740157480314" />
+    <arc layer="TOP_SILKSCREEN" originx="-8.7419135797255E-15" originy="13.779527559055" startangle=".0" sweepangle="180.0" radius="41.338582677165" width="7.8740157480314" />
+    <line layer="TOP_SILKSCREEN" originx="0" originy="-47.244094488188" endx="0" endy="-47.244094488188" width="3.9370078740157" />
+    <arc layer="TOP_SILKSCREEN" originx="1.6391087961985E-15" originy="-49.212598425196" startangle="90.0" sweepangle="180.0" radius="1.9685039370079" width="3.9370078740157" />
+    <line layer="TOP_SILKSCREEN" originx="0" originy="-51.181102362204" endx="0" endy="-51.181102362204" width="3.9370078740157" />
+    <arc layer="TOP_SILKSCREEN" originx="1.6391087961985E-15" originy="-49.212598425196" startangle="-90.0" sweepangle="180.0" radius="1.9685039370079" width="3.9370078740157" />
+  </footprint>
+  <symbol name="ECS-.327-6-13X" originx="0" originy="0">
+    <line originx="120" originy="100" endx="120" endy="-100" width="0" />
+    <line originx="280" originy="100" endx="280" endy="-100" width="0" />
+    <line originx="160" originy="140" endx="160" endy="-140" width="0" />
+    <line originx="240" originy="-140" endx="160" endy="-140" width="0" />
+    <line originx="240" originy="-140" endx="240" endy="140" width="0" />
+    <line originx="160" originy="140" endx="240" endy="140" width="0" />
+    <line originx="280" originy="0" endx="300" endy="0" width="0" />
+    <line originx="120" originy="0" endx="100" endy="0" width="0" />
+    <sympin number="1" originx="100" originy="0" rotation="180" length="100" width="7.8740157480315" flipped="False">
+      <text name="pinname" originx="140" originy="10" style="Default" rotation="0" justify="left" flipped="False" hidden="True" data="1" />
+      <text name="pindes" originx="60" originy="10" style="Default" rotation="0" justify="lowerright" flipped="False" hidden="False" data="1" />
+    </sympin>
+    <sympin number="2" originx="300" originy="0" rotation="0" length="100" width="7.8740157480315" flipped="False">
+      <text name="pinname" originx="260" originy="10" style="Default" rotation="0" justify="right" flipped="False" hidden="True" data="2" />
+      <text name="pindes" originx="340" originy="10" style="Default" rotation="0" justify="lowerleft" flipped="False" hidden="False" data="2" />
+    </sympin>
+  </symbol>
+  <component name="ECS-.327-6-13X" designatorprefix="Y" height="244.09448818897" footprint="ECS327613X">
+    <comppin designator="1" sympin="1" pinswap="0" gateswap="0" gate="1" group="1" side="" type="Any" name="1" />
+    <comppin designator="2" sympin="2" pinswap="0" gateswap="0" gate="1" group="1" side="" type="Any" name="2" />
+    <attached_symbol gate="1" name="ECS-.327-6-13X" />
+    <pinmap designator="1" footprintpin="1" />
+    <pinmap designator="2" footprintpin="2" />
+    <text name="Datasheet" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="https://ecsxtal.com/store/pdf/ECS-3x8X%202x6X%201X5X.pdf" />
+    <text name="Description" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="32.768 kHz +/-20ppm Crystal 6pF 35 kOhms Cylindrical Can, Radial" />
+    <text name="Mouser Part Number" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="520-ECS327-6-13-X" />
+    <text name="Mouser Price/Stock" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="https://www.mouser.co.uk/ProductDetail/ECS/ECS-.327-6-13X?qs=aGohqJksTCIxgMwEoE0VEw%3D%3D" />
+    <text name="Manufacturer_Name" originx="0" originy="0" style="Default" rotation="0" justify="" flipped="False" hidden="True" data="ECS" />
+    <text name="Manufacturer_Part_Number" originx="350" originy="150" style="Default" rotation="0" justify="left" flipped="False" hidden="False" data="ECS-.327-6-13X" />
+  </component>
+</quadcept_library>

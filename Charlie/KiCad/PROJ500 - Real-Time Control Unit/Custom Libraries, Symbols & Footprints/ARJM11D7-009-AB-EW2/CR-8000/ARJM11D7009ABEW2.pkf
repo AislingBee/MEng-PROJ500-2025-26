@@ -1,0 +1,10 @@
+(unit MM)
+
+(package "ARJM11D7009ABEW2"
+    (type UNDEF)
+    (uver 2)
+    (mountForm default
+        (footprintRef "ARJM11D7009ABEW2")
+        (spec "default")
+    )
+)

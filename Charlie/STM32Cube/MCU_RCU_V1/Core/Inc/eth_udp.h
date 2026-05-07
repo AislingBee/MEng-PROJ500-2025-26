@@ -8,7 +8,7 @@
  *   7701  Thor → RCU  (motor commands)
  *   7702  RCU → Thor  (supervision events, on-change)
  *
- * Thor IP placeholder: 192.168.100.20  (update once confirmed)
+ * Thor IP: 192.168.100.20 (static, configured on Thor network interface)
  * RCU static IP:       192.168.100.10  (set in CubeMX lwIP config)
  */
 #ifndef ETH_UDP_H

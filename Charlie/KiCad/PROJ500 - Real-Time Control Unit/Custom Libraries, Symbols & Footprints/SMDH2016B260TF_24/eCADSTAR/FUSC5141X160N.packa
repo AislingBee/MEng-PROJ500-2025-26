@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "SMDH2016B260TF_24"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2026-02-03-00:36:00)
+    (mountForm default
+        (footprintRef "FUSC5141X160N")
+        (spec "System")
+    )
+)

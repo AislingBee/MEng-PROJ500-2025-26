@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP STM32G474RET6
+D Arm Cortex-M4 32-bit MCU+FPU, 170 MHz / 213 DMIPS, 128 KB SRAM, rich analog, math acc, 184 ps 12 chan Hi-res timer
+K
+F https://www.st.com/resource/en/datasheet/stm32g474cb.pdf
+$ENDCMP
+#
+#End Doc Library

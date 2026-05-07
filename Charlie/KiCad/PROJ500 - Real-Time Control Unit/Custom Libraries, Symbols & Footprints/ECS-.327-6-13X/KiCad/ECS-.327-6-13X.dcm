@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP ECS-.327-6-13X
+D 32.768 kHz +/-20ppm Crystal 6pF 35 kOhms Cylindrical Can, Radial
+K
+F https://ecsxtal.com/store/pdf/ECS-3x8X%25202x6X%25201X5X.pdf
+$ENDCMP
+#
+#End Doc Library

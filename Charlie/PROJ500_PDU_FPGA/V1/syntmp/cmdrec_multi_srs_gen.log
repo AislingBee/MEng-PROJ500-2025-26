@@ -1,0 +1,7 @@
+C:\Programs\Lattice Diamond\synpbase\bin64\syn_nfilter.exe  -link  -top  pdu_glue  -multisrs  "C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\PROJ500_PDU_FPGA_V1_comp.srs"  -osyn  "C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\PROJ500_PDU_FPGA_V1_mult.srs"  -log  "C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synlog\PROJ500_PDU_FPGA_V1_multi_srs_gen.srr" 
+relcom:..\..\..\..\..\..\..\..\..\..\Programs\Lattice Diamond\synpbase\bin64\syn_nfilter.exe -link -top pdu_glue -multisrs "C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\PROJ500_PDU_FPGA_V1_comp.srs" -osyn "C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\PROJ500_PDU_FPGA_V1_mult.srs" -log "C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synlog\PROJ500_PDU_FPGA_V1_multi_srs_gen.srr"
+rc:0 success:1 runtime:0
+file:..\synwork\proj500_pdu_fpga_v1_comp.srs|io:i|time:1778100105|size:28339|exec:0|csum:5E596E005347D10CB33DCC83626490B3
+file:..\synwork\proj500_pdu_fpga_v1_mult.srs|io:o|time:1778100107|size:19734|exec:0|csum:
+file:..\synlog\proj500_pdu_fpga_v1_multi_srs_gen.srr|io:o|time:1778100107|size:1197|exec:0|csum:
+file:..\..\..\..\..\..\..\..\..\..\programs\lattice diamond\synpbase\bin64\syn_nfilter.exe|io:i|time:1727134362|size:10549248|exec:1|csum:D91EA53737F6BC51A484A15DD0EB29F5

@@ -1,0 +1,799 @@
+
+edif2ngd  -l "MachXO2" -d LCMXO2-640HC -path "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/V1" -path "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA"   "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/V1/PROJ500_PDU_FPGA_V1.edi" "PROJ500_PDU_FPGA_V1.ngo"   
+edif2ngd:  version Diamond (64-bit) 3.14.0.75.2
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+    <postMsg mid="1121028" type="Warning" dynamic="1" navigation="0" arg0="ENABLE_FB_CLOSED"  />
+Writing the design to PROJ500_PDU_FPGA_V1.ngo...
+
+Total CPU Time: 0 secs  
+Total REAL Time: 0 secs  
+Peak Memory Usage: 14 MB
+
+
+ngdbuild  -a "MachXO2" -d LCMXO2-640HC  -p "C:/Programs/Lattice Diamond/ispfpga/xo2c00/data"  -p "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/V1" -p "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA"  "PROJ500_PDU_FPGA_V1.ngo" "PROJ500_PDU_FPGA_V1.ngd"  	
+ngdbuild:  version Diamond (64-bit) 3.14.0.75.2
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+Reading 'PROJ500_PDU_FPGA_V1.ngo' ...
+Loading NGL library 'C:/Programs/Lattice Diamond/ispfpga/xo2c00/data/xo2clib.ngl'...
+Loading NGL library 'C:/Programs/Lattice Diamond/ispfpga/mg5g00/data/mg5glib.ngl'...
+Loading NGL library 'C:/Programs/Lattice Diamond/ispfpga/or5g00/data/orc5glib.ngl'...
+
+
+Running DRC...
+
+    <postMsg mid="1166052" type="Warning" dynamic="2" navigation="1" arg0="logical" arg1="u_osch_SEDSTDBY" arg2="u_osch_SEDSTDBY"  />
+    <postMsg mid="1163101" type="Warning" dynamic="1" navigation="0" arg0="1"  />
+
+Design Results:
+    449 blocks expanded
+Complete the first expansion.
+Writing 'PROJ500_PDU_FPGA_V1.ngd' ...
+Total CPU Time: 0 secs 
+Total REAL Time: 0 secs 
+Peak Memory Usage: 21 MB
+
+
+map -a "MachXO2" -p LCMXO2-640HC -t QFN48 -s 5 -oc Commercial   "PROJ500_PDU_FPGA_V1.ngd" -o "PROJ500_PDU_FPGA_V1_map.ncd" -pr "PROJ500_PDU_FPGA_V1.prf" -mp "PROJ500_PDU_FPGA_V1.mrp" -lpf "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/V1/PROJ500_PDU_FPGA_V1_synplify.lpf" -lpf "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/PROJ500_PDU_FPGA.lpf"  -c 0           
+map:  version Diamond (64-bit) 3.14.0.75.2
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+   Process the file: PROJ500_PDU_FPGA_V1.ngd
+   Picdevice="LCMXO2-640HC"
+
+   Pictype="QFN48"
+
+   Picspeed=5
+
+   Remove unused logic
+
+   Do not produce over sized NCDs.
+
+Part used: LCMXO2-640HCQFN48, Performance used: 5.
+
+    <postMsg mid="1104084" type="Warning" dynamic="3" navigation="0" arg0="" arg1="FREQUENCY NET &quot;clk_osc&quot; 2.100000 MHz ;&#xA;" arg2="FREQUENCY NET &quot;clk_osc&quot; 2.080000 MHz ;&#xA;"  />
+Loading device for application map from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+
+Running general design DRC...
+
+Removing unused logic...
+
+Optimizing...
+
+1 CCU2 constant inputs absorbed.
+
+
+
+
+Design Summary:
+   Number of registers:    170 out of   760 (22%)
+      PFU registers:          154 out of   640 (24%)
+      PIO registers:           16 out of   120 (13%)
+   Number of SLICEs:       138 out of   320 (43%)
+      SLICEs as Logic/ROM:    138 out of   320 (43%)
+      SLICEs as RAM:            0 out of   240 (0%)
+      SLICEs as Carry:         31 out of   320 (10%)
+   Number of LUT4s:        270 out of   640 (42%)
+      Number used as logic LUTs:        208
+      Number used as distributed RAM:     0
+      Number used as ripple logic:       62
+      Number used as shift registers:     0
+   Number of PIO sites used: 34 + 4(JTAG) out of 40 (95%)
+   Number of block RAMs:  0 out of 2 (0%)
+   Number of GSRs:        0 out of 1 (0%)
+   EFB used :        Yes
+   JTAG used :       No
+   Readback used :   No
+   Oscillator used : Yes
+   Startup used :    No
+   POR :             On
+   Bandgap :         On
+   Number of Power Controller:  0 out of 1 (0%)
+   Number of Dynamic Bank Controller (BCINRD):  0 out of 4 (0%)
+   Number of DCCA:  0 out of 8 (0%)
+   Number of DCMA:  0 out of 2 (0%)
+   Notes:-
+      1. Total number of LUT4s = (Number of logic LUT4s) + 2*(Number of distributed RAMs) + 2*(Number of ripple logic)
+      2. Number of logic LUT4s does not include count of distributed RAM and ripple logic.
+   Number of clocks:  2
+     Net clk_osc: 104 loads, 104 rising, 0 falling (Driver: u_osch )
+     Net u_efb_i2c/i2c1_scli: 1 loads, 1 rising, 0 falling (Driver: PIO i2c1_scl )
+   Number of Clock Enables:  6
+     Net N_193_i: 6 loads, 6 LSLICEs
+     Net tick_1ms: 23 loads, 21 LSLICEs
+     Net N_240_i: 4 loads, 4 LSLICEs
+     Net N_250_i: 1 loads, 1 LSLICEs
+     Net t_prechargee: 7 loads, 7 LSLICEs
+     Net un1_spare_heartbeat3_9_i: 2 loads, 2 LSLICEs
+   Number of LSRs:  7
+     Net wb_rst_is_i: 1 loads, 1 LSLICEs
+     Net wb_rst_i: 5 loads, 4 LSLICEs
+     Net un1_spare_heartbeat3_1_i: 1 loads, 1 LSLICEs
+     Net N_195_i: 4 loads, 4 LSLICEs
+     Net wb_ack_o: 1 loads, 1 LSLICEs
+     Net un1_spare_heartbeat3_2_i: 2 loads, 2 LSLICEs
+     Net un1_spare_heartbeat3_i: 1 loads, 1 LSLICEs
+   Number of nets driven by tri-state buffers:  0
+   Top 10 highest fanout non-clock nets:
+     Net tick_1ms: 76 loads
+     Net state[0]: 23 loads
+     Net state[1]: 20 loads
+     Net fault_set: 19 loads
+     Net state[2]: 16 loads
+     Net un1_spare_heartbeat3_6_i: 16 loads
+     Net wb_rst_i: 16 loads
+     Net arm_ok: 14 loads
+     Net un1_precharge_latch_r_2_sqmuxa_i: 13 loads
+     Net wb_resp_valid: 13 loads
+    <postMsg mid="1103805" type="Warning" dynamic="2" navigation="0" arg0="In &quot;LOCATE COMP &quot;i2c1_scl&quot; SITE &quot;43&quot; ;&quot;: " arg1="43"  />
+    <postMsg mid="1103805" type="Warning" dynamic="2" navigation="0" arg0="In &quot;LOCATE COMP &quot;i2c1_sda&quot; SITE &quot;42&quot; ;&quot;: " arg1="42"  />
+ 
+
+   Number of warnings:  3
+   Number of errors:    0
+
+
+
+Total CPU Time: 0 secs  
+Total REAL Time: 0 secs  
+Peak Memory Usage: 40 MB
+
+Dumping design to file PROJ500_PDU_FPGA_V1_map.ncd.
+
+trce -f "PROJ500_PDU_FPGA_V1.mt" -o "PROJ500_PDU_FPGA_V1.tw1" "PROJ500_PDU_FPGA_V1_map.ncd" "PROJ500_PDU_FPGA_V1.prf"
+trce:  version Diamond (64-bit) 3.14.0.75.2
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Loading design for application trce from file proj500_pdu_fpga_v1_map.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application trce from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+Setup and Hold Report
+
+--------------------------------------------------------------------------------
+Lattice TRACE Report - Setup, Version Diamond (64-bit) 3.14.0.75.2
+Wed May 06 21:42:30 2026
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Report Information
+------------------
+Command line:    trce -v 1 -gt -mapchkpnt 0 -sethld -o PROJ500_PDU_FPGA_V1.tw1 -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_V1_map.ncd PROJ500_PDU_FPGA_V1.prf 
+Design file:     proj500_pdu_fpga_v1_map.ncd
+Preference file: proj500_pdu_fpga_v1.prf
+Device,speed:    LCMXO2-640HC,5
+Report level:    verbose report, limited to 1 item per preference
+--------------------------------------------------------------------------------
+
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+--------------------------------------------------------------------------------
+
+
+
+Timing summary (Setup):
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 11812 paths, 1 nets, and 1185 connections (98.42% coverage)
+
+--------------------------------------------------------------------------------
+Lattice TRACE Report - Hold, Version Diamond (64-bit) 3.14.0.75.2
+Wed May 06 21:42:30 2026
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Report Information
+------------------
+Command line:    trce -v 1 -gt -mapchkpnt 0 -sethld -o PROJ500_PDU_FPGA_V1.tw1 -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_V1_map.ncd PROJ500_PDU_FPGA_V1.prf 
+Design file:     proj500_pdu_fpga_v1_map.ncd
+Preference file: proj500_pdu_fpga_v1.prf
+Device,speed:    LCMXO2-640HC,M
+Report level:    verbose report, limited to 1 item per preference
+--------------------------------------------------------------------------------
+
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+--------------------------------------------------------------------------------
+
+
+
+Timing summary (Hold):
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 11812 paths, 1 nets, and 1185 connections (98.42% coverage)
+
+
+
+Timing summary (Setup and Hold):
+---------------
+
+Timing errors: 0 (setup), 0 (hold)
+Score: 0 (setup), 0 (hold)
+Cumulative negative slack: 0 (0+0)
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+
+Total CPU Time: 0 secs 
+Total REAL Time: 0 secs 
+Peak Memory Usage: 46 MB
+
+
+ldbanno "PROJ500_PDU_FPGA_V1_map.ncd" -n Verilog -o "PROJ500_PDU_FPGA_V1_mapvo.vo" -w -neg
+ldbanno: version Diamond (64-bit) 3.14.0.75.2
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Writing a Verilog netlist using the orca library type based on the PROJ500_PDU_FPGA_V1_map design file.
+
+
+Loading design for application ldbanno from file PROJ500_PDU_FPGA_V1_map.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application ldbanno from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+Converting design PROJ500_PDU_FPGA_V1_map.ncd into .ldb format.
+Writing Verilog netlist to file PROJ500_PDU_FPGA_V1_mapvo.vo
+Writing SDF timing to file PROJ500_PDU_FPGA_V1_mapvo.sdf
+    <postMsg mid="35400250" type="Info"    dynamic="1" navigation="0" arg0="0"  />
+Total CPU Time: 0 secs 
+Total REAL Time: 0 secs 
+Peak Memory Usage: 46 MB
+
+ldbanno "PROJ500_PDU_FPGA_V1_map.ncd" -n VHDL -o "PROJ500_PDU_FPGA_V1_mapvho.vho" -w -neg
+ldbanno: version Diamond (64-bit) 3.14.0.75.2
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Writing a VHDL netlist using the orca library type based on the PROJ500_PDU_FPGA_V1_map design file.
+
+
+Loading design for application ldbanno from file PROJ500_PDU_FPGA_V1_map.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application ldbanno from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+Converting design PROJ500_PDU_FPGA_V1_map.ncd into .ldb format.
+Writing VHDL netlist to file PROJ500_PDU_FPGA_V1_mapvho.vho
+Writing SDF timing to file PROJ500_PDU_FPGA_V1_mapvho.sdf
+    <postMsg mid="35400250" type="Info"    dynamic="1" navigation="0" arg0="0"  />
+Total CPU Time: 0 secs 
+Total REAL Time: 0 secs 
+Peak Memory Usage: 46 MB
+
+mpartrce -p "PROJ500_PDU_FPGA_V1.p2t" -f "PROJ500_PDU_FPGA_V1.p3t" -tf "PROJ500_PDU_FPGA_V1.pt" "PROJ500_PDU_FPGA_V1_map.ncd" "PROJ500_PDU_FPGA_V1.ncd"
+
+---- MParTrce Tool ----
+Removing old design directory at request of -rem command line option to this program.
+Running par. Please wait . . .
+
+Lattice Place and Route Report for Design "PROJ500_PDU_FPGA_V1_map.ncd"
+Wed May 06 21:42:31 2026
+
+PAR: Place And Route Diamond (64-bit) 3.14.0.75.2.
+Command Line: par -w -l 5 -i 6 -t 1 -c 0 -e 0 -gui -msgset "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml" -exp parUseNBR=1:parCDP=0:parCDR=0:parPathBased=OFF:parASE=1 PROJ500_PDU_FPGA_V1_map.ncd PROJ500_PDU_FPGA_V1.dir/5_1.ncd PROJ500_PDU_FPGA_V1.prf
+Preference file: PROJ500_PDU_FPGA_V1.prf.
+Placement level-cost: 5-1.
+Routing Iterations: 6
+
+Loading design for application par from file PROJ500_PDU_FPGA_V1_map.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application par from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+License checked out.
+
+
+Ignore Preference Error(s):  True
+Device utilization summary:
+
+   PIO (prelim)   34+4(JTAG)/80      48% used
+                  34+4(JTAG)/40      95% bonded
+   IOLOGIC           16/80           20% used
+
+   SLICE            138/320          43% used
+
+   OSC                1/1           100% used
+   EFB                1/1           100% used
+
+
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+Number of Signals: 484
+Number of Connections: 1204
+
+Pin Constraint Summary:
+   32 out of 34 pins locked (94% locked).
+
+The following 1 signal is selected to use the primary clock routing resources:
+    clk_osc (driver: u_osch, clk load #: 104)
+
+
+The following 1 signal is selected to use the secondary clock routing resources:
+    tick_1ms (driver: SLICE_98, clk load #: 0, sr load #: 0, ce load #: 23)
+
+No signal is selected as Global Set/Reset.
+Starting Placer Phase 0.
+............
+Finished Placer Phase 0.  REAL time: 0 secs 
+
+Starting Placer Phase 1.
+....................
+Placer score = 48664.
+Finished Placer Phase 1.  REAL time: 2 secs 
+
+Starting Placer Phase 2.
+.
+Placer score =  48579
+Finished Placer Phase 2.  REAL time: 2 secs 
+
+
+------------------ Clock Report ------------------
+
+Global Clock Resources:
+  CLK_PIN    : 0 out of 8 (0%)
+  DCM        : 0 out of 2 (0%)
+  DCC        : 0 out of 8 (0%)
+
+Global Clocks:
+  PRIMARY "clk_osc" from OSC on comp "u_osch" on site "OSC", clk load = 104
+  SECONDARY "tick_1ms" from Q0 on comp "SLICE_98" on site "R5C2A", clk load = 0, ce load = 23, sr load = 0
+
+  PRIMARY  : 1 out of 8 (12%)
+  SECONDARY: 1 out of 8 (12%)
+
+--------------- End of Clock Report ---------------
+
+
+I/O Usage Summary (final):
+   34 + 4(JTAG) out of 80 (47.5%) PIO sites used.
+   34 + 4(JTAG) out of 40 (95.0%) bonded PIO sites used.
+   Number of PIO comps: 34; differential: 0.
+   Number of Vref pins used: 0.
+
+I/O Bank Usage Summary:
++----------+----------------+------------+-----------+
+| I/O Bank | Usage          | Bank Vccio | Bank Vref |
++----------+----------------+------------+-----------+
+| 0        | 5 / 10 ( 50%)  | 3.3V       | -         |
+| 1        | 10 / 10 (100%) | 3.3V       | -         |
+| 2        | 9 / 10 ( 90%)  | 3.3V       | -         |
+| 3        | 10 / 10 (100%) | 3.3V       | -         |
++----------+----------------+------------+-----------+
+
+Total placer CPU time: 2 secs 
+
+Dumping design to file PROJ500_PDU_FPGA_V1.dir/5_1.ncd.
+
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+0 connections routed; 1204 unrouted.
+Starting router resource preassignment
+
+Completed router resource preassignment. Real time: 2 secs 
+
+Start NBR router at 21:42:33 05/06/26
+
+*****************************************************************
+Info: NBR allows conflicts(one node used by more than one signal)
+      in the earlier iterations. In each iteration, it tries to  
+      solve the conflicts while keeping the critical connections 
+      routed as short as possible. The routing process is said to
+      be completed when no conflicts exist and all connections   
+      are routed.                                                
+Note: NBR uses a different method to calculate timing slacks. The
+      worst slack and total negative slack may not be the same as
+      that in TRCE report. You should always run TRCE to verify  
+      your design.                                               
+*****************************************************************
+
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+Start NBR special constraint process at 21:42:33 05/06/26
+
+Start NBR section for initial routing at 21:42:33 05/06/26
+Level 4, iteration 1
+18(0.04%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 467.799ns/0.000ns; real time: 2 secs 
+
+Info: Initial congestion level at 75% usage is 0
+Info: Initial congestion area  at 75% usage is 0 (0.00%)
+
+Start NBR section for normal routing at 21:42:33 05/06/26
+Level 4, iteration 1
+8(0.02%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 467.799ns/0.000ns; real time: 2 secs 
+Level 4, iteration 2
+1(0.00%) conflict; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 467.799ns/0.000ns; real time: 2 secs 
+Level 4, iteration 3
+0(0.00%) conflict; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 467.799ns/0.000ns; real time: 2 secs 
+
+Start NBR section for setup/hold timing optimization with effort level 3 at 21:42:33 05/06/26
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+
+Start NBR section for re-routing at 21:42:34 05/06/26
+Level 4, iteration 1
+0(0.00%) conflict; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 467.799ns/0.000ns; real time: 3 secs 
+
+Start NBR section for post-routing at 21:42:34 05/06/26
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+
+End NBR router with 0 unrouted connection
+
+NBR Summary
+-----------
+  Number of unrouted connections : 0 (0.00%)
+  Number of connections with timing violations : 0 (0.00%)
+  Estimated worst slack<setup> : 467.799ns
+  Timing score<setup> : 0
+-----------
+Notes: The timing info is calculated for SETUP only and all PAR_ADJs are ignored.
+
+
+
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+Total CPU time 2 secs 
+Total REAL time: 3 secs 
+Completely routed.
+End of route.  1204 routed (100.00%); 0 unrouted.
+
+Hold time timing score: 0, hold timing errors: 0
+
+Timing score: 0 
+
+Dumping design to file PROJ500_PDU_FPGA_V1.dir/5_1.ncd.
+
+
+PAR_SUMMARY::Run status = Completed
+PAR_SUMMARY::Number of unrouted conns = 0
+PAR_SUMMARY::Worst  slack<setup/<ns>> = 467.799
+PAR_SUMMARY::Timing score<setup/<ns>> = 0.000
+PAR_SUMMARY::Worst  slack<hold /<ns>> = 0.306
+PAR_SUMMARY::Timing score<hold /<ns>> = 0.000
+PAR_SUMMARY::Number of errors = 0
+
+Total CPU  time to completion: 2 secs 
+Total REAL time to completion: 3 secs 
+
+par done!
+
+Note: user must run 'Trace' for timing closure signoff.
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+Exiting par with exit code 0
+Exiting mpartrce with exit code 0
+
+trce -f "PROJ500_PDU_FPGA_V1.pt" -o "PROJ500_PDU_FPGA_V1.twr" "PROJ500_PDU_FPGA_V1.ncd" "PROJ500_PDU_FPGA_V1.prf"
+trce:  version Diamond (64-bit) 3.14.0.75.2
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Loading design for application trce from file proj500_pdu_fpga_v1.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application trce from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+Setup and Hold Report
+
+--------------------------------------------------------------------------------
+Lattice TRACE Report - Setup, Version Diamond (64-bit) 3.14.0.75.2
+Wed May 06 21:42:34 2026
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Report Information
+------------------
+Command line:    trce -v 10 -gt -sethld -sp 5 -sphld m -o PROJ500_PDU_FPGA_V1.twr -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_V1.ncd PROJ500_PDU_FPGA_V1.prf 
+Design file:     proj500_pdu_fpga_v1.ncd
+Preference file: proj500_pdu_fpga_v1.prf
+Device,speed:    LCMXO2-640HC,5
+Report level:    verbose report, limited to 10 items per preference
+--------------------------------------------------------------------------------
+
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+--------------------------------------------------------------------------------
+
+
+
+Timing summary (Setup):
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 11812 paths, 1 nets, and 1185 connections (98.42% coverage)
+
+--------------------------------------------------------------------------------
+Lattice TRACE Report - Hold, Version Diamond (64-bit) 3.14.0.75.2
+Wed May 06 21:42:34 2026
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Report Information
+------------------
+Command line:    trce -v 10 -gt -sethld -sp 5 -sphld m -o PROJ500_PDU_FPGA_V1.twr -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_V1.ncd PROJ500_PDU_FPGA_V1.prf 
+Design file:     proj500_pdu_fpga_v1.ncd
+Preference file: proj500_pdu_fpga_v1.prf
+Device,speed:    LCMXO2-640HC,m
+Report level:    verbose report, limited to 10 items per preference
+--------------------------------------------------------------------------------
+
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+--------------------------------------------------------------------------------
+
+
+
+Timing summary (Hold):
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 11812 paths, 1 nets, and 1185 connections (98.42% coverage)
+
+
+
+Timing summary (Setup and Hold):
+---------------
+
+Timing errors: 0 (setup), 0 (hold)
+Score: 0 (setup), 0 (hold)
+Cumulative negative slack: 0 (0+0)
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+
+Total CPU Time: 0 secs 
+Total REAL Time: 0 secs 
+Peak Memory Usage: 46 MB
+
+
+iotiming  "PROJ500_PDU_FPGA_V1.ncd" "PROJ500_PDU_FPGA_V1.prf"
+I/O Timing Report:
+:  version Diamond (64-bit) 3.14.0.75.2
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+Loading design for application iotiming from file proj500_pdu_fpga_v1.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application iotiming from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+Running Performance Grade: 5
+Computing Setup Time ...
+Computing Max Clock to Output Delay ...
+Computing Hold Time ...
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+Computing Min Clock to Output Delay ...
+
+Loading design for application iotiming from file proj500_pdu_fpga_v1.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 6
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+Running Performance Grade: 6
+Computing Setup Time ...
+Computing Max Clock to Output Delay ...
+Computing Hold Time ...
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+Computing Min Clock to Output Delay ...
+
+Loading design for application iotiming from file proj500_pdu_fpga_v1.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: M
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+Running Performance Grade: M
+Computing Setup Time ...
+Computing Max Clock to Output Delay ...
+Computing Hold Time ...
+    <postMsg mid="1009991" type="Warning" dynamic="1" navigation="0" arg0="Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz"  />
+Computing Min Clock to Output Delay ...
+Done.
+
+tmcheck -par "PROJ500_PDU_FPGA_V1.par" 
+
+bitgen -f "PROJ500_PDU_FPGA_V1.t2b" -w "PROJ500_PDU_FPGA_V1.ncd"  -jedec "PROJ500_PDU_FPGA_V1.prf"
+
+
+BITGEN: Bitstream Generator Diamond (64-bit) 3.14.0.75.2
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+
+Loading design for application Bitgen from file PROJ500_PDU_FPGA_V1.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application Bitgen from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+
+Running DRC.
+DRC detected 0 errors and 0 warnings.
+Reading Preference File from PROJ500_PDU_FPGA_V1.prf.
+    <postMsg mid="1009992" type="Info"    dynamic="1" navigation="0" arg0=" SW_XO3D_SECURITY_ENCRYPTION *NOT* controlled by xo2c00.acd ###"  />
+    <postMsg mid="1009992" type="Info"    dynamic="1" navigation="0" arg0=" SW_XO3D_SECURITY_ENCRYPTION license_securityIP OK"  />
+
+Preference Summary:
++---------------------------------+---------------------------------+
+|  Preference                     |  Current Setting                |
++---------------------------------+---------------------------------+
+|                         RamCfg  |                        Reset**  |
++---------------------------------+---------------------------------+
+|                     MCCLK_FREQ  |                         2.08**  |
++---------------------------------+---------------------------------+
+|                  CONFIG_SECURE  |                          OFF**  |
++---------------------------------+---------------------------------+
+|                          INBUF  |                           ON**  |
++---------------------------------+---------------------------------+
+|                      JTAG_PORT  |                       ENABLE**  |
++---------------------------------+---------------------------------+
+|                       SDM_PORT  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|                 SLAVE_SPI_PORT  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|                MASTER_SPI_PORT  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|                       I2C_PORT  |                         ENABLE  |
++---------------------------------+---------------------------------+
+|        MUX_CONFIGURATION_PORTS  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|                  CONFIGURATION  |                          CFG**  |
++---------------------------------+---------------------------------+
+|                COMPRESS_CONFIG  |                           ON**  |
++---------------------------------+---------------------------------+
+|                        MY_ASSP  |                          OFF**  |
++---------------------------------+---------------------------------+
+|               ONE_TIME_PROGRAM  |                          OFF**  |
++---------------------------------+---------------------------------+
+|                 ENABLE_TRANSFR  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|                  SHAREDEBRINIT  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|            BACKGROUND_RECONFIG  |                          OFF**  |
++---------------------------------+---------------------------------+
+ *  Default setting.
+ ** The specified setting matches the default setting.
+
+
+Creating bit map...
+ 
+Bitstream Status: Final           Version 1.95.
+ 
+Saving bit stream in "PROJ500_PDU_FPGA_V1.jed".
+ 
+===========
+UFM Summary.
+===========
+UFM Size:        191 Pages (128*191 Bits).
+UFM Utilization: General Purpose Flash Memory.
+ 
+Available General Purpose Flash Memory:  191 Pages (Page 0 to Page 190).
+Initialized UFM Pages:                     0 Page.
+ 
+=========
+Padding summary
+=========
+Padded 122112 bits for this design
+
+
+Total CPU Time: 0 secs 
+Total REAL Time: 0 secs 
+Peak Memory Usage: 249 MB

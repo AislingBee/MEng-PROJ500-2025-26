@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'SMDH2016B260TF_24'
+CLASS = DISCRETE
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Yageo Group", "SMDH2016B260TF/24" (!) = "", "FUSC5141X160N", "Fuses Chip", "", "", "Resettable Fuses - PPTC 2016 24V 2.60A 1.5W SMD AEC-Q200 High Temp", "https://www.yageogroup.com/content/datasheet/asset/file/SMDH2016_1", "1.6 mm"
+END_PART
+
+END.

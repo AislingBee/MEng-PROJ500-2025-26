@@ -1,0 +1,27 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#SamacSys ECAD Model ECS-.327-6-13X
+#/1425467/1152530/2.50/2/3/Crystal or Oscillator
+DEF ECS-.327-6-13X Y 0 30 Y Y 1 F N
+F0 "Y" 350 250 50 H V L CNN
+F1 "ECS-.327-6-13X" 350 150 50 H V L CNN
+F2 "ECS327613X" 350 50 50 H I L CNN
+F3 "https://ecsxtal.com/store/pdf/ECS-3x8X%25202x6X%25201X5X.pdf" 350 -50 50 H I L CNN
+F4 "32.768 kHz +/-20ppm Crystal 6pF 35 kOhms Cylindrical Can, Radial" 350 -150 50 H I L CNN "Description"
+F5 "6.2" 350 -250 50 H I L CNN "Height"
+F6 "520-ECS327-6-13-X" 350 -350 50 H I L CNN "Mouser Part Number"
+F7 "https://www.mouser.co.uk/ProductDetail/ECS/ECS-.327-6-13X?qs=aGohqJksTCIxgMwEoE0VEw%3D%3D" 350 -450 50 H I L CNN "Mouser Price/Stock"
+F8 "ECS" 350 -550 50 H I L CNN "Manufacturer_Name"
+F9 "ECS-.327-6-13X" 350 -650 50 H I L CNN "Manufacturer_Part_Number"
+DRAW
+X ~ 1 0 0 100 R 50 50 0 0 P
+X ~ 2 400 0 100 L 50 50 0 0 P
+P 2 0 1 6 120 100 120 -100 N
+P 2 0 1 6 280 100 280 -100 N
+P 5 0 1 6 160 140 160 -140 240 -140 240 140 160 140 N
+P 2 0 1 6 280 0 300 0 N
+P 2 0 1 6 120 0 100 0 N
+ENDDRAW
+ENDDEF
+#
+#End Library

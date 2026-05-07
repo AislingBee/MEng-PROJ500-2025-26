@@ -1,0 +1,6 @@
+@W: CL168 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv":85:39:85:44|Removing instance u_osch because it does not drive other instances. To preserve this instance, use the syn_noprune synthesis directive.
+@W: CL169 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv":120:4:120:12|Pruning unused register step_div[21:0]. Make sure that there are no unused intermediate registers.
+@W: CL169 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv":120:4:120:12|Pruning unused register step_idx[4:0]. Make sure that there are no unused intermediate registers.
+@W: CL158 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv":43:16:43:23|Inout i2c1_scl is unused
+@W: CL158 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv":44:16:44:23|Inout i2c1_sda is unused
+

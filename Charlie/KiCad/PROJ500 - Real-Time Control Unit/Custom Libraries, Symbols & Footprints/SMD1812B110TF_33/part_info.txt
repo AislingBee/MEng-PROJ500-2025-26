@@ -1,0 +1,9 @@
+Manufacturer=Yageo Group
+PartNumber=SMD1812B110TF/33
+PartCategory=Fuse
+PackageCategory=Fuses Chip
+PinCount=2
+Version=1.1
+Released=2021-05-31 07:08:38
+Downloaded=2026-04-04 23:38:08
+3D=Y

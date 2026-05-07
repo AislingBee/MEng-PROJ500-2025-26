@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'NTMFS5C673NLT1G'
+CLASS = DISCRETE
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET";
+{========================================================================================}
+ "onsemi", "NTMFS5C673NLT1G" (!) = "", "NRVTS10100EMFST1G", "Other", "863-NTMFS5C673NLT1G", "https://www.mouser.co.uk/ProductDetail/onsemi/NTMFS5C673NLT1G?qs=tCMd4XlZ%2FiAxxjsFaegWng%3D%3D", "Low RDS(on); Low input capacitance; Maximum junction temperature of 175C; RoHS Compliant", "https://www.onsemi.com/pub/Collateral/NTMFS5C673NL-D.PDF"
+END_PART
+
+END.

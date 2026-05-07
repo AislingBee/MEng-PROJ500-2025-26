@@ -1,0 +1,532 @@
+
+// Verilog netlist produced by program ldbanno, Version Diamond (64-bit) 3.14.0.75.2
+
+// ldbanno -n Verilog -o PROJ500_PDU_FPGA_SELFTEST_vo.vo -w -neg -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_SELFTEST.ncd 
+// Netlist created on Fri Apr 17 00:30:17 2026
+// Netlist written on Fri Apr 17 00:30:21 2026
+// Design is for device LCMXO2-640HC
+// Design is for package QFN48
+// Design is for performance grade 5
+
+`timescale 1 ns / 1 ps
+
+module pdu_selftest_mxo2 ( SW_COMPUTE, SW_ARM, SW_RST_FAULT, SW_REMOTE_ARM, 
+                           ESTOP_OK, OV, UV, VBUS_OV, MCU_ALIVE, MCU_CMD_ARM, 
+                           MCU_CMD_FAULT, PRECHARGE_OK, FB_CLOSED, 
+                           SW_REMOTE_DISARM, i2c1_scl, i2c1_sda, FAULT_LATCH, 
+                           PRECHARGE_LATCH, MOTOR_EN, COMPUTE_EN, K_SEL, K_EN, 
+                           FAULT_CODE, STATE_CODE, OVUV_OK, ARM_PERMIT, 
+                           PRECHARGE_REQ, DUMP_EN, SPARE_OUT_0, SPARE_OUT_1 );
+  input  SW_COMPUTE, SW_ARM, SW_RST_FAULT, SW_REMOTE_ARM, ESTOP_OK, OV, UV, 
+         VBUS_OV, MCU_ALIVE, MCU_CMD_ARM, MCU_CMD_FAULT, PRECHARGE_OK, 
+         FB_CLOSED, SW_REMOTE_DISARM, i2c1_scl, i2c1_sda;
+  output FAULT_LATCH, PRECHARGE_LATCH, MOTOR_EN, COMPUTE_EN, K_SEL, K_EN;
+  output [3:0] FAULT_CODE;
+  output [1:0] STATE_CODE;
+  output OVUV_OK, ARM_PERMIT, PRECHARGE_REQ, DUMP_EN, SPARE_OUT_0, SPARE_OUT_1;
+  wire   SPARE_OUT_1_8, SPARE_OUT_1_9, SPARE_OUT_1_7, SPARE_OUT_1_6, UV_c, 
+         VBUS_OV_c, SPARE_OUT_1_c, SW_ARM_c, PRECHARGE_OK_c, MCU_CMD_FAULT_c, 
+         OV_c, SW_COMPUTE_c, SW_REMOTE_ARM_c, SW_RST_FAULT_c, 
+         SW_REMOTE_DISARM_c, MCU_CMD_ARM_c, MCU_ALIVE_c, ESTOP_OK_c, 
+         FB_CLOSED_c, VCC, VCCI;
+
+  SLICE_0 SLICE_0( .D1(SPARE_OUT_1_8), .C1(SPARE_OUT_1_9), .B1(SPARE_OUT_1_7), 
+    .A1(SPARE_OUT_1_6), .B0(UV_c), .A0(VBUS_OV_c), .F0(SPARE_OUT_1_6), 
+    .F1(SPARE_OUT_1_c));
+  SLICE_1 SLICE_1( .D1(SW_ARM_c), .C1(PRECHARGE_OK_c), .B1(MCU_CMD_FAULT_c), 
+    .A1(OV_c), .D0(SW_COMPUTE_c), .C0(SW_REMOTE_ARM_c), .B0(SW_RST_FAULT_c), 
+    .A0(SW_REMOTE_DISARM_c), .F0(SPARE_OUT_1_9), .F1(SPARE_OUT_1_8));
+  SLICE_2 SLICE_2( .D0(MCU_CMD_ARM_c), .C0(MCU_ALIVE_c), .B0(ESTOP_OK_c), 
+    .A0(FB_CLOSED_c), .F0(SPARE_OUT_1_7), .F1(VCC));
+  FAULT_LATCH FAULT_LATCH_I( .PADDO(VCC), .FAULT_LATCH(FAULT_LATCH));
+  SW_COMPUTE SW_COMPUTE_I( .PADDI(SW_COMPUTE_c), .SW_COMPUTE(SW_COMPUTE));
+  SPARE_OUT_1 SPARE_OUT_1_I( .PADDO(SPARE_OUT_1_c), .SPARE_OUT_1(SPARE_OUT_1));
+  SPARE_OUT_0 SPARE_OUT_0_I( .PADDO(VCC), .SPARE_OUT_0(SPARE_OUT_0));
+  DUMP_EN DUMP_EN_I( .PADDO(VCC), .DUMP_EN(DUMP_EN));
+  PRECHARGE_REQ PRECHARGE_REQ_I( .PADDO(VCC), .PRECHARGE_REQ(PRECHARGE_REQ));
+  ARM_PERMIT ARM_PERMIT_I( .PADDO(VCC), .ARM_PERMIT(ARM_PERMIT));
+  OVUV_OK OVUV_OK_I( .PADDO(VCC), .OVUV_OK(OVUV_OK));
+  STATE_CODE_1_ \STATE_CODE[1]_I ( .PADDO(VCC), .STATECODE1(STATE_CODE[1]));
+  STATE_CODE_0_ \STATE_CODE[0]_I ( .PADDO(VCC), .STATECODE0(STATE_CODE[0]));
+  FAULT_CODE_3_ \FAULT_CODE[3]_I ( .PADDO(VCC), .FAULTCODE3(FAULT_CODE[3]));
+  FAULT_CODE_2_ \FAULT_CODE[2]_I ( .PADDO(VCC), .FAULTCODE2(FAULT_CODE[2]));
+  FAULT_CODE_1_ \FAULT_CODE[1]_I ( .PADDO(VCC), .FAULTCODE1(FAULT_CODE[1]));
+  FAULT_CODE_0_ \FAULT_CODE[0]_I ( .PADDO(VCC), .FAULTCODE0(FAULT_CODE[0]));
+  K_EN K_EN_I( .PADDO(VCC), .K_EN(K_EN));
+  K_SEL K_SEL_I( .PADDO(VCC), .K_SEL(K_SEL));
+  COMPUTE_EN COMPUTE_EN_I( .PADDO(VCC), .COMPUTE_EN(COMPUTE_EN));
+  MOTOR_EN MOTOR_EN_I( .PADDO(VCC), .MOTOR_EN(MOTOR_EN));
+  PRECHARGE_LATCH PRECHARGE_LATCH_I( .PADDO(VCC), 
+    .PRECHARGE_LATCH(PRECHARGE_LATCH));
+  SW_REMOTE_DISARM SW_REMOTE_DISARM_I( .PADDI(SW_REMOTE_DISARM_c), 
+    .SW_REMOTE_DISARM(SW_REMOTE_DISARM));
+  FB_CLOSED FB_CLOSED_I( .PADDI(FB_CLOSED_c), .FB_CLOSED(FB_CLOSED));
+  PRECHARGE_OK PRECHARGE_OK_I( .PADDI(PRECHARGE_OK_c), 
+    .PRECHARGE_OK(PRECHARGE_OK));
+  MCU_CMD_FAULT MCU_CMD_FAULT_I( .PADDI(MCU_CMD_FAULT_c), 
+    .MCU_CMD_FAULT(MCU_CMD_FAULT));
+  MCU_CMD_ARM MCU_CMD_ARM_I( .PADDI(MCU_CMD_ARM_c), .MCU_CMD_ARM(MCU_CMD_ARM));
+  MCU_ALIVE MCU_ALIVE_I( .PADDI(MCU_ALIVE_c), .MCU_ALIVE(MCU_ALIVE));
+  VBUS_OV VBUS_OV_I( .PADDI(VBUS_OV_c), .VBUS_OV(VBUS_OV));
+  UV UV_I( .PADDI(UV_c), .UV(UV));
+  OV OV_I( .PADDI(OV_c), .OV(OV));
+  ESTOP_OK ESTOP_OK_I( .PADDI(ESTOP_OK_c), .ESTOP_OK(ESTOP_OK));
+  SW_REMOTE_ARM SW_REMOTE_ARM_I( .PADDI(SW_REMOTE_ARM_c), 
+    .SW_REMOTE_ARM(SW_REMOTE_ARM));
+  SW_RST_FAULT SW_RST_FAULT_I( .PADDI(SW_RST_FAULT_c), 
+    .SW_RST_FAULT(SW_RST_FAULT));
+  SW_ARM SW_ARM_I( .PADDI(SW_ARM_c), .SW_ARM(SW_ARM));
+  VHI VHI_INST( .Z(VCCI));
+  PUR PUR_INST( .PUR(VCCI));
+  GSR GSR_INST( .GSR(VCCI));
+endmodule
+
+module SLICE_0 ( input D1, C1, B1, A1, B0, A0, output F0, F1 );
+  wire   GNDI;
+
+  lut4 SPARE_OUT_1( .A(A1), .B(B1), .C(C1), .D(D1), .Z(F1));
+  lut40001 SPARE_OUT_1_6( .A(A0), .B(B0), .C(GNDI), .D(GNDI), .Z(F0));
+  gnd DRIVEGND( .PWR0(GNDI));
+
+  specify
+    (D1 => F1) = (0:0:0,0:0:0);
+    (C1 => F1) = (0:0:0,0:0:0);
+    (B1 => F1) = (0:0:0,0:0:0);
+    (A1 => F1) = (0:0:0,0:0:0);
+    (B0 => F0) = (0:0:0,0:0:0);
+    (A0 => F0) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module lut4 ( input A, B, C, D, output Z );
+
+  ROM16X1A #(16'h6996) INST10( .AD0(A), .AD1(B), .AD2(C), .AD3(D), .DO0(Z));
+endmodule
+
+module lut40001 ( input A, B, C, D, output Z );
+
+  ROM16X1A #(16'h6666) INST10( .AD0(A), .AD1(B), .AD2(C), .AD3(D), .DO0(Z));
+endmodule
+
+module gnd ( output PWR0 );
+
+  VLO INST1( .Z(PWR0));
+endmodule
+
+module SLICE_1 ( input D1, C1, B1, A1, D0, C0, B0, A0, output F0, F1 );
+
+  lut40002 SPARE_OUT_1_8( .A(A1), .B(B1), .C(C1), .D(D1), .Z(F1));
+  lut40003 SPARE_OUT_1_9( .A(A0), .B(B0), .C(C0), .D(D0), .Z(F0));
+
+  specify
+    (D1 => F1) = (0:0:0,0:0:0);
+    (C1 => F1) = (0:0:0,0:0:0);
+    (B1 => F1) = (0:0:0,0:0:0);
+    (A1 => F1) = (0:0:0,0:0:0);
+    (D0 => F0) = (0:0:0,0:0:0);
+    (C0 => F0) = (0:0:0,0:0:0);
+    (B0 => F0) = (0:0:0,0:0:0);
+    (A0 => F0) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module lut40002 ( input A, B, C, D, output Z );
+
+  ROM16X1A #(16'h6996) INST10( .AD0(A), .AD1(B), .AD2(C), .AD3(D), .DO0(Z));
+endmodule
+
+module lut40003 ( input A, B, C, D, output Z );
+
+  ROM16X1A #(16'h6996) INST10( .AD0(A), .AD1(B), .AD2(C), .AD3(D), .DO0(Z));
+endmodule
+
+module SLICE_2 ( input D0, C0, B0, A0, output F0, F1 );
+  wire   GNDI;
+
+  lut40004 VCC( .A(GNDI), .B(GNDI), .C(GNDI), .D(GNDI), .Z(F1));
+  gnd DRIVEGND( .PWR0(GNDI));
+  lut40002 SPARE_OUT_1_7( .A(A0), .B(B0), .C(C0), .D(D0), .Z(F0));
+
+  specify
+    (D0 => F0) = (0:0:0,0:0:0);
+    (C0 => F0) = (0:0:0,0:0:0);
+    (B0 => F0) = (0:0:0,0:0:0);
+    (A0 => F0) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module lut40004 ( input A, B, C, D, output Z );
+
+  ROM16X1A #(16'hFFFF) INST10( .AD0(A), .AD1(B), .AD2(C), .AD3(D), .DO0(Z));
+endmodule
+
+module FAULT_LATCH ( input PADDO, output FAULT_LATCH );
+
+  xo2iobuf FAULT_LATCH_pad( .I(PADDO), .PAD(FAULT_LATCH));
+
+  specify
+    (PADDO => FAULT_LATCH) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module xo2iobuf ( input I, output PAD );
+
+  OB INST5( .I(I), .O(PAD));
+endmodule
+
+module SW_COMPUTE ( output PADDI, input SW_COMPUTE );
+
+  xo2iobuf0005 SW_COMPUTE_pad( .Z(PADDI), .PAD(SW_COMPUTE));
+
+  specify
+    (SW_COMPUTE => PADDI) = (0:0:0,0:0:0);
+    $width (posedge SW_COMPUTE, 0:0:0);
+    $width (negedge SW_COMPUTE, 0:0:0);
+  endspecify
+
+endmodule
+
+module xo2iobuf0005 ( output Z, input PAD );
+
+  IB INST1( .I(PAD), .O(Z));
+endmodule
+
+module SPARE_OUT_1 ( input PADDO, output SPARE_OUT_1 );
+
+  xo2iobuf SPARE_OUT_1_pad( .I(PADDO), .PAD(SPARE_OUT_1));
+
+  specify
+    (PADDO => SPARE_OUT_1) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module SPARE_OUT_0 ( input PADDO, output SPARE_OUT_0 );
+
+  xo2iobuf SPARE_OUT_0_pad( .I(PADDO), .PAD(SPARE_OUT_0));
+
+  specify
+    (PADDO => SPARE_OUT_0) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module DUMP_EN ( input PADDO, output DUMP_EN );
+
+  xo2iobuf DUMP_EN_pad( .I(PADDO), .PAD(DUMP_EN));
+
+  specify
+    (PADDO => DUMP_EN) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module PRECHARGE_REQ ( input PADDO, output PRECHARGE_REQ );
+
+  xo2iobuf PRECHARGE_REQ_pad( .I(PADDO), .PAD(PRECHARGE_REQ));
+
+  specify
+    (PADDO => PRECHARGE_REQ) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module ARM_PERMIT ( input PADDO, output ARM_PERMIT );
+
+  xo2iobuf ARM_PERMIT_pad( .I(PADDO), .PAD(ARM_PERMIT));
+
+  specify
+    (PADDO => ARM_PERMIT) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module OVUV_OK ( input PADDO, output OVUV_OK );
+
+  xo2iobuf OVUV_OK_pad( .I(PADDO), .PAD(OVUV_OK));
+
+  specify
+    (PADDO => OVUV_OK) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module STATE_CODE_1_ ( input PADDO, output STATECODE1 );
+
+  xo2iobuf \STATE_CODE_pad[1] ( .I(PADDO), .PAD(STATECODE1));
+
+  specify
+    (PADDO => STATECODE1) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module STATE_CODE_0_ ( input PADDO, output STATECODE0 );
+
+  xo2iobuf \STATE_CODE_pad[0] ( .I(PADDO), .PAD(STATECODE0));
+
+  specify
+    (PADDO => STATECODE0) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module FAULT_CODE_3_ ( input PADDO, output FAULTCODE3 );
+
+  xo2iobuf \FAULT_CODE_pad[3] ( .I(PADDO), .PAD(FAULTCODE3));
+
+  specify
+    (PADDO => FAULTCODE3) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module FAULT_CODE_2_ ( input PADDO, output FAULTCODE2 );
+
+  xo2iobuf \FAULT_CODE_pad[2] ( .I(PADDO), .PAD(FAULTCODE2));
+
+  specify
+    (PADDO => FAULTCODE2) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module FAULT_CODE_1_ ( input PADDO, output FAULTCODE1 );
+
+  xo2iobuf \FAULT_CODE_pad[1] ( .I(PADDO), .PAD(FAULTCODE1));
+
+  specify
+    (PADDO => FAULTCODE1) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module FAULT_CODE_0_ ( input PADDO, output FAULTCODE0 );
+
+  xo2iobuf \FAULT_CODE_pad[0] ( .I(PADDO), .PAD(FAULTCODE0));
+
+  specify
+    (PADDO => FAULTCODE0) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module K_EN ( input PADDO, output K_EN );
+
+  xo2iobuf0006 K_EN_pad( .I(PADDO), .PAD(K_EN));
+
+  specify
+    (PADDO => K_EN) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module xo2iobuf0006 ( input I, output PAD );
+
+  OB INST5( .I(I), .O(PAD));
+endmodule
+
+module K_SEL ( input PADDO, output K_SEL );
+
+  xo2iobuf0006 K_SEL_pad( .I(PADDO), .PAD(K_SEL));
+
+  specify
+    (PADDO => K_SEL) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module COMPUTE_EN ( input PADDO, output COMPUTE_EN );
+
+  xo2iobuf0007 COMPUTE_EN_pad( .I(PADDO), .PAD(COMPUTE_EN));
+
+  specify
+    (PADDO => COMPUTE_EN) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module xo2iobuf0007 ( input I, output PAD );
+
+  OB INST5( .I(I), .O(PAD));
+endmodule
+
+module MOTOR_EN ( input PADDO, output MOTOR_EN );
+
+  xo2iobuf MOTOR_EN_pad( .I(PADDO), .PAD(MOTOR_EN));
+
+  specify
+    (PADDO => MOTOR_EN) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module PRECHARGE_LATCH ( input PADDO, output PRECHARGE_LATCH );
+
+  xo2iobuf PRECHARGE_LATCH_pad( .I(PADDO), .PAD(PRECHARGE_LATCH));
+
+  specify
+    (PADDO => PRECHARGE_LATCH) = (0:0:0,0:0:0);
+  endspecify
+
+endmodule
+
+module SW_REMOTE_DISARM ( output PADDI, input SW_REMOTE_DISARM );
+
+  xo2iobuf0005 SW_REMOTE_DISARM_pad( .Z(PADDI), .PAD(SW_REMOTE_DISARM));
+
+  specify
+    (SW_REMOTE_DISARM => PADDI) = (0:0:0,0:0:0);
+    $width (posedge SW_REMOTE_DISARM, 0:0:0);
+    $width (negedge SW_REMOTE_DISARM, 0:0:0);
+  endspecify
+
+endmodule
+
+module FB_CLOSED ( output PADDI, input FB_CLOSED );
+
+  xo2iobuf0005 FB_CLOSED_pad( .Z(PADDI), .PAD(FB_CLOSED));
+
+  specify
+    (FB_CLOSED => PADDI) = (0:0:0,0:0:0);
+    $width (posedge FB_CLOSED, 0:0:0);
+    $width (negedge FB_CLOSED, 0:0:0);
+  endspecify
+
+endmodule
+
+module PRECHARGE_OK ( output PADDI, input PRECHARGE_OK );
+
+  xo2iobuf0005 PRECHARGE_OK_pad( .Z(PADDI), .PAD(PRECHARGE_OK));
+
+  specify
+    (PRECHARGE_OK => PADDI) = (0:0:0,0:0:0);
+    $width (posedge PRECHARGE_OK, 0:0:0);
+    $width (negedge PRECHARGE_OK, 0:0:0);
+  endspecify
+
+endmodule
+
+module MCU_CMD_FAULT ( output PADDI, input MCU_CMD_FAULT );
+
+  xo2iobuf0005 MCU_CMD_FAULT_pad( .Z(PADDI), .PAD(MCU_CMD_FAULT));
+
+  specify
+    (MCU_CMD_FAULT => PADDI) = (0:0:0,0:0:0);
+    $width (posedge MCU_CMD_FAULT, 0:0:0);
+    $width (negedge MCU_CMD_FAULT, 0:0:0);
+  endspecify
+
+endmodule
+
+module MCU_CMD_ARM ( output PADDI, input MCU_CMD_ARM );
+
+  xo2iobuf0005 MCU_CMD_ARM_pad( .Z(PADDI), .PAD(MCU_CMD_ARM));
+
+  specify
+    (MCU_CMD_ARM => PADDI) = (0:0:0,0:0:0);
+    $width (posedge MCU_CMD_ARM, 0:0:0);
+    $width (negedge MCU_CMD_ARM, 0:0:0);
+  endspecify
+
+endmodule
+
+module MCU_ALIVE ( output PADDI, input MCU_ALIVE );
+
+  xo2iobuf0005 MCU_ALIVE_pad( .Z(PADDI), .PAD(MCU_ALIVE));
+
+  specify
+    (MCU_ALIVE => PADDI) = (0:0:0,0:0:0);
+    $width (posedge MCU_ALIVE, 0:0:0);
+    $width (negedge MCU_ALIVE, 0:0:0);
+  endspecify
+
+endmodule
+
+module VBUS_OV ( output PADDI, input VBUS_OV );
+
+  xo2iobuf0005 VBUS_OV_pad( .Z(PADDI), .PAD(VBUS_OV));
+
+  specify
+    (VBUS_OV => PADDI) = (0:0:0,0:0:0);
+    $width (posedge VBUS_OV, 0:0:0);
+    $width (negedge VBUS_OV, 0:0:0);
+  endspecify
+
+endmodule
+
+module UV ( output PADDI, input UV );
+
+  xo2iobuf0005 UV_pad( .Z(PADDI), .PAD(UV));
+
+  specify
+    (UV => PADDI) = (0:0:0,0:0:0);
+    $width (posedge UV, 0:0:0);
+    $width (negedge UV, 0:0:0);
+  endspecify
+
+endmodule
+
+module OV ( output PADDI, input OV );
+
+  xo2iobuf0005 OV_pad( .Z(PADDI), .PAD(OV));
+
+  specify
+    (OV => PADDI) = (0:0:0,0:0:0);
+    $width (posedge OV, 0:0:0);
+    $width (negedge OV, 0:0:0);
+  endspecify
+
+endmodule
+
+module ESTOP_OK ( output PADDI, input ESTOP_OK );
+
+  xo2iobuf0005 ESTOP_OK_pad( .Z(PADDI), .PAD(ESTOP_OK));
+
+  specify
+    (ESTOP_OK => PADDI) = (0:0:0,0:0:0);
+    $width (posedge ESTOP_OK, 0:0:0);
+    $width (negedge ESTOP_OK, 0:0:0);
+  endspecify
+
+endmodule
+
+module SW_REMOTE_ARM ( output PADDI, input SW_REMOTE_ARM );
+
+  xo2iobuf0005 SW_REMOTE_ARM_pad( .Z(PADDI), .PAD(SW_REMOTE_ARM));
+
+  specify
+    (SW_REMOTE_ARM => PADDI) = (0:0:0,0:0:0);
+    $width (posedge SW_REMOTE_ARM, 0:0:0);
+    $width (negedge SW_REMOTE_ARM, 0:0:0);
+  endspecify
+
+endmodule
+
+module SW_RST_FAULT ( output PADDI, input SW_RST_FAULT );
+
+  xo2iobuf0005 SW_RST_FAULT_pad( .Z(PADDI), .PAD(SW_RST_FAULT));
+
+  specify
+    (SW_RST_FAULT => PADDI) = (0:0:0,0:0:0);
+    $width (posedge SW_RST_FAULT, 0:0:0);
+    $width (negedge SW_RST_FAULT, 0:0:0);
+  endspecify
+
+endmodule
+
+module SW_ARM ( output PADDI, input SW_ARM );
+
+  xo2iobuf0005 SW_ARM_pad( .Z(PADDI), .PAD(SW_ARM));
+
+  specify
+    (SW_ARM => PADDI) = (0:0:0,0:0:0);
+    $width (posedge SW_ARM, 0:0:0);
+    $width (negedge SW_ARM, 0:0:0);
+  endspecify
+
+endmodule

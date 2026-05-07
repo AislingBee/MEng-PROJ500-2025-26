@@ -1,0 +1,16 @@
+.SMD1812B110TF_33 :1 ;Resettable Fuses - PPTC PPTC SMD 1812, 33V 1.1A, Reel 7"
+FUSC4632X200N
+*STM F
+*NGS
+*PLB 1="1" 2="2"
+*MXP 2
+*DFN SMD1812B110TF_33
+~!Mouser Part Number (603-SMD1812B110TF/33)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/YAGEO/SMD1812B110TF-33?qs=PzGy0jfpSMuML01qySW0Yw%3D%3D)
+~!Manufacturer_Name (Yageo Group)
+~!Manufacturer_Part_Number (SMD1812B110TF/33)
+~!Link Datasheet (https://www.mouser.cn/datasheet/2/447/SMD1812_1-1955023.pdf)
+~!Height (2mm)
+~!3D_Model (SMD1812B110TF_33)
+SMD1812B110TF_33
+1.1!U 2.1!U 

@@ -1,0 +1,9 @@
+Manufacturer=OMRON Electronics
+PartNumber=G5LE-1A4-DC12
+PartCategory=Relay or Contactor
+PackageCategory=Other
+PinCount=4
+Version=2.1
+Released=2018-01-31 15:10:56
+Downloaded=2026-02-15 21:16:00
+3D=Y

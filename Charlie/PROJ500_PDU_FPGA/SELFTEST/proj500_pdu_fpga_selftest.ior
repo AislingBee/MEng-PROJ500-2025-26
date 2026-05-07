@@ -1,0 +1,42 @@
+Loading design for application iotiming from file proj500_pdu_fpga_selftest.ncd.
+Design name: pdu_selftest_mxo2
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 6
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+Loading design for application iotiming from file proj500_pdu_fpga_selftest.ncd.
+Design name: pdu_selftest_mxo2
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: M
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+// Design: pdu_selftest_mxo2
+// Package: QFN48
+// ncd File: proj500_pdu_fpga_selftest.ncd
+// Version: Diamond (64-bit) 3.14.0.75.2
+// Written on Mon Apr 20 18:52:07 2026
+// M: Minimum Performance Grade
+// iotiming PROJ500_PDU_FPGA_SELFTEST.ncd PROJ500_PDU_FPGA_SELFTEST.prf -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml
+
+I/O Timing Report (All units are in ns)
+
+Worst Case Results across Performance Grades (M, 6, 5):
+
+// Input Setup and Hold Times
+
+Port  Clock Edge  Setup Performance_Grade  Hold Performance_Grade
+----------------------------------------------------------------------
+(no input setup/hold data)
+
+
+// Clock to Output Delay
+
+Port  Clock Edge  Max_Delay Performance_Grade  Min_Delay Performance_Grade
+------------------------------------------------------------------------
+(no clock to output min/max data)

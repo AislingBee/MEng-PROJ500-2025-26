@@ -1,0 +1,315 @@
+<HTML>
+<HEAD><TITLE>Lattice Map TRACE Report</TITLE>
+<STYLE TYPE="text/css">
+<!--
+ body,pre{    font-family:'Courier New', monospace;    color: #000000;    font-size:88%;    background-color: #ffffff;}h1 {    font-weight: bold;    margin-top: 24px;    margin-bottom: 10px;    border-bottom: 3px solid #000;    font-size: 1em;}h2 {    font-weight: bold;    margin-top: 18px;    margin-bottom: 5px;    font-size: 0.90em;}h3 {    font-weight: bold;    margin-top: 12px;    margin-bottom: 5px;    font-size: 0.80em;}p {    font-size:78%;}P.Table {    margin-top: 4px;    margin-bottom: 4px;    margin-right: 4px;    margin-left: 4px;}table{    border-width: 1px 1px 1px 1px;    border-style: solid solid solid solid;    border-color: black black black black;    border-collapse: collapse;}th {    font-weight:bold;    padding: 4px;    border-width: 1px 1px 1px 1px;    border-style: solid solid solid solid;    border-color: black black black black;    vertical-align:top;    text-align:left;    font-size:78%;}td {    padding: 4px;    border-width: 1px 1px 1px 1px;    border-style: solid solid solid solid;    border-color: black black black black;    vertical-align:top;    font-size:78%;}a {    color:#013C9A;    text-decoration:none;}a:visited {    color:#013C9A;}a:hover, a:active {    text-decoration:underline;    color:#5BAFD4;}.pass{background-color: #00ff00;}.fail{background-color: #ff0000;}.comment{    font-size: 90%;    font-style: italic;}
+-->
+</STYLE>
+</HEAD>
+<PRE><A name="Map_Twr"></A><B><U><big>Map TRACE Report</big></U></B>
+
+Loading design for application trce from file proj500_pdu_fpga_v1_map.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 5
+Loading device for application trce from file 'xo2c640.nph' in environment: C:/Programs/Lattice Diamond/ispfpga.
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+Setup and Hold Report
+
+--------------------------------------------------------------------------------
+<A name="Map_Twr_setup"></A><B><U><big>Lattice TRACE Report - Setup, Version Diamond (64-bit) 3.14.0.75.2</big></U></B>
+Wed May 06 21:42:30 2026
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+<A name="mtw1_set_ri"></A><B><U><big>Report Information</big></U></B>
+------------------
+Command line:    trce -v 1 -gt -mapchkpnt 0 -sethld -o PROJ500_PDU_FPGA_V1.tw1 -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_V1_map.ncd PROJ500_PDU_FPGA_V1.prf 
+Design file:     proj500_pdu_fpga_v1_map.ncd
+Preference file: proj500_pdu_fpga_v1.prf
+Device,speed:    LCMXO2-640HC,5
+Report level:    verbose report, limited to 1 item per preference
+--------------------------------------------------------------------------------
+
+<A name="mtw1_set_ps"></A><B><U><big>Preference Summary</big></U></B>
+
+<LI><A href='#map_twr_pref_0_0' Target='right'>FREQUENCY NET "clk_osc" 2.080000 MHz (0 errors)</A></LI>            4096 items scored, 0 timing errors detected.
+Report:   78.790MHz is the maximum frequency for this preference.
+
+WARNING - trce: Warning:  To support I2C port clock rates > 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+--------------------------------------------------------------------------------
+
+
+
+================================================================================
+<A name="map_twr_pref_0_0"></A>Preference: FREQUENCY NET "clk_osc" 2.080000 MHz ;
+            4096 items scored, 0 timing errors detected.
+--------------------------------------------------------------------------------
+
+
+Passed: The following path meets requirements by 468.077ns
+
+ Logical Details:  Cell type  Pin type       Cell/ASIC name  (clock net +/-)
+
+   Source:         FF         Q              t_precharge[0]  (from clk_osc +)
+   Destination:    FF         Data in        t_precharge[12]  (to clk_osc +)
+
+   Delay:              12.542ns  (42.5% logic, 57.5% route), 14 logic levels.
+
+ Constraint Details:
+
+     12.542ns physical path delay SLICE_0 to SLICE_25 meets
+    480.769ns delay constraint less
+      0.150ns DIN_SET requirement (totaling 480.619ns) by 468.077ns
+
+ Physical Path Details:
+
+      Data path SLICE_0 to SLICE_25:
+
+   Name    Fanout   Delay (ns)          Site               Resource
+REG_DEL     ---     0.409    SLICE_0.CLK to     SLICE_0.Q1 SLICE_0 (from clk_osc)
+ROUTE         3   e 1.030     SLICE_0.Q1 to   SLICE_158.A1 t_precharge[0]
+CTOF_DEL    ---     0.452   SLICE_158.A1 to   SLICE_158.F1 SLICE_158
+ROUTE         1   e 1.030   SLICE_158.F1 to   SLICE_135.B1 un1_t_precharge_1_1
+CTOF_DEL    ---     0.452   SLICE_135.B1 to   SLICE_135.F1 SLICE_135
+ROUTE         2   e 1.030   SLICE_135.F1 to    SLICE_65.C1 un1_t_precharge_1
+CTOF_DEL    ---     0.452    SLICE_65.C1 to    SLICE_65.F1 SLICE_65
+ROUTE         3   e 1.030    SLICE_65.F1 to    SLICE_48.D1 pchg_to_10
+CTOF_DEL    ---     0.452    SLICE_48.D1 to    SLICE_48.F1 SLICE_48
+ROUTE        19   e 1.030    SLICE_48.F1 to   SLICE_131.B1 fault_set
+CTOF_DEL    ---     0.452   SLICE_131.B1 to   SLICE_131.F1 SLICE_131
+ROUTE         4   e 1.030   SLICE_131.F1 to   SLICE_136.B0 precharge_latch_r_2_sqmuxa
+CTOF_DEL    ---     0.452   SLICE_136.B0 to   SLICE_136.F0 SLICE_136
+ROUTE         2   e 1.030   SLICE_136.F0 to     SLICE_0.B0 t_precharge
+C0TOFCO_DE  ---     0.905     SLICE_0.B0 to    SLICE_0.FCO SLICE_0
+ROUTE         1   e 0.001    SLICE_0.FCO to   SLICE_30.FCI t_precharge_cry[0]
+FCITOFCO_D  ---     0.146   SLICE_30.FCI to   SLICE_30.FCO SLICE_30
+ROUTE         1   e 0.001   SLICE_30.FCO to   SLICE_29.FCI t_precharge_cry[2]
+FCITOFCO_D  ---     0.146   SLICE_29.FCI to   SLICE_29.FCO SLICE_29
+ROUTE         1   e 0.001   SLICE_29.FCO to   SLICE_28.FCI t_precharge_cry[4]
+FCITOFCO_D  ---     0.146   SLICE_28.FCI to   SLICE_28.FCO SLICE_28
+ROUTE         1   e 0.001   SLICE_28.FCO to   SLICE_27.FCI t_precharge_cry[6]
+FCITOFCO_D  ---     0.146   SLICE_27.FCI to   SLICE_27.FCO SLICE_27
+ROUTE         1   e 0.001   SLICE_27.FCO to   SLICE_26.FCI t_precharge_cry[8]
+FCITOFCO_D  ---     0.146   SLICE_26.FCI to   SLICE_26.FCO SLICE_26
+ROUTE         1   e 0.001   SLICE_26.FCO to   SLICE_25.FCI t_precharge_cry[10]
+FCITOF1_DE  ---     0.569   SLICE_25.FCI to    SLICE_25.F1 SLICE_25
+ROUTE         1   e 0.001    SLICE_25.F1 to   SLICE_25.DI1 t_precharge_s[12] (to clk_osc)
+                  --------
+                   12.542   (42.5% logic, 57.5% route), 14 logic levels.
+
+Report:   78.790MHz is the maximum frequency for this preference.
+
+<A name="mtw1_set_rs"></A><B><U><big>Report Summary</big></U></B>
+--------------
+----------------------------------------------------------------------------
+Preference                              |   Constraint|       Actual|Levels
+----------------------------------------------------------------------------
+                                        |             |             |
+FREQUENCY NET "clk_osc" 2.080000 MHz ;  |    2.080 MHz|   78.790 MHz|  14  
+                                        |             |             |
+----------------------------------------------------------------------------
+
+
+All preferences were met.
+
+
+<A name="mtw1_set_clkda"></A><B><U><big>Clock Domains Analysis</big></U></B>
+------------------------
+
+Found 3 clocks:
+
+Clock Domain: u_efb_i2c/i2c1_sclo   Source: u_efb_i2c/EFBInst_0.I2C1SCLO   Loads: 1
+   No transfer within this clock domain is found
+
+Clock Domain: u_efb_i2c/i2c1_scli   Source: i2c1_scl.PAD   Loads: 1
+   No transfer within this clock domain is found
+
+Clock Domain: clk_osc   Source: u_osch.OSC   Loads: 104
+   Covered under: FREQUENCY NET "clk_osc" 2.080000 MHz ;
+
+
+<A name="mtw1_set_ts"></A><B><U><big>Timing summary (Setup):</big></U></B>
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 11812 paths, 1 nets, and 1185 connections (98.42% coverage)
+
+--------------------------------------------------------------------------------
+<A name="Map_Twr_hold"></A><B><U><big>Lattice TRACE Report - Hold, Version Diamond (64-bit) 3.14.0.75.2</big></U></B>
+Wed May 06 21:42:30 2026
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
+
+<A name="mtw1_hold_ri"></A><B><U><big>Report Information</big></U></B>
+------------------
+Command line:    trce -v 1 -gt -mapchkpnt 0 -sethld -o PROJ500_PDU_FPGA_V1.tw1 -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml PROJ500_PDU_FPGA_V1_map.ncd PROJ500_PDU_FPGA_V1.prf 
+Design file:     proj500_pdu_fpga_v1_map.ncd
+Preference file: proj500_pdu_fpga_v1.prf
+Device,speed:    LCMXO2-640HC,M
+Report level:    verbose report, limited to 1 item per preference
+--------------------------------------------------------------------------------
+
+<A name="mtw1_hold_ps"></A><B><U><big>Preference Summary</big></U></B>
+
+<LI><A href='#map_twr_pref_1_0' Target='right'>FREQUENCY NET "clk_osc" 2.080000 MHz (0 errors)</A></LI>            4096 items scored, 0 timing errors detected.
+
+WARNING - trce: Warning:  To support I2C port clock rates > 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+--------------------------------------------------------------------------------
+
+
+
+================================================================================
+<A name="map_twr_pref_1_0"></A>Preference: FREQUENCY NET "clk_osc" 2.080000 MHz ;
+            4096 items scored, 0 timing errors detected.
+--------------------------------------------------------------------------------
+
+
+Passed: The following path meets requirements by 0.351ns
+
+ Logical Details:  Cell type  Pin type       Cell/ASIC name  (clock net +/-)
+
+   Source:         FF         Q              rarm_qual  (from clk_osc +)
+   Destination:    FF         Data in        rarm_prev  (to clk_osc +)
+
+   Delay:               0.332ns  (40.1% logic, 59.9% route), 1 logic levels.
+
+ Constraint Details:
+
+      0.332ns physical path delay SLICE_69 to SLICE_69 meets
+     -0.019ns M_HLD and
+      0.000ns delay constraint requirement (totaling -0.019ns) by 0.351ns
+
+ Physical Path Details:
+
+      Data path SLICE_69 to SLICE_69:
+
+   Name    Fanout   Delay (ns)          Site               Resource
+REG_DEL     ---     0.133   SLICE_69.CLK to    SLICE_69.Q0 SLICE_69 (from clk_osc)
+ROUTE         2   e 0.199    SLICE_69.Q0 to    SLICE_69.M1 rarm_qual (to clk_osc)
+                  --------
+                    0.332   (40.1% logic, 59.9% route), 1 logic levels.
+
+<A name="mtw1_hold_rs"></A><B><U><big>Report Summary</big></U></B>
+--------------
+----------------------------------------------------------------------------
+Preference(MIN Delays)                  |   Constraint|       Actual|Levels
+----------------------------------------------------------------------------
+                                        |             |             |
+FREQUENCY NET "clk_osc" 2.080000 MHz ;  |     0.000 ns|     0.351 ns|   1  
+                                        |             |             |
+----------------------------------------------------------------------------
+
+
+All preferences were met.
+
+
+<A name="mtw1_hold_clkda"></A><B><U><big>Clock Domains Analysis</big></U></B>
+------------------------
+
+Found 3 clocks:
+
+Clock Domain: u_efb_i2c/i2c1_sclo   Source: u_efb_i2c/EFBInst_0.I2C1SCLO   Loads: 1
+   No transfer within this clock domain is found
+
+Clock Domain: u_efb_i2c/i2c1_scli   Source: i2c1_scl.PAD   Loads: 1
+   No transfer within this clock domain is found
+
+Clock Domain: clk_osc   Source: u_osch.OSC   Loads: 104
+   Covered under: FREQUENCY NET "clk_osc" 2.080000 MHz ;
+
+
+<A name="mtw1_hold_ts"></A><B><U><big>Timing summary (Hold):</big></U></B>
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 11812 paths, 1 nets, and 1185 connections (98.42% coverage)
+
+
+
+<A name="mtw1_ts"></A><B><U><big>Timing summary (Setup and Hold):</big></U></B>
+---------------
+
+Timing errors: 0 (setup), 0 (hold)
+Score: 0 (setup), 0 (hold)
+Cumulative negative slack: 0 (0+0)
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+
+
+
+
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+</PRE></FONT>
+</BODY>
+</HTML>

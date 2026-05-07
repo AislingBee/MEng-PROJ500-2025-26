@@ -1,0 +1,159 @@
+<HTML>
+<HEAD><TITLE>I/O Timing Report</TITLE>
+<STYLE TYPE="text/css">
+<!--
+ body,pre{    font-family:'Courier New', monospace;    color: #000000;    font-size:88%;    background-color: #ffffff;}h1 {    font-weight: bold;    margin-top: 24px;    margin-bottom: 10px;    border-bottom: 3px solid #000;    font-size: 1em;}h2 {    font-weight: bold;    margin-top: 18px;    margin-bottom: 5px;    font-size: 0.90em;}h3 {    font-weight: bold;    margin-top: 12px;    margin-bottom: 5px;    font-size: 0.80em;}p {    font-size:78%;}P.Table {    margin-top: 4px;    margin-bottom: 4px;    margin-right: 4px;    margin-left: 4px;}table{    border-width: 1px 1px 1px 1px;    border-style: solid solid solid solid;    border-color: black black black black;    border-collapse: collapse;}th {    font-weight:bold;    padding: 4px;    border-width: 1px 1px 1px 1px;    border-style: solid solid solid solid;    border-color: black black black black;    vertical-align:top;    text-align:left;    font-size:78%;}td {    padding: 4px;    border-width: 1px 1px 1px 1px;    border-style: solid solid solid solid;    border-color: black black black black;    vertical-align:top;    font-size:78%;}a {    color:#013C9A;    text-decoration:none;}a:visited {    color:#013C9A;}a:hover, a:active {    text-decoration:underline;    color:#5BAFD4;}.pass{background-color: #00ff00;}.fail{background-color: #ff0000;}.comment{    font-size: 90%;    font-style: italic;}
+-->
+</STYLE>
+</HEAD>
+<PRE><A name="Top"></A><B><U><big>I/O Timing Report</big></U></B>
+WARNING - Warning:  To support I2C port clock rates > 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz
+WARNING - iotiming: Warning:  To support I2C port clock rates > 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz
+Loading design for application iotiming from file proj500_pdu_fpga_v1.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: 6
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+WARNING - iotiming: Warning:  To support I2C port clock rates > 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz
+WARNING - iotiming: Warning:  To support I2C port clock rates > 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz
+Loading design for application iotiming from file proj500_pdu_fpga_v1.ncd.
+Design name: pdu_glue
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-640HC
+Package:     QFN48
+Performance: M
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 36.4.
+WARNING - iotiming: Warning:  To support I2C port clock rates > 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz
+WARNING - iotiming: Warning:  To support I2C port clock rates > 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz
+// Design: pdu_glue
+// Package: QFN48
+// ncd File: proj500_pdu_fpga_v1.ncd
+// Version: Diamond (64-bit) 3.14.0.75.2
+// Written on Wed May 06 21:42:35 2026
+// M: Minimum Performance Grade
+// iotiming PROJ500_PDU_FPGA_V1.ncd PROJ500_PDU_FPGA_V1.prf -gui -msgset C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/promote.xml
+
+I/O Timing Report (All units are in ns)
+
+Worst Case Results across Performance Grades (M, 6, 5):
+
+// Input Setup and Hold Times
+
+Port     Clock    Edge  Setup Performance_Grade  Hold Performance_Grade
+----------------------------------------------------------------------
+i2c1_sda i2c1_scl R     2.109      5       1.623     5
+
+
+// Clock to Output Delay
+
+Port     Clock    Edge  Max_Delay Performance_Grade  Min_Delay Performance_Grade
+------------------------------------------------------------------------
+i2c1_sda i2c1_scl F    11.903         5        2.692          M
+
+
+// Internal_Clock to Input
+
+Port     Internal_Clock     
+--------------------------------------------------------
+ESTOP_OK clk_osc            
+FB_CLOSE clk_osc            
+MCU_ALIV clk_osc            
+MCU_CMD_ clk_osc            
+MCU_CMD_ clk_osc            
+OV       clk_osc            
+PRECHARG clk_osc            
+SW_ARM   clk_osc            
+SW_COMPU clk_osc            
+SW_REMOT clk_osc            
+SW_REMOT clk_osc            
+SW_RST_F clk_osc            
+UV       clk_osc            
+VBUS_OV  clk_osc            
+
+
+// Internal_Clock to Output
+
+Port            Internal_Clock     
+--------------------------------------------------------
+ARM_PERMIT      clk_osc            
+COMPUTE_EN      clk_osc            
+DUMP_EN         clk_osc            
+FAULT_CODE[0]   clk_osc            
+FAULT_CODE[1]   clk_osc            
+FAULT_CODE[2]   clk_osc            
+FAULT_LATCH     clk_osc            
+K_EN            clk_osc            
+K_SEL           clk_osc            
+MOTOR_EN        clk_osc            
+OVUV_OK         clk_osc            
+PRECHARGE_LATCH clk_osc            
+PRECHARGE_REQ   clk_osc            
+SPARE_OUT_0     clk_osc            
+SPARE_OUT_1     clk_osc            
+STATE_CODE[0]   clk_osc            
+STATE_CODE[1]   clk_osc            
+i2c1_scl        u_efb_i2c/i2c1_sclo
+i2c1_sda        u_efb_i2c/i2c1_sclo
+WARNING: you must also run trce with hold speed: 5
+
+
+
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+</PRE></FONT>
+</BODY>
+</HTML>

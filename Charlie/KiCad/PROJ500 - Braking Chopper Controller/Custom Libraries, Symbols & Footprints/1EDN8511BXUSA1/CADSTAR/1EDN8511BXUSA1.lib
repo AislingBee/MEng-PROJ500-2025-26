@@ -1,0 +1,16 @@
+.1EDN8511BXUSA1 :1 ;INFINEON - 1EDN8511BXUSA1 - MOSFET DRIVER, -40 TO 150DEG C
+SOT95P280X145-6N
+*STM IC
+*NGS
+*PLB 1="VDD" 2="OUT_SRC" 3="OUT_SNK" 4="GND" 5="IN-" 6="IN+"
+*MXP 6
+*DFN 1EDN8511BXUSA1
+~!Mouser Part Number (726-1EDN8511BXUSA1)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Infineon-Technologies/1EDN8511BXUSA1?qs=W0yvOO0ixfGKnnVISnHd5g%3D%3D)
+~!Manufacturer_Name (Infineon)
+~!Manufacturer_Part_Number (1EDN8511BXUSA1)
+~!Link Datasheet (https://www.infineon.com/cms/en/product/power/gate-driver-ics/?)
+~!Height (1.45mm)
+~!3D_Model (1EDN8511BXUSA1)
+"1EDN8511BXUSA1"
+1.1!U 2.1!U 3.1!U 6.1!U 5.1!U 4.1!U 

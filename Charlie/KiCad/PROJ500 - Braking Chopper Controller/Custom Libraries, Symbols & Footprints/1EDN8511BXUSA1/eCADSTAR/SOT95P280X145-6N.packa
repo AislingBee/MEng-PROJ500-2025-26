@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "1EDN8511BXUSA1"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2020-11-30-19:47:11)
+    (mountForm default
+        (footprintRef "SOT95P280X145-6N")
+        (spec "System")
+    )
+)

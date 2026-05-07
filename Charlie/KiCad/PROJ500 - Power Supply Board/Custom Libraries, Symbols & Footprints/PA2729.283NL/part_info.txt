@@ -1,0 +1,9 @@
+Manufacturer=Yageo Group
+PartNumber=PA2729.283NL
+PartCategory=Connector
+PackageCategory=Other
+PinCount=3
+Version=1.2
+Released=2019-08-03 23:03:25
+Downloaded=2026-03-25 01:09:33
+3D=Y

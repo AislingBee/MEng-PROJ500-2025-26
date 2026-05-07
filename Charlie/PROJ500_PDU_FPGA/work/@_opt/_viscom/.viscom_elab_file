@@ -1,0 +1,1 @@
+{C:/Programs/Lattice Diamond/questasim/win64/VisualizerRls/bin/viscom.exe} -nolock -quiet -jmem_size 1130784 work.tb_pdu_glue -quiet -auto_acc_if_foreign -work work +acc -allow_unnamed -o _opt -id 1-d8b32fc3b4e3-69fba6a6-35f-df5c {+__design_bin_path+C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA} +__betafsm

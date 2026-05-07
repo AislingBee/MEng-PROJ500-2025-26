@@ -1,0 +1,9 @@
+Manufacturer=OMRON Electronics
+PartNumber=G5LE-14-ASI DC12
+PartCategory=Relay or Contactor
+PackageCategory=Other
+PinCount=5
+Version=1.2
+Released=2019-04-08 22:31:55
+Downloaded=2026-03-01 19:50:44
+3D=Y

@@ -1,0 +1,1510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BaliMessageLog>
+    <Task name="Bitgen">
+        <Message>
+            <ID>1009992</ID>
+            <Severity>Info</Severity>
+            <Dynamic> SW_XO3D_SECURITY_ENCRYPTION *NOT* controlled by xo2c00.acd ###</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009992</ID>
+            <Severity>Info</Severity>
+            <Dynamic> SW_XO3D_SECURITY_ENCRYPTION license_securityIP OK</Dynamic>
+        </Message>
+    </Task>
+    <Task name="MapVerilogSimFile">
+        <Message>
+            <ID>35400250</ID>
+            <Severity>Info</Severity>
+            <Dynamic>0</Dynamic>
+        </Message>
+    </Task>
+    <Task name="PARTrace">
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+    </Task>
+    <Task name="IBIS">
+        <Message>
+            <ID>1191031</ID>
+            <Severity>Info</Severity>
+        </Message>
+    </Task>
+    <Task name="MapVHDLSimFile">
+        <Message>
+            <ID>35400250</ID>
+            <Severity>Info</Severity>
+            <Dynamic>0</Dynamic>
+        </Message>
+    </Task>
+    <Task name="Map">
+        <Message>
+            <ID>1104084</ID>
+            <Severity>Warning</Severity>
+            <Dynamic></Dynamic>
+            <Dynamic>FREQUENCY NET &quot;clk_osc&quot; 2.100000 MHz ;
+</Dynamic>
+            <Dynamic>FREQUENCY NET &quot;clk_osc&quot; 2.080000 MHz ;
+</Dynamic>
+        </Message>
+        <Message>
+            <ID>1103805</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>In &quot;LOCATE COMP &quot;i2c1_scl&quot; SITE &quot;43&quot; ;&quot;: </Dynamic>
+            <Dynamic>43</Dynamic>
+        </Message>
+        <Message>
+            <ID>1103805</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>In &quot;LOCATE COMP &quot;i2c1_sda&quot; SITE &quot;42&quot; ;&quot;: </Dynamic>
+            <Dynamic>42</Dynamic>
+        </Message>
+    </Task>
+    <Task name="MapTrace">
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+    </Task>
+    <Task name="PAR">
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+    </Task>
+    <Task name="TimingSimFileVHD">
+        <Message>
+            <ID>35400250</ID>
+            <Severity>Info</Severity>
+            <Dynamic>0</Dynamic>
+        </Message>
+    </Task>
+    <Task name="Jedecgen">
+        <Message>
+            <ID>1009992</ID>
+            <Severity>Info</Severity>
+            <Dynamic> SW_XO3D_SECURITY_ENCRYPTION *NOT* controlled by xo2c00.acd ###</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009992</ID>
+            <Severity>Info</Severity>
+            <Dynamic> SW_XO3D_SECURITY_ENCRYPTION license_securityIP OK</Dynamic>
+        </Message>
+    </Task>
+    <Task name="TimingSimFileVlg">
+        <Message>
+            <ID>35400250</ID>
+            <Severity>Info</Severity>
+            <Dynamic>0</Dynamic>
+        </Message>
+    </Task>
+    <Task name="Translate">
+        <Message>
+            <ID>1121028</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>ENABLE_FB_CLOSED</Dynamic>
+        </Message>
+        <Message>
+            <ID>1166052</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>logical</Dynamic>
+            <Dynamic>u_osch_SEDSTDBY</Dynamic>
+            <Navigation>u_osch_SEDSTDBY</Navigation>
+        </Message>
+        <Message>
+            <ID>1163101</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>1</Dynamic>
+        </Message>
+    </Task>
+    <Task name="Synplify_Synthesis">
+        <Message>
+            <ID>2011000</ID>
+            <Severity>Info</Severity>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL169 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv&quot;:692:4:692:12|Pruning unused register t_blank_open[8:0]. Make sure that there are no unused intermediate registers.</Dynamic>
+            <Navigation>CL169</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>692</Navigation>
+            <Navigation>4</Navigation>
+            <Navigation>692</Navigation>
+            <Navigation>12</Navigation>
+            <Navigation>Pruning unused register t_blank_open[8:0]. Make sure that there are no unused intermediate registers.</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL169 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv&quot;:692:4:692:12|Pruning unused register t_blank_close[8:0]. Make sure that there are no unused intermediate registers.</Dynamic>
+            <Navigation>CL169</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>692</Navigation>
+            <Navigation>4</Navigation>
+            <Navigation>692</Navigation>
+            <Navigation>12</Navigation>
+            <Navigation>Pruning unused register t_blank_close[8:0]. Make sure that there are no unused intermediate registers.</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL260 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv&quot;:692:4:692:12|Pruning register bit 3 of fault_code_r[3:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.</Dynamic>
+            <Navigation>CL260</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>692</Navigation>
+            <Navigation>4</Navigation>
+            <Navigation>692</Navigation>
+            <Navigation>12</Navigation>
+            <Navigation>Pruning register bit 3 of fault_code_r[3:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL279 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv&quot;:960:4:960:12|Pruning register bits 7 to 2 of wb_adr_i[7:0]. If this is not the intended behavior, drive the inputs with valid values, or inputs from the top level.</Dynamic>
+            <Navigation>CL279</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>960</Navigation>
+            <Navigation>4</Navigation>
+            <Navigation>960</Navigation>
+            <Navigation>12</Navigation>
+            <Navigation>Pruning register bits 7 to 2 of wb_adr_i[7:0]. If this is not the intended behavior, drive the inputs with valid values, or inputs from the top level.</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL260 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv&quot;:864:4:864:12|Pruning register bit 3 of FAULT_CODE[3:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.</Dynamic>
+            <Navigation>CL260</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>864</Navigation>
+            <Navigation>4</Navigation>
+            <Navigation>864</Navigation>
+            <Navigation>12</Navigation>
+            <Navigation>Pruning register bit 3 of FAULT_CODE[3:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.</Navigation>
+        </Message>
+        <Message>
+            <ID>2019993</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>FX474 |User-specified initial value defined for some sequential elements which can prevent optimum synthesis results from being achieved.</Dynamic>
+            <Navigation>FX474</Navigation>
+            <Navigation>User-specified initial value defined for some sequential elements which can prevent optimum synthesis results from being achieved. </Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN132 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:960:4:960:12|Removing sequential instance wb_stb_i because it is equivalent to instance wb_cyc_i. To keep the instance, apply constraint syn_preserve=1 on the instance.</Dynamic>
+            <Navigation>BN132</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>960</Navigation>
+            <Navigation>4</Navigation>
+            <Navigation>960</Navigation>
+            <Navigation>12</Navigation>
+            <Navigation>Removing sequential instance wb_stb_i because it is equivalent to instance wb_cyc_i. To keep the instance, apply constraint syn_preserve=1 on the instance.</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net clk_osc has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net clk_osc has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_65 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_65 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_85 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_85 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_264 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_264 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019993</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>FX474 |User-specified initial value defined for some sequential elements which can prevent optimum synthesis results from being achieved.</Dynamic>
+            <Navigation>FX474</Navigation>
+            <Navigation>User-specified initial value defined for some sequential elements which can prevent optimum synthesis results from being achieved. </Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net fault_code_enc_0\.un11_fault_code_r_sn has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net fault_code_enc_0\.un11_fault_code_r_sn has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_uv_filt_2_sn has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_uv_filt_2_sn has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_pchg_to_1_sn has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_pchg_to_1_sn has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net wb_state_ns[0] has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net wb_state_ns[0] has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net STATE_CODE_2[1] has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net STATE_CODE_2[1] has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_527 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_527 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_528 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_528 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_529 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_529 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_530 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_530 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_531 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_531 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_532 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_532 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_533 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_533 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_534 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_534 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_535 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_535 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_536 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_536 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_537 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_537 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_538 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_538 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_539 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_539 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_540 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_540 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_541 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_541 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_542 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_542 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_543 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_543 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_544 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_544 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_545 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_545 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_546 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_546 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_547 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_547 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_548 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_548 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_549 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_549 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_550 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_550 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_551 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_551 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_552 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_552 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_553 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_553 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_554 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_554 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_555 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_555 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_556 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_556 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_557 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_557 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_558 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_558 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_559 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_559 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_560 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_560 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_561 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_561 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_563 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_563 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_564 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_564 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_565 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_565 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_566 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_566 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_567 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_567 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_568 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_568 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_569 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_569 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_570 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_570 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_571 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_571 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_572 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_572 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_573 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_573 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_574 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_574 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_575 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_575 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_576 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_576 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_577 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_577 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_642 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_642 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_tx_ptr_axb_0 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_tx_ptr_axb_0 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_tx_ptr_axb_1 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_tx_ptr_axb_1 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_tx_ptr_axb_2 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_tx_ptr_axb_2 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_tx_ptr_axb_3 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_tx_ptr_axb_3 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_tx_ptr_axb_4 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_tx_ptr_axb_4 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_tx_ptr_axb_5 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_tx_ptr_axb_5 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_tx_ptr_axb_6 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_tx_ptr_axb_6 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_tx_ptr_axb_7 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_tx_ptr_axb_7 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_t_prechg_abort_2 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_t_prechg_abort_2 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_t_prechg_abort_min_2 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_t_prechg_abort_min_2 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un1_t_ksel_blank_2 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un1_t_ksel_blank_2 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_0 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_0 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_1 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_1 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_2 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_2 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_3 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_3 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_4 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_4 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_5 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_5 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_6 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_6 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_7 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_7 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_8 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_8 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_9 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_9 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_10 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_10 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net un2_div_cnt_axb_11 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net un2_div_cnt_axb_11 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net t_precharge has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net t_precharge has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1335 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1335 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1337 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1337 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1339 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1339 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1341 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1341 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1343 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1343 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1345 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1345 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1347 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1347 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1349 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1349 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1351 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1351 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1353 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1353 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1355 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1355 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1357 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1357 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1359 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1359 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1361 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1361 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1363 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1363 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>BN161 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv&quot;:189:7:189:14|Net N_1365 has multiple drivers .</Dynamic>
+            <Navigation>BN161</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>7</Navigation>
+            <Navigation>189</Navigation>
+            <Navigation>14</Navigation>
+            <Navigation>Net N_1365 has multiple drivers .</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>MT246 :&quot;c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_efb_i2c.v&quot;:91:8:91:16|Blackbox EFB is missing a user supplied timing model. This may have a negative effect on timing analysis and optimizations (Quality of Results)</Dynamic>
+            <Navigation>MT246</Navigation>
+            <Navigation>c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_efb_i2c.v</Navigation>
+            <Navigation>91</Navigation>
+            <Navigation>8</Navigation>
+            <Navigation>91</Navigation>
+            <Navigation>16</Navigation>
+            <Navigation>Blackbox EFB is missing a user supplied timing model. This may have a negative effect on timing analysis and optimizations (Quality of Results)</Navigation>
+        </Message>
+    </Task>
+    <Task name="IOTiming">
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>Warning:  To support I2C port clock rates &gt; 200 KHz, the EFB WB_CLK signal should be connected a clock source of at least 3 MHz</Dynamic>
+        </Message>
+    </Task>
+</BaliMessageLog>

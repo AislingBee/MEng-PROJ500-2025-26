@@ -24,7 +24,7 @@ Parameters:
   rcu_ip         (str)  default "192.168.100.10"
   rcu_cmd_port   (int)  default 7701
   telem_port     (int)  default 7700
-  ctrl_mode      (int)  default 0  (0=MIT impedance Phase 2, 1=CSP pos Phase 1)
+  ctrl_mode      (int)  default 1  (1=CSP pos Phase 1, 0=MIT impedance Phase 2)
   auto_enable    (bool) default False
   log_dir        (str)  default "~/rcu_logs"
   loop_rate_hz   (float) default 200.0  (motor command TX rate)
@@ -85,7 +85,7 @@ class RcuUdpBridge(Node):
         self.declare_parameter("rcu_ip",       rp.RCU_IP)
         self.declare_parameter("rcu_cmd_port", rp.PORT_CMD)
         self.declare_parameter("telem_port",   rp.PORT_TELEM)
-        self.declare_parameter("ctrl_mode",    0)
+        self.declare_parameter("ctrl_mode",    1)
         self.declare_parameter("auto_enable",  False)
         self.declare_parameter("log_dir",      os.path.expanduser("~/rcu_logs"))
         self.declare_parameter("loop_rate_hz", 200.0)
@@ -110,10 +110,8 @@ class RcuUdpBridge(Node):
         self._motor_fb = {mid: (0.0, 0.0) for mid in range(1, 13)}
         self._motor_fb_lock = threading.Lock()
 
-        # Latest robot command (full MIT tuple) from /robot_command.
-        # Each entry: {"pos": rad, "vel": rad/s, "trq": Nm, "kp": float, "kd": float}
-        _zero = lambda: {"pos": 0.0, "vel": 0.0, "trq": 0.0, "kp": 0.0, "kd": 0.0}
-        self._cmd_entries = {mid: _zero() for mid in range(1, 13)}
+        # Latest robot command (joint positions) from /robot_command
+        self._cmd_positions = {mid: 0.0 for mid in range(1, 13)}
         self._cmd_lock = threading.Lock()
 
         # ----- QoS -----
@@ -179,43 +177,21 @@ class RcuUdpBridge(Node):
         """Called at loop_rate_hz.  Build and send motor command packet."""
         with self._cmd_lock:
             entries = [
-                {
-                    "motor_id": mid,
-                    "pos_rad":   self._cmd_entries[mid]["pos"],
-                    "vel_rads":  self._cmd_entries[mid]["vel"],
-                    "torque_nm": self._cmd_entries[mid]["trq"],
-                    "kp":        self._cmd_entries[mid]["kp"],
-                    "kd":        self._cmd_entries[mid]["kd"],
-                }
+                {"motor_id": mid, "pos_rad": self._cmd_positions[mid]}
                 for mid in range(1, 13)
             ]
         pkt = rp.encode_motor_cmd_packet(entries)
         self._tx_sock.sendto(pkt, self._rcu_addr)
 
     def _robot_command_cb(self, msg):
-        """Map /robot_command joint targets → internal MIT command entries.
-
-        Reads positions (required) and, if present on the message,
-        velocities, efforts (torque), kp_gains, and kd_gains.
-        All fields default to 0.0 if not provided.
-        """
+        """Map /robot_command joint positions → internal commanded positions."""
         if not hasattr(msg, "joint_names") or not hasattr(msg, "positions"):
             return
-        vels    = list(getattr(msg, "velocities",  []) or [])
-        trqs    = list(getattr(msg, "efforts",      []) or [])
-        kps     = list(getattr(msg, "kp_gains",     []) or [])
-        kds     = list(getattr(msg, "kd_gains",     []) or [])
         with self._cmd_lock:
-            for i, (name, pos) in enumerate(zip(msg.joint_names, msg.positions)):
+            for name, pos in zip(msg.joint_names, msg.positions):
                 mid = rp.JOINT_TO_MOTOR_ID.get(name)
                 if mid is not None:
-                    self._cmd_entries[mid] = {
-                        "pos": float(pos),
-                        "vel": float(vels[i]) if i < len(vels) else 0.0,
-                        "trq": float(trqs[i]) if i < len(trqs) else 0.0,
-                        "kp":  float(kps[i])  if i < len(kps)  else 0.0,
-                        "kd":  float(kds[i])  if i < len(kds)  else 0.0,
-                    }
+                    self._cmd_positions[mid] = float(pos)
 
     def _send(self, data: bytes):
         self._tx_sock.sendto(data, self._rcu_addr)

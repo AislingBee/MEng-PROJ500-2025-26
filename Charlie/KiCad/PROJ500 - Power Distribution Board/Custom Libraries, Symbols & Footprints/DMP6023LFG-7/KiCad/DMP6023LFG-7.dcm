@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP DMP6023LFG-7
+D MOSFET P-Ch 60V Enh Mode 20Vgs 53.1nC 2569pF
+K
+F https://www.diodes.com//assets/Datasheets/DMP6023LFG.pdf
+$ENDCMP
+#
+#End Doc Library

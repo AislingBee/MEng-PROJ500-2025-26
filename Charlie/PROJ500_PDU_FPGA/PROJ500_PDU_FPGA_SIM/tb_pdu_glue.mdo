@@ -1,0 +1,63 @@
+# tb_pdu_glue.mdo  — ModelSim/Questasim do-file for pdu_glue functional testbench
+# Run from the ModelSim transcript: do {tb_pdu_glue.mdo}
+
+set ROOT "C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA"
+
+# Compile (PDU_EFB_I2C_sim.v replaces the real EFB wrapper — EFB has no sim model)
+vlib work
+vlog -sv -mfcu +define+SIM \
+    +incdir+$ROOT \
+    -work work \
+    "$ROOT/PDU_EFB_I2C_sim.v" \
+    "$ROOT/pdu_glue_mxo2.sv" \
+    "$ROOT/tb_pdu_glue.sv"
+
+# Simulate (no Lattice primitive libraries needed with the stub)
+vsim -voptargs=+acc -L work tb_pdu_glue
+
+# Waveform setup — key signals grouped
+add wave -divider "Clock"
+add wave sim:/tb_pdu_glue/sim_clk
+
+add wave -divider "Inputs"
+add wave sim:/tb_pdu_glue/SW_COMPUTE
+add wave sim:/tb_pdu_glue/SW_ARM
+add wave sim:/tb_pdu_glue/SW_REMOTE_ARM
+add wave sim:/tb_pdu_glue/SW_REMOTE_DISARM
+add wave sim:/tb_pdu_glue/ESTOP_OK
+add wave sim:/tb_pdu_glue/OV
+add wave sim:/tb_pdu_glue/UV
+add wave sim:/tb_pdu_glue/VBUS_OV
+add wave sim:/tb_pdu_glue/MCU_CMD_ARM
+add wave sim:/tb_pdu_glue/MCU_CMD_FAULT
+add wave sim:/tb_pdu_glue/PRECHARGE_OK
+add wave sim:/tb_pdu_glue/FB_CLOSED
+
+add wave -divider "State / Codes"
+add wave -radix unsigned sim:/tb_pdu_glue/dut/state
+add wave -radix hex      sim:/tb_pdu_glue/STATE_CODE
+add wave                 sim:/tb_pdu_glue/FAULT_LATCH
+add wave -radix hex      sim:/tb_pdu_glue/FAULT_CODE
+
+add wave -divider "Relay Outputs"
+add wave sim:/tb_pdu_glue/K_SEL
+add wave sim:/tb_pdu_glue/K_EN
+add wave sim:/tb_pdu_glue/MOTOR_EN
+add wave sim:/tb_pdu_glue/DUMP_EN
+add wave sim:/tb_pdu_glue/PRECHARGE_REQ
+add wave sim:/tb_pdu_glue/PRECHARGE_LATCH
+
+add wave -divider "Computed Flags"
+add wave sim:/tb_pdu_glue/ARM_PERMIT
+add wave sim:/tb_pdu_glue/COMPUTE_EN
+add wave sim:/tb_pdu_glue/OVUV_OK
+add wave sim:/tb_pdu_glue/SPARE_OUT_0
+
+add wave -divider "Internal Timers"
+add wave -radix unsigned sim:/tb_pdu_glue/dut/t_ksel_blank
+add wave -radix unsigned sim:/tb_pdu_glue/dut/t_precharge
+add wave -radix unsigned sim:/tb_pdu_glue/dut/t_blank_close
+add wave -radix unsigned sim:/tb_pdu_glue/dut/t_blank_open
+
+# Run — total sim time is ~130ms of real time (real 2.08MHz clock)
+run -all

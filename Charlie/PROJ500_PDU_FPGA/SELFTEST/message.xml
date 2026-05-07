@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BaliMessageLog>
+    <Task name="Bitgen">
+        <Message>
+            <ID>1009992</ID>
+            <Severity>Info</Severity>
+            <Dynamic> SW_XO3D_SECURITY_ENCRYPTION *NOT* controlled by xo2c00.acd ###</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009992</ID>
+            <Severity>Info</Severity>
+            <Dynamic> SW_XO3D_SECURITY_ENCRYPTION license_securityIP OK</Dynamic>
+        </Message>
+    </Task>
+    <Task name="MapVerilogSimFile">
+        <Message>
+            <ID>35400250</ID>
+            <Severity>Info</Severity>
+            <Dynamic>0</Dynamic>
+        </Message>
+    </Task>
+    <Task name="IBIS">
+        <Message>
+            <ID>1191031</ID>
+            <Severity>Info</Severity>
+        </Message>
+    </Task>
+    <Task name="MapVHDLSimFile">
+        <Message>
+            <ID>35400250</ID>
+            <Severity>Info</Severity>
+            <Dynamic>0</Dynamic>
+        </Message>
+    </Task>
+    <Task name="Map">
+        <Message>
+            <ID>1100644</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/SELFTEST/source/PROJ500_PDU_FPGA.lpf(32): Semantic error in &quot;IOBUF PORT &quot;i2c1_scl&quot; IO_TYPE=LVCMOS33 PULLMODE=NONE OPENDRAIN=ON ;&quot;: </Dynamic>
+            <Dynamic>i2c1_scl</Dynamic>
+            <Navigation>C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/SELFTEST/source/PROJ500_PDU_FPGA.lpf</Navigation>
+            <Navigation>32</Navigation>
+        </Message>
+        <Message>
+            <ID>1100644</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/SELFTEST/source/PROJ500_PDU_FPGA.lpf(33): Semantic error in &quot;IOBUF PORT &quot;i2c1_sda&quot; IO_TYPE=LVCMOS33 PULLMODE=NONE OPENDRAIN=ON ;&quot;: </Dynamic>
+            <Dynamic>i2c1_sda</Dynamic>
+            <Navigation>C:/Users/charl/Documents/TEMP BACKUPS/17.03.26/PROJ500 (Humanoid)/FPGA/PROJ500_PDU_FPGA/SELFTEST/source/PROJ500_PDU_FPGA.lpf</Navigation>
+            <Navigation>33</Navigation>
+        </Message>
+        <Message>
+            <ID>51001046</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>i2c1_scl</Dynamic>
+        </Message>
+        <Message>
+            <ID>51001046</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>i2c1_sda</Dynamic>
+        </Message>
+    </Task>
+    <Task name="TimingSimFileVHD">
+        <Message>
+            <ID>35400250</ID>
+            <Severity>Info</Severity>
+            <Dynamic>0</Dynamic>
+        </Message>
+    </Task>
+    <Task name="Jedecgen">
+        <Message>
+            <ID>1009992</ID>
+            <Severity>Info</Severity>
+            <Dynamic> SW_XO3D_SECURITY_ENCRYPTION *NOT* controlled by xo2c00.acd ###</Dynamic>
+        </Message>
+        <Message>
+            <ID>1009992</ID>
+            <Severity>Info</Severity>
+            <Dynamic> SW_XO3D_SECURITY_ENCRYPTION license_securityIP OK</Dynamic>
+        </Message>
+    </Task>
+    <Task name="TimingSimFileVlg">
+        <Message>
+            <ID>35400250</ID>
+            <Severity>Info</Severity>
+            <Dynamic>0</Dynamic>
+        </Message>
+    </Task>
+    <Task name="Translate">
+        <Message>
+            <ID>1166052</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>logical</Dynamic>
+            <Dynamic>i2c1_scl</Dynamic>
+            <Navigation>i2c1_scl</Navigation>
+        </Message>
+        <Message>
+            <ID>1166052</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>logical</Dynamic>
+            <Dynamic>i2c1_sda</Dynamic>
+            <Navigation>i2c1_sda</Navigation>
+        </Message>
+        <Message>
+            <ID>1163101</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>2</Dynamic>
+        </Message>
+    </Task>
+    <Task name="Synplify_Synthesis">
+        <Message>
+            <ID>2011000</ID>
+            <Severity>Info</Severity>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL168 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv&quot;:85:39:85:44|Removing instance u_osch because it does not drive other instances. To preserve this instance, use the syn_noprune synthesis directive.</Dynamic>
+            <Navigation>CL168</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv</Navigation>
+            <Navigation>85</Navigation>
+            <Navigation>39</Navigation>
+            <Navigation>85</Navigation>
+            <Navigation>44</Navigation>
+            <Navigation>Removing instance u_osch because it does not drive other instances. To preserve this instance, use the syn_noprune synthesis directive.</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL169 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv&quot;:120:4:120:12|Pruning unused register step_div[21:0]. Make sure that there are no unused intermediate registers.</Dynamic>
+            <Navigation>CL169</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv</Navigation>
+            <Navigation>120</Navigation>
+            <Navigation>4</Navigation>
+            <Navigation>120</Navigation>
+            <Navigation>12</Navigation>
+            <Navigation>Pruning unused register step_div[21:0]. Make sure that there are no unused intermediate registers.</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL169 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv&quot;:120:4:120:12|Pruning unused register step_idx[4:0]. Make sure that there are no unused intermediate registers.</Dynamic>
+            <Navigation>CL169</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv</Navigation>
+            <Navigation>120</Navigation>
+            <Navigation>4</Navigation>
+            <Navigation>120</Navigation>
+            <Navigation>12</Navigation>
+            <Navigation>Pruning unused register step_idx[4:0]. Make sure that there are no unused intermediate registers.</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL158 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv&quot;:43:16:43:23|Inout i2c1_scl is unused</Dynamic>
+            <Navigation>CL158</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv</Navigation>
+            <Navigation>43</Navigation>
+            <Navigation>16</Navigation>
+            <Navigation>43</Navigation>
+            <Navigation>23</Navigation>
+            <Navigation>Inout i2c1_scl is unused</Navigation>
+        </Message>
+        <Message>
+            <ID>2019991</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>CL158 :&quot;C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv&quot;:44:16:44:23|Inout i2c1_sda is unused</Dynamic>
+            <Navigation>CL158</Navigation>
+            <Navigation>C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv</Navigation>
+            <Navigation>44</Navigation>
+            <Navigation>16</Navigation>
+            <Navigation>44</Navigation>
+            <Navigation>23</Navigation>
+            <Navigation>Inout i2c1_sda is unused</Navigation>
+        </Message>
+    </Task>
+</BaliMessageLog>

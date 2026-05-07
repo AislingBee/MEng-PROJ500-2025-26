@@ -1,0 +1,16 @@
+.ECS-.327-6-13X :1 ;32.768 kHz +/-20ppm Crystal 6pF 35 kOhms Cylindrical Can, Radial
+ECS327613X
+*STM Y
+*NGS
+*PLB 1="1" 2="2"
+*MXP 2
+*DFN ECS-.327-6-13X
+~!Mouser Part Number (520-ECS327-6-13-X)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/ECS/ECS-.327-6-13X?qs=aGohqJksTCIxgMwEoE0VEw%3D%3D)
+~!Manufacturer_Name (ECS)
+~!Manufacturer_Part_Number (ECS-.327-6-13X)
+~!Link Datasheet (https://ecsxtal.com/store/pdf/ECS-3x8X%25202x6X%25201X5X.pdf)
+~!Height (6.2mm)
+~!3D_Model (ECS-.327-6-13X)
+ECS-.327-6-13X
+1.1!U 2.1!U 

@@ -1,0 +1,17 @@
+.ARJM11D7-009-AB-EW2 :1 ;Telecom and Datacom Connector, 8 Contact(s), Female, Right Angle, Solder Terminal, Locking, Jack
+ARJM11D7009ABEW2
+*STM J
+*NGS
+*PNM 1=1 2=2 3=P1 4=P2 5=P3 6=P4 7=P5 8=P6 9=P7 10=P8 11=P9 12=P10 13=P11 14=P12
+*PLB 1="MH1" 2="MH2" 3="TD+" 4="TD-" 5="RD+" 6="CT_1" 7="CT_2" 8="RD-" 9="NC" 10="GND" 11="A_GREEN" 12="K_GREEN" 13="A_YELLOW" 14="K_YELLOW"
+*MXP 16
+*DFN ARJM11D7-009-AB-EW2
+~!Mouser Part Number (815-RJM11D7009ABEW2)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/ABRACON/ARJM11D7-009-AB-EW2?qs=YCa%2FAAYMW01wgGAVSiGYdQ%3D%3D)
+~!Manufacturer_Name (ABRACON)
+~!Manufacturer_Part_Number (ARJM11D7-009-AB-EW2)
+~!Link Datasheet (https://abracon.com/Magnetics/ARJM11.pdf)
+~!Height (14.05mm)
+~!3D_Model (ARJM11D7-009-AB-EW2)
+ARJM11D7-009-AB-EW2
+1.1!U 2.1!U 3.1!U 4.1!U 5.1!U 6.1!U 7.1!U 8.1!U 9.1!U 10.1!U 11.1!U 12.1!U 13.1!U 14.1!U 

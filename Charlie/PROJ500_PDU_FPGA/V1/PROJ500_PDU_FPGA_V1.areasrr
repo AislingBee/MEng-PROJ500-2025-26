@@ -1,0 +1,45 @@
+----------------------------------------------------------------------
+Report for cell pdu_glue.verilog
+
+Register bits: 170 of 640 (27%)
+PIC Latch:       0
+I/O cells:       34
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                                 BB        2       100.0
+                              CCU2D       31       100.0
+                                EFB        1       100.0
+                            FD1P3AX       61       100.0
+                            FD1P3IX        8       100.0
+                            FD1S3AX       65       100.0
+                            FD1S3AY        3       100.0
+                            FD1S3IX       16       100.0
+                            FD1S3JX        1       100.0
+                                GSR        1       100.0
+                                 IB       14       100.0
+                           IFS1P3DX       14       100.0
+                                INV        2       100.0
+                                 OB       18       100.0
+                           OFS1P3DX        2       100.0
+                           ORCALUT4      205       100.0
+                               OSCH        1       100.0
+                                PUR        1       100.0
+                                VHI        2       100.0
+                                VLO        2       100.0
+SUB MODULES 
+                        PDU_EFB_I2C        1       100.0
+                            
+                         TOTAL           451           
+----------------------------------------------------------------------
+Report for cell PDU_EFB_I2C.netlist
+     Instance path:  u_efb_i2c
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                                 BB        2       100.0
+                                EFB        1       100.0
+                                INV        1        50.0
+                           ORCALUT4        1         0.5
+                                VHI        1        50.0
+                                VLO        1        50.0
+                            
+                         TOTAL             7           

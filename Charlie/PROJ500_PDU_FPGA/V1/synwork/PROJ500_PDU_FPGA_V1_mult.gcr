@@ -1,0 +1,8 @@
+i clk_osc
+m 0 0
+u 114 170
+p {t:clk_osc_keep.OUT[0]}{t:wb_state[0].C}
+e ckid0_0 {t:wb_state[0].C} dff
+c ckid0_0 {t:u_osch.OSC} OSCH Unsupported/too complex instance on clock path
+l 0 0 0 0 0 0
+r 0 0 0 0 0 0 0 0

@@ -1,0 +1,24 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#SamacSys ECAD Model SMDH2016B260TF_24
+#/21185396/1152530/2.50/2/3/Fuse
+DEF SMDH2016B260TF_24 F 0 30 Y Y 1 F N
+F0 "F" 550 250 50 H V L CNN
+F1 "SMDH2016B260TF_24" 550 150 50 H V L CNN
+F2 "FUSC5141X160N" 550 50 50 H I L CNN
+F3 "https://www.yageogroup.com/content/datasheet/asset/file/SMDH2016_1" 550 -50 50 H I L CNN
+F4 "Resettable Fuses - PPTC 2016 24V 2.60A 1.5W SMD AEC-Q200 High Temp" 550 -150 50 H I L CNN "Description"
+F5 "1.6" 550 -250 50 H I L CNN "Height"
+F6 "" 550 -350 50 H I L CNN "Mouser Part Number"
+F7 "" 550 -450 50 H I L CNN "Mouser Price/Stock"
+F8 "Yageo Group" 550 -550 50 H I L CNN "Manufacturer_Name"
+F9 "SMDH2016B260TF/24" 550 -650 50 H I L CNN "Manufacturer_Part_Number"
+DRAW
+X ~ 1 0 0 200 R 50 50 0 0 P
+X ~ 2 700 0 200 L 50 50 0 0 P
+P 5 0 1 6 200 50 500 50 500 -50 200 -50 200 50 N
+P 2 0 1 6 200 0 500 0 N
+ENDDRAW
+ENDDEF
+#
+#End Library

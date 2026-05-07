@@ -1,0 +1,165 @@
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys HDL Compiler, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+###########################################################[
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys Verilog Compiler, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+@I::"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v" (library work)
+@I::"C:\Programs\Lattice Diamond\synpbase\lib\lucent\pmi_def.v" (library work)
+@I::"C:\Programs\Lattice Diamond\synpbase\lib\vlog\hypermods.v" (library __hyper__lib__)
+@I::"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\PDU_EFB_I2C.v" (library work)
+@I::"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv" (library work)
+Verilog syntax check successful!
+File C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv changed - recompiling
+Selecting top level module pdu_glue
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1793:7:1793:10|Synthesizing module OSCH in library work.
+Running optimization stage 1 on OSCH .......
+Finished optimization stage 1 on OSCH (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1120:7:1120:9|Synthesizing module VHI in library work.
+Running optimization stage 1 on VHI .......
+Finished optimization stage 1 on VHI (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1124:7:1124:9|Synthesizing module VLO in library work.
+Running optimization stage 1 on VLO .......
+Finished optimization stage 1 on VLO (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":82:7:82:8|Synthesizing module BB in library work.
+Running optimization stage 1 on BB .......
+Finished optimization stage 1 on BB (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1800:7:1800:9|Synthesizing module EFB in library work.
+Running optimization stage 1 on EFB .......
+Finished optimization stage 1 on EFB (CPU Time 0h:00m:00s, Memory Used current: 93MB peak: 94MB)
+@N: CG364 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\PDU_EFB_I2C.v":8:7:8:17|Synthesizing module PDU_EFB_I2C in library work.
+Running optimization stage 1 on PDU_EFB_I2C .......
+Finished optimization stage 1 on PDU_EFB_I2C (CPU Time 0h:00m:00s, Memory Used current: 93MB peak: 94MB)
+@N: CG364 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":189:7:189:14|Synthesizing module pdu_glue in library work.
+@N: CG179 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":518:104:518:112|Removing redundant assignment.
+@N: CG179 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":520:104:520:115|Removing redundant assignment.
+@N: CG179 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":545:95:545:102|Removing redundant assignment.
+Running optimization stage 1 on pdu_glue .......
+@W: CL169 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Pruning unused register t_blank_open[8:0]. Make sure that there are no unused intermediate registers.
+@W: CL169 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Pruning unused register t_blank_close[8:0]. Make sure that there are no unused intermediate registers.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[2] is always 1.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[3] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[4] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[5] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[6] is always 1.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Register bit wb_adr_i[7] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Register bit fault_code_r[3] is always 0.
+@W: CL260 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Pruning register bit 3 of fault_code_r[3:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.
+@W: CL279 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Pruning register bits 7 to 2 of wb_adr_i[7:0]. If this is not the intended behavior, drive the inputs with valid values, or inputs from the top level.
+Finished optimization stage 1 on pdu_glue (CPU Time 0h:00m:00s, Memory Used current: 95MB peak: 98MB)
+Running optimization stage 2 on pdu_glue .......
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":864:4:864:12|Register bit FAULT_CODE[3] is always 0.
+@W: CL260 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":864:4:864:12|Pruning register bit 3 of FAULT_CODE[3:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.
+@N: CL201 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":692:4:692:12|Trying to extract state machine for register state.
+@N: CL201 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":960:4:960:12|Trying to extract state machine for register wb_state.
+Extracted state machine for register wb_state
+State machine has 2 reachable states with original encodings of:
+   00
+   01
+@N: CL201 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":1036:4:1036:12|Trying to extract state machine for register i2c_state.
+Extracted state machine for register i2c_state
+State machine has 7 reachable states with original encodings of:
+   000
+   001
+   010
+   011
+   100
+   101
+   110
+Finished optimization stage 2 on pdu_glue (CPU Time 0h:00m:00s, Memory Used current: 97MB peak: 98MB)
+Running optimization stage 2 on PDU_EFB_I2C .......
+Finished optimization stage 2 on PDU_EFB_I2C (CPU Time 0h:00m:00s, Memory Used current: 97MB peak: 98MB)
+Running optimization stage 2 on EFB .......
+Finished optimization stage 2 on EFB (CPU Time 0h:00m:00s, Memory Used current: 97MB peak: 98MB)
+Running optimization stage 2 on BB .......
+Finished optimization stage 2 on BB (CPU Time 0h:00m:00s, Memory Used current: 97MB peak: 98MB)
+Running optimization stage 2 on VLO .......
+Finished optimization stage 2 on VLO (CPU Time 0h:00m:00s, Memory Used current: 97MB peak: 98MB)
+Running optimization stage 2 on VHI .......
+Finished optimization stage 2 on VHI (CPU Time 0h:00m:00s, Memory Used current: 97MB peak: 98MB)
+Running optimization stage 2 on OSCH .......
+Finished optimization stage 2 on OSCH (CPU Time 0h:00m:00s, Memory Used current: 97MB peak: 98MB)
+
+For a summary of runtime per design unit, please see file:
+==========================================================
+@L: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\layer0.duruntime
+
+
+
+At c_ver Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 96MB peak: 98MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed May  6 21:41:45 2026
+
+###########################################################]
+###########################################################[
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys Synopsys Netlist Linker, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+File C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\layer0.srs changed - recompiling
+
+At syn_nfilter Exit (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 92MB peak: 93MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed May  6 21:41:45 2026
+
+###########################################################]
+
+For a summary of runtime and memory usage for all design units, please see file:
+==========================================================
+@L: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\PROJ500_PDU_FPGA_V1_comp.rt.csv
+
+@END
+
+At c_hdl Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 24MB peak: 24MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed May  6 21:41:46 2026
+
+###########################################################]

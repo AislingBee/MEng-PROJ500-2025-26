@@ -1,0 +1,13 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "A768KE107M1VLAE036")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/A768KE107M1VLAE036/KiCad")(options "")(descr ""))
+  (lib (name "MIC28517T_E_PHA")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/MIC28517T_E_PHA/KiCADv6/footprints.pretty")(options "")(descr ""))
+  (lib (name "ASPI-4030S-4R7M-T")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/ASPI-4030S-4R7M-T/KiCad")(options "")(descr ""))
+  (lib (name "SRP1265A-6R8M")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/SRP1265A-6R8M/KiCad")(options "")(descr ""))
+  (lib (name "2016L300_16MR")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/2016L300_16MR/KiCad")(options "")(descr ""))
+  (lib (name "Littelfuse-65600301009")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/65600301009/KiCad")(options "")(descr ""))
+  (lib (name "TBP02R1-381-02BE")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/TBP02R1-381-02BE/KiCad")(options "")(descr ""))
+  (lib (name "74LVC3G17GT,115")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/74LVC3G17GT,115/KiCad")(options "")(descr ""))
+  (lib (name "PA2729.283NL")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/PA2729.283NL/KiCad")(options "")(descr ""))
+  (lib (name "SIA469DJ-T1-GE3")(type "KiCad")(uri "${KIPRJMOD}/Custom Libraries, Symbols & Footprints/SIA469DJ-T1-GE3/KiCad")(options "")(descr ""))
+)

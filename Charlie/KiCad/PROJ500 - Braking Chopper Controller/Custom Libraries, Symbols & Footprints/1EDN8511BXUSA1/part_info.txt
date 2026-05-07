@@ -1,0 +1,9 @@
+Manufacturer=Infineon
+PartNumber=1EDN8511BXUSA1
+PartCategory=Integrated Circuit
+PackageCategory=SOT23 (6-Pin)
+PinCount=6
+Version=7.1
+Released=2019-08-21 14:30:34
+Downloaded=2026-01-25 02:35:22
+3D=Y

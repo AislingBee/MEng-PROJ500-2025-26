@@ -1,0 +1,9 @@
+Manufacturer=Texas Instruments
+PartNumber=TCAN3414DRBR
+PartCategory=Integrated Circuit
+PackageCategory=Small Outline No-lead
+PinCount=9
+Version=1.1
+Released=2024-07-14 12:25:58
+Downloaded=2026-02-15 22:00:15
+3D=Y

@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'TCAN3414DRBR'
+CLASS = IC
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Texas Instruments", "TCAN3414DRBR" (!) = "", "SON65P300X300X100-9N-D", "Small Outline No-lead", "595-TCAN3414DRBR", "https://www.mouser.co.uk/ProductDetail/Texas-Instruments/TCAN3414DRBR?qs=2wMNvWM5ZX6YBBH9qF6w4g%3D%3D", "CAN Interface IC 3.3-V CAN FD transceiver with shut-down and standby mode", "https://www.ti.com/lit/ds/symlink/tcan3413.pdf?ts=1714741551942&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FTCAN3413", "1 mm"
+END_PART
+
+END.

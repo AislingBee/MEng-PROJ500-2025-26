@@ -1,0 +1,649 @@
+#Build: Synplify Pro (R) V-2023.09L-2, Build 349R, Sep 17 2024
+#install: C:\Programs\Lattice Diamond\synpbase
+#OS: Windows 10 or later
+#Hostname: CHARLIE
+
+# Wed Apr 15 07:30:00 2026
+
+#Implementation: SELFTEST
+
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : SELFTEST
+Synopsys HDL Compiler, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+###########################################################[
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : SELFTEST
+Synopsys Verilog Compiler, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+@I::"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v" (library work)
+@I::"C:\Programs\Lattice Diamond\synpbase\lib\lucent\pmi_def.v" (library work)
+@I::"C:\Programs\Lattice Diamond\synpbase\lib\vlog\hypermods.v" (library __hyper__lib__)
+@I::"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv" (library work)
+Verilog syntax check successful!
+Selecting top level module pdu_selftest_mxo2
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1793:7:1793:10|Synthesizing module OSCH in library work.
+Running optimization stage 1 on OSCH .......
+Finished optimization stage 1 on OSCH (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv":21:7:21:23|Synthesizing module pdu_selftest_mxo2 in library work.
+Running optimization stage 1 on pdu_selftest_mxo2 .......
+Finished optimization stage 1 on pdu_selftest_mxo2 (CPU Time 0h:00m:00s, Memory Used current: 93MB peak: 94MB)
+Running optimization stage 2 on pdu_selftest_mxo2 .......
+@W: CL158 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv":40:16:40:23|Inout i2c1_scl is unused
+@W: CL158 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_selftest_mxo2.sv":41:16:41:23|Inout i2c1_sda is unused
+Finished optimization stage 2 on pdu_selftest_mxo2 (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 94MB)
+Running optimization stage 2 on OSCH .......
+Finished optimization stage 2 on OSCH (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 94MB)
+
+For a summary of runtime per design unit, please see file:
+==========================================================
+@L: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\SELFTEST\synwork\layer0.duruntime
+
+
+
+At c_ver Exit (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 92MB peak: 94MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed Apr 15 07:30:02 2026
+
+###########################################################]
+###########################################################[
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : SELFTEST
+Synopsys Synopsys Netlist Linker, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+
+At syn_nfilter Exit (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 92MB peak: 92MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed Apr 15 07:30:02 2026
+
+###########################################################]
+
+For a summary of runtime and memory usage for all design units, please see file:
+==========================================================
+@L: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\SELFTEST\synwork\PROJ500_PDU_FPGA_SELFTEST_comp.rt.csv
+
+@END
+
+At c_hdl Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 31MB peak: 32MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed Apr 15 07:30:02 2026
+
+###########################################################]
+###########################################################[
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : SELFTEST
+Synopsys Synopsys Netlist Linker, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+
+At syn_nfilter Exit (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 92MB peak: 93MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed Apr 15 07:30:03 2026
+
+###########################################################]
+Premap Report
+
+# Wed Apr 15 07:30:03 2026
+
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : SELFTEST
+Synopsys Lattice Technology Pre-mapping, Version map202309lat, Build 191R, Built Sep 17 2024 10:38:50, @
+
+
+Mapper Startup Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 184MB peak: 184MB)
+
+
+Done reading skeleton netlist (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 188MB peak: 199MB)
+
+@A: MF827 |No constraint file specified.
+@L: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\SELFTEST\PROJ500_PDU_FPGA_SELFTEST_scck.rpt 
+See clock summary report "C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\SELFTEST\PROJ500_PDU_FPGA_SELFTEST_scck.rpt"
+@N: MF916 |Option synthesis_strategy=base is enabled. 
+@N: MF248 |Running in 64-bit mode.
+@N: MF666 |Clock conversion enabled. (Command "set_option -fix_gated_and_generated_clocks 1" in the project file.)
+
+Design Input Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 190MB peak: 199MB)
+
+
+Mapper Initialization Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 191MB peak: 199MB)
+
+
+Start loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 204MB peak: 204MB)
+
+
+Finished loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 204MB peak: 206MB)
+
+NConnInternalConnection caching is on
+
+Starting HSTDM IP insertion (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 254MB peak: 255MB)
+
+
+Finished HSTDM IP insertion (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 254MB peak: 255MB)
+
+
+Started DisTri Cleanup (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 254MB peak: 255MB)
+
+
+Finished DisTri Cleanup (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 254MB peak: 255MB)
+
+
+Starting clock optimization phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:00s; Memory used current: 256MB peak: 256MB)
+
+
+mixed edge conversion for GCC is OFF
+@W: BZ204 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":81:41:81:46|GCC unable to propagate clocks through gate u_osch; all outputs will be treated as enables regardless of whether any inputs are clocks
+@W: BZ240 :|GCC encountered Inferred Clock constraint on net GCC considers to be data clk_osc; this will likely lead to failure to convert
+
+Finished clock optimization phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 256MB peak: 257MB)
+
+
+Starting clock optimization report phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 257MB peak: 257MB)
+
+
+Finished clock optimization report phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 257MB peak: 258MB)
+
+@N: FX1184 |Applying syn_allowed_resources blockrams=2 on top level netlist pdu_selftest_mxo2 
+
+Finished netlist restructuring (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 257MB peak: 258MB)
+
+
+
+Clock Summary
+******************
+
+          Start                                        Requested     Requested     Clock        Clock          Clock
+Level     Clock                                        Frequency     Period        Type         Group          Load 
+--------------------------------------------------------------------------------------------------------------------
+0 -       pdu_selftest_mxo2|clk_osc_inferred_clock     2.1 MHz       480.769       inferred     (multiple)     25   
+====================================================================================================================
+
+
+
+Clock Load Summary
+***********************
+
+                                             Clock     Source               Clock Pin           Non-clock Pin     Non-clock Pin
+Clock                                        Load      Pin                  Seq Example         Seq Example       Comb Example 
+-------------------------------------------------------------------------------------------------------------------------------
+pdu_selftest_mxo2|clk_osc_inferred_clock     25        u_osch.OSC(OSCH)     step_idx[4:0].C     -                 -            
+===============================================================================================================================
+
+@W: MT529 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":111:4:111:12|Found inferred clock pdu_selftest_mxo2|clk_osc_inferred_clock which controls 25 sequential elements including step_div[19:0]. This clock has no specified timing constraint which may prevent conversion of gated or generated clocks and may adversely impact design performance. 
+
+ICG Latch Removal Summary:
+Number of ICG latches removed: 0
+Number of ICG latches not removed:	0
+
+
+@S |Clock Optimization Summary
+
+
+
+#### START OF PREMAP CLOCK OPTIMIZATION REPORT #####[
+
+0 non-gated/non-generated clock tree(s) driving 0 clock pin(s) of sequential element(s)
+1 gated/generated clock tree(s) driving 25 clock pin(s) of sequential element(s)
+0 instances converted, 25 sequential instances remain driven by gated/generated clocks
+
+======================================================= Gated/Generated Clocks ========================================================
+Clock Tree ID     Driving Element     Drive Element Type     Unconverted Fanout     Sample Instance     Explanation                    
+---------------------------------------------------------------------------------------------------------------------------------------
+@KP:ckid0_0       u_osch.OSC          OSCH                   25                     step_div[19:0]      Clock source is invalid for GCC
+=======================================================================================================================================
+
+
+##### END OF CLOCK OPTIMIZATION REPORT ######
+
+
+Summary of user generated gated clocks:
+0 user generated gated/generated clock tree(s) driving 0 clock pin(s) of sequential element(s)
+
+@N: FX1143 |Skipping assigning INTERNAL_VREF to iobanks, because the table of mapping from pin to iobank is not initialized.
+Finished Pre Mapping Phase.
+
+Starting constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 257MB peak: 258MB)
+
+
+Finished constraint checker preprocessing (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 257MB peak: 258MB)
+
+
+Finished constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 258MB peak: 258MB)
+
+Pre-mapping successful!
+
+At Mapper Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 175MB peak: 260MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+# Wed Apr 15 07:30:05 2026
+
+###########################################################]
+Map & Optimize Report
+
+# Wed Apr 15 07:30:05 2026
+
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : SELFTEST
+Synopsys Lattice Technology Mapper, Version map202309lat, Build 191R, Built Sep 17 2024 10:38:50, @
+
+
+Mapper Startup Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 184MB peak: 184MB)
+
+@N: MF916 |Option synthesis_strategy=base is enabled. 
+@N: MF248 |Running in 64-bit mode.
+@N: MF666 |Clock conversion enabled. (Command "set_option -fix_gated_and_generated_clocks 1" in the project file.)
+
+Design Input Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 186MB peak: 199MB)
+
+
+Mapper Initialization Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 186MB peak: 199MB)
+
+
+Start loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 200MB peak: 200MB)
+
+
+Finished loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 202MB peak: 204MB)
+
+
+
+Starting Optimization and Mapping (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 254MB peak: 254MB)
+
+@N: BZ173 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":145:15:145:18|ROM FAULT_CODE_1[3:0] (in view: work.pdu_selftest_mxo2(verilog)) mapped in logic.
+@N: BZ173 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":145:15:145:18|ROM STATE_CODE_1[1:0] (in view: work.pdu_selftest_mxo2(verilog)) mapped in logic.
+@N: BZ173 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":145:15:145:18|ROM ARM_PERMIT_1[15:0] (in view: work.pdu_selftest_mxo2(verilog)) mapped in logic.
+@N: MO106 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":145:15:145:18|Found ROM ARM_PERMIT_1[15:0] (in view: work.pdu_selftest_mxo2(verilog)) with 24 words by 16 bits.
+@N: BZ173 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":145:15:145:18|ROM STATE_CODE_1[1:0] (in view: work.pdu_selftest_mxo2(verilog)) mapped in logic.
+@N: MO106 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":145:15:145:18|Found ROM STATE_CODE_1[1:0] (in view: work.pdu_selftest_mxo2(verilog)) with 24 words by 2 bits.
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net clk_osc has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net COMPUTE_EN has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_41 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_42 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_44 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_45 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_46 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_47 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_48 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_49 has multiple drivers .
+
+Finished RTL optimizations (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 259MB peak: 259MB)
+
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_114 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_115 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_116 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_117 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_118 has multiple drivers .
+
+Starting factoring (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 260MB peak: 260MB)
+
+
+Finished factoring (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 260MB peak: 261MB)
+
+
+Available hyper_sources - for debug and ip models
+	None Found
+
+NConnInternalConnection caching is on
+
+Finished generic timing optimizations - Pass 1 (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 260MB peak: 261MB)
+
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_0 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_1 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_2 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_3 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_4 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_5 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_6 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_7 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_8 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_9 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_10 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_11 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_12 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_13 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_14 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_15 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_16 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_17 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_18 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net un2_step_div_axb_19 has multiple drivers .
+
+Starting Early Timing Optimization (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:01s; Memory used current: 261MB peak: 261MB)
+
+
+Finished Early Timing Optimization (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 261MB peak: 262MB)
+
+
+Finished generic timing optimizations - Pass 2 (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 261MB peak: 262MB)
+
+
+Finished preparing to map (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 261MB peak: 262MB)
+
+
+Finished technology mapping (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 263MB peak: 263MB)
+
+Pass		 CPU time		Worst Slack		Luts / Registers
+------------------------------------------------------------
+   1		0h:00m:01s		   475.75ns		  50 /        25
+
+Finished technology timing optimizations and critical path resynthesis (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 263MB peak: 264MB)
+
+@W: FX474 |User-specified initial value defined for some sequential elements which can prevent optimum synthesis results from being achieved. 
+@N: FX164 |The option to pack registers in the IOB has not been specified. Please set syn_useioff attribute.  
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_343 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_345 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_347 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_selftest_mxo2.sv":21:7:21:23|Net N_349 has multiple drivers .
+
+Finished restoring hierarchy (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 264MB peak: 264MB)
+
+
+Starting CDBProcessSetClockGroups... (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 264MB peak: 265MB)
+
+
+Finished with CDBProcessSetClockGroups (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 264MB peak: 265MB)
+
+
+Start Writing Netlists (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 211MB peak: 265MB)
+
+Writing Analyst data base C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\SELFTEST\synwork\PROJ500_PDU_FPGA_SELFTEST_m.srm
+
+Finished Writing Netlist Databases (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:02s; Memory used current: 265MB peak: 265MB)
+
+Writing EDIF Netlist and constraint files
+@N: FX1056 |Writing EDF file: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\SELFTEST\PROJ500_PDU_FPGA_SELFTEST.edi
+@N: BW106 |Synplicity Constraint File capacitance units using default value of 1pF 
+
+Finished Writing EDIF Netlist and constraint files (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 273MB peak: 273MB)
+
+
+Finished Writing Netlists (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 273MB peak: 274MB)
+
+
+Start final timing analysis (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 271MB peak: 274MB)
+
+@W: MT420 |Found inferred clock pdu_selftest_mxo2|clk_osc_inferred_clock with period 480.77ns. Please declare a user-defined clock on net clk_osc.
+
+
+##### START OF TIMING REPORT #####[
+# Timing report written on Wed Apr 15 07:30:08 2026
+#
+
+
+Top view:               pdu_selftest_mxo2
+Requested Frequency:    2.1 MHz
+Wire load mode:         top
+Paths requested:        5
+Constraint File(s):    
+@N: MT320 |This timing report is an estimate of place and route data. For final timing results, use the FPGA vendor place and route report.
+
+@N: MT322 |Clock constraints include only register-to-register paths associated with each individual clock.
+
+
+
+Performance Summary
+*******************
+
+
+Worst slack in design: 475.177
+
+                                             Requested     Estimated     Requested     Estimated                 Clock        Clock     
+Starting Clock                               Frequency     Frequency     Period        Period        Slack       Type         Group     
+----------------------------------------------------------------------------------------------------------------------------------------
+pdu_selftest_mxo2|clk_osc_inferred_clock     2.1 MHz       178.8 MHz     480.769       5.592         475.177     inferred     (multiple)
+========================================================================================================================================
+
+
+
+
+
+Clock Relationships
+*******************
+
+Clocks                                                                              |    rise  to  rise     |    fall  to  fall   |    rise  to  fall   |    fall  to  rise 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Starting                                  Ending                                    |  constraint  slack    |  constraint  slack  |  constraint  slack  |  constraint  slack
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+pdu_selftest_mxo2|clk_osc_inferred_clock  pdu_selftest_mxo2|clk_osc_inferred_clock  |  480.769     475.177  |  No paths    -      |  No paths    -      |  No paths    -    
+============================================================================================================================================================================
+ Note: 'No paths' indicates there are no paths in the design for that pair of clock edges.
+       'Diff grp' indicates that paths exist but the starting clock and ending clock are in different clock groups.
+
+
+
+Interface Information 
+*********************
+
+No IO constraint found
+
+
+
+====================================
+Detailed Report for Clock: pdu_selftest_mxo2|clk_osc_inferred_clock
+====================================
+
+
+
+Starting Points with Worst Slack
+********************************
+
+                 Starting                                                                          Arrival            
+Instance         Reference                                    Type        Pin     Net              Time        Slack  
+                 Clock                                                                                                
+----------------------------------------------------------------------------------------------------------------------
+step_div[0]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     Q       step_div[0]      1.108       475.177
+step_div[1]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     Q       step_div[1]      1.044       475.384
+step_div[2]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     Q       step_div[2]      1.044       475.384
+step_div[3]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     Q       step_div[3]      1.044       475.527
+step_div[4]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     Q       step_div[4]      1.044       475.527
+step_div[5]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     Q       step_div[5]      1.044       475.670
+step_div[6]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     Q       step_div[6]      1.044       475.670
+step_div[7]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     Q       step_div[7]      1.044       475.812
+step_div[8]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     Q       step_div[8]      1.044       475.812
+step_div[12]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3IX     Q       step_div[12]     1.044       475.883
+======================================================================================================================
+
+
+Ending Points with Worst Slack
+******************************
+
+                 Starting                                                                                      Required            
+Instance         Reference                                    Type        Pin     Net                          Time         Slack  
+                 Clock                                                                                                             
+-----------------------------------------------------------------------------------------------------------------------------------
+step_div[19]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3IX     D       step_div_3[19]               480.664      475.177
+step_div[17]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     D       un2_step_div_cry_17_0_S0     480.664      475.320
+step_div[18]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3IX     D       step_div_3[18]               480.664      475.320
+step_div[15]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3IX     D       step_div_3[15]               480.664      475.463
+step_div[16]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     D       un2_step_div_cry_15_0_S1     480.664      475.463
+step_div[13]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3IX     D       step_div_3[13]               480.664      475.606
+step_div[14]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     D       un2_step_div_cry_13_0_S1     480.664      475.606
+step_div[11]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     D       un2_step_div_cry_11_0_S0     480.664      475.748
+step_div[12]     pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3IX     D       step_div_3[12]               480.664      475.748
+step_idx[0]      pdu_selftest_mxo2|clk_osc_inferred_clock     FD1S3AX     D       step_idx_RNO[0]              480.858      475.883
+===================================================================================================================================
+
+
+
+Worst Path Information
+***********************
+
+
+Path information for path number 1: 
+      Requested Period:                      480.769
+    - Setup time:                            0.106
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         480.664
+
+    - Propagation time:                      5.487
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     475.177
+
+    Number of logic level(s):                11
+    Starting point:                          step_div[0] / Q
+    Ending point:                            step_div[19] / D
+    The start point is clocked by            pdu_selftest_mxo2|clk_osc_inferred_clock [rising] (rise=0.000 fall=240.385 period=480.769) on pin CK
+    The end   point is clocked by            pdu_selftest_mxo2|clk_osc_inferred_clock [rising] (rise=0.000 fall=240.385 period=480.769) on pin CK
+
+Instance / Net                        Pin      Pin               Arrival     No. of    
+Name                      Type        Name     Dir     Delay     Time        Fan Out(s)
+---------------------------------------------------------------------------------------
+step_div[0]               FD1S3AX     Q        Out     1.108     1.108 r     -         
+step_div[0]               Net         -        -       -         -           3         
+un2_step_div_cry_0_0      CCU2D       A1       In      0.000     1.108 r     -         
+un2_step_div_cry_0_0      CCU2D       COUT     Out     1.544     2.652 r     -         
+un2_step_div_cry_0        Net         -        -       -         -           1         
+un2_step_div_cry_1_0      CCU2D       CIN      In      0.000     2.652 r     -         
+un2_step_div_cry_1_0      CCU2D       COUT     Out     0.143     2.795 r     -         
+un2_step_div_cry_2        Net         -        -       -         -           1         
+un2_step_div_cry_3_0      CCU2D       CIN      In      0.000     2.795 r     -         
+un2_step_div_cry_3_0      CCU2D       COUT     Out     0.143     2.938 r     -         
+un2_step_div_cry_4        Net         -        -       -         -           1         
+un2_step_div_cry_5_0      CCU2D       CIN      In      0.000     2.938 r     -         
+un2_step_div_cry_5_0      CCU2D       COUT     Out     0.143     3.081 r     -         
+un2_step_div_cry_6        Net         -        -       -         -           1         
+un2_step_div_cry_7_0      CCU2D       CIN      In      0.000     3.081 r     -         
+un2_step_div_cry_7_0      CCU2D       COUT     Out     0.143     3.224 r     -         
+un2_step_div_cry_8        Net         -        -       -         -           1         
+un2_step_div_cry_9_0      CCU2D       CIN      In      0.000     3.224 r     -         
+un2_step_div_cry_9_0      CCU2D       COUT     Out     0.143     3.366 r     -         
+un2_step_div_cry_10       Net         -        -       -         -           1         
+un2_step_div_cry_11_0     CCU2D       CIN      In      0.000     3.366 r     -         
+un2_step_div_cry_11_0     CCU2D       COUT     Out     0.143     3.509 r     -         
+un2_step_div_cry_12       Net         -        -       -         -           1         
+un2_step_div_cry_13_0     CCU2D       CIN      In      0.000     3.509 r     -         
+un2_step_div_cry_13_0     CCU2D       COUT     Out     0.143     3.652 r     -         
+un2_step_div_cry_14       Net         -        -       -         -           1         
+un2_step_div_cry_15_0     CCU2D       CIN      In      0.000     3.652 r     -         
+un2_step_div_cry_15_0     CCU2D       COUT     Out     0.143     3.795 r     -         
+un2_step_div_cry_16       Net         -        -       -         -           1         
+un2_step_div_cry_17_0     CCU2D       CIN      In      0.000     3.795 r     -         
+un2_step_div_cry_17_0     CCU2D       COUT     Out     0.143     3.938 r     -         
+un2_step_div_cry_18       Net         -        -       -         -           1         
+un2_step_div_s_19_0       CCU2D       CIN      In      0.000     3.938 r     -         
+un2_step_div_s_19_0       CCU2D       S0       Out     1.549     5.487 r     -         
+step_div_3[19]            Net         -        -       -         -           1         
+step_div[19]              FD1S3IX     D        In      0.000     5.487 r     -         
+=======================================================================================
+
+
+
+##### END OF TIMING REPORT #####]
+
+Timing exceptions that could not be applied
+
+Finished final timing analysis (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 273MB peak: 274MB)
+
+
+Finished timing report (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 273MB peak: 274MB)
+
+---------------------------------------
+Resource Usage Report
+Part: lcmxo2_640hc-5
+
+Register bits: 25 of 640 (4%)
+PIC Latch:       0
+I/O cells:       33
+
+
+Details:
+CCU2D:          11
+FD1P3AX:        4
+FD1S3AX:        15
+FD1S3IX:        6
+GSR:            1
+IB:             15
+INV:            1
+OB:             18
+ORCALUT4:       49
+OSCH:           1
+PUR:            1
+VHI:            1
+VLO:            1
+Mapper successful!
+
+At Mapper Exit (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 134MB peak: 274MB)
+
+Process took 0h:00m:02s realtime, 0h:00m:02s cputime
+# Wed Apr 15 07:30:08 2026
+
+###########################################################]

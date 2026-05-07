@@ -1,0 +1,9 @@
+Manufacturer=Yageo Group
+PartNumber=SMDH2016B260TF/24
+PartCategory=Fuse
+PackageCategory=Fuses Chip
+PinCount=2
+Version=2.1
+Released=2025-11-14 03:45:02
+Downloaded=2026-03-15 03:00:44
+3D=Y

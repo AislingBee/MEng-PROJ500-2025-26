@@ -1,0 +1,9 @@
+Manufacturer=LITTELFUSE
+PartNumber=RGEF500
+PartCategory=Fuse
+PackageCategory=Other
+PinCount=2
+Version=1.2
+Released=2020-11-18 13:36:59
+Downloaded=2026-03-15 03:22:14
+3D=Y

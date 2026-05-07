@@ -1,0 +1,10 @@
+(unit MM)
+
+(package "NRVTS10100EMFST1G"
+    (type UNDEF)
+    (uver 2)
+    (mountForm default
+        (footprintRef "NRVTS10100EMFST1G")
+        (spec "default")
+    )
+)

@@ -1,0 +1,1008 @@
+#Build: Synplify Pro (R) V-2023.09L-2, Build 349R, Sep 17 2024
+#install: C:\Programs\Lattice Diamond\synpbase
+#OS: Windows 10 or later
+#Hostname: CHARLIE
+
+# Wed Apr 15 01:44:04 2026
+
+#Implementation: V1
+
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys HDL Compiler, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+###########################################################[
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys Verilog Compiler, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+@I::"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v" (library work)
+@I::"C:\Programs\Lattice Diamond\synpbase\lib\lucent\pmi_def.v" (library work)
+@I::"C:\Programs\Lattice Diamond\synpbase\lib\vlog\hypermods.v" (library __hyper__lib__)
+@I::"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\PDU_EFB_I2C.v" (library work)
+@I::"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv" (library work)
+Verilog syntax check successful!
+Selecting top level module pdu_glue
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1793:7:1793:10|Synthesizing module OSCH in library work.
+Running optimization stage 1 on OSCH .......
+Finished optimization stage 1 on OSCH (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1120:7:1120:9|Synthesizing module VHI in library work.
+Running optimization stage 1 on VHI .......
+Finished optimization stage 1 on VHI (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1124:7:1124:9|Synthesizing module VLO in library work.
+Running optimization stage 1 on VLO .......
+Finished optimization stage 1 on VLO (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":82:7:82:8|Synthesizing module BB in library work.
+Running optimization stage 1 on BB .......
+Finished optimization stage 1 on BB (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Programs\Lattice Diamond\synpbase\lib\lucent\machxo2.v":1800:7:1800:9|Synthesizing module EFB in library work.
+Running optimization stage 1 on EFB .......
+Finished optimization stage 1 on EFB (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\PDU_EFB_I2C.v":8:7:8:17|Synthesizing module PDU_EFB_I2C in library work.
+Running optimization stage 1 on PDU_EFB_I2C .......
+Finished optimization stage 1 on PDU_EFB_I2C (CPU Time 0h:00m:00s, Memory Used current: 92MB peak: 93MB)
+@N: CG364 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":39:7:39:14|Synthesizing module pdu_glue in library work.
+Running optimization stage 1 on pdu_glue .......
+@W: CL169 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":435:4:435:12|Pruning unused register sr0[7:0]. Make sure that there are no unused intermediate registers.
+@W: CL169 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":435:4:435:12|Pruning unused register sr1[7:0]. Make sure that there are no unused intermediate registers.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":222:4:222:12|Register bit SPARE_OUT_0 is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":222:4:222:12|Register bit SPARE_OUT_1 is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":343:4:343:12|Register bit wb_adr_i[2] is always 1.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":343:4:343:12|Register bit wb_adr_i[3] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":343:4:343:12|Register bit wb_adr_i[4] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":343:4:343:12|Register bit wb_adr_i[5] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":343:4:343:12|Register bit wb_adr_i[6] is always 1.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":343:4:343:12|Register bit wb_adr_i[7] is always 0.
+@N: CL189 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":222:4:222:12|Register bit FAULT_CODE[3] is always 0.
+@W: CL260 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":222:4:222:12|Pruning register bit 3 of FAULT_CODE[3:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.
+@W: CL279 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":343:4:343:12|Pruning register bits 7 to 2 of wb_adr_i[7:0]. If this is not the intended behavior, drive the inputs with valid values, or inputs from the top level.
+Finished optimization stage 1 on pdu_glue (CPU Time 0h:00m:00s, Memory Used current: 94MB peak: 95MB)
+Running optimization stage 2 on pdu_glue .......
+@N: CL201 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":343:4:343:12|Trying to extract state machine for register wb_state.
+Extracted state machine for register wb_state
+State machine has 2 reachable states with original encodings of:
+   00
+   01
+@N: CL201 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":435:4:435:12|Trying to extract state machine for register i2c_state.
+Extracted state machine for register i2c_state
+State machine has 9 reachable states with original encodings of:
+   0000
+   0001
+   0010
+   0011
+   0100
+   0101
+   0110
+   0111
+   1000
+@N: CL159 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":54:13:54:22|Input SPARE_IN_0 is unused.
+@N: CL159 :"C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\pdu_glue_mxo2.sv":56:13:56:22|Input SPARE_IN_1 is unused.
+Finished optimization stage 2 on pdu_glue (CPU Time 0h:00m:00s, Memory Used current: 95MB peak: 96MB)
+Running optimization stage 2 on PDU_EFB_I2C .......
+Finished optimization stage 2 on PDU_EFB_I2C (CPU Time 0h:00m:00s, Memory Used current: 95MB peak: 96MB)
+Running optimization stage 2 on EFB .......
+Finished optimization stage 2 on EFB (CPU Time 0h:00m:00s, Memory Used current: 95MB peak: 96MB)
+Running optimization stage 2 on BB .......
+Finished optimization stage 2 on BB (CPU Time 0h:00m:00s, Memory Used current: 95MB peak: 96MB)
+Running optimization stage 2 on VLO .......
+Finished optimization stage 2 on VLO (CPU Time 0h:00m:00s, Memory Used current: 95MB peak: 96MB)
+Running optimization stage 2 on VHI .......
+Finished optimization stage 2 on VHI (CPU Time 0h:00m:00s, Memory Used current: 95MB peak: 96MB)
+Running optimization stage 2 on OSCH .......
+Finished optimization stage 2 on OSCH (CPU Time 0h:00m:00s, Memory Used current: 95MB peak: 96MB)
+
+For a summary of runtime per design unit, please see file:
+==========================================================
+@L: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\layer0.duruntime
+
+
+
+At c_ver Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 94MB peak: 96MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed Apr 15 01:44:06 2026
+
+###########################################################]
+###########################################################[
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys Synopsys Netlist Linker, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+
+At syn_nfilter Exit (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 92MB peak: 93MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed Apr 15 01:44:06 2026
+
+###########################################################]
+
+For a summary of runtime and memory usage for all design units, please see file:
+==========================================================
+@L: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\PROJ500_PDU_FPGA_V1_comp.rt.csv
+
+@END
+
+At c_hdl Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 24MB peak: 24MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed Apr 15 01:44:06 2026
+
+###########################################################]
+###########################################################[
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys Synopsys Netlist Linker, Version comp202309synp1, Build 349R, Built Sep 17 2024 08:16:26, @
+
+@N|Running in 64-bit mode
+
+At syn_nfilter Exit (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 92MB peak: 93MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+
+Process completed successfully.
+# Wed Apr 15 01:44:07 2026
+
+###########################################################]
+Premap Report
+
+# Wed Apr 15 01:44:07 2026
+
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys Lattice Technology Pre-mapping, Version map202309lat, Build 191R, Built Sep 17 2024 10:38:50, @
+
+
+Mapper Startup Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 184MB peak: 184MB)
+
+
+Done reading skeleton netlist (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 188MB peak: 199MB)
+
+@A: MF827 |No constraint file specified.
+@L: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\PROJ500_PDU_FPGA_V1_scck.rpt 
+See clock summary report "C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\PROJ500_PDU_FPGA_V1_scck.rpt"
+@N: MF916 |Option synthesis_strategy=base is enabled. 
+@N: MF248 |Running in 64-bit mode.
+@N: MF666 |Clock conversion enabled. (Command "set_option -fix_gated_and_generated_clocks 1" in the project file.)
+
+Design Input Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 191MB peak: 199MB)
+
+
+Mapper Initialization Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 191MB peak: 199MB)
+
+
+Start loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 204MB peak: 204MB)
+
+
+Finished loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 205MB peak: 206MB)
+
+NConnInternalConnection caching is on
+@N: FX493 |Applying initial value "00" on instance estop_ff[1:0].
+@W: FX474 |User-specified initial value defined for some sequential elements which can prevent optimum synthesis results from being achieved. 
+@N: FX493 |Applying initial value "00" on instance fb_closed_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance mcu_alive_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance mcu_arm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance mcu_fault_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance ov_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance pchgok_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_arm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_compute_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_rarm_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance sw_rst_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance uv_ff[1:0].
+@N: FX493 |Applying initial value "00" on instance vbusov_ff[1:0].
+@N: FX493 |Applying initial value "00000000" on instance reg_ptr[7:0].
+@N: FX493 |Applying initial value "0" on instance tick_1ms.
+@N: FX493 |Applying initial value "0" on instance prev_srw.
+@N: FX493 |Applying initial value "1" on instance expect_ptr.
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":306:4:306:12|Initial value on register wb_rst_ms[2:0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "101" on instance wb_rst_ms[2:0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_ksel_blank[4:0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "00000" on instance t_ksel_blank[4:0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[8:0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "000000000" on instance t_blank_close[8:0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[8:0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "000000000" on instance t_blank_open[8:0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[12:0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0000000000000" on instance t_precharge[12:0].
+@W: BN132 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Removing sequential instance DUMP_EN because it is equivalent to instance K_SEL. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":343:4:343:12|Removing sequential instance wb_stb_i because it is equivalent to instance wb_cyc_i. To keep the instance, apply constraint syn_preserve=1 on the instance.
+
+Starting HSTDM IP insertion (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 256MB peak: 256MB)
+
+
+Finished HSTDM IP insertion (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 256MB peak: 256MB)
+
+
+Started DisTri Cleanup (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 256MB peak: 256MB)
+
+
+Finished DisTri Cleanup (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 256MB peak: 257MB)
+
+Encoding state machine i2c_state[8:0] (in view: work.pdu_glue(verilog))
+original code -> new code
+   0000 -> 000000001
+   0001 -> 000000010
+   0010 -> 000000100
+   0011 -> 000001000
+   0100 -> 000010000
+   0101 -> 000100000
+   0110 -> 001000000
+   0111 -> 010000000
+   1000 -> 100000000
+@N: FX493 |Applying initial value "1" on instance i2c_state[0].
+@N: FX493 |Applying initial value "0" on instance i2c_state[1].
+@N: FX493 |Applying initial value "0" on instance i2c_state[2].
+@N: FX493 |Applying initial value "0" on instance i2c_state[3].
+@N: FX493 |Applying initial value "0" on instance i2c_state[4].
+@N: FX493 |Applying initial value "0" on instance i2c_state[5].
+@N: FX493 |Applying initial value "0" on instance i2c_state[6].
+@N: FX493 |Applying initial value "0" on instance i2c_state[7].
+@N: FX493 |Applying initial value "0" on instance i2c_state[8].
+Encoding state machine wb_state[1:0] (in view: work.pdu_glue(verilog))
+original code -> new code
+   00 -> 0
+   01 -> 1
+@N: MO225 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":343:4:343:12|There are no possible illegal states for state machine wb_state[1:0] (in view: work.pdu_glue(verilog)); safe FSM implementation is not required.
+
+Starting clock optimization phase (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 259MB peak: 259MB)
+
+
+mixed edge conversion for GCC is OFF
+@W: BZ204 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":107:41:107:46|GCC unable to propagate clocks through gate u_osch; all outputs will be treated as enables regardless of whether any inputs are clocks
+@W: BZ240 :|GCC encountered Inferred Clock constraint on net GCC considers to be data clk_osc; this will likely lead to failure to convert
+
+Finished clock optimization phase (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 260MB peak: 260MB)
+
+
+Starting clock optimization report phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 260MB peak: 261MB)
+
+
+Finished clock optimization report phase (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 260MB peak: 261MB)
+
+@N: FX1184 |Applying syn_allowed_resources blockrams=2 on top level netlist pdu_glue 
+
+Finished netlist restructuring (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 260MB peak: 261MB)
+
+
+
+Clock Summary
+******************
+
+          Start                               Requested     Requested     Clock        Clock               Clock
+Level     Clock                               Frequency     Period        Type         Group               Load 
+----------------------------------------------------------------------------------------------------------------
+0 -       System                              100.0 MHz     10.000        system       system_clkgroup     0    
+                                                                                                                
+0 -       pdu_glue|clk_osc_inferred_clock     2.1 MHz       480.769       inferred     (multiple)          142  
+================================================================================================================
+
+
+
+Clock Load Summary
+***********************
+
+                                    Clock     Source               Clock Pin           Non-clock Pin     Non-clock Pin
+Clock                               Load      Pin                  Seq Example         Seq Example       Comb Example 
+----------------------------------------------------------------------------------------------------------------------
+System                              0         -                    -                   -                 -            
+                                                                                                                      
+pdu_glue|clk_osc_inferred_clock     142       u_osch.OSC(OSCH)     wb_resp_valid.C     -                 -            
+======================================================================================================================
+
+@W: MT529 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":343:4:343:12|Found inferred clock pdu_glue|clk_osc_inferred_clock which controls 142 sequential elements including wb_state[0]. This clock has no specified timing constraint which may prevent conversion of gated or generated clocks and may adversely impact design performance. 
+
+ICG Latch Removal Summary:
+Number of ICG latches removed: 0
+Number of ICG latches not removed:	0
+
+
+@S |Clock Optimization Summary
+
+
+
+#### START OF PREMAP CLOCK OPTIMIZATION REPORT #####[
+
+0 non-gated/non-generated clock tree(s) driving 0 clock pin(s) of sequential element(s)
+1 gated/generated clock tree(s) driving 142 clock pin(s) of sequential element(s)
+0 instances converted, 142 sequential instances remain driven by gated/generated clocks
+
+======================================================= Gated/Generated Clocks ========================================================
+Clock Tree ID     Driving Element     Drive Element Type     Unconverted Fanout     Sample Instance     Explanation                    
+---------------------------------------------------------------------------------------------------------------------------------------
+@KP:ckid0_0       u_osch.OSC          OSCH                   142                    wb_state[0]         Clock source is invalid for GCC
+=======================================================================================================================================
+
+
+##### END OF CLOCK OPTIMIZATION REPORT ######
+
+
+Summary of user generated gated clocks:
+0 user generated gated/generated clock tree(s) driving 0 clock pin(s) of sequential element(s)
+
+@N: FX1143 |Skipping assigning INTERNAL_VREF to iobanks, because the table of mapping from pin to iobank is not initialized.
+Finished Pre Mapping Phase.
+
+Starting constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 261MB peak: 261MB)
+
+
+Finished constraint checker preprocessing (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 261MB peak: 262MB)
+
+
+Finished constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 261MB peak: 262MB)
+
+Pre-mapping successful!
+
+At Mapper Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 176MB peak: 262MB)
+
+Process took 0h:00m:01s realtime, 0h:00m:01s cputime
+# Wed Apr 15 01:44:09 2026
+
+###########################################################]
+Map & Optimize Report
+
+# Wed Apr 15 01:44:09 2026
+
+
+Copyright (C) 1994-2023 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: V-2023.09L-2
+Install: C:\Programs\Lattice Diamond\synpbase
+OS: Windows 10 or later
+Hostname: CHARLIE
+
+Implementation : V1
+Synopsys Lattice Technology Mapper, Version map202309lat, Build 191R, Built Sep 17 2024 10:38:50, @
+
+
+Mapper Startup Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 184MB peak: 184MB)
+
+@N: MF916 |Option synthesis_strategy=base is enabled. 
+@N: MF248 |Running in 64-bit mode.
+@N: MF666 |Clock conversion enabled. (Command "set_option -fix_gated_and_generated_clocks 1" in the project file.)
+
+Design Input Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 186MB peak: 199MB)
+
+
+Mapper Initialization Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 186MB peak: 199MB)
+
+
+Start loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 200MB peak: 200MB)
+
+
+Finished loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 201MB peak: 203MB)
+
+
+
+Starting Optimization and Mapping (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 254MB peak: 254MB)
+
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net clk_osc has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_35 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_53 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_71 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_77 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_85 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_97 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_117 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_137 has multiple drivers .
+
+Finished RTL optimizations (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 259MB peak: 259MB)
+
+@W: FX474 |User-specified initial value defined for some sequential elements which can prevent optimum synthesis results from being achieved. 
+@N: FX493 |Applying initial value "0" on instance estop_ff[0].
+@N: FX493 |Applying initial value "0" on instance estop_ff[1].
+@N: FX493 |Applying initial value "0" on instance fb_closed_ff[0].
+@N: FX493 |Applying initial value "0" on instance fb_closed_ff[1].
+@N: FX493 |Applying initial value "0" on instance mcu_alive_ff[0].
+@N: FX493 |Applying initial value "0" on instance mcu_alive_ff[1].
+@N: FX493 |Applying initial value "0" on instance mcu_arm_ff[0].
+@N: FX493 |Applying initial value "0" on instance mcu_arm_ff[1].
+@N: FX493 |Applying initial value "0" on instance mcu_fault_ff[0].
+@N: FX493 |Applying initial value "0" on instance mcu_fault_ff[1].
+@N: FX493 |Applying initial value "0" on instance ov_ff[0].
+@N: FX493 |Applying initial value "0" on instance ov_ff[1].
+@N: FX493 |Applying initial value "0" on instance pchgok_ff[0].
+@N: FX493 |Applying initial value "0" on instance pchgok_ff[1].
+@N: FX493 |Applying initial value "0" on instance sw_arm_ff[0].
+@N: FX493 |Applying initial value "0" on instance sw_arm_ff[1].
+@N: FX493 |Applying initial value "0" on instance sw_compute_ff[0].
+@N: FX493 |Applying initial value "0" on instance sw_compute_ff[1].
+@N: FX493 |Applying initial value "0" on instance sw_rarm_ff[0].
+@N: FX493 |Applying initial value "0" on instance sw_rarm_ff[1].
+@N: FX493 |Applying initial value "0" on instance sw_rst_ff[0].
+@N: FX493 |Applying initial value "0" on instance sw_rst_ff[1].
+@N: FX493 |Applying initial value "0" on instance uv_ff[0].
+@N: FX493 |Applying initial value "0" on instance uv_ff[1].
+@N: FX493 |Applying initial value "0" on instance vbusov_ff[0].
+@N: FX493 |Applying initial value "0" on instance vbusov_ff[1].
+@N: FX493 |Applying initial value "0" on instance reg_ptr[0].
+@N: FX493 |Applying initial value "0" on instance reg_ptr[1].
+@N: FX493 |Applying initial value "0" on instance reg_ptr[2].
+@N: FX493 |Applying initial value "0" on instance reg_ptr[3].
+@N: FX493 |Applying initial value "0" on instance reg_ptr[4].
+@N: FX493 |Applying initial value "0" on instance reg_ptr[5].
+@N: FX493 |Applying initial value "0" on instance reg_ptr[6].
+@N: FX493 |Applying initial value "0" on instance reg_ptr[7].
+@N: FX493 |Applying initial value "0" on instance tick_1ms.
+@N: FX493 |Applying initial value "0" on instance prev_srw.
+@N: FX493 |Applying initial value "1" on instance expect_ptr.
+@N: FX493 |Applying initial value "1" on instance wb_rst_ms[0].
+@N: FX493 |Applying initial value "0" on instance wb_rst_ms[1].
+@N: FX493 |Applying initial value "1" on instance wb_rst_ms[2].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_ksel_blank[0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_ksel_blank[1] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[1].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_ksel_blank[2] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[2].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_ksel_blank[3] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[3].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_ksel_blank[4] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[4].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_close[0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[1] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_close[1].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[2] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_close[2].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[3] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_close[3].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[4] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_close[4].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[5] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_close[5].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[6] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_close[6].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[7] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_close[7].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_close[8] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_close[8].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_open[0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[1] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_open[1].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[2] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_open[2].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[3] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_open[3].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[4] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_open[4].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[5] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_open[5].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[6] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_open[6].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[7] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_open[7].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_blank_open[8] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_blank_open[8].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[0] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[0].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[1] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[1].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[2] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[2].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[3] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[3].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[4] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[4].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[5] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[5].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[6] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[6].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[7] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[7].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[8] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[8].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[9] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[9].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[10] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[10].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[11] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[11].
+@A: FX681 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":222:4:222:12|Initial value on register t_precharge[12] is non-zero which can prevent the register from being packed into a block RAM or DSP.
+@N: FX493 |Applying initial value "0" on instance t_precharge[12].
+@N: FX493 |Applying initial value "1" on instance i2c_state[0].
+@N: FX493 |Applying initial value "0" on instance i2c_state[1].
+@N: FX493 |Applying initial value "0" on instance i2c_state[2].
+@N: FX493 |Applying initial value "0" on instance i2c_state[3].
+@N: FX493 |Applying initial value "0" on instance i2c_state[4].
+@N: FX493 |Applying initial value "0" on instance i2c_state[5].
+@N: FX493 |Applying initial value "0" on instance i2c_state[6].
+@N: FX493 |Applying initial value "0" on instance i2c_state[7].
+@N: FX493 |Applying initial value "0" on instance i2c_state[8].
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net wb_state_ns[0] has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_520 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_521 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_522 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_523 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_524 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_525 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_526 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_527 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_528 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_529 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_530 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_531 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_532 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_533 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_534 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_535 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_536 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_537 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_538 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_539 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_540 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_541 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_542 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_543 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_544 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_545 has multiple drivers .
+
+Starting factoring (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 261MB peak: 261MB)
+
+
+Finished factoring (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 261MB peak: 262MB)
+
+
+Available hyper_sources - for debug and ip models
+	None Found
+
+NConnInternalConnection caching is on
+
+Finished generic timing optimizations - Pass 1 (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 262MB peak: 262MB)
+
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_622 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_623 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_651 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_671 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_691 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_710 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un1_tx_ptr_axb_0 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un1_tx_ptr_axb_1 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un1_tx_ptr_axb_2 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un1_tx_ptr_axb_3 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un1_tx_ptr_axb_4 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un1_tx_ptr_axb_5 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un1_tx_ptr_axb_6 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un1_tx_ptr_axb_7 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_0 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_1 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_2 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_3 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_4 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_5 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_6 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_7 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_8 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_9 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_10 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net un2_div_cnt_axb_11 has multiple drivers .
+
+Starting Early Timing Optimization (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:01s; Memory used current: 263MB peak: 263MB)
+
+
+Finished Early Timing Optimization (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 263MB peak: 264MB)
+
+
+Finished generic timing optimizations - Pass 2 (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 263MB peak: 264MB)
+
+
+Finished preparing to map (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 263MB peak: 264MB)
+
+
+Finished technology mapping (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 265MB peak: 265MB)
+
+Pass		 CPU time		Worst Slack		Luts / Registers
+------------------------------------------------------------
+   1		0h:00m:01s		     7.32ns		 172 /       142
+
+Finished technology timing optimizations and critical path resynthesis (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 265MB peak: 266MB)
+
+@N: FX164 |The option to pack registers in the IOB has not been specified. Please set syn_useioff attribute.  
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1302 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1304 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1306 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1308 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1310 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1312 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1314 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1316 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1318 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1320 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1322 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1324 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1326 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1328 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1432 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1434 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1436 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1446 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1448 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1450 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1452 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1454 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1456 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1458 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1460 has multiple drivers .
+@W: BN161 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":39:7:39:14|Net N_1468 has multiple drivers .
+
+Finished restoring hierarchy (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 265MB peak: 266MB)
+
+
+Starting CDBProcessSetClockGroups... (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 266MB peak: 266MB)
+
+
+Finished with CDBProcessSetClockGroups (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 266MB peak: 267MB)
+
+
+Start Writing Netlists (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 210MB peak: 267MB)
+
+Writing Analyst data base C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\synwork\PROJ500_PDU_FPGA_V1_m.srm
+
+Finished Writing Netlist Databases (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 266MB peak: 267MB)
+
+Writing EDIF Netlist and constraint files
+@N: FX1056 |Writing EDF file: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\PROJ500_PDU_FPGA_V1.edi
+@N: BW106 |Synplicity Constraint File capacitance units using default value of 1pF 
+
+Finished Writing EDIF Netlist and constraint files (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 274MB peak: 274MB)
+
+
+Finished Writing Netlists (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 274MB peak: 275MB)
+
+
+Start final timing analysis (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 273MB peak: 275MB)
+
+@W: MT246 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_efb_i2c.v":91:8:91:16|Blackbox EFB is missing a user supplied timing model. This may have a negative effect on timing analysis and optimizations (Quality of Results)
+@W: MT420 |Found inferred clock pdu_glue|clk_osc_inferred_clock with period 480.77ns. Please declare a user-defined clock on net clk_osc.
+
+
+##### START OF TIMING REPORT #####[
+# Timing report written on Wed Apr 15 01:44:12 2026
+#
+
+
+Top view:               pdu_glue
+Requested Frequency:    2.1 MHz
+Wire load mode:         top
+Paths requested:        5
+Constraint File(s):    
+@N: MT320 |This timing report is an estimate of place and route data. For final timing results, use the FPGA vendor place and route report.
+
+@N: MT322 |Clock constraints include only register-to-register paths associated with each individual clock.
+
+
+
+Performance Summary
+*******************
+
+
+Worst slack in design: 7.324
+
+                                    Requested     Estimated     Requested     Estimated                 Clock        Clock          
+Starting Clock                      Frequency     Frequency     Period        Period        Slack       Type         Group          
+------------------------------------------------------------------------------------------------------------------------------------
+pdu_glue|clk_osc_inferred_clock     2.1 MHz       118.7 MHz     480.769       8.424         472.345     inferred     (multiple)     
+System                              100.0 MHz     373.6 MHz     10.000        2.676         7.324       system       system_clkgroup
+====================================================================================================================================
+
+
+
+
+
+Clock Relationships
+*******************
+
+Clocks                                                            |    rise  to  rise     |    fall  to  fall   |    rise  to  fall   |    fall  to  rise 
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Starting                         Ending                           |  constraint  slack    |  constraint  slack  |  constraint  slack  |  constraint  slack
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+System                           System                           |  10.000      7.324    |  No paths    -      |  No paths    -      |  No paths    -    
+System                           pdu_glue|clk_osc_inferred_clock  |  480.769     479.152  |  No paths    -      |  No paths    -      |  No paths    -    
+pdu_glue|clk_osc_inferred_clock  System                           |  480.769     479.457  |  No paths    -      |  No paths    -      |  No paths    -    
+pdu_glue|clk_osc_inferred_clock  pdu_glue|clk_osc_inferred_clock  |  480.769     472.345  |  No paths    -      |  No paths    -      |  No paths    -    
+==========================================================================================================================================================
+ Note: 'No paths' indicates there are no paths in the design for that pair of clock edges.
+       'Diff grp' indicates that paths exist but the starting clock and ending clock are in different clock groups.
+
+
+
+Interface Information 
+*********************
+
+No IO constraint found
+
+
+
+====================================
+Detailed Report for Clock: pdu_glue|clk_osc_inferred_clock
+====================================
+
+
+
+Starting Points with Worst Slack
+********************************
+
+                    Starting                                                                    Arrival            
+Instance            Reference                           Type        Pin     Net                 Time        Slack  
+                    Clock                                                                                          
+-------------------------------------------------------------------------------------------------------------------
+t_blank_open[0]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_blank_open[0]     1.108       472.345
+t_blank_open[1]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_blank_open[1]     1.044       472.409
+t_blank_open[3]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_blank_open[3]     1.044       472.409
+t_blank_open[4]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_blank_open[4]     1.044       472.409
+t_blank_open[5]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_blank_open[5]     1.044       472.409
+t_blank_open[6]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_blank_open[6]     1.044       472.409
+t_blank_open[8]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_blank_open[8]     1.044       472.409
+t_precharge[0]      pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_precharge[0]      1.108       473.004
+t_precharge[1]      pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_precharge[1]      1.044       473.068
+t_precharge[2]      pdu_glue|clk_osc_inferred_clock     FD1S3AX     Q       t_precharge[2]      1.044       473.068
+===================================================================================================================
+
+
+Ending Points with Worst Slack
+******************************
+
+                    Starting                                                                        Required            
+Instance            Reference                           Type        Pin     Net                     Time         Slack  
+                    Clock                                                                                               
+------------------------------------------------------------------------------------------------------------------------
+FAULT_CODE_1[0]     pdu_glue|clk_osc_inferred_clock     FD1P3AX     SP      un1_OVUV_OK3_i_0        480.298      472.345
+FAULT_CODE_1[1]     pdu_glue|clk_osc_inferred_clock     FD1P3AX     SP      un1_OVUV_OK3_i_0        480.298      472.345
+FAULT_CODE_1[2]     pdu_glue|clk_osc_inferred_clock     FD1P3AX     SP      un1_OVUV_OK3_i_0        480.298      472.345
+t_precharge[11]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     D       t_precharge_s[11]       480.858      473.004
+t_precharge[12]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     D       t_precharge_s[12]       480.858      473.004
+t_precharge[9]      pdu_glue|clk_osc_inferred_clock     FD1S3AX     D       t_precharge_s[9]        480.858      473.147
+t_precharge[10]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     D       t_precharge_s[10]       480.858      473.147
+t_precharge[7]      pdu_glue|clk_osc_inferred_clock     FD1S3AX     D       t_precharge_r[7]        480.858      473.290
+t_precharge[8]      pdu_glue|clk_osc_inferred_clock     FD1S3AX     D       t_precharge_s[8]        480.858      473.290
+t_blank_open[7]     pdu_glue|clk_osc_inferred_clock     FD1S3AX     D       t_blank_open_RNO[7]     480.858      473.314
+========================================================================================================================
+
+
+
+Worst Path Information
+***********************
+
+
+Path information for path number 1: 
+      Requested Period:                      480.769
+    - Setup time:                            0.472
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         480.298
+
+    - Propagation time:                      7.953
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (non-critical) :                 472.345
+
+    Number of logic level(s):                6
+    Starting point:                          t_blank_open[0] / Q
+    Ending point:                            FAULT_CODE_1[0] / SP
+    The start point is clocked by            pdu_glue|clk_osc_inferred_clock [rising] (rise=0.000 fall=240.385 period=480.769) on pin CK
+    The end   point is clocked by            pdu_glue|clk_osc_inferred_clock [rising] (rise=0.000 fall=240.385 period=480.769) on pin CK
+
+Instance / Net                          Pin      Pin               Arrival     No. of    
+Name                       Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------
+t_blank_open[0]            FD1S3AX      Q        Out     1.108     1.108 r     -         
+t_blank_open[0]            Net          -        -       -         -           3         
+un1_t_blank_open_9_5       ORCALUT4     A        In      0.000     1.108 r     -         
+un1_t_blank_open_9_5       ORCALUT4     Z        Out     1.017     2.125 f     -         
+un1_t_blank_open_9_5       Net          -        -       -         -           1         
+un1_t_blank_open_9         ORCALUT4     D        In      0.000     2.125 f     -         
+un1_t_blank_open_9         ORCALUT4     Z        Out     1.281     3.405 f     -         
+un1_t_blank_open_9         Net          -        -       -         -           11        
+un1_OVUV_OK3_i_o2          ORCALUT4     C        In      0.000     3.405 f     -         
+un1_OVUV_OK3_i_o2          ORCALUT4     Z        Out     1.153     4.558 r     -         
+N_93                       Net          -        -       -         -           3         
+FAULT_CODE_5_i_0_o2[1]     ORCALUT4     A        In      0.000     4.558 r     -         
+FAULT_CODE_5_i_0_o2[1]     ORCALUT4     Z        Out     1.153     5.711 f     -         
+FAULT_CODE_5_i_0_o2[1]     Net          -        -       -         -           3         
+FAULT_LATCH_3_f0_0_o2      ORCALUT4     C        In      0.000     5.711 f     -         
+FAULT_LATCH_3_f0_0_o2      ORCALUT4     Z        Out     1.089     6.800 f     -         
+FAULT_LATCH_3_f0_0_o2      Net          -        -       -         -           2         
+un1_OVUV_OK3_i_0           ORCALUT4     B        In      0.000     6.800 f     -         
+un1_OVUV_OK3_i_0           ORCALUT4     Z        Out     1.153     7.953 f     -         
+un1_OVUV_OK3_i_0           Net          -        -       -         -           3         
+FAULT_CODE_1[0]            FD1P3AX      SP       In      0.000     7.953 f     -         
+=========================================================================================
+
+
+
+
+====================================
+Detailed Report for Clock: System
+====================================
+
+
+
+Starting Points with Worst Slack
+********************************
+
+                        Starting                                            Arrival            
+Instance                Reference     Type     Pin          Net             Time        Slack  
+                        Clock                                                                  
+-----------------------------------------------------------------------------------------------
+u_efb_i2c.EFBInst_0     System        EFB      I2C1SCLO     i2c1_sclo       0.000       7.324  
+u_efb_i2c.EFBInst_0     System        EFB      I2C1SDAO     i2c1_sdao       0.000       7.324  
+u_efb_i2c.EFBInst_0     System        EFB      I2C1IRQO     i2c1_irqo       0.000       479.152
+u_efb_i2c.EFBInst_0     System        EFB      WBACKO       wb_ack_o        0.000       479.681
+u_efb_i2c.EFBInst_0     System        EFB      WBDATO0      wb_dat_o[0]     0.000       480.664
+u_efb_i2c.EFBInst_0     System        EFB      WBDATO1      wb_dat_o[1]     0.000       480.664
+u_efb_i2c.EFBInst_0     System        EFB      WBDATO2      wb_dat_o[2]     0.000       480.664
+u_efb_i2c.EFBInst_0     System        EFB      WBDATO3      wb_dat_o[3]     0.000       480.664
+u_efb_i2c.EFBInst_0     System        EFB      WBDATO4      wb_dat_o[4]     0.000       480.664
+u_efb_i2c.EFBInst_0     System        EFB      WBDATO5      wb_dat_o[5]     0.000       480.664
+===============================================================================================
+
+
+Ending Points with Worst Slack
+******************************
+
+                        Starting                                                    Required            
+Instance                Reference     Type        Pin          Net                  Time         Slack  
+                        Clock                                                                           
+--------------------------------------------------------------------------------------------------------
+u_efb_i2c.EFBInst_0     System        EFB         I2C1SCLI     i2c1_scli            10.000       7.324  
+u_efb_i2c.EFBInst_0     System        EFB         I2C1SDAI     i2c1_sdai            10.000       7.324  
+i2c_state[0]            System        FD1S3AY     D            i2c_state_nss[0]     480.858      479.152
+i2c_state[1]            System        FD1S3AX     D            N_250_i              480.858      479.152
+wb_cyc_i                System        FD1P3AX     SP           N_317_i              480.298      479.681
+wb_resp_dat[0]          System        FD1P3AX     SP           N_307_i              480.298      479.849
+wb_resp_dat[1]          System        FD1P3AX     SP           N_307_i              480.298      479.849
+wb_resp_dat[2]          System        FD1P3AX     SP           N_307_i              480.298      479.849
+wb_resp_dat[3]          System        FD1P3AX     SP           N_307_i              480.298      479.849
+wb_resp_dat[4]          System        FD1P3AX     SP           N_307_i              480.298      479.849
+========================================================================================================
+
+
+
+Worst Path Information
+***********************
+
+
+Path information for path number 1: 
+      Requested Period:                      10.000
+    - Setup time:                            0.000
+    + Clock delay at ending point:           0.000 (ideal)
+    + Estimated clock delay at ending point: 0.000
+    = Required time:                         10.000
+
+    - Propagation time:                      2.676
+    - Clock delay at starting point:         0.000 (ideal)
+    - Estimated clock delay at start point:  -0.000
+    = Slack (critical) :                     7.324
+
+    Number of logic level(s):                1
+    Starting point:                          u_efb_i2c.EFBInst_0 / I2C1SCLO
+    Ending point:                            u_efb_i2c.EFBInst_0 / I2C1SCLI
+    The start point is clocked by            System [rising]
+    The end   point is clocked by            System [rising]
+
+Instance / Net                   Pin          Pin               Arrival     No. of    
+Name                    Type     Name         Dir     Delay     Time        Fan Out(s)
+--------------------------------------------------------------------------------------
+u_efb_i2c.EFBInst_0     EFB      I2C1SCLO     Out     0.000     0.000 r     -         
+i2c1_sclo               Net      -            -       -         -           1         
+u_efb_i2c.BB1_scl       BB       I            In      0.000     0.000 r     -         
+u_efb_i2c.BB1_scl       BB       O            Out     2.676     2.676 r     -         
+i2c1_scli               Net      -            -       -         -           1         
+u_efb_i2c.EFBInst_0     EFB      I2C1SCLI     In      0.000     2.676 r     -         
+======================================================================================
+
+
+
+##### END OF TIMING REPORT #####]
+
+Timing exceptions that could not be applied
+
+Finished final timing analysis (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 274MB peak: 275MB)
+
+
+Finished timing report (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 274MB peak: 275MB)
+
+---------------------------------------
+Resource Usage Report
+Part: lcmxo2_640hc-5
+
+Register bits: 142 of 640 (22%)
+PIC Latch:       0
+I/O cells:       35
+
+
+Details:
+BB:             2
+CCU2D:          32
+EFB:            1
+FD1P3AX:        26
+FD1P3IX:        8
+FD1S3AX:        81
+FD1S3AY:        4
+FD1S3IX:        9
+FD1S3JX:        1
+GSR:            1
+IB:             15
+IFS1P3DX:       13
+INV:            2
+OB:             18
+ORCALUT4:       169
+OSCH:           1
+PFUMX:          1
+PUR:            1
+VHI:            2
+VLO:            2
+Mapper successful!
+
+At Mapper Exit (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 133MB peak: 275MB)
+
+Process took 0h:00m:02s realtime, 0h:00m:02s cputime
+# Wed Apr 15 01:44:12 2026
+
+###########################################################]

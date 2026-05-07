@@ -1,0 +1,14 @@
+@P:  Worst Slack : 7.324
+@P:  clk_osc - Estimated Frequency : 82.7 MHz
+@P:  clk_osc - Requested Frequency : 2.1 MHz
+@P:  clk_osc - Estimated Period : 12.086
+@P:  clk_osc - Requested Period : 480.770
+@P:  clk_osc - Slack : 468.684
+@P:  System - Estimated Frequency : 373.6 MHz
+@P:  System - Requested Frequency : 100.0 MHz
+@P:  System - Estimated Period : 2.676
+@P:  System - Requested Period : 10.000
+@P:  System - Slack : 7.324
+@P:  Total Area : 207.0
+@P:  Total Area : 0.0
+@P:  CPU Time : 0h:00m:02s

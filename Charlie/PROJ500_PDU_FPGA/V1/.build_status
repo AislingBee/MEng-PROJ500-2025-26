@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BuildStatus>
+    <Strategy name="Strategy1">
+        <Milestone name="Export" build_result="0" build_time="0">
+            <Task name="IBIS" build_result="0" update_result="2" update_time="1778100154"/>
+            <Task name="TimingSimFileVlg" build_result="0" update_result="2" update_time="1778100154"/>
+            <Task name="TimingSimFileVHD" build_result="0" update_result="2" update_time="1778100154"/>
+            <Task name="Bitgen" build_result="0" update_result="2" update_time="1778100154"/>
+            <Task name="Jedecgen" build_result="2" update_result="0" update_time="1778100156"/>
+        </Milestone>
+        <Milestone name="Map" build_result="2" build_time="1778100150">
+            <Task name="Map" build_result="2" update_result="0" update_time="1778100150"/>
+            <Task name="MapTrace" build_result="2" update_result="0" update_time="1778100150"/>
+            <Task name="MapVerilogSimFile" build_result="2" update_result="0" update_time="1778100150"/>
+            <Task name="MapVHDLSimFile" build_result="2" update_result="0" update_time="1778100151"/>
+        </Milestone>
+        <Milestone name="PAR" build_result="2" build_time="1778100154">
+            <Task name="PAR" build_result="2" update_result="0" update_time="1778100154"/>
+            <Task name="PARTrace" build_result="2" update_result="0" update_time="1778100154"/>
+            <Task name="IOTiming" build_result="2" update_result="0" update_time="1778100155"/>
+        </Milestone>
+        <Milestone name="Synthesis" build_result="2" build_time="1778100114">
+            <Task name="Synplify_Synthesis" build_result="2" update_result="0" update_time="1778100114"/>
+        </Milestone>
+        <Milestone name="TOOL_Report" build_result="0" build_time="0">
+            <Task name="HDLE" build_result="0" update_result="2" update_time="1778098515"/>
+            <Task name="BKM" build_result="0" update_result="2" update_time="1778098515"/>
+            <Task name="SSO" build_result="0" update_result="3" update_time="0"/>
+            <Task name="PIODRC" build_result="0" update_result="3" update_time="0"/>
+            <Task name="DEC" build_result="0" update_result="3" update_time="0"/>
+        </Milestone>
+        <Milestone name="Translate" build_result="2" build_time="1778100149">
+            <Task name="Translate" build_result="2" update_result="0" update_time="1778100149"/>
+        </Milestone>
+        <Report name="IBIS/PROJ500_PDU_FPGA_V1.ibs" last_build_time="1776222990" last_build_size="141683"/>
+        <Report name="PROJ500_PDU_FPGA_V1.bgn" last_build_time="1778100156" last_build_size="4679"/>
+        <Report name="PROJ500_PDU_FPGA_V1.bit" last_build_time="1776222992" last_build_size="6144"/>
+        <Report name="PROJ500_PDU_FPGA_V1.edi" last_build_time="1778100111" last_build_size="256415"/>
+        <Report name="PROJ500_PDU_FPGA_V1.ior" last_build_time="1778100155" last_build_size="3937"/>
+        <Report name="PROJ500_PDU_FPGA_V1.jed" last_build_time="1778100156" last_build_size="176334"/>
+        <Report name="PROJ500_PDU_FPGA_V1.ncd" last_build_time="1778100154" last_build_size="313046"/>
+        <Report name="PROJ500_PDU_FPGA_V1.ngd" last_build_time="1778100149" last_build_size="242086"/>
+        <Report name="PROJ500_PDU_FPGA_V1.tw1" last_build_time="1778100150" last_build_size="10409"/>
+        <Report name="PROJ500_PDU_FPGA_V1.twr" last_build_time="1778100154" last_build_size="55128"/>
+        <Report name="PROJ500_PDU_FPGA_V1_map.ncd" last_build_time="1778100150" last_build_size="214256"/>
+        <Report name="PROJ500_PDU_FPGA_V1_mapvho.sdf" last_build_time="1778100151" last_build_size="201647"/>
+        <Report name="PROJ500_PDU_FPGA_V1_mapvho.vho" last_build_time="1778100151" last_build_size="1649996"/>
+        <Report name="PROJ500_PDU_FPGA_V1_mapvo.sdf" last_build_time="1778100150" last_build_size="199283"/>
+        <Report name="PROJ500_PDU_FPGA_V1_mapvo.vo" last_build_time="1778100150" last_build_size="254262"/>
+        <Report name="PROJ500_PDU_FPGA_V1_vho.sdf" last_build_time="1776222991" last_build_size="195132"/>
+        <Report name="PROJ500_PDU_FPGA_V1_vho.vho" last_build_time="1776222991" last_build_size="1470154"/>
+        <Report name="PROJ500_PDU_FPGA_V1_vo.sdf" last_build_time="1776222991" last_build_size="192965"/>
+        <Report name="PROJ500_PDU_FPGA_V1_vo.vo" last_build_time="1776222991" last_build_size="233702"/>
+    </Strategy>
+</BuildStatus>
+                

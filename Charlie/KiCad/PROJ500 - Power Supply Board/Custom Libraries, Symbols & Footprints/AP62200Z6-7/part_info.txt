@@ -1,0 +1,9 @@
+Manufacturer=Diodes Incorporated
+PartNumber=AP62200Z6-7
+PartCategory=Integrated Circuit
+PackageCategory=SOT23 (6-Pin)
+PinCount=6
+Version=5.1
+Released=2019-11-20 09:20:02
+Downloaded=2026-02-15 20:56:51
+3D=N

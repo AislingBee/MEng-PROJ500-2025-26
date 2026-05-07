@@ -1,0 +1,78 @@
+@N: MF916 |Option synthesis_strategy=base is enabled. 
+@N: MF248 |Running in 64-bit mode.
+@N: MF666 |Clock conversion enabled. (Command "set_option -fix_gated_and_generated_clocks 1" in the project file.)
+@N: MO231 :"c:\users\charl\documents\temp backups\17.03.26\proj500 (humanoid)\fpga\proj500_pdu_fpga\pdu_glue_mxo2.sv":692:4:692:12|Found counter in view:work.pdu_glue(verilog) instance t_precharge[12:0] 
+@N: FX493 |Applying initial value "0" on instance estop_ff[0].
+@N: FX493 |Applying initial value "0" on instance estop_ff[1].
+@N: FX493 |Applying initial value "0" on instance fb_closed_ff[0].
+@N: FX493 |Applying initial value "0" on instance fb_closed_ff[1].
+@N: FX493 |Applying initial value "0" on instance mcu_alive_ff[0].
+@N: FX493 |Applying initial value "0" on instance mcu_alive_ff[1].
+@N: FX493 |Applying initial value "0" on instance mcu_arm_ff[0].
+@N: FX493 |Applying initial value "0" on instance mcu_arm_ff[1].
+@N: FX493 |Applying initial value "0" on instance mcu_fault_ff[0].
+@N: FX493 |Applying initial value "0" on instance mcu_fault_ff[1].
+@N: FX493 |Applying initial value "0" on instance ov_ff[0].
+@N: FX493 |Applying initial value "0" on instance ov_ff[1].
+@N: FX493 |Applying initial value "0" on instance pchgok_ff[0].
+@N: FX493 |Applying initial value "0" on instance pchgok_ff[1].
+@N: FX493 |Applying initial value "0" on instance sw_arm_ff[0].
+@N: FX493 |Applying initial value "0" on instance sw_arm_ff[1].
+@N: FX493 |Applying initial value "0" on instance sw_compute_ff[0].
+@N: FX493 |Applying initial value "0" on instance sw_compute_ff[1].
+@N: FX493 |Applying initial value "0" on instance sw_rarm_ff[0].
+@N: FX493 |Applying initial value "0" on instance sw_rarm_ff[1].
+@N: FX493 |Applying initial value "0" on instance sw_rdisarm_ff[0].
+@N: FX493 |Applying initial value "0" on instance sw_rdisarm_ff[1].
+@N: FX493 |Applying initial value "0" on instance sw_rst_ff[0].
+@N: FX493 |Applying initial value "0" on instance sw_rst_ff[1].
+@N: FX493 |Applying initial value "0" on instance uv_ff[0].
+@N: FX493 |Applying initial value "0" on instance uv_ff[1].
+@N: FX493 |Applying initial value "0" on instance vbusov_ff[0].
+@N: FX493 |Applying initial value "0" on instance vbusov_ff[1].
+@N: FX493 |Applying initial value "0" on instance tick_1ms.
+@N: FX493 |Applying initial value "1" on instance wb_rst_ms[0].
+@N: FX493 |Applying initial value "0" on instance wb_rst_ms[1].
+@N: FX493 |Applying initial value "1" on instance wb_rst_ms[2].
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[0].
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[1].
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[2].
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[3].
+@N: FX493 |Applying initial value "0" on instance t_ksel_blank[4].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort[0].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort[1].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort[2].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort[3].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort[4].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort[5].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort[6].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort[7].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort[8].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort_min[0].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort_min[1].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort_min[2].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort_min[3].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort_min[4].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort_min[5].
+@N: FX493 |Applying initial value "0" on instance t_prechg_abort_min[6].
+@N: FX493 |Applying initial value "1" on instance i2c_state[0].
+@N: FX493 |Applying initial value "0" on instance i2c_state[1].
+@N: FX493 |Applying initial value "0" on instance i2c_state[2].
+@N: FX493 |Applying initial value "0" on instance i2c_state[3].
+@N: FX493 |Applying initial value "0" on instance i2c_state[4].
+@N: FX493 |Applying initial value "0" on instance i2c_state[5].
+@N: FX493 |Applying initial value "0" on instance i2c_state[6].
+@N: FX493 |Applying initial value "0" on instance ov_cnt[0].
+@N: FX493 |Applying initial value "0" on instance ov_cnt[1].
+@N: FX493 |Applying initial value "0" on instance pchgok_cnt[0].
+@N: FX493 |Applying initial value "0" on instance pchgok_cnt[1].
+@N: FX493 |Applying initial value "0" on instance uv_cnt[0].
+@N: FX493 |Applying initial value "0" on instance uv_cnt[1].
+@N: FX493 |Applying initial value "0" on instance vbusov_cnt[0].
+@N: FX493 |Applying initial value "0" on instance vbusov_cnt[1].
+@N: FX164 |The option to pack registers in the IOB has not been specified. Please set syn_useioff attribute.  
+@N: FX1056 |Writing EDF file: C:\Users\charl\Documents\TEMP BACKUPS\17.03.26\PROJ500 (Humanoid)\FPGA\PROJ500_PDU_FPGA\V1\PROJ500_PDU_FPGA_V1.edi
+@N: BW106 |Synplicity Constraint File capacitance units using default value of 1pF 
+@N: MT615 |Found clock clk_osc with period 480.77ns 
+@N: MT320 |This timing report is an estimate of place and route data. For final timing results, use the FPGA vendor place and route report.
+@N: MT322 |Clock constraints include only register-to-register paths associated with each individual clock.

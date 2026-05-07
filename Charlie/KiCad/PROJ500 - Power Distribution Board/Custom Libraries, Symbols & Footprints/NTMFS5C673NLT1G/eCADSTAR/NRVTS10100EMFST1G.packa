@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "NTMFS5C673NLT1G"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2019-07-04-08:00:46)
+    (mountForm default
+        (footprintRef "NRVTS10100EMFST1G")
+        (spec "System")
+    )
+)

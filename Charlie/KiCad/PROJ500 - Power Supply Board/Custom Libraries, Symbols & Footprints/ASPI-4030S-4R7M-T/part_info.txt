@@ -1,0 +1,9 @@
+Manufacturer=ABRACON
+PartNumber=ASPI-4030S-4R7M-T
+PartCategory=Inductor
+PackageCategory=Other
+PinCount=2
+Version=8.1
+Released=2022-07-26 04:18:59
+Downloaded=2026-02-22 20:12:30
+3D=Y
