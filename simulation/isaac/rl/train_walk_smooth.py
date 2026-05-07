@@ -13,8 +13,8 @@ from isaaclab.app import AppLauncher
 
 parser = argparse.ArgumentParser(description="Train smooth deployable humanoid walking S2R PPO.")
 AppLauncher.add_app_launcher_args(parser)
-parser.add_argument("--num_envs", type=int, default=24000)
-parser.add_argument("--max_iterations", type=int, default=2000)
+parser.add_argument("--num_envs", type=int, default=1000)
+parser.add_argument("--max_iterations", type=int, default=200)
 parser.add_argument("--task", type=str, default="Humanoid-Walk-Smooth-S2R-v0")
 parser.add_argument("--seed", type=int, default=42)
 parser.add_argument("--run_name", type=str, default="")
