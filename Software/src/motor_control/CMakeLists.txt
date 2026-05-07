@@ -41,6 +41,7 @@ install(FILES
 
 set(MOTOR_CONTROL_PY_SCRIPTS
   motor_control/pretty_robot_moves.py
+  motor_control/ros_topic_gui.py
   motor_control/bridges/rcu_udp_bridge.py
   motor_control/bridges/robot_command_bridge.py
   motor_control/bridges/robot_observation_bridge.py
